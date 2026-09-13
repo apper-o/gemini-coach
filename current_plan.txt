@@ -1,0 +1,21 @@
+1. KWALIFIKACJA DNIA:
+Dzisiejszy dzień to czas bezwzględnego obniżenia obciążenia ze względu na skrajnie niski poziom zasobów energetycznych (Body Battery: 8) oraz głęboki deficyt regeneracji ośrodkowego układu nerwowego (faza REM: zaledwie 22 minuty).
+
+2. ANALIZA FIZJOLOGICZNA:
+   - Regeneracja i układ autonomiczny: HRV znajduje się na dolnej granicy normy (46 ms), a tętno spoczynkowe jest nieznacznie podwyższone. Kluczowym problemem jest jednak średnie tętno nocne (62 bpm) i drastycznie skrócony sen REM (22 min). O ile mięśnie miały warunki do regeneracji (ponad 2h snu głębokiego), o tyle Twój układ nerwowy (OUN) jest mocno przeciążony i nie przyjmie dziś bodźca tempowego.
+   - Obciążenie treningowe: Analiza wczorajszego biegu wskazuje na dużą niewydolność krążeniową/zmęczeniową. Przy wolnym tempie (5:31 min/km) Twoje tętno wynosiło aż 159 bpm (strefa Z3 zamiast Z2). Doszło do wyraźnego dryfu tętna. Dodatkowe 16 908 kroków i umiarkowany stres w ciągu dnia całkowicie wyczerpały Twoje rezerwy.
+   - Zarządzanie energią: Body Battery startujące z poziomu 65 i spadające do 8 oznacza drastyczny deficyt. Zaplanowany na niedzielę akcent w fazie Build (np. progi czy długi bieg) w tym stanie doprowadziłby do mikrourazów i pogłębienia stanu stanów zapalnych. Najlepsze okno na ewentualny ruch to późne popołudnie (po drzemce/odpoczynku).
+
+3. TYP TRENINGU I CEL FIZJOLOGICZNY:
+Bieg regeneracyjny (Active Recovery) z elementami marszu – stymulacja przepływu krwi w celu usunięcia ubocznych produktów przemiany materii, przy całkowitym oszczędzaniu układu nerwowego i nieprzekraczaniu progu tlenowego.
+
+4. STRUKTURA JEDNOSTKI KROK PO KROKU:
+   - Rozgrzewka: 5-10 minut wymachów, krążeń bioder i mobilizacji stawu skokowego w domu (bez dynamicznych wyskoków i podbijania tętna).
+   - Część główna: 35–40 minut biegu w strefie Z1.
+     * Tempo: wolniej niż 5:45 min/km (sugerowane 6:00–6:15 min/km).
+     * Tętno: ściśle poniżej 135 bpm.
+     * Biomechanika: skupienie na miękkim lądowaniu pod środkiem ciężkości, wysoka kadencja (około 170 spm) mimo bardzo wolnego tempa, aby nie obciążać kolan.
+   - Schłodzenie: 5 minut powolnego marszu, a po powrocie do domu 10 minut rolowania (piany/wałka) ze szczególnym uwzględnieniem taśmy tylnej (łydki, mięśnie kulszowo-goleniowe).
+
+5. WARUNEK KOREKTY W BIEGU:
+Jeśli w trakcie pierwszych 10 minut biegu Twoje tętno przekroczy 138 bpm przy tempie wolniejszym niż 5:50 min/km (sygnał dalszego dryfu krążeniowego), natychmiast przejdź do marszu i dokończ jednostkę jako 30-minutowy spacer regeneracyjny.
