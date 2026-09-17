@@ -27,11 +27,11 @@ Znajdujesz się w **fazie Taperingu (Badań i Błysku)**. Twoja biometria z osta
   * Krążenia bioder, wymachy nóg w dwóch płaszczyznach (10 rep/noga).
   * Mobilizacja stawu skokowego w klęku (10 rep/noga).
   * *Brak dynamicznych przebieżek!*
-* **2. CZĘŚĆ GŁÓWNA (40 minut / ok. 6 km):**
-  * **Intensywność:** Strefa Z1 do dolnej granicy Z2 (**Tętno: 120–135 bpm**, bezwzględny limit 138 bpm).
-  * **Tempo:** Bardzo spokojne, **6:20 – 6:40 min/km**.
+* **2. CZĘŚĆ GŁÓWNA (40 minut / ok. 8 km):**
+  * **Intensywność:** Strefa Z1 do dolnej granicy Z2 (**Tętno: 140–150 bpm**, bezwzględny limit 155 bpm).
+  * **Tempo:** Bardzo spokojne, **6:00 – 6:20 min/km**.
   * **Kadencja docelowa:** Wysoka (172–176 spm) – lekki, krótki krok, brak obciążania stawów.
-  * *Rygor:* Jeśli tętno przekroczy 138 bpm, przejdź do 60-sekundowego marszu.
+  * *Rygor:* Jeśli tętno przekroczy 155 bpm, przejdź do 60-sekundowego marszu.
 * **3. SCHŁODZENIE (5 minut):**
   * 3 minuty marszu (spadek tętna <115 bpm).
   * Lekkie rolowanie (Foam Roller) – drenażowe, delikatne ruchy na łydkach i udach.

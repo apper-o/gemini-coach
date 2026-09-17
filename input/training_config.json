@@ -3,10 +3,10 @@
     "phase": "Taper",
     "time_left": "2 tygodnie",
     "max_hr": "202 bpm (szacowane)",
-    "lthr": "nieznany",
+    "lthr": "Brak danych",
     "z1": "<123 bpm, regeneracja i schłodzenie",
-    "z2": "123–144 bpm, baza tlenowa / bieg spokojny (tempo >6:00 min/km)",
-    "z3": "144–162 bpm, tempo maratońskie (tempo ok. 4:50-5:40 min/km)",
+    "z2": "123–148 bpm, baza tlenowa / bieg spokojny (tempo >6:00 min/km)",
+    "z3": "148–162 bpm, tempo maratońskie (tempo ok. 4:50-5:40 min/km)",
     "z4": "162–181 bpm, próg mleczanowy LTHR (tempo ok. 4:10–4:40 min/km)",
     "z5": ">181 bpm, beztlen / interwały VO2max"
 }
