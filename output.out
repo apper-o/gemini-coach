@@ -1,0 +1,43 @@
+
+==================================================
+🛌 DZIEŃ BEZ BIEGU / REST DAY: Czwartek, 2026-09-17
+==================================================
+Dzisiaj nie odnotowano aktywności biegowej.
+Model przeprowadzi audyt regeneracji w dniu wolnym i sprawdzi gotowość na kolejny trening z planu!
+
+==================================================
+WYSYŁANIE RAPORTU DO GEMINI (Model: gemini-3.6-flash)...
+==================================================
+
+🏆 RAPORT TRENERSKI I ADAPTACJA NA DZIEŃ Piątek, 2026-09-18 🏆
+
+### AUDYT DNIA: Czwartek, 2026-09-17
+- **Typ dnia:** REST DAY
+- **Zgodność z planem:** Wzorowo | **Ocena:** 10/10
+- **Zestawienie:** Nie dotyczy (Dzień wolny).
+- **Kluczowe anomalie biomechaniczne / fizjologiczne:** Nie dotyczy.
+
+### KOSZT METABOLICZNY I STAN ZASOBÓW
+- **Bodziec fizjologiczny:** Aerobic TE 0.0, Anaerobic TE 0.0. Dominujący szlak metaboliczny: resynteza glikogenu mięśniowego, przebudowa mikrouszkodzeń strukturalnych oraz regeneracja przywspółczulna układu autonomicznego (AUN).
+- **Koszt dzienny:** Kroki łączne: 11 618, średni stres: 38/100, wieczorne Body Battery: 23/100 (spadek o -54 punkty od poziomu startowego 77/100).
+- **Wpływ bazy wyjściowej (sen/HRV):** Architektura snu z nocy poprzedzającej (Sleep Score 81/100, 1h 45m snu głębokiego) oraz stabilny wskaźnik HRV (48 ms, w normie bazowej 46–60 ms) zapewniły pełną adaptację po środowych akcentach w Tempie Maratońskim. Podwyższone obciążenie pozaaktywnościowe (11.6k kroków) obniżyło wieczorne zasoby energii (BB 23/100), jednak brak odchyleń w RHR (+1 bpm) wskazuje na brak ukrytego stanu zapalnego.
+
+### ADAPTACJA TRENINGU NA DZIEŃ: Piątek, 2026-09-18
+- **Pierwotny plan na dzień Piątek, 2026-09-18:** Bieg spokojny Z2 (6 km) z 4 x 100 m przebieżkami/rytmówkami (4:20–4:30 min/km) oraz 1 km schłodzenia. Łączny dystans: ok. 6.5 km.
+- **Uwzględnienie notatki biegacza:** Brak uwag od biegacza.
+- **DECYZJA O KOREKCIE:** POTWIERDZAM realizację planu bez zmian.
+- **Uzasadnienie fizjologiczne:** Status HRV w normie oraz brak obciążenia biegowego w czwartek zapewniają pełną gotowość obwodową. Zaplanowana jednostka ma charakter tonizujący i pobudzający rekrutację jednostek motorycznych szybkurczliwych (przebieżki) bez generowania zmęczenia metabolicznego czy generowania kwasu mlekowego przed niedzielnym akcentem.
+- **ROZPISKA NA DZIEŃ Piątek, 2026-09-18:**
+  * **Rozgrzewka:** 5 minut mobilizacji stawowej przed wyjściem (biodra, stawy skokowe). Brak dynamicznych przebieżek w tej części.
+  * **Część Główna:** 
+    - 5 km bieg spokojny w strefie **Z2** (tętno rygorystycznie **125–140 bpm**, tempo **6:00 – 6:15 min/km**).
+    - Przerwa: 2 minuty w marszu.
+    - **4 x 100 m Przebieżki / Rytmówki:** narastająco do tempa **4:20–4:30 min/km**. Praca nad kadencją, wysokim prowadzeniem kolana i lądowaniem pod środkiem ciężkości.
+    - Przerwa po każdym odcinku 100 m: 100 metrów marszu (do pełnej restytucji krążeniowej).
+  * **Schłodzenie:** 1 km bardzo spokojnego truchtu w **Z1** (tempo **>6:30 min/km**, tętno **<123 bpm**).
+- **Wytyczne regeneracyjne na noc:**
+  * Nawodnienie: minimum 1.5 l wody mineralnej z elektrolitami do końca dnia.
+  * Suplementacja: 300–400 mg jonów magnezu + potas przed snem.
+  * Higiena snu: dążenie do uzyskania min. 8h ciągłego snu w celu odtworzenia wskaźnika Body Battery powyżej 85/100.
+
+✅ Zapisano raport do: output/last_daily_report.md oraz archiwum trainings_history/2026-09-17.md

@@ -78,7 +78,7 @@ Znajdujesz się w **fazie Taperingu (Badań i Błysku)**. Twoja biometria z osta
 * **2. CZĘŚĆ GŁÓWNA:**
   * **6 km** Bieg spokojny w **Z2 (Tętno: 125–140 bpm, Tempo: 6:00 – 6:15 min/km)**.
   * **Akompaniament dynamiki (4 x 100m Przebieżki / Rytmówki):**
-    * Po ukończeniu 5 km zrób 2 minuty przerwy w marszu.
+    * Po ukończeniu 6 km zrób 2 minuty przerwy w marszu.
     * Wykonaj **4 x 100 metrów** narastająco do prędkości ok. **4:20–4:30 min/km** (akcent na ładną techniczną sylwetkę, wysokie unoszenie kolana, lądowanie pod środkiem ciężkości).
     * Przerwa po każdej przebieżce: **100 metrów marszu** (pełne uspokojenie oddechu).
 * **3. SCHŁODZENIE (1 km):**

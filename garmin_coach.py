@@ -294,7 +294,7 @@ def parse_garmin_data(data):
             if act_details:
                 splits_text = ""
                 if act_details.get('splits'):
-                    splits_text = "\n    * Splity kilometrowe:\n" + "\n".join([f"    {s}" for s in act_details['splits']])
+                    splits_text = "\n    * Splity kilometrowe:\n\n" + "\n".join(act_details['splits'])
 
                 time_info = f" [Start: {act_details['start_time']}]" if act_details.get('start_time') and act_details['start_time'] != "Brak danych" else ""
                 act_entry = (
@@ -646,64 +646,55 @@ def parse_activity_biomechanics(activity):
     parsed_splits = []
     if splits_raw and isinstance(splits_raw, dict):
         lap_list = splits_raw.get('lapDTOs', [])
-        cumulative_time_sec = 0.0
+        if lap_list:
+            parsed_splits.append("| Km | Dystans | Czas | Tempo | GAP | Tętno (śr/max) | Kadencja | Krok | GCT | Odchylenie | Moc | Wznios/Spadek |")
+            parsed_splits.append("|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|")
 
-        for idx, lap in enumerate(lap_list):
-            lap_num = idx + 1
-            lap_dist = lap.get('distance', 0) / 1000
-            lap_dur = lap.get('duration', 0)
-            cumulative_time_sec += lap_dur
+            cumulative_time_sec = 0.0
 
-            dur_m, dur_s = int(lap_dur // 60), int(lap_dur % 60)
-            cum_m, cum_s = int(cumulative_time_sec // 60), int(cumulative_time_sec % 60)
-            dur_str = f"{dur_m}:{dur_s:02d}"
-            cum_str = f"{cum_m}:{cum_s:02d}"
+            for idx, lap in enumerate(lap_list):
+                lap_num = idx + 1
+                lap_dist = lap.get('distance', 0) / 1000
+                lap_dur = lap.get('duration', 0)
+                cumulative_time_sec += lap_dur
 
-            lap_speed = lap.get('averageSpeed', 0)
-            lap_pace = f"{int((1000/lap_speed)//60)}:{int((1000/lap_speed)%60):02d} min/km" if lap_speed > 0 else "Brak danych"
+                dur_m, dur_s = int(lap_dur // 60), int(lap_dur % 60)
+                dur_str = f"{dur_m}:{dur_s:02d}"
 
-            max_speed = lap.get('maxSpeed', 0)
-            best_pace = f"{int((1000/max_speed)//60)}:{int((1000/max_speed)%60):02d} min/km" if max_speed > 0 else "Brak danych"
+                lap_speed = lap.get('averageSpeed', 0)
+                lap_pace = f"{int((1000/lap_speed)//60)}:{int((1000/lap_speed)%60):02d} min/km" if lap_speed > 0 else "Brak danych"
 
-            mov_speed = lap.get('averageMovingSpeed', 0)
-            mov_pace = f"{int((1000/mov_speed)//60)}:{int((1000/mov_speed)%60):02d} min/km" if mov_speed > 0 else lap_pace
+                gap_speed = lap.get('avgGradeAdjustedSpeed', 0)
+                gap_pace = f"{int((1000/gap_speed)//60)}:{int((1000/gap_speed)%60):02d} min/km" if gap_speed > 0 else "Brak danych"
 
-            gap_speed = lap.get('avgGradeAdjustedSpeed', 0)
-            gap_pace = f"{int((1000/gap_speed)//60)}:{int((1000/gap_speed)%60):02d} min/km" if gap_speed > 0 else "Brak danych"
+                if lap.get('averageHR') is not None and lap.get('maxHR') is not None:
+                    hr_str = f"{int(lap['averageHR'])} / {int(lap['maxHR'])} bpm"
+                elif lap.get('averageHR') is not None:
+                    hr_str = f"{int(lap['averageHR'])} bpm"
+                elif lap.get('maxHR') is not None:
+                    hr_str = f"max {int(lap['maxHR'])} bpm"
+                else:
+                    hr_str = "Brak danych"
 
-            avg_hr = f"{int(lap['averageHR'])} bpm" if lap.get('averageHR') is not None else "Brak danych"
-            max_hr = f"{int(lap['maxHR'])} bpm" if lap.get('maxHR') is not None else "Brak danych"
+                ascent = f"+{int(lap['elevationGain'])}m" if lap.get('elevationGain') is not None else "+0m"
+                descent = f"-{int(lap['elevationLoss'])}m" if lap.get('elevationLoss') is not None else "-0m"
+                elev_str = f"{ascent} / {descent}"
 
-            ascent = f"+{int(lap['elevationGain'])}m" if lap.get('elevationGain') is not None else "+0m"
-            descent = f"-{int(lap['elevationLoss'])}m" if lap.get('elevationLoss') is not None else "-0m"
+                avg_pwr = f"{int(lap['averagePower'])} W" if lap.get('averagePower') is not None else "Brak danych"
 
-            avg_pwr = f"{int(lap['averagePower'])} W" if lap.get('averagePower') is not None else "Brak danych"
-            max_pwr = f"{int(lap['maxPower'])} W" if lap.get('maxPower') is not None else "Brak danych"
+                raw_cad_lap = lap.get('averageRunCadence') or lap.get('averageRunningCadenceInStepsPerMinute')
+                avg_cad = f"{int(round(raw_cad_lap))} spm" if raw_cad_lap is not None else "Brak danych"
 
-            raw_cad_lap = lap.get('averageRunCadence') or lap.get('averageRunningCadenceInStepsPerMinute')
-            avg_cad = f"{int(round(raw_cad_lap))} spm" if raw_cad_lap is not None else "Brak danych"
-            max_cad = f"{int(round(lap['maxRunCadence']))} spm" if lap.get('maxRunCadence') is not None else "Brak danych"
+                gct_lap = f"{lap['groundContactTime']:.1f} ms" if lap.get('groundContactTime') is not None else "Brak danych"
+                stride_lap = f"{lap['strideLength']/100:.2f} m" if lap.get('strideLength') is not None else "Brak danych"
+                vert_osc_lap = f"{lap['verticalOscillation']:.2f} cm" if lap.get('verticalOscillation') is not None else "Brak danych"
 
-            gct_lap = f"{lap['groundContactTime']:.1f} ms" if lap.get('groundContactTime') is not None else "Brak danych"
-            stride_lap = f"{lap['strideLength']/100:.2f} m" if lap.get('strideLength') is not None else "Brak danych"
-            vert_osc_lap = f"{lap['verticalOscillation']:.2f} cm" if lap.get('verticalOscillation') is not None else "Brak danych"
-            vert_ratio_lap = f"{lap['verticalRatio']:.2f} %" if lap.get('verticalRatio') is not None else "Brak danych"
-            gct_balance = f"{lap['groundContactBalanceLeft']:.1f}% L" if lap.get('groundContactBalanceLeft') is not None else "Brak danych"
-
-            cals = f"{int(lap['calories'])} kcal" if lap.get('calories') is not None else "Brak danych"
-            temp = f"{lap['averageTemperature']:.0f}°C" if lap.get('averageTemperature') is not None else "Brak danych"
-            mov_time_s = int(lap.get('movingDuration', lap_dur))
-            mov_time_str = f"{mov_time_s//60}:{mov_time_s%60:02d}"
-
-            split_line = (
-                f"  * Odcinek {lap_num} ({lap_dist:.2f} km) | Czas: {dur_str} (Łącznie: {cum_str}, W ruchu: {mov_time_str}) | "
-                f"Tempo: {lap_pace} (GAP: {gap_pace}, Najlepsze: {best_pace}, Ruch: {mov_pace}) | "
-                f"Tętno: {avg_hr} (Max: {max_hr}) | Przewyższenia: {ascent} / {descent} | "
-                f"Moc: {avg_pwr} (Max: {max_pwr}) | Kadencja: {avg_cad} (Max: {max_cad}) | "
-                f"Biomechanika: Krok {stride_lap}, GCT {gct_lap}, Balans GCT: {gct_balance}, Odchylenie {vert_osc_lap}, Współczynnik {vert_ratio_lap} | "
-                f"Kalorie: {cals} | Temp: {temp}"
-            )
-            parsed_splits.append(split_line)
+                split_row = (
+                    f"| {lap_num} | {lap_dist:.2f} km | {dur_str} | {lap_pace} | {gap_pace} | "
+                    f"{hr_str} | {avg_cad} | {stride_lap} | {gct_lap} | {vert_osc_lap} | "
+                    f"{avg_pwr} | {elev_str} |"
+                )
+                parsed_splits.append(split_row)
 
     res["splits"] = parsed_splits
     return res
@@ -1082,6 +1073,8 @@ def main():
                 acts_archive_blocks = []
                 for idx, act_s in enumerate(all_today_stats):
                     splits_formatted = "\n".join(act_s.get('splits', []))
+                    if not splits_formatted:
+                        splits_formatted = "Brak szczegółowych splitów dla tej jednostki"
                     time_info = f" [Start: {act_s['start_time']}]" if act_s.get('start_time') and act_s['start_time'] != "Brak danych" else ""
                     single_block = f"""### Jednostka {idx + 1}{time_info}: {act_s['name']}
 - Warunki pogodowe: {act_s.get('weather', 'Brak danych o pogodzie')}
