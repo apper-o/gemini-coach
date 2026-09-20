@@ -355,28 +355,36 @@ def load_training_config(config_file=os.path.join(INPUT_DIR, "training_config.js
         return default_config
 
 
-def load_user_note(note_file=os.path.join(PROMPTS_DIR, "user_note.md")):
+def load_user_note(note_file=None):
     """
-    Wczytuje opcjonalną notatkę użytkownika do trenera z folderu prompts/.
+    Wczytuje opcjonalną notatkę użytkownika do trenera z folderu prompts/ (lub input/).
     """
-    os.makedirs(os.path.dirname(note_file), exist_ok=True)
+    if note_file is None:
+        note_file = os.path.join(PROMPTS_DIR, "user_note.md")
+
     if not os.path.exists(note_file):
-        try:
-            with open(note_file, "w", encoding="utf-8") as f:
-                f.write("# Twoja wiadomość/uwagi do Trenera Gemini\n"
-                        "# Możesz tu wpisać dowolne bieżące informacje, np.:\n"
-                        "# - 'Czuję lekkie zmęczenie w czwórgłowych po wczorajszych schodach'\n"
-                        "# - 'W czwartek mam czas tylko rano na max 45 minut'\n"
-                        "# - 'W sobotę chcę biegać w terenie krosowym'\n"
-                        "# Trener uwzględni te uwagi w prompcie. Linie zaczynające się od '#' są ignorowane.\n")
-        except Exception:
-            pass
-        return None
+        alt_file = os.path.join(INPUT_DIR, "user_note.md")
+        if os.path.exists(alt_file):
+            note_file = alt_file
+        else:
+            os.makedirs(os.path.dirname(note_file), exist_ok=True)
+            try:
+                with open(note_file, "w", encoding="utf-8") as f:
+                    f.write("# Twoja wiadomość/uwagi do Trenera Gemini\n"
+                            "# Możesz tu wpisać dowolne bieżące informacje, np.:\n"
+                            "# - 'Czuję lekkie zmęczenie w czwórgłowych po wczorajszych schodach'\n"
+                            "# - 'W czwartek mam czas tylko rano na max 45 minut'\n"
+                            "# - 'W sobotę chcę biegać w terenie krosowym'\n"
+                            "# Trener uwzględni te uwagi w prompcie. Linie zaczynające się od '#' są ignorowane.\n")
+            except Exception:
+                pass
+            return None
 
     try:
         with open(note_file, "r", encoding="utf-8") as f:
             lines = f.readlines()
-        valid = [l.strip() for l in lines if l.strip() and not l.strip().startswith("#")]
+        valid_lines = [l for l in lines if not l.strip().startswith("#")]
+        content = "".join(valid_lines).strip()
         return content if content else None
     except Exception as e:
         logger.warning(f"Nie udało się odczytać pliku {note_file}: {e}")
@@ -485,6 +493,9 @@ DODATKOWE UWAGI I WIADOMOŚĆ OD BIEGACZA:
         "weekly_plan.md",
         goal=training_context.get('goal', 'Brak danych'),
         phase=training_context.get('phase', 'Brak danych'),
+        time_left=training_context.get('time_left', 'Brak danych'),
+        max_hr=training_context.get('max_hr', 'Brak danych'),
+        lthr=training_context.get('lthr', 'Brak danych'),
         z1=training_context.get('z1', 'Brak danych'),
         z2=training_context.get('z2', 'Brak danych'),
         z3=training_context.get('z3', 'Brak danych'),
@@ -522,6 +533,7 @@ DODATKOWE UWAGI I WIADOMOŚĆ OD BIEGACZA:
         "weekly_suggestions.md",
         goal=training_context.get('goal', 'Brak danych'),
         phase=training_context.get('phase', 'Brak danych'),
+        time_left=training_context.get('time_left', 'Brak danych'),
         max_hr=training_context.get('max_hr', 'Brak danych'),
         lthr=training_context.get('lthr', 'Brak danych'),
         z1=training_context.get('z1', 'Brak danych'),
@@ -912,6 +924,7 @@ def main():
             print(f"   python garmin_coach.py week")
         except Exception as e:
             logger.error(f"Wystąpił błąd podczas generowania sugestii: {e}")
+            sys.exit(1)
 
     # ==================== TRYB 2: PLANOWANIE TYGODNIOWE (WEEK) ====================
     # Omijamy łączenie z Garminem – używamy preferencji, profilu, historii z 7 dni i notatki
@@ -959,6 +972,11 @@ def main():
             strength_routines=strength_routines
         )
 
+        if debug:
+            with open("debug_log.md", "w", encoding="utf-8") as f_debug:
+                f_debug.write(week_prompt + "\n")
+        
+
         print("\n" + "="*50)
         print(f"WYSYŁANIE PLANU DO GEMINI (Model: {GEMINI_MODEL})...")
         print("="*50)
@@ -976,6 +994,7 @@ def main():
             print(f"\n✅ Zapisano plan do: {weekly_plan_file}. Będzie on podstawą do codziennej weryfikacji i adaptacji!")
         except Exception as e:
             logger.error(f"Wystąpił błąd podczas generowania planu tygodniowego: {e}")
+            sys.exit(1)
 
     # ==================== TRYB 3: CODZIENNA WERYFIKACJA I ADAPTACJA (DAILY) ====================
     # Pobieranie danych z zegarka Garmin następuje TYLKO w tym trybie!
@@ -1165,6 +1184,7 @@ Aktywność: Brak biegu (Regeneracja / Odpoczynek)
             print(f"\n✅ Zapisano raport do: {latest_daily_file} oraz archiwum {history_file_path}")
         except Exception as e:
             logger.error(f"Wystąpił błąd podczas weryfikacji i adaptacji: {e}")
+            sys.exit(1)
 
 
 if __name__ == "__main__":

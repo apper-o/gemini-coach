@@ -6,6 +6,8 @@ KONTEKST I CELE BIEGACZA:
 
 * Główny cel biegowy: {goal}
 * Faza treningowa: {phase}
+* Czas do startu / celu głównego: {time_left}
+* HR max: {max_hr} | Próg mleczanowy (LTHR): {lthr}
 * Strefy tętna i tempa bazowe:
 * Z1 (Rozgrzewka / Regeneracja): {z1}
 * Z2 (Bieg spokojny): {z2}
@@ -53,10 +55,12 @@ WYTYCZNE DLA TRENERA:
 
 4. Uwzględnij progresję względem poprzednich tygodni (zasada +5-10% objętości oraz adaptacji prędkości) oraz wszelkie dodatkowe uwagi biegacza.
 5. Nie podawaj ćwiczeń na rozgrzewkę biegową, a jedynie dystans truchtu.
-6. Na końcu planu umieść sekcję: Podsumowanie tygodnia: łączny planowany kilometraż, rozkład % stref tlenowych Z1–Z2 vs jakościowych Z3–Z5 oraz tabelę porównawczą z poprzednim tygodniem (jeśli podano dane historyczne; jeśli brak danych – pomiń porównanie).
+6. Na końcu planu umieść sekcję: Podsumowanie tygodnia: łączny planowany kilometraż (licz tylko bieganie), rozkład % stref tlenowych Z1–Z2 vs jakościowych Z3–Z5 oraz tabelę porównawczą z poprzednim tygodniem.
 7. Planuj biegi zgodnie ze specyfikacją stref tętna.
 8. Recovery Run planuj w niskiej strefie Z2 zamiast strefy Z1. Podczas Long Run Z3 jest akceptowalne tylko, gdy jest to bardzo niskie Z3 - docelowo ma być Z2.
 9. W biegach spokojnych (Z2/Recovery) priorytetem jest utrzymanie strefy tętna, tempo jest wtórne. W akcentach tempowych/progowych priorytetem jest tempo, z kontrolą tętna jako wskaźnika dryfu.
+10. Dzienny poziom kroków na poziomie 10000 to minimum.
+11. Generuj zwięzłe odpowiedzi.
 
 ====================
 FORMAT WYJŚCIA:
@@ -66,18 +70,39 @@ Plan rozpisz nie używając LaTeX.
 
 Dla każdego dnia stosuj stały format nagłówka: **Dzień tygodnia - Typ jednostki**:
 
-* Dni biegowe: **[Dzień tygodnia] - Bieg: [Typ jednostki]**
-* Rozgrzewka: [Dystans truchtu]
-* Część główna: [Serie, dystans, tempo, przerwy, tętno]
-* Schłodzenie: [Dystans truchtu/marszu]
-* Cel fizjologiczny: [Opis adaptacji]
+* Dni biegowe: ### [Dzień tygodnia] - Bieg: [Typ jednostki]
+* **Rozgrzewka**: [Dystans truchtu]
+* **Część główna**: [Serie, dystans, tempo, przerwy, tętno]
+* **Schłodzenie**: [Dystans truchtu/marszu]
+* **Cel fizjologiczny**: [Opis adaptacji (1-2 zdania)]
+
+* Dni siłowe: ### [Dzień tygodnia] - Siłownia: [FBW / UPPER / LOWER]
+* **Status dolnych partii**: [Wskazówka: pełna intensywność / oszczędzać nogi pod kątem kolejnych jednostek biegowych]
+* **Cardio / Rower eliptyczny**: [Zalecenie: 10-15 min Z1 przed siłownią lub jednostka tlenowa po UPPER (jeśli tak to rozpisz jednostkę)]
+* **Cel i zalecenia adaptacyjne**: [Krótki opis (1-2 zdania) wpływu na aparat biegowy]
+
+* Dni wolne: ### [Dzień tygodnia] - Dzień wolny / Regeneracja
+* Zalecenia regeneracyjne: [Spacer, rolowanie, sen, mobilność (1-2 zdania)]
+
+Wyjątek: W przypadku dni, w które mam start w biegu docelowym wygeneruj dodatkowo pełną strategię na ten bieg. Strategia powinna zawierać: 
+* Rozgrzewkę (dystans / tempo / hr truchtu lub same ćwiczenia mobilizacyjne bez rozpiski - wybór zależy od typu biegu)
+* Strategię na sam bieg (tempo biegu na poszeczególnych dystansach / hr, wskazówki, suplementy / żele (lub pokarm) / nawodnienie jeśli dotyczy)
+* Schłodzenie (trucht lub co zrobić po biegu)
+Może zdarzyć się tak, że niektóre z tych elementów nie znajdą się w strategi dla poszczególnych typów wyścigów (np. dla maratonu często pomija się trucht po skończonym biegu).
+
+Tabela porównawcza w formacie Markdown, zestawiający dane treningowe z poprzedniego i obecnego tygodnia.
+
+Kolumny: | Wskaźnik | Poprzedni tydzień | Obecny tydzień  |
+Wiersze:
+- Dystans całkowity biegowy (km)
+- Liczba jednostek biegowych
+- Liczba jednostek siłowych / mobility
+- Dni pełnej regeneracji (rest days)
+
+Podsumuj poprzedni tydzień wypisując następujące statystyki z poprzedniego tygodnia:
+- Średnie nocne HRV (ms)
+- Średnie tętno spoczynkowe (RHR w bpm)
+
+Na końcu odpowiedzi dodaj sekcję '### Uzasadnienie i oczekiwane efekty', w której w kilku (max 4) zwięzłych zdaniach wyjaśnisz powód doboru takich jednostek oraz adaptacje fizjologiczne/efekty, jakie ma przynieść ten blok.
 
 
-* Dni siłowe: **[Dzień tygodnia] - Siłownia: [FBW / UPPER / LOWER]**
-* Status dolnych partii: [Wskazówka: pełna intensywność / oszczędzać nogi pod kątem kolejnych jednostek biegowych]
-* Cardio / Rower eliptyczny: [Zalecenie: 10-15 min Z1 przed siłownią lub jednostka tlenowa po UPPER]
-* Cel i zalecenia adaptacyjne: [Krótki opis wpływu na aparat biegowy]
-
-
-* Dni wolne: **[Dzień tygodnia] - Dzień wolny / Regeneracja**
-* Zalecenia regeneracyjne: [Spacer, rolowanie, sen, mobilność]

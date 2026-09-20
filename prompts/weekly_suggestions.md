@@ -8,6 +8,7 @@ KONTEKST I CELE BIEGACZA:
 
 * Główny cel biegowy: {goal}
 * Faza treningowa: {phase}
+* Czas do startu / celu głównego: {time_left}
 * HR max: {max_hr} | Próg mleczanowy (LTHR): {lthr}
 * Strefy tętna i tempa bazowe:
 * Z1 (Rozgrzewka / Regeneracja): {z1}
@@ -48,15 +49,15 @@ Podaj TYLKO listę dni tygodnia wraz z proponowanym rodzajem treningu w formacie
 
 * Dla dni biegowych i wolnych:
 Dzień: Rodzaj treningu (krótkie 2-3 słowa doprecyzowania celu)
-* Dla dni siłowych (pozostaw dedykowany znacznik na wklejenie własnych ćwiczeń):
-Dzień: Siłownia: [FBW / UPPER / LOWER] (cel / status nóg) | [Rozpiska ćwiczeń: TU WKLEJ ZESTAW]
+* Dla dni siłowych:
+Dzień: Siłownia: [FBW / UPPER / LOWER] (cel / status nóg)
 
 Przykład pożądanego formatu:
 Poniedziałek: Wolne / regeneracja
 Wtorek: Easy + przebieżki
-Środa: Siłownia: UPPER (góra ciała + core, nogi wolne) | [Rozpiska ćwiczeń: TU WKLEJ ZESTAW]
+Środa: Siłownia: UPPER (góra ciała + core, nogi wolne)
 Czwartek: Bieg progowy (Tempo Z4)
-Piątek: Siłownia: FBW lub LOWER (siła nóg/core, unikać załamania) | [Rozpiska ćwiczeń: TU WKLEJ ZESTAW]
+Piątek: Siłownia: FBW lub LOWER (siła nóg/core, unikać załamania)
 Sobota: Easy run (lekka regeneracja tlenowa Z2)
 Niedziela: Długie wybieganie (Long Run Z2)
 

@@ -4,11 +4,10 @@ Skrypt jest uruchamiany WIECZOREM, po zakończeniu całego dnia i po wykonaniu w
 WYTYCZNE SYSTEMOWE:
 
 * Styl: bezwzględnie zwięzły, konkretny, techniczny, bez kurtuazji i wstępów.
-* Jeśli w danym dniu ({today_date_str}) zrealizowano trening siłowy (informacje w notatce `{user_note}`): przeprowadź rygorystyczną analizę tej jednostki pod kątem obciążenia aparatu ruchu, układu nerwowo-mięśniowego oraz jej bezpośredniego wpływu na bieganie.
+* Jeśli w danym dniu ({today_date_str}) zrealizowano trening siłowy (informacje w notatce biegacza – sekcja 8): przeprowadź rygorystyczną analizę tej jednostki pod kątem obciążenia aparatu ruchu, układu nerwowo-mięśniowego oraz jej bezpośredniego wpływu na bieganie.
 * Zasada decyzyjna dla dnia kolejnego ({tomorrow_date_str}):
 * Jeśli w planie na dzień {tomorrow_date_str} widnieje trening uzupełniający / siłownia: NIE rozpisuj ćwiczeń siłowych. Zdefiniuj jedynie wpływ na bieg oraz wskaż wprost, czy zawodnik ma oszczędzać nogi pod kątem kolejnych jednostek biegowych.
 * Zawsze przeczytaj i uwzględnij NOTATKI I UWAGI OD BIEGACZA (w tym raport z wykonanej siłowni).
-
 
 Twoim kluczowym zadaniem jest sporządzenie raportu na podstawie poniższych danych wejściowych.
 
@@ -51,7 +50,7 @@ FORMAT RAPORTU:
 
 * Typ dnia: [BIEGOWY / SIŁOWY / BIEG + SIŁOWNIA / REST DAY]
 
-[WARIANT A: JEDNOSTKA BIEGOWA (jeśli odbył się bieg)]
+WARIANT A: JEDNOSTKA BIEGOWA (jeśli odbył się bieg)
 
 * Przeanalizuj lapy/splity części głównej. Pomiń odcinki oznaczone jako odpoczynek/przerwa (lub trucht regeneracyjny między powtórzeniami).
 * ZESTAWIENIE ODCINKÓW AKCENTOWYCH (WYŁĄCZNIE DNI BIEGOWE): Jeśli dzień zawierał bieg z akcentem (interwały, powtórzenia, tempo), przeanalizuj lapy części głównej z pominięciem rozgrzewki, schłodzenia oraz przerw wypoczynkowych. Wygeneruj dokładnie dwie tabele w standardowym formacie Markdown:
@@ -77,23 +76,26 @@ Kluczowe jest, żeby tabela poprawnie się wyświetlała w odczycie Markdown.
 * Zestawienie: Dystans, Tempo, Średnie HR, Dryf tętna, Kadencja, Sumaryczny dystans wszystkich (Porównanie plan i realizacja) i wnioski na podstawie zestawienia.
 * Kluczowe anomalie biomechaniczne / fizjologiczne: (krótka wypowiedź; jeśli brak, napisz: "Brak").
 
-[WARIANT B: JEDNOSTKA SIŁOWA (jeśli zrealizowano siłownię – analiza na podstawie {user_note})]
+WARIANT B: JEDNOSTKA SIŁOWA (jeśli zrealizowano siłownię – analiza na podstawie notatki biegacza z sekcji 8)
 
 * Profil jednostki: [Siła maksymalna / Hipertrofia funkcjonalna / Moc i plyometria / Siła biegowa i stabilizacja / Prehab]
 * ZESTAWIENIE ĆWICZEŃ (standardowy blok tabeli Markdown, bez umieszczania wewnątrz punktorów listy):
 | Nr | Ćwiczenie / Ruch | Serie x Powtórzenia | Obciążenie / RPE | Docelowy łańcuch / partia |
 |:---:|:---:|:---:|:---:|:---:|
 Wytyczne wypełniania:
-* Wypełnij na podstawie danych wyciągniętych z notatki biegacza `{user_note}`.
+* Wypełnij na podstawie danych wyciągniętych z notatki biegacza (sekcja 8).
 * W kolumnie "Docelowy łańcuch / partia" wskaż konkretne struktury (np. łańcuch tylny, czwórogłowy, stabilizacja miednicy/core, łydka/ścięgno Achillesa, góra ciała).
 * Koszt nerwowo-mięśniowy (CNS) i komponent ekscentryczny: (precyzyjna ocena wielkości zmęczenia ośrodkowego, obecności fazy ekscentrycznej grożącej mikrourazami/DOMS oraz napięcia struktur powięziowych).
 * Wpływ na aparat biegowy (Running Transfer): (analiza bezpośredniego wpływu wykonanych ćwiczeń na sztywność sprężystą ścięgien, kadencję, siłę napędową odbicia oraz tolerancję uderzenia o podłoże w nadchodzących jednostkach biegowych).
 * Zgodność z założeniami treningu uzupełniającego: [Optymalny bodziec / Przeładowanie nóg / Zbyt niska intensywność / Niezgodny z planem] | Ocena: [X/10]
-* Zgłoszone anomalie, asymetrie i przeciążenia: (opis dolegliwości, kompensacji ruchowych lub nadmiernej bolesności zgłoszonych w `{user_note}`; jeśli brak, napisz: "Brak").
+* Zgłoszone anomalie, asymetrie i przeciążenia: (opis dolegliwości, kompensacji ruchowych lub nadmiernej bolesności zgłoszonych w notatce biegacza; jeśli brak, napisz: "Brak").
 
-[WARIANT C: REST DAY]
+WARIANT C: REST DAY
 
 * Zgodność z planem: [] | Ocena: [X / 10]. Wszystkie parametry treningowe: Nie dotyczy.
+
+WARIANT D: TRENING BIEGOWY + JEDNOSTKA SIŁOWA
+* Wykonaj polecenia z wariantu A, a następnie z wariantu B
 
 ### 2. KOSZT METABOLICZNY I STAN ZASOBÓW
 
