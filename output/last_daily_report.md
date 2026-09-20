@@ -1,41 +1,56 @@
-# DZIEŃ WOLNY / REST DAY: 2026-09-17 (Czwartek, 2026-09-17)
+# DZIEŃ WOLNY / REST DAY: 2026-09-19 (Sobota, 2026-09-19)
 Aktywność: Brak biegu (Regeneracja / Odpoczynek)
 
-## Biometria regeneracyjna i bilans dnia (Czwartek, 2026-09-17):
-- HRV (miniona noc): BALANCED 48 ms (Średnia 7-dniowa: 49 ms, Norma bazowa: 46–60 ms)
-- RHR (miniona noc): 57 bpm (Średnia 7-dniowa: 56 bpm, odchylenie: +1 bpm) (Średnie tętno z całej nocy: 61 bpm)
-- Sen (miniona noc): 81/100 (Głęboki: 1h 45m, REM: 1h 5m)
-- Wnioski o śnie: POSITIVE_LONG_AND_DEEP, POSITIVE_RESTFUL_EVENING
-- Body Battery: Aktualnie wieczorem: 23/100 (Maksymalnie po nocy: 77/100, spadek w ciągu dnia: -54)
-- Całodzienny stres w dniu Czwartek, 2026-09-17: Średni poziom stresu: 38/100
-- Kroki w dniu Czwartek, 2026-09-17 (cały dzień): 11618 kroków (aktywne kalorie: 900.0 kcal)
+## Biometria regeneracyjna i bilans dnia (Sobota, 2026-09-19):
+- HRV (miniona noc): BALANCED 41 ms (Średnia 7-dniowa: 48 ms, Norma bazowa: 46–59 ms)
+- RHR (miniona noc): 59 bpm (Średnia 7-dniowa: 56 bpm, odchylenie: +3 bpm) (Średnie tętno z całej nocy: 63 bpm)
+- Sen (miniona noc): 68/100 (Głęboki: 1h 57m, REM: 0h 28m)
+- Wnioski o śnie: NEGATIVE_NOT_ENOUGH_REM, NEGATIVE_STRESSFUL_DAY
+- Body Battery: Aktualnie wieczorem: 11/100 (Maksymalnie po nocy: 55/100, spadek w ciągu dnia: -44)
+- Całodzienny stres w dniu Sobota, 2026-09-19: Średni poziom stresu: 38/100
+- Kroki w dniu Sobota, 2026-09-19 (cały dzień): 10160 kroków (aktywne kalorie: 663.0 kcal)
 
-## Ocena trenera i adaptacja na dzień Piątek, 2026-09-18:
-### AUDYT DNIA: Czwartek, 2026-09-17
-- **Typ dnia:** REST DAY
-- **Zgodność z planem:** Wzorowo | **Ocena:** 10/10
-- **Zestawienie:** Nie dotyczy (Dzień wolny).
-- **Kluczowe anomalie biomechaniczne / fizjologiczne:** Nie dotyczy.
+## Ocena trenera i adaptacja na dzień Niedziela, 2026-09-20:
+### 1. AUDYT DNIA: Sobota, 2026-09-19
 
-### KOSZT METABOLICZNY I STAN ZASOBÓW
-- **Bodziec fizjologiczny:** Aerobic TE 0.0, Anaerobic TE 0.0. Dominujący szlak metaboliczny: resynteza glikogenu mięśniowego, przebudowa mikrouszkodzeń strukturalnych oraz regeneracja przywspółczulna układu autonomicznego (AUN).
-- **Koszt dzienny:** Kroki łączne: 11 618, średni stres: 38/100, wieczorne Body Battery: 23/100 (spadek o -54 punkty od poziomu startowego 77/100).
-- **Wpływ bazy wyjściowej (sen/HRV):** Architektura snu z nocy poprzedzającej (Sleep Score 81/100, 1h 45m snu głębokiego) oraz stabilny wskaźnik HRV (48 ms, w normie bazowej 46–60 ms) zapewniły pełną adaptację po środowych akcentach w Tempie Maratońskim. Podwyższone obciążenie pozaaktywnościowe (11.6k kroków) obniżyło wieczorne zasoby energii (BB 23/100), jednak brak odchyleń w RHR (+1 bpm) wskazuje na brak ukrytego stanu zapalnego.
+- Typ dnia: REST DAY
+- Zgodność z planem: Wzorowo | Ocena: 9/10
+- Zestawienie: Nie dotyczy
+- Kluczowe anomalie biomechaniczne / fizjologiczne: Nie dotyczy.
 
-### ADAPTACJA TRENINGU NA DZIEŃ: Piątek, 2026-09-18
-- **Pierwotny plan na dzień Piątek, 2026-09-18:** Bieg spokojny Z2 (6 km) z 4 x 100 m przebieżkami/rytmówkami (4:20–4:30 min/km) oraz 1 km schłodzenia. Łączny dystans: ok. 6.5 km.
-- **Uwzględnienie notatki biegacza:** Brak uwag od biegacza.
-- **DECYZJA O KOREKCIE:** POTWIERDZAM realizację planu bez zmian.
-- **Uzasadnienie fizjologiczne:** Status HRV w normie oraz brak obciążenia biegowego w czwartek zapewniają pełną gotowość obwodową. Zaplanowana jednostka ma charakter tonizujący i pobudzający rekrutację jednostek motorycznych szybkurczliwych (przebieżki) bez generowania zmęczenia metabolicznego czy generowania kwasu mlekowego przed niedzielnym akcentem.
-- **ROZPISKA NA DZIEŃ Piątek, 2026-09-18:**
-  * **Rozgrzewka:** 5 minut mobilizacji stawowej przed wyjściem (biodra, stawy skokowe). Brak dynamicznych przebieżek w tej części.
-  * **Część Główna:** 
-    - 5 km bieg spokojny w strefie **Z2** (tętno rygorystycznie **125–140 bpm**, tempo **6:00 – 6:15 min/km**).
-    - Przerwa: 2 minuty w marszu.
-    - **4 x 100 m Przebieżki / Rytmówki:** narastająco do tempa **4:20–4:30 min/km**. Praca nad kadencją, wysokim prowadzeniem kolana i lądowaniem pod środkiem ciężkości.
-    - Przerwa po każdym odcinku 100 m: 100 metrów marszu (do pełnej restytucji krążeniowej).
-  * **Schłodzenie:** 1 km bardzo spokojnego truchtu w **Z1** (tempo **>6:30 min/km**, tętno **<123 bpm**).
-- **Wytyczne regeneracyjne na noc:**
-  * Nawodnienie: minimum 1.5 l wody mineralnej z elektrolitami do końca dnia.
-  * Suplementacja: 300–400 mg jonów magnezu + potas przed snem.
-  * Higiena snu: dążenie do uzyskania min. 8h ciągłego snu w celu odtworzenia wskaźnika Body Battery powyżej 85/100.
+---
+
+### 2. KOSZT METABOLICZNY I STAN ZASOBÓW
+
+- Bodziec fizjologiczny: Aerobic TE 0.0, Anaerobic TE 0.0. Dominujący szlak metaboliczny w ciągu dnia: beztlenowy niekwasomlekowy / glikolityczny lokalnie na siłowni (góra ciała/core) oraz niskointensywna oksydacja kwasów tłuszczowych (aktywność codzienna).
+- Koszt dzienny: Kroki łączne 10 160, średni stres 38/100, wieczorne Body Battery 11/100 (spadek o 44 pkt z niskiego poziomu startowego 55/100).
+- Wpływ bazy wyjściowej (sen/HRV): Niska jakość snu (Score 68/100, istotny deficyt fazy REM: 28 min), obniżona 7-dniowa dynamika HRV (41 ms vs norma 46–59 ms) oraz podwyższone RHR (+3 bpm) świadczą o utrzymującym się obciążeniu Centralnego Układu Nerwowego (CUN). Zjawisko to ograniczyło dobową odnowę zasobów energetycznych, sprowadzając wieczorne Body Battery do poziomu krytycznego (11/100).
+
+---
+
+### 3. ADAPTACJA TRENINGU NA DZIEŃ: Niedziela, 2026-09-20
+
+- Pierwotny plan na dzień Niedziela, 2026-09-20: Skrócone długie wybieganie z blokiem w Tempie Maratońskim (MP). Łącznie 12 km: 3 km Z2 + 5 km MP (5:30 min/km) + 3 km Z2 + 1 km Z1. Test żelu na 4. km.
+- Uwzględnienie notatki biegacza: Wykonano trening siłowy nastawiony na górne partie (Incline Bench Press, Pull Up, Bent Over Row) oraz stabilizację centralną (Dead Bug, Side Plank). Dolne kończyny nie zostały poddane obciążeniom ekscentrycznym ani skurczom izometrycznym o wysokim tonażu. Brak lokalnego zmęczenia mięśniowego nóg.
+- DECYZJA O KOREKCIE: POTWIERDZAM planowany trening w pełnym wymiarze.
+- Uzasadnienie fizjologiczne: Trening siłowy góry ciała i core nie naruszył aparatu ruchu pod kątem obciążenia obwodowego nóg. Mimo obecnego zmęczenia CUN (niski HRV, niska faza REM), zaplanowana redukcja objętości w taperingu (12 km) jest w pełni bezpieczna i konieczna do podtrzymania adaptacji nerwowo-mięśniowej przed startem.
+
+ROZPISKA NA DZIEŃ Niedziela, 2026-09-20:
+- Rozgrzewka (5–8 minut na lądzie):
+  * Mobilizacja dynamiczna stawu skokowego i biodrowego (wymachy, krążenia, krok odstawno-dostawny).
+  * Brak przebieżek przed częścią główną.
+- Część Główna (Łączny dystans: 12 km):
+  * Km 1 – 3 (3 km): Baza tlenowa Z2. Tempo: 6:00 – 6:15 min/km | Tętno: <140 bpm.
+  * Km 4 – 8 (5 km): Główny Blok MP. Tempo rygorystyczne: 5:30 min/km ($\pm 5$ s) | Strefa Z3 (148–158 bpm) | Kadencja: 174–178 spm.
+    * *Rygor:* Na 4. kilometrze przyjąć testowy żel energetyczny i popić min. 100 ml wody.
+  * Km 9 – 11 (3 km): Powrót do Z2. Tempo: 6:00 – 6:15 min/km | Tętno: <144 bpm.
+  * Km 12 (1 km): Schłodzenie w Z1. Tempo: >6:30 min/km | Tętno: <123 bpm.
+- Schłodzenie (po biegu):
+  * 5 minut marszu.
+  * Rozciąganie statyczne taśmy tylnej (czworogłowe, dwugłowe, łydki) – bez rozciągania przeczulonego po siłowni core.
+  * Posiłek węglowodanowo-białkowy (stosunek 4:1) do 30 min po wysiłku.
+
+Wytyczne regeneracyjne na noc:
+- Suplementacja: 400 mg jonów magnezu + cynk na noc.
+- Nawodnienie: Min. 500 ml wody z elektrolitami przed snem.
+- Higiena CUN: Odłączenie od ekranów emitujących niebieskie światło minimum 60 minut przed snem (priorytet: wydłużenie fazy REM i odbudowa indeksu HRV).

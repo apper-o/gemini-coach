@@ -377,11 +377,35 @@ def load_user_note(note_file=os.path.join(PROMPTS_DIR, "user_note.md")):
         with open(note_file, "r", encoding="utf-8") as f:
             lines = f.readlines()
         valid = [l.strip() for l in lines if l.strip() and not l.strip().startswith("#")]
-        content = "\n".join(valid).strip()
         return content if content else None
     except Exception as e:
         logger.warning(f"Nie udało się odczytać pliku {note_file}: {e}")
         return None
+
+
+def load_strength_routines(file_path=None):
+    """
+    Wczytuje bazę własnych zestawów siłowych biegacza (FBW, UPPER, LOWER) z pliku Markdown.
+    Domyślnie szuka w input/strength_routines.md, z fallbackiem do prompts/strength_routines.md.
+    """
+    if file_path is None:
+        file_path = os.path.join(INPUT_DIR, "strength_routines.md")
+
+    if not os.path.exists(file_path):
+        alt_path = os.path.join(PROMPTS_DIR, "strength_routines.md")
+        if os.path.exists(alt_path):
+            file_path = alt_path
+        else:
+            logger.warning(f"Nie znaleziono pliku z zestawami siłowymi: {file_path}")
+            return "Brak zdefiniowanych zestawów siłowych w pliku input/strength_routines.md."
+
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            content = f.read().strip()
+        return content if content else "Brak zdefiniowanych zestawów siłowych w pliku input/strength_routines.md."
+    except Exception as e:
+        logger.warning(f"Nie udało się odczytać pliku {file_path}: {e}")
+        return "Brak zdefiniowanych zestawów siłowych w pliku input/strength_routines.md."
 
 
 def load_prompt_template(filename, **kwargs):
@@ -435,7 +459,7 @@ def load_training_history(history_dir=HISTORY_DIR, days=7, ref_date=None):
     return "\n\n" + "-"*40 + "\n\n".join(entries) if entries else None
 
 
-def generate_weekly_plan_prompt(days_preferences, training_context, history_context=None, user_note=None):
+def generate_weekly_plan_prompt(days_preferences, training_context, history_context=None, user_note=None, strength_routines=None):
     """
     Tworzy prompt dla Gemini do ułożenia kompletnego planu treningowego na cały tydzień.
     """
@@ -455,6 +479,8 @@ DODATKOWE UWAGI I WIADOMOŚĆ OD BIEGACZA:
 {user_note}
 """
 
+    routines_section = strength_routines if strength_routines else "Brak zdefiniowanych zestawów siłowych (zawodnik nie podał rozpiski)."
+
     return load_prompt_template(
         "weekly_plan.md",
         goal=training_context.get('goal', 'Brak danych'),
@@ -465,6 +491,7 @@ DODATKOWE UWAGI I WIADOMOŚĆ OD BIEGACZA:
         z4=training_context.get('z4', 'Brak danych'),
         z5=training_context.get('z5', 'Brak danych'),
         hist_section=hist_section,
+        strength_routines=routines_section,
         days_preferences=days_preferences,
         note_section=note_section
     )
@@ -820,6 +847,7 @@ def main():
     config_file = os.path.join(INPUT_DIR, "training_config.json")
     note_file = os.path.join(PROMPTS_DIR, "user_note.md")
     dump_file = os.path.join(INPUT_DIR, "garmin_dump.json")
+    strength_routines_file = os.path.join(INPUT_DIR, "strength_routines.md")
 
     # 4. Sprawdzenie klucza Gemini
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
@@ -919,11 +947,16 @@ def main():
         print(days_preferences)
         print("\n" + "-"*40)
 
+        strength_routines = load_strength_routines(strength_routines_file)
+        if strength_routines:
+            logger.info(f"Wczytano bazę zestawów siłowych z pliku: {strength_routines_file}")
+
         week_prompt = generate_weekly_plan_prompt(
             days_preferences=days_preferences,
             training_context=training_context,
             history_context=history_context,
-            user_note=user_note
+            user_note=user_note,
+            strength_routines=strength_routines
         )
 
         print("\n" + "="*50)
