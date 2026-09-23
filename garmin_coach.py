@@ -18,8 +18,8 @@ OUTPUT_DIR = "output"
 PROMPTS_DIR = "prompts"
 HISTORY_DIR = "trainings_history"
 
-# Konfiguracja modelu Gemini z .env (domyślnie gemini-3.5-flash)
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
+# Konfiguracja modelu Gemini z .env (domyślnie gemini-3.5-flash-lite)
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
 
 # Dni tygodnia w języku polskim
 DAYS_PL = ["Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota", "Niedziela"]

@@ -312,9 +312,10 @@ def extract_concise_caption(md_text):
     return caption
 
 
-def send_telegram_document(bot_token, chat_id, file_bytes, filename, caption=""):
+def send_telegram_document(bot_token, chat_id, file_bytes, filename, caption="", parse_mode="HTML"):
     """
     Wysyła plik HTML jako załącznik na Telegram za pomocą żądania multipart/form-data.
+    W razie błędu parsowania HTML w podpisie (caption) automatycznie ponawia próbę jako zwykły tekst.
     """
     boundary = "----WebKitFormBoundary" + os.urandom(16).hex()
     body = bytearray()
@@ -327,8 +328,9 @@ def send_telegram_document(bot_token, chat_id, file_bytes, filename, caption="")
     if caption:
         body.extend(f"--{boundary}\r\n".encode("utf-8"))
         body.extend(f'Content-Disposition: form-data; name="caption"\r\n\r\n{caption}\r\n'.encode("utf-8"))
-        body.extend(f"--{boundary}\r\n".encode("utf-8"))
-        body.extend(f'Content-Disposition: form-data; name="parse_mode"\r\n\r\nHTML\r\n'.encode("utf-8"))
+        if parse_mode:
+            body.extend(f"--{boundary}\r\n".encode("utf-8"))
+            body.extend(f'Content-Disposition: form-data; name="parse_mode"\r\n\r\n{parse_mode}\r\n'.encode("utf-8"))
 
     # Pole: document
     body.extend(f"--{boundary}\r\n".encode("utf-8"))
@@ -351,7 +353,12 @@ def send_telegram_document(bot_token, chat_id, file_bytes, filename, caption="")
         with urllib.request.urlopen(req, timeout=30) as response:
             return response.read()
     except Exception as e:
-        logger.error(f"Błąd wysyłki dokumentu na Telegram: {e}")
+        logger.warning(f"Błąd wysyłki dokumentu z podpisem ({e}).")
+        if parse_mode:
+            plain_caption = re.sub(r'<[^>]+>', '', caption)
+            logger.info("Ponawiam wysyłkę z podpisem w czystym tekście bez HTML...")
+            return send_telegram_document(bot_token, chat_id, file_bytes, filename, caption=plain_caption, parse_mode=None)
+        logger.error(f"Nie udało się wysłać dokumentu na Telegram: {e}")
         return None
 
 

@@ -56,12 +56,13 @@ jobs:
           pip install -r requirements.txt
 
       - name: Przygotowanie notatki użytkownika dla GitHub Actions
+        env:
+          INPUT_USER_NOTE: ${{ github.event.inputs.user_note }}
         run: |
           mkdir -p prompts
-          USER_NOTE="${{ github.event.inputs.user_note }}"
-          if [ -n "$USER_NOTE" ]; then
+          if [ -n "$INPUT_USER_NOTE" ]; then
             echo "Ustawianie nowej notatki wpisanej w GitHub Actions..."
-            echo "$USER_NOTE" > prompts/user_note.md
+            echo "$INPUT_USER_NOTE" > prompts/user_note.md
           else
             echo "Brak notatki dla tego uruchomienia – czyszczenie prompts/user_note.md, aby nie używać starej notatki z repozytorium."
             > prompts/user_note.md
@@ -72,13 +73,13 @@ jobs:
           GARMIN_EMAIL: ${{ secrets.GARMIN_EMAIL }}
           GARMIN_PASSWORD: ${{ secrets.GARMIN_PASSWORD }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GEMINI_MODEL: "gemini-3.5-flash"
+          GEMINI_MODEL: "gemini-3.5-flash-lite"
+          TARGET_MODE: ${{ github.event.inputs.mode || 'yesterday' }}
           USE_LOCAL_DATA: "false"
           DEBUG: "false"
         run: |
-          MODE="${{ github.event.inputs.mode || 'yesterday' }}"
-          echo "Uruchamianie w trybie: $MODE"
-          python garmin_coach.py "$MODE"
+          echo "Uruchamianie w trybie: $TARGET_MODE"
+          python garmin_coach.py "$TARGET_MODE"
 
       - name: Wysyłka raportu na Telegram
         if: success()
