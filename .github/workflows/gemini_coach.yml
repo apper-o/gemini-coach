@@ -73,6 +73,7 @@ jobs:
           GARMIN_EMAIL: ${{ secrets.GARMIN_EMAIL }}
           GARMIN_PASSWORD: ${{ secrets.GARMIN_PASSWORD }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODELS: "gemini-3.5-flash-lite,gemini-3.5-flash,gemini-3.0-flash-lite"
           GEMINI_MODEL: "gemini-3.5-flash-lite"
           TARGET_MODE: ${{ github.event.inputs.mode || 'yesterday' }}
           USE_LOCAL_DATA: "false"

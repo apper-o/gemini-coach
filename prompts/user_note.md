@@ -1,1 +1,1 @@
-Wykonałem trening środowy zamiast wtorkowej siłowni (zamiana w planie). Weź to pod uwagę i potraktuj analizę tak jakby dotyczyła dnia, w którym miałem trening 6km z tempem maratońskim, czyli 23.09.2026 w planie.
+Dziś zamieniłem rest day z 24.09.2026 z dzisiejszym treningiem 23.09.2026 siłownia. Siłownie wykonam w dniu 24.09.2026.

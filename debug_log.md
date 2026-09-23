@@ -1,13 +1,12 @@
 Działasz jako rygorystyczny, analityczny trener biegania, fizjolog sportowy i biomechanik.
-Skrypt jest uruchamiany KOLEJNEGO DNIA (Środa, 2026-09-23) w trybie zastępczym 'yesterday' (ponieważ biegacz nie przeprowadził weryfikacji wczoraj wieczorem).
+Skrypt jest uruchamiany WIECZOREM, po zakończeniu całego dnia i po wykonaniu wszystkich ewentualnych jednostek treningowych.
 
 WYTYCZNE SYSTEMOWE:
 
 * Styl: bezwzględnie zwięzły, konkretny, techniczny, bez kurtuazji i wstępów.
-* Twoim celem jest rygorystyczny audyt WCZORAJSZEGO treningu (Wtorek, 2026-09-22), ocena regeneracji podczas minionej nocy (sen między wczoraj a dziś) oraz natychmiastowa ADAPTACJA I ZALECENIA NA DZISIEJSZY TRENING (Środa, 2026-09-23).
-* Jeśli w dniu wczorajszym (Wtorek, 2026-09-22) zrealizowano trening siłowy (informacje w notatce biegacza – sekcja 8): przeprowadź rygorystyczną analizę tej jednostki pod kątem obciążenia aparatu ruchu, układu nerwowo-mięśniowego oraz jej bezpośredniego wpływu na bieganie.
-* Zasada decyzyjna dla dnia dzisiejszego (Środa, 2026-09-23):
-  * Jeśli w planie na dzień Środa, 2026-09-23 widnieje trening uzupełniający / siłownia: NIE rozpisuj ćwiczeń siłowych. Zdefiniuj jedynie wpływ na bieg oraz wskaż wprost, czy zawodnik ma oszczędzać nogi pod kątem kolejnych jednostek biegowych.
+* Jeśli w danym dniu (Środa, 2026-09-23) zrealizowano trening siłowy (informacje w notatce biegacza – sekcja 8): przeprowadź rygorystyczną analizę tej jednostki pod kątem obciążenia aparatu ruchu, układu nerwowo-mięśniowego oraz jej bezpośredniego wpływu na bieganie.
+* Zasada decyzyjna dla dnia kolejnego (Czwartek, 2026-09-24):
+* Jeśli w planie na dzień Czwartek, 2026-09-24 widnieje trening uzupełniający / siłownia: NIE rozpisuj ćwiczeń siłowych. Zdefiniuj jedynie wpływ na bieg oraz wskaż wprost, czy zawodnik ma oszczędzać nogi pod kątem kolejnych jednostek biegowych.
 * Zawsze przeczytaj i uwzględnij NOTATKI I UWAGI OD BIEGACZA (w tym raport z wykonanej siłowni).
 
 Twoim kluczowym zadaniem jest sporządzenie raportu na podstawie poniższych danych wejściowych.
@@ -20,25 +19,34 @@ DANE WEJŚCIOWE:
 * HR max: 202 bpm (szacowane) | Próg mleczanowy (LTHR): Brak danych
 * Strefy tętna: Z1: <123 bpm, regeneracja i schłodzenie, Z2: 123–148 bpm, baza tlenowa / bieg spokojny (tempo >6:00 min/km), Z3: 148–162 bpm, tempo maratońskie (tempo ok. 4:50-5:40 min/km), Z4: 162–181 bpm, próg mleczanowy LTHR (tempo ok. 4:10–4:40 min/km), Z5: >181 bpm, beztlen / interwały VO2max
 
-2. PLAN NA DZIEŃ WCZORAJSZY (Wtorek, 2026-09-22):
-Założenia na dzień wczorajszy (Wtorek, 2026-09-22) według załączonego planu tygodniowego. W dniu Wtorek, 2026-09-22 zarejestrowano łącznie 1 jednostek treningowych. Odszukaj sekcję odpowiadającą temu dniu (Wtorek) w planie tygodniowym i sprawdź zgodność wykonania całości lub poszczególnych etapów.
+2. PLAN NA DZIEŃ Środa, 2026-09-23:
+W dniu Środa, 2026-09-23 NIE BYŁO TRENINGU BIEGOWEGO (Dzień wolny / Rest Day). Sprawdź w planie tygodniowym, czy dzień wolny był zaplanowany na Środa. Skup się na ocenie regeneracji (sen, HRV, RHR, Body Battery, dzisiejsze kroki i stres) oraz adaptacji do treningu na dzień Czwartek, 2026-09-24.
+3. RZECZYWISTA REALIZACJA W DNIU Środa, 2026-09-23 (JEDNOSTKI TRENINGOWE):
+W dniu Środa, 2026-09-23 nie odnotowano treningu biegowego (Dzień wolny / Regeneracja).
+4. KOSZT DNIA Środa, 2026-09-23 (WIECZORNY BILANS OBCIĄŻENIA):
 
-3. RZECZYWISTA REALIZACJA W DNIU WCZORAJSZYM (Wtorek, 2026-09-22) (JEDNOSTKI TRENINGOWE):
+* Dzisiejsze kroki (cały dzień): 12037 kroków (aktywne kalorie: 684.0 kcal)
+* Średni poziom stresu w ciągu dnia: Średni poziom stresu: 34/100
+* Poziom energii Body Battery: Aktualnie wieczorem: 24/100 (Maksymalnie po nocy: 90/100, spadek w ciągu dnia: -66)
 
+5. STAN Z NOCY PRZED DNIEM Środa, 2026-09-23 (BAZA WYJŚCIOWA NA START DNIA):
 
------------------------------------[JEDNOSTKA 1 [Start: 15:09]]: Rzeszow Running | 6.00 km w czasie 34.3 min (Średnie tempo: 5:43 min/km)
-- Warunki atmosferyczne i pogoda: Wiatr: 11.0 km/h wnw | Wilgotność: 82%
-- Przewyższenia (wznios/spadek): +23 m / -21 m
-- Tętno: Średnie 152 bpm | Maksymalne 163 bpm
-- Biomechanika kroku:
-  * Kadencja: Średnia 173 spm | Maksymalna 180 spm
-  * Długość kroku: 1.01 m
-  * Czas kontaktu z podłożem (GCT): 265.8 ms
-  * Odchylenie pionowe: 8.40 cm (Vertical ratio: 8.32 %)
-- Efekt treningowy i moc:
-  * Aerobic Training Effect: 3.1/5.0 (AEROBIC_BASE) | Anaerobic TE: 0.0/5.0
-  * Średnia moc biegowa: 338 W
-- Splity kilometrowe / odcinki:
+* Status HRV: BALANCED 51 ms (Średnia 7-dniowa: 48 ms, Norma bazowa: 46–59 ms)
+* Tętno spoczynkowe (RHR): 54 bpm (Średnia 7-dniowa: 56 bpm, odchylenie: -2 bpm) (Średnie tętno z całej nocy: 59 bpm)
+* Jakość snu (Sleep Score): 78/100 (Głęboki: 1h 37m, REM: 0h 48m)
+* Wnioski Garmina o śnie: NEGATIVE_LONG_BUT_NOT_ENOUGH_REM, NONE
+
+6. KONTEKST DNIA POPRZEDNIEGO (Wtorek, 2026-09-22):
+
+====================
+KONTEKST DNIA POPRZEDNIEGO (Wtorek, 2026-09-22):
+  [Jednostka 1 [Start: 15:09]]: Rzeszow Running (6.00 km w 34.3 min, tempo 5:43 min/km)
+    * Pogoda/Warunki: Wiatr: 11.0 km/h wnw | Wilgotność: 82%
+    * Tętno: Średnie 152 bpm | Maksymalne 163 bpm
+    * Biomechanika: Średnia kadencja 173 spm, krok 1.01 m, kontakt 265.8 ms, odchylenie 8.40 cm
+    * Obciążenie: Aerobic TE: 3.1/5.0 (AEROBIC_BASE), Anaerobic TE: 0.0/5.0, Średnia moc: 338 W
+    * Splity kilometrowe:
+
 | Km | Dystans | Czas | Tempo | GAP | Tętno (śr/max) | Kadencja | Krok | GCT | Odchylenie | Moc | Wznios/Spadek |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | 1 | 1.00 km | 5:46 | 5:46 min/km | 5:44 min/km | 141 / 152 bpm | 173 spm | 0.99 m | 267.6 ms | 8.26 cm | 348 W | +5m / -0m |
@@ -48,23 +56,6 @@ Założenia na dzień wczorajszy (Wtorek, 2026-09-22) według załączonego plan
 | 5 | 1.00 km | 5:37 | 5:37 min/km | 5:33 min/km | 155 / 159 bpm | 172 spm | 1.03 m | 262.4 ms | 8.42 cm | 337 W | +4m / -5m |
 | 6 | 1.00 km | 6:15 | 6:15 min/km | 6:14 min/km | 152 / 158 bpm | 169 spm | 0.95 m | 276.4 ms | 8.37 cm | 297 W | +0m / -1m |
 | 7 | 0.00 km | 0:00 | 5:42 min/km | 6:55 min/km | 147 / 147 bpm | 169 spm | 0.87 m | 283.0 ms | 8.09 cm | 266 W | +0m / -0m |
-
-4. KOSZT DNIA WCZORAJSZEGO (Wtorek, 2026-09-22) (BILANS OBCIĄŻENIA Z CAŁEGO DNIA):
-
-* Wczorajsze kroki (cały dzień): 16401 kroków (aktywne kalorie: 839.0 kcal)
-* Średni poziom stresu w ciągu dnia: Średni poziom stresu: 33/100
-* Poziom energii Body Battery pod koniec wczorajszego dnia: Pod koniec dnia: 21/100 (Max w ciągu dnia: 86/100, min: 21/100, spadek w ciągu dnia: -65)
-
-5. STAN Z MINIONEJ NOCY (SEN MIĘDZY DNIEM WCZORAJSZYM A DZISIEJSZYM – BAZA REGENERACYJNA I GOTOWOŚĆ NA DZIŚ Środa, 2026-09-23):
-
-* Status HRV (z minionej nocy): BALANCED 51 ms (Średnia 7-dniowa: 48 ms, Norma bazowa: 46–59 ms)
-* Tętno spoczynkowe (RHR z minionej nocy): 54 bpm (Średnia 7-dniowa: 56 bpm, odchylenie: -2 bpm) (Średnie tętno z całej nocy: 59 bpm)
-* Jakość snu (Sleep Score): 78/100 (Głęboki: 1h 37m, REM: 0h 48m)
-* Wnioski Garmina o śnie: NEGATIVE_LONG_BUT_NOT_ENOUGH_REM, NONE
-* Poranne naładowanie Body Battery na start dnia Środa, 2026-09-23: 53/100 (Szczyt poranny po nocy: 90/100)
-
-6. KONTEKST DNIA PRZEDWCZORAJSZEGO (Poniedziałek, 2026-09-21):
-Brak danych o treningu z dnia Poniedziałek, 2026-09-21 (dzień wolny)
 
 7. AKTUALNY PLAN TYGODNIOWY:
 
@@ -129,14 +120,13 @@ AKTUALNY PLAN TYGODNIOWY (I KOLEJNE ZAPLANOWANE TRENINGI):
 ### Uzasadnienie i oczekiwane efekty
 Głównym celem tego tygodnia jest realizacja strategii taperingu, która poprzez głęboką redukcję objętości biegów treningowych umożliwia pełną superkompensację glikogenu mięśniowego i odbudowę zmęczonego CUN. Wprowadzenie jednostki UPPER we wtorek podtrzymuje tonus mięśni posturalnych bez wywoływania zmęczenia obwodowego nóg, co w połączeniu z restrykcyjnym limfem kroków w dni wolne eliminuje mikrostany zapalne. Krótkie pobudzenie tempowe w środę i piątek ma za zadanie podtrzymać pobudzenie układu nerwowo-mięśniowego oraz ekonomię biegu przy tempie startowym bez generowania długu tlenowego. Strategia maratońska opiera się na rygorystycznym trzymaniu strefy Z3 (poniżej progu mleczanowego) przez pierwsze 32 km, co maksymalizuje udział lipolizy i chroni zapasy glikogenu przed przedwczesnym wyczerpaniem na końcowych kilometrach.
 
-
 8. BIEŻĄCA NOTATKA I UWAGI OD BIEGACZA (w tym ewentualny przebieg siłowni):
-Wykonałem trening środowy zamiast wtorkowej siłowni (zamiana w planie). Weź to pod uwagę i potraktuj analizę tak jakby dotyczyła dnia, w którym miałem trening 6km z tempem maratońskim, czyli 23.09.2026 w planie.
+Dziś zamieniłem rest day z 24.09.2026 z dzisiejszym treningiem 23.09.2026 siłownia. Siłownie wykonam w dniu 24.09.2026.
 
 ====================
 FORMAT RAPORTU:
 
-### 1. AUDYT DNIA WCZORAJSZEGO: Wtorek, 2026-09-22
+### 1. AUDYT DNIA: Środa, 2026-09-23
 
 * Typ dnia: [BIEGOWY / SIŁOWY / BIEG + SIŁOWNIA / REST DAY]
 
@@ -187,26 +177,32 @@ WARIANT C: REST DAY
 WARIANT D: TRENING BIEGOWY + JEDNOSTKA SIŁOWA
 * Wykonaj polecenia z wariantu A, a następnie z wariantu B
 
-### 2. KOSZT METABOLICZNY I OCENA REGENERACJI Z MINIONEJ NOCY
+### 2. KOSZT METABOLICZNY I STAN ZASOBÓW
 
-* Ocena kosztu wczorajszego dnia: Kroki łączne [X], średni stres [Y/100], wieczorne Body Battery pod koniec wczorajszego dnia [Z/100].
-* Jakość nocnej odbudowy (sen wczoraj->dziś): Analiza wpływu snu (78/100, głęboki 1h 37m, REM 0h 48m) i nocnego HRV/RHR na odbudowę glikogenu, układu nerwowego i mikrourazów po wczorajszym obciążeniu.
-* Poranna gotowość (Readiness) na dzień Środa, 2026-09-23: Poziom naładowania Body Battery (53/100 (Szczyt poranny po nocy: 90/100)) oraz status układu autonomicznego po nocy.
+* Bodziec fizjologiczny i szlaki energetyczne:
+* Jeśli był bieg: Aerobic TE [X], Anaerobic TE [Y], dominujący szlak metaboliczny (tlenowy / glikolityczny).
+* Jeśli była siłownia: Koszt nerwowo-mięśniowy (CNS) [Niski / Umiarkowany / Wysoki], dominujący system energetyczny (ATP-CP / glikolityczny beztlenowy), charakter zmęczenia (ośrodkowe vs obwodowe mikrourazy).
+* Jeśli był dzień łączony (bieg + siłownia): Skumulowane TE z biegu oraz ocena interferencji treningowej i łącznego obciążenia aparatu ruchu.
+* Jeśli Rest Day: N/D.
 
-### 3. ADAPTACJA TRENINGU NA DZIEŃ DZISIEJSZY: Środa, 2026-09-23
+* Koszt dzienny: Kroki łączne [X], średni stres [Y/100], wieczorne Body Battery [Z/100].
+* Wpływ bazy wyjściowej (sen/HRV): Jak stan z nocy wpłynął na tolerancję dzisiejszego obciążenia (biegowego, siłowego lub łączonego).
 
-* Pierwotny plan na dzień Środa, 2026-09-23: Założenia na dzień dzisiejszy (Środa, 2026-09-23) według planu tygodniowego (sekcja: Środa)
+### 3. ADAPTACJA TRENINGU NA DZIEŃ: Czwartek, 2026-09-24
+
+* Pierwotny plan na dzień Czwartek, 2026-09-24: Założenia na dzień Czwartek, 2026-09-24 według planu tygodniowego (sekcja: Czwartek)
 * Uwzględnienie notatki biegacza: [Odniesienie do zgłoszonych uwag, samopoczucia, bolesności mięśniowych/DOMS po siłowni, dyspozycji czasowej lub brak uwag]
 
-* DECYZJA O KOREKCIE NA DZIŚ:
-* Wskaż wprost, czy w świetle wczorajszego treningu ORAZ świeżej biometrii snu z nocy dzisiejszy trening ma być realizowany bez zmian, czy wymaga natychmiastowej modyfikacji (np. zmiana objętości, obniżenie tempa, zamiana akcentu na bieg regeneracyjny Z1/Z2, zmiana kolejności dni, zaleć rest lub modyfikację statusu siłowni).
+* DECYZJA O KOREKCIE:
+* Jeśli wskaźniki i notatka są optymalne (brak przeciążenia CNS, mikrourazów czy długu tlenowego): potwierdź planowany trening na dzień Czwartek, 2026-09-24.
+* Jeśli wskaźniki lub notatka biegacza sygnalizują duże zmęczenie (np. wysoki koszt nerwowy po siłowni, bolesność łańcucha tylnego/czwórogłowych, spadek HRV, brak czasu): zmodyfikuj jednostkę na dzień Czwartek, 2026-09-24 (np. obniż intensywność, zamień akcent na bieg regeneracyjny Z1/Z2, zamień kolejność dni, zaleć rest lub zmodyfikuj status siłowni).
 
-* Uzasadnienie fizjologiczne: (1-2 zwięzłe argumenty bazujące na wieczornym bilansie wczorajszego obciążenia, jakości snu z minionej nocy i notatce biegacza).
-* ROZPISKA NA DZIEŃ DZISIEJSZY (Środa, 2026-09-23):
+* Uzasadnienie fizjologiczne: (1-2 zwięzłe argumenty bazujące na wieczornym bilansie obciążenia, specyfice wykonanej jednostki biegowej/siłowej i notatce biegacza).
+* ROZPISKA NA DZIEŃ Czwartek, 2026-09-24:
 * Jeśli bieg: Rozgrzewka, Część Główna (dokładne tempa/strefy HR z planu lub skorygowane), Schłodzenie.
 * Jeśli siłownia: Status dla dolnych partii (np. "Pełna intensywność" / "Oszczędzać nogi — unikać pracy ekscentrycznej i obciążeń osiowych") oraz wytyczne dot. cardio uzupełniającego (np. rowerek, mobilność). Pamiętaj: NIE rozpisuj ćwiczeń siłowych.
 * Jeśli Rest Day: Zalecenie pełnej regeneracji biernej lub lekkiego rollowania/mobilności.
-* Wytyczne okołotreningowe na dziś: (krótko: odżywianie, nawodnienie i przygotowanie do jednostki).
+* Wytyczne regeneracyjne na noc: (krótko: nawodnienie, sen, ukierunkowanie żywieniowe/suplementacja pod kątem odbudowy glikogenu lub regeneracji mięśniowo-nerwowej po sile).
 
 ====================
 UWAGI DOTYCZĄCE FORMATOWANIA WIADOMOŚCI:
@@ -216,6 +212,7 @@ UWAGI DOTYCZĄCE FORMATOWANIA WIADOMOŚCI:
 * Każdy wiersz bezwzględnie w nowej linii (zastosuj pojedynczy znak '|', zakaz używania '||').
 * Każda tabela musi być oddzielona od tekstu pustą linią z góry i z dołu.
 * ZAKAZ umieszczania tabel wewnątrz list punktowanych (bullet pointów).
+
 
 3. Informacje o zarejestrowanych aktywnościach (splity/odcinki) umieszczaj wyłącznie w tabelach Markdown.
 4. W przypadku biegów ciągłych/regeneracyjnych bez podziału na serie: wygeneruj jedną tabelę ze splitami (lub oznacz Tabelę 2 jako N/D).
@@ -228,4 +225,3 @@ UWAGI STAŁE:
 2. Weź pod uwagę, że recovery time może być czasami zbyt duży.
 3. Jestem biegaczem ambitnym, więc jeśli powinienm starać się zrobić lepsze czasy, niż zaplanowane to daj znać.
 4. Podczas krótkich przebieżek statystyki takie jak Avg Run Cadence mogą być niedokładne ze względu na krótki dystans.
-

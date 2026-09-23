@@ -18,8 +18,56 @@ OUTPUT_DIR = "output"
 PROMPTS_DIR = "prompts"
 HISTORY_DIR = "trainings_history"
 
-# Konfiguracja modelu Gemini z .env (domyślnie gemini-3.5-flash-lite)
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
+# Domyślna kaskada modeli Gemini (od najszybszego do lżejszej rezerwy 3.0)
+DEFAULT_GEMINI_MODELS = [
+    "gemini-3.5-flash-lite",
+    "gemini-3.5-flash",
+    "gemini-3.0-flash-lite"
+]
+
+# Konfiguracja modeli Gemini z .env (pojedynczy model lub lista po przecinku)
+raw_models_env = os.getenv("GEMINI_MODELS") or os.getenv("GEMINI_MODEL")
+if raw_models_env:
+    custom_models = [m.strip() for m in raw_models_env.split(",") if m.strip()]
+    for dm in DEFAULT_GEMINI_MODELS:
+        if dm not in custom_models:
+            custom_models.append(dm)
+    GEMINI_MODELS_CASCADE = custom_models
+else:
+    GEMINI_MODELS_CASCADE = DEFAULT_GEMINI_MODELS
+
+GEMINI_MODEL = GEMINI_MODELS_CASCADE[0]
+
+
+def send_gemini_prompt_with_fallback(client, prompt, models=None):
+    """
+    Wysyła prompt do Gemini z automatycznym mechanizmem fallbacku (kaskada modeli).
+    Jeśli dany model jest przeciążony (429, 503, high demand), automatycznie przełącza na kolejny model w kaskadzie:
+    1. gemini-3.5-flash-lite (Główny)
+    2. gemini-3.5-flash (Zapasowy)
+    3. gemini-3.0-flash-lite (Rezerwowy 3.0)
+    """
+    if models is None:
+        models = GEMINI_MODELS_CASCADE
+
+    last_error = None
+    for idx, model_name in enumerate(models, 1):
+        try:
+            logger.info(f"Wysyłanie zapytania do Gemini (Model [{idx}/{len(models)}]: {model_name})...")
+            chat = client.chats.create(model=model_name)
+            response = chat.send_message(prompt)
+            logger.info(f"✅ Odpowiedź pomyślnie wygenerowana przez model: {model_name}")
+            return response, model_name
+        except Exception as e:
+            err_msg = str(e)
+            logger.warning(f"⚠️ Model {model_name} zwrócił błąd ({err_msg}).")
+            last_error = e
+            if idx < len(models):
+                logger.info(f"🔄 Przełączam na model zapasowy: {models[idx]}...")
+                continue
+
+    logger.error(f"❌ Wszystkie modele Gemini w kaskadzie zawiodły: {models}")
+    raise last_error
 
 # Dni tygodnia w języku polskim
 DAYS_PL = ["Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota", "Niedziela"]
@@ -1263,12 +1311,11 @@ def main():
         )
 
         print("\n" + "="*50)
-        print(f"WYSYŁANIE ZAPYTANIA DO GEMINI (Model: {GEMINI_MODEL})...")
+        print(f"WYSYŁANIE ZAPYTANIA DO GEMINI (Kaskada: {', '.join(GEMINI_MODELS_CASCADE)})...")
         print("="*50)
 
         try:
-            chat = client.chats.create(model=GEMINI_MODEL)
-            response = chat.send_message(suggest_prompt)
+            response, used_model = send_gemini_prompt_with_fallback(client, suggest_prompt)
 
             print("\n💡 PROPONOWANY PODZIAŁ TYPÓW TRENINGU NA TEN TYDZIEŃ 💡\n")
             print(response.text)
@@ -1338,12 +1385,11 @@ def main():
         
 
         print("\n" + "="*50)
-        print(f"WYSYŁANIE PLANU DO GEMINI (Model: {GEMINI_MODEL})...")
+        print(f"WYSYŁANIE PLANU DO GEMINI (Kaskada: {', '.join(GEMINI_MODELS_CASCADE)})...")
         print("="*50)
 
         try:
-            chat = client.chats.create(model=GEMINI_MODEL)
-            response = chat.send_message(week_prompt)
+            response, used_model = send_gemini_prompt_with_fallback(client, week_prompt)
 
             print("\n🏆 ROZPISKA PLANU NA CAŁY TYDZIEŃ OD TRENERA 🏆\n")
             print(response.text)
@@ -1461,12 +1507,11 @@ def main():
                 f_debug.write(verification_prompt + "\n")
 
         print("\n" + "="*50)
-        print(f"WYSYŁANIE RAPORTU DO GEMINI (Model: {GEMINI_MODEL})...")
+        print(f"WYSYŁANIE RAPORTU DO GEMINI (Kaskada: {', '.join(GEMINI_MODELS_CASCADE)})...")
         print("="*50)
 
         try:
-            chat = client.chats.create(model=GEMINI_MODEL)
-            response = chat.send_message(verification_prompt)
+            response, used_model = send_gemini_prompt_with_fallback(client, verification_prompt)
 
             print(f"\n🏆 RAPORT TRENERSKI I ADAPTACJA NA DZIEŃ {tomorrow_date_str} 🏆\n")
             print(response.text)
@@ -1650,12 +1695,11 @@ Aktywność: Brak biegu (Regeneracja / Odpoczynek)
                 f_debug.write(yesterday_prompt + "\n")
 
         print("\n" + "="*50)
-        print(f"WYSYŁANIE RAPORTU DO GEMINI (Model: {GEMINI_MODEL})...")
+        print(f"WYSYŁANIE RAPORTU DO GEMINI (Kaskada: {', '.join(GEMINI_MODELS_CASCADE)})...")
         print("="*50)
 
         try:
-            chat = client.chats.create(model=GEMINI_MODEL)
-            response = chat.send_message(yesterday_prompt)
+            response, used_model = send_gemini_prompt_with_fallback(client, yesterday_prompt)
 
             print(f"\n🏆 RAPORT TRENERSKI (AUDYT DNIA WCZORAJSZEGO) I ADAPTACJA NA DZIŚ ({today_date_str}) 🏆\n")
             print(response.text)
