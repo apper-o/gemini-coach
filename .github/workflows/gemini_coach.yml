@@ -55,11 +55,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Aktualizacja notatki użytkownika (jeśli podano przy wywołaniu ręcznym)
-        if: "${{ github.event.inputs.user_note != '' }}"
+      - name: Przygotowanie notatki użytkownika dla GitHub Actions
         run: |
           mkdir -p prompts
-          echo "${{ github.event.inputs.user_note }}" > prompts/user_note.md
+          USER_NOTE="${{ github.event.inputs.user_note }}"
+          if [ -n "$USER_NOTE" ]; then
+            echo "Ustawianie nowej notatki wpisanej w GitHub Actions..."
+            echo "$USER_NOTE" > prompts/user_note.md
+          else
+            echo "Brak notatki dla tego uruchomienia – czyszczenie prompts/user_note.md, aby nie używać starej notatki z repozytorium."
+            > prompts/user_note.md
+          fi
 
       - name: Uruchomienie Garmin Coach
         env:
@@ -102,7 +108,7 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add trainings_history/ output/ input/weekly_preferences.md prompts/user_note.md || true
+          git add trainings_history/ output/ input/weekly_preferences.md || true
           if git diff --staged --quiet; then
             echo "Brak nowych zmian do zapisania w repozytorium."
           else
