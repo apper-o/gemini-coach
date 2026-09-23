@@ -66,6 +66,7 @@ jobs:
           GARMIN_EMAIL: ${{ secrets.GARMIN_EMAIL }}
           GARMIN_PASSWORD: ${{ secrets.GARMIN_PASSWORD }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: "gemini-3.5-flash"
           USE_LOCAL_DATA: "false"
           DEBUG: "false"
         run: |
@@ -74,7 +75,7 @@ jobs:
           python garmin_coach.py "$MODE"
 
       - name: Wysyłka raportu na Telegram
-        if: always()
+        if: success()
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -88,7 +89,7 @@ jobs:
           fi
 
       - name: Wyświetlenie raportu w podsumowaniu GitHub Actions (Step Summary)
-        if: always()
+        if: success()
         run: |
           if [ -f "output/last_daily_report.md" ]; then
             cat output/last_daily_report.md >> $GITHUB_STEP_SUMMARY
