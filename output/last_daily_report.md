@@ -1,100 +1,92 @@
-# TRENING Z DNIA: 2026-09-20 (Niedziela, 2026-09-20)
+# TRENING Z DNIA: 2026-09-22 (Wtorek, 2026-09-22) [TRYB YESTERDAY]
 Liczba zarejestrowanych jednostek: 1
 
-## Biometria regeneracyjna i bilans dnia (Niedziela, 2026-09-20):
-- HRV (miniona noc): BALANCED 42 ms (Średnia 7-dniowa: 47 ms, Norma bazowa: 46–59 ms)
-- RHR (miniona noc): 58 bpm (Średnia 7-dniowa: 56 bpm, odchylenie: +2 bpm) (Średnie tętno z całej nocy: 64 bpm)
-- Sen (miniona noc): 82/100 (Głęboki: 1h 57m, REM: 1h 15m)
-- Wnioski o śnie: POSITIVE_LONG_AND_DEEP, NONE
-- Body Battery: Aktualnie wieczorem: 42/100 (Maksymalnie po nocy: 77/100, spadek w ciągu dnia: -35)
-- Całodzienny stres w dniu Niedziela, 2026-09-20: Średni poziom stresu: 21/100
-- Kroki w dniu Niedziela, 2026-09-20 (cały dzień): 14968 kroków (aktywne kalorie: 967.0 kcal)
+## Bilans wczorajszego dnia (Wtorek, 2026-09-22):
+- Wczorajsze kroki: 16401 kroków (aktywne kalorie: 839.0 kcal)
+- Średni stres wczoraj: Średni poziom stresu: 33/100
+- Body Battery pod koniec wczorajszego dnia: Pod koniec dnia: 21/100 (Max w ciągu dnia: 86/100, min: 21/100, spadek w ciągu dnia: -65)
 
-## Zarejestrowane aktywności:
-### Jednostka 1 [Start: 12:33]: Rzeszow Running
-- Warunki pogodowe: Wiatr: 13.0 km/h ssw | Wilgotność: 44%
-- Dystans: 12.01 km | Czas: 73.9 min | Średnie tempo: 6:09 min/km
-- Tętno: Średnie 157 bpm | Max 170 bpm
-- Training Effect: Aerobowy 3.5/5.0 (AEROBIC_BASE) | Beztlenowy 0.0/5.0
-- Biomechanika: Średnia kadencja 170 spm, Krok 0.95 m, Kontakt z podłożem 274.5 ms, Odchylenie pionowe 8.32 cm
+## Biometria regeneracyjna z minionej nocy (sen przed dniem Środa, 2026-09-23):
+- HRV (miniona noc): BALANCED 51 ms (Średnia 7-dniowa: 48 ms, Norma bazowa: 46–59 ms)
+- RHR (miniona noc): 54 bpm (Średnia 7-dniowa: 56 bpm, odchylenie: -2 bpm) (Średnie tętno z całej nocy: 59 bpm)
+- Sen (miniona noc): 78/100 (Głęboki: 1h 37m, REM: 0h 48m)
+- Wnioski o śnie: NEGATIVE_LONG_BUT_NOT_ENOUGH_REM, NONE
+- Poranne Body Battery na start dnia Środa, 2026-09-23: 53/100 (Szczyt poranny po nocy: 90/100)
+
+## Zarejestrowane aktywności wczoraj:
+### Jednostka 1 [Start: 15:09]: Rzeszow Running
+- Warunki pogodowe: Wiatr: 11.0 km/h wnw | Wilgotność: 82%
+- Dystans: 6.00 km | Czas: 34.3 min | Średnie tempo: 5:43 min/km
+- Tętno: Średnie 152 bpm | Max 163 bpm
+- Training Effect: Aerobowy 3.1/5.0 (AEROBIC_BASE) | Beztlenowy 0.0/5.0
+- Biomechanika: Średnia kadencja 173 spm, Krok 1.01 m, Kontakt z podłożem 265.8 ms, Odchylenie pionowe 8.40 cm
 
 #### Splity:
 | Km | Dystans | Czas | Tempo | GAP | Tętno (śr/max) | Kadencja | Krok | GCT | Odchylenie | Moc | Wznios/Spadek |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| 1 | 1.00 km | 6:30 | 6:30 min/km | 6:32 min/km | 138 / 150 bpm | 163 spm | 0.93 m | 285.3 ms | 8.48 cm | 300 W | +2m / -0m |
-| 2 | 1.00 km | 6:41 | 6:41 min/km | 6:40 min/km | 148 / 153 bpm | 166 spm | 0.91 m | 285.7 ms | 8.38 cm | 285 W | +1m / -3m |
-| 3 | 1.00 km | 6:23 | 6:23 min/km | 6:26 min/km | 152 / 159 bpm | 168 spm | 0.93 m | 281.2 ms | 8.35 cm | 304 W | +4m / -6m |
-| 4 | 1.00 km | 5:40 | 5:40 min/km | 5:36 min/km | 163 / 166 bpm | 173 spm | 1.03 m | 265.1 ms | 8.52 cm | 333 W | +5m / -8m |
-| 5 | 1.00 km | 5:33 | 5:33 min/km | 5:31 min/km | 166 / 170 bpm | 175 spm | 1.02 m | 261.0 ms | 8.32 cm | 347 W | +3m / -0m |
-| 6 | 1.00 km | 5:38 | 5:38 min/km | 5:35 min/km | 165 / 169 bpm | 173 spm | 1.02 m | 264.0 ms | 8.44 cm | 347 W | +6m / -5m |
-| 7 | 1.00 km | 5:35 | 5:35 min/km | 5:37 min/km | 164 / 166 bpm | 174 spm | 1.02 m | 262.0 ms | 8.37 cm | 327 W | +0m / -2m |
-| 8 | 1.00 km | 5:40 | 5:40 min/km | 5:39 min/km | 165 / 168 bpm | 174 spm | 1.01 m | 264.0 ms | 8.36 cm | 353 W | +5m / -4m |
-| 9 | 1.00 km | 6:28 | 6:28 min/km | 6:24 min/km | 158 / 165 bpm | 170 spm | 0.91 m | 277.3 ms | 8.16 cm | 313 W | +5m / -4m |
-| 10 | 1.00 km | 6:26 | 6:26 min/km | 6:25 min/km | 158 / 162 bpm | 170 spm | 0.91 m | 277.5 ms | 8.17 cm | 298 W | +3m / -0m |
-| 11 | 1.00 km | 6:25 | 6:25 min/km | 6:34 min/km | 154 / 159 bpm | 169 spm | 0.91 m | 280.0 ms | 8.25 cm | 281 W | +0m / -8m |
-| 12 | 1.00 km | 6:46 | 6:46 min/km | 6:43 min/km | 153 / 158 bpm | 169 spm | 0.87 m | 282.9 ms | 8.06 cm | 298 W | +7m / -1m |
-| 13 | 0.01 km | 0:02 | 6:30 min/km | 6:22 min/km | 154 / 154 bpm | 167 spm | 0.92 m | 284.0 ms | 8.38 cm | 310 W | +1m / -0m |
+| 1 | 1.00 km | 5:46 | 5:46 min/km | 5:44 min/km | 141 / 152 bpm | 173 spm | 0.99 m | 267.6 ms | 8.26 cm | 348 W | +5m / -0m |
+| 2 | 1.00 km | 5:47 | 5:47 min/km | 5:50 min/km | 151 / 155 bpm | 173 spm | 1.00 m | 267.1 ms | 8.38 cm | 335 W | +5m / -9m |
+| 3 | 1.00 km | 5:26 | 5:26 min/km | 5:22 min/km | 159 / 163 bpm | 174 spm | 1.06 m | 260.0 ms | 8.54 cm | 358 W | +8m / -5m |
+| 4 | 1.00 km | 5:26 | 5:26 min/km | 5:26 min/km | 155 / 161 bpm | 175 spm | 1.05 m | 259.8 ms | 8.43 cm | 357 W | +2m / -1m |
+| 5 | 1.00 km | 5:37 | 5:37 min/km | 5:33 min/km | 155 / 159 bpm | 172 spm | 1.03 m | 262.4 ms | 8.42 cm | 337 W | +4m / -5m |
+| 6 | 1.00 km | 6:15 | 6:15 min/km | 6:14 min/km | 152 / 158 bpm | 169 spm | 0.95 m | 276.4 ms | 8.37 cm | 297 W | +0m / -1m |
+| 7 | 0.00 km | 0:00 | 5:42 min/km | 6:55 min/km | 147 / 147 bpm | 169 spm | 0.87 m | 283.0 ms | 8.09 cm | 266 W | +0m / -0m |
 
-## Ocena trenera i adaptacja na dzień Poniedziałek, 2026-09-21:
-### 1. AUDYT DNIA: Niedziela, 2026-09-20
+## Ocena trenera i adaptacja na dzień dzisiejszy (Środa, 2026-09-23):
+### 1. AUDYT DNIA WCZORAJSZEGO: Wtorek, 2026-09-22
 
-* Typ dnia: BIEGOWY (Skrócone długie wybieganie z blokiem MP)
+* Typ dnia: BIEGOWY (Zamiana w planie – wykonano jednostkę biegową zaplanowaną na środę)
 
-ZESTAWIENIE ODCINKÓW AKCENTOWYCH (WYŁĄCZNIE DNI BIEGOWE):
+Tabela 1: Poszczególne powtórzenia
 
 | Nr powtórzenia | Seria | Dystans | Czas | Średnie Tempo | Średnie HR | Maks HR | Średnia kadencja |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | 1 | 1.00 km | 5:40 | 5:40 min/km | 163 bpm | 166 bpm | 173 spm |
-| 2 | 1 | 1.00 km | 5:33 | 5:33 min/km | 166 bpm | 170 bpm | 175 spm |
-| 3 | 1 | 1.00 km | 5:38 | 5:38 min/km | 165 bpm | 169 bpm | 173 spm |
-| 4 | 1 | 1.00 km | 5:35 | 5:35 min/km | 164 bpm | 166 bpm | 174 spm |
-| 5 | 1 | 1.00 km | 5:40 | 5:40 min/km | 165 bpm | 168 bpm | 174 spm |
+| 1 | 1 | 1.00 km | 5:26 | 5:26 min/km | 159 bpm | 163 bpm | 174 spm |
+| 2 | 1 | 1.00 km | 5:26 | 5:26 min/km | 155 bpm | 161 bpm | 175 spm |
+| 3 | 1 | 1.00 km | 5:37 | 5:37 min/km | 155 bpm | 159 bpm | 172 spm |
+
+Tabela 2: Agregacja według serii
 
 | Seria | Łączny Dystans Serii | Łączny Czas Roboczy | Średnie Tempo Serii | Średnie HR Serii | Maks HR w Serii | Średnia kadencja w Serii |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 | 5.00 km | 28:06 | 5:37 min/km | 165 bpm | 170 bpm | 174 spm |
+| 1 | 3.00 km | 16:29 | 5:30 min/km | 156 bpm | 163 bpm | 174 spm |
 
-* Zgodność z planem: Przekroczona intensywność | Ocena: 5/10
+* Zgodność z planem: Przekroczona intensywność | Ocena: 6/10
 
-* Zestawienie parametrów (Plan vs Realizacja):
-  * Dystans: Plan: 12.00 km | Realizacja: 12.01 km (Zgodność: 100%)
-  * Tempo: Plan MP: 5:30 min/km ($\pm 5$ s) | Realizacja MP: 5:37 min/km (Średnio o 7 s/km wolniej niż cel)
-  * Średnie HR: Plan MP: Z3 (148–158 bpm) | Realizacja MP: 165 bpm (Wejście w głęboką strefę Z4 – próg mleczanowy)
-  * Dryf tętna: Bardzo wysoki. Po zakończeniu bloku MP, powrót do bazy tlenowej na km 9-11 charakteryzował się tętnem 154-158 bpm (środek strefy Z3) przy tempie >6:25 min/km. Świadczy to o braku powrotu do równowagi i skumulowanym zmęczeniu.
-  * Kadencja: Plan: 174–178 spm | Realizacja MP: 174 spm (Dolna granica normy).
-  * Wnioski: Trening domknięty objętościowo, ale wykonany przy zbyt dużym koszcie fizjologicznym. Docelowe tempo maratońskie generowało obciążenie progowe (Z4), co na 3 tygodnie przed startem głównym wskazuje na niedostateczną świeżość lub błędy w oszacowaniu stref.
+* Zestawienie (Porównanie planu i realizacji):
+  * Dystans: Plan: 6.00 km (2.0 km rozgrzewka, 3.0 km MP, 1.0 km schłodzenie). Realizacja: 6.00 km. Zgodność: 100%.
+  * Tempo części głównej (MP): Plan: 5:35 min/km. Realizacja: ~5:30 min/km. Przekroczenie założeń o 5 sekund na kilometr (za szybko). Kilometry 1 i 2 części głównej (odcinki 3 i 4 całego biegu) pokonane zbyt agresywnie (5:26 min/km).
+  * Średnie HR części głównej: Plan: strefa Z3 (148–155 bpm). Realizacja: 156 bpm. Chwilowe przekroczenie progu i wejście w strefę Z4 (HR max 163 bpm na pierwszym kilometrze akcentu).
+  * Dryf tętna: Widoczny na pierwszym kilometrze akcentu (peaking do 163 bpm), ustabilizowany na kolejnych kilometrach po lekkim zwolnieniu. Niepokojący jest brak spadku tętna podczas schłodzenia (km 6: tempo 6:15 min/km, ale średnie HR wciąż na poziomie 152 bpm – strefa Z2/Z3 zamiast regeneracyjnej Z1 <123 bpm).
+  * Kadencja części głównej: Plan: 174–178 spm. Realizacja: średnia 174 spm. Na ostatnim kilometrze akcentu spadek do 172 spm przy jednoczesnym wydłużeniu kroku do 1.03 m.
 
-* Kluczowe anomalie biomechaniczne / fizjologiczne: 
-  Słaba reaktywność podłoża na początku i końcu biegu – czas kontaktu z podłożem (GCT) w Z2 przekraczał 280 ms przy kadencji spadającej do 163-166 spm. Świadczy to o "człapaniu" i braku sztywności sprężystej aparatu ruchu na niskich intensywnościach.
+* Kluczowe anomalie biomechaniczne / fizjologiczne:
+  * Podczas schłodzenia (km 6) nastąpił drastyczny spadek kadencji do 169 spm oraz wydłużenie czasu kontaktu z podłożem (GCT) do 276.4 ms (na końcówce nawet do 283.0 ms). Świadczy to o "człapaniu" i utracie sztywności sprężystej aparatu ruchu natychmiast po zakończeniu akcentu.
+  * Brak efektywnego schłodzenia układu krążenia – tętno 152 bpm podczas truchtu 6:15 min/km wskazuje na wysokie pobudzenie powysiłkowe.
 
-### 2. KOSZT METABOLICZNY I STAN ZASOBÓW
+### 2. KOSZT METABOLICZNY I OCENA REGENERACJI Z MINIONEJ NOCY
 
-* Bodziec fizjologiczny i szlaki energetyczne:
-  Aerobic TE: 3.5 (AEROBIC_BASE), Anaerobic TE: 0.0. Dominujący szlak metaboliczny: tlenowy z nieplanowanym, silnym udziałem przemian glikolitycznych (beztlenowych) podczas bloku MP wskutek wejścia tętna w strefę Z4.
+* Ocena kosztu wczorajszego dnia: Kroki łączne: 16401 (wysoka aktywność pozatreningowa jak na tydzień taperingu), średni stres: 33/100, wieczorne Body Battery pod koniec wczorajszego dnia: 21/100 (głębokie rozładowanie).
+* Jakość nocnej odbudowy (sen wczoraj->dziś): Sleep Score: 78/100. Czas snu głębokiego (1h 37m) na poziomie optymalnym (odbudowa strukturalna i fizyczna). REM (0h 48m) zdecydowanie za krótki (niepełna regeneracja układu nerwowego). Stabilne, zrównoważone HRV (51 ms) oraz niski spoczynkowy RHR (54 bpm, -2 bpm poniżej średniej) wskazują na prawidłową adaptację układu przywspółczulnego i brak ukrytego przemęczenia.
+* Poranna gotowość (Readiness) na dzień Środa, 2026-09-23: Body Battery po nocy odbudowało się do poziomu 90/100, co wskazuje na wysoką gotowość fizyczną. Jednak bieżący stan naładowania spadł do 53/100, co oznacza szybkie tempo zużywania zasobów od momentu przebudzenia. Układ autonomiczny jest w stanie równowagi.
 
-* Koszt dzienny: Kroki łączne: 14 968, średni stres: 21/100, wieczorne Body Battery: 42/100 (spadek z 77/100).
+### 3. ADAPTACJA TRENINGU NA DZIEŃ DZISIEJSZY: Środa, 2026-09-23
 
-* Wpływ bazy wyjściowej (sen/HRV): 
-  Status HRV na poziomie BALANCED (42 ms), ale poniżej średniej 7-dniowej (47 ms) oraz podwyższone tętno spoczynkowe RHR (+2 bpm powyżej średniej, średnia nocna aż 64 bpm) zwiastowały osłabienie układu przywspółczulnego. To bezpośrednia przyczyna nienaturalnie wysokiej odpowiedzi kardiologicznej (tętna) na dzisiejszym treningu.
+* Pierwotny plan na dzień Środa, 2026-09-23: Bieg: Pobudzenie w Tempie Maratońskim (MP) - jednostka wykonana wczoraj.
+* Uwzględnienie notatki biegacza: Nastąpiła zamiana dni. Dzisiaj realizowany jest zaległy wtorkowy trening siłowy UPPER.
 
-### 3. ADAPTACJA TRENINGU NA DZIEŃ: Poniedziałek, 2026-09-21
+* DECYZJA O KOREKCIE NA DZIŚ:
+Realizacja treningu uzupełniającego (siłownia UPPER) z bezwzględnym nakazem oszczędzania dolnych partii ciała. Brak modyfikacji objętości siłowej dla góry ciała. 
 
-* Pierwotny plan na dzień Poniedziałek, 2026-09-21: REGENERACJA ŚCISŁA (REST DAY) – brak biegu.
+* Uzasadnienie fizjologiczne: Wczorajszy bieg tempowy został zrealizowany zbyt szybko (tempo średnie 5:30 zamiast planowanego 5:35), co wygenerowało niepotrzebny koszt glikogenowy i zaangażowało strefę Z4 (beztlenową). Aby zniwelować ten błąd przed niedzielnym maratonem, nogi muszą dziś przejść w tryb bezwzględnej restytucji. Sesja UPPER podtrzyma tonus mięśni posturalnych i stabilizację centralną (core), co ułatwi utrzymanie prawidłowej sylwetki biegowej, nie obciążając przy tym zmęczonych włókien mięśniowych nóg.
 
-* Uwzględnienie notatki biegacza: 
-  Odniesienie do propozycji dodania treningu siłowego/cross-treningu w dni wolne (notatka sekcja 8): **Kategoryczna odmowa.** Wprowadzanie jednostek siłowych w dni wolne (REST DAYS) podczas fazy taperingu jest błędem kardynalnym. Twoje wskaźniki (HRV na dolnej granicy, podwyższone RHR, wysoki koszt kardiologiczny biegu MP) sygnalizują niedostateczną regenerację CUN. Dokładanie obciążeń siłowych uniemożliwi superkompensację i odbudowę glikogenu.
+* ROZPISKA NA DZIEŃ DZISIEJSZY (Środa, 2026-09-23):
+* Trening: Siłownia UPPER (zgodnie z założeniami wtorkowymi).
+* Status dla dolnych partii: BEZWZGLĘDNIE OSZCZĘDZAĆ NOGI. Kategoryczny zakaz wykonywania przysiadów, martwych ciągów, wykroków, pracy ekscentrycznej, izometrii oraz plio. Nogi mają być w stanie spoczynku strukturalnego pod kątem piątkowego rozruchu i niedzielnego maratonu.
+* Cardio uzupełniające: Maksymalnie 10 minut lekkiej rozgrzewki na rowerze stacjonarnym lub eliptycznym przed częścią siłową. Warunek: tętno <123 bpm (strefa Z1), opór minimalny (kręcenie o charakterze drenażu limfatycznego, bez generowania oporu mięśniowego). Brak jakiegokolwiek cardio po treningu głównym.
 
-* DECYZJA O KOREKCIE: Potwierdzam pierwotny plan: REGENERACJA ŚCISŁA (REST DAY). Bezwzględny zakaz treningów siłowych i dodatkowego cardio.
-
-* Uzasadnienie fizjologiczne: 
-  Organizm wykazuje cechy skumulowanego zmęczenia centralnego (spadek HRV, wzrost RHR) oraz obwodowego (dryf tętna, wysokie GCT). W fazie taperingu kluczem jest odbudowa zasobów energetycznych i tonusu mięśniowego. Każda dodatkowa aktywność fizyczna (w tym siłownia) w dniu jutrzejszym pogłębi zmęczenie i zniweczy adaptację.
-
-* ROZPISKA NA DZIEŃ Poniedziałek, 2026-09-21:
-  * Brak jednostki biegowej (0 km).
-  * Status dla siłowni/dolnych partii: Oszczędzać nogi – całkowity zakaz treningu oporowego, plyometrii oraz obciążeń osiowych.
-  * Aktywność dopuszczalna: Maksymalnie 20 minut delikatnego rollowania (roller piankowy o niskiej gęstości – drenażowo) oraz rozciąganie statyczne (stretching pasywny).
-
-* Wytyczne regeneracyjne na noc:
-  * Nawodnienie: Minimum 2.5 l płynów mineralizowanych (elektrolity z przewagą sodu i potasu).
-  * Suplementacja: 400 mg jonów magnezu (cytrynian lub chelat) + cynk przed snem.
-  * Sen: Celować w minimum 8.5 - 9 godzin. Ścisła higiena snu (brak ekranów na 90 minut przed snem) w celu wydłużenia kluczowej fazy głębokiej i REM.
+* Wytyczne okołotreningowe na dziś:
+  * Kontrola aktywności pozatreningowej: limit kroków na dziś to maksymalnie 10 000 (wczorajsze 16 400 w fazie taperingu to błąd logistyczny – ogranicz chodzenie).
+  * Nawodnienie: Minimum 3 litry płynów, w tym 1 litr izotoniku (uzupełnienie strat po wczorajszym zbyt mocnym biegu).
+  * Odżywianie: Zwiększona podaż węglowodanów złożonych w celu rozpoczęcia odbudowy uszczuplonego wczoraj glikogenu.
+  * Uwaga dla ambitnego biegacza: Tapering to nie okres na bicie rekordów na treningach. Bieganie akcentów szybciej niż w planie niszczy proces superkompensacji. Twoim celem na dziś jest rygorystyczny hamulec dla nóg.

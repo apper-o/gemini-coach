@@ -1,85 +1,90 @@
 📝 Wczytano Twoją wiadomość z prompts/user_note.md:
-   "Chciałbym, jeżeli już musimy zrobić dużo rest day przed maratonem, to żeby robić w te dni cross-trening np. siłownię, jeśli to dobry pomysł."
+   "Wykonałem trening środowy zamiast wtorkowej siłowni (zamiana w planie). Weź to pod uwagę i potraktuj analizę tak jakby dotyczyła dnia, w którym miałem trening 6km z tempem maratońskim, czyli 23.09.2026 w planie."
 
-
-============================================================
-🗓️  TRYB PLANOWANIA TYGODNIOWEGO (GEMINI COACH) 🗓️
-============================================================
-📄 Wczytano preferencje z pliku input/weekly_preferences.md:
-
-**Poniedziałek:** Wolne (spacer)
-**Wtorek:** cross-training lub wolne (wybierz co lepsze)
-**Środa:** Trening biegowy
-**Czwartek:** cross-training lub wolne (wybierz co lepsze)
-**Piątek:** Trening biegowy
-**Sobota:** Wolne (spacer)
-**Niedziela:** Maraton
-
-----------------------------------------
 
 ==================================================
-WYSYŁANIE PLANU DO GEMINI (Model: gemini-3.5-flash)...
+📊 POBRANO AKTYWNOŚCI DO AUDYTU (1 jednostek w dniu Wtorek, 2026-09-22):
 ==================================================
 
-🏆 ROZPISKA PLANU NA CAŁY TYDZIEŃ OD TRENERA 🏆
+▶️ Rzeszow Running (6.00 km, tempo: 5:43 min/km)
+   - duration: 34.3 min
+   - avg_hr: 152 bpm
+   - max_hr: 163 bpm
+   - avg_cadence: 173 spm
+   - max_cadence: 180 spm
+   - stride_length: 1.01 m
+   - ground_contact_time: 265.8 ms
+   - vertical_oscillation: 8.40 cm
+   - vertical_ratio: 8.32 %
+   - elevation_gain: 23 m
+   - elevation_loss: 21 m
+   - aerobic_te: 3.1/5.0 (AEROBIC_BASE)
+   - anaerobic_te: 0.0/5.0
+   - avg_power: 338 W
+   - weather: Wiatr: 11.0 km/h wnw | Wilgotność: 82%
 
-### Poniedziałek - Dzień wolny / Regeneracja
-* **Zalecenia regeneracyjne**: Spokojny spacer regeneracyjny rozbity na 2-3 porcje w ciągu dnia (cel: min. 10 000 kroków, płaski teren). Automasaż rollerem o niskiej gęstości (ruch drenażowy od dołu ku górze) oraz 15 minut pasywnego rozciągania. Priorytetem jest nawodnienie (min. 3 l płynów z elektrolitami) i wydłużenie snu nocnego.
+==================================================
+WYSYŁANIE RAPORTU DO GEMINI (Model: gemini-3.5-flash)...
+==================================================
 
-### Wtorek - Siłownia: UPPER
-* **Status dolnych partii**: Bezwzględnie oszczędzać nogi. Kategoryczny zakaz ćwiczeń siłowych na dolne kończyny, brak pracy ekscentrycznej, plio oraz izometrii.
-* **Cardio / Rower eliptyczny**: 10 minut w strefie Z1 (tętno <123 bpm, opór minimalny) jako rozgrzewka przed częścią siłową góry ciała. Brak cardio po treningu głównym UPPER.
-* **Cel i zalecenia adaptacyjne**: Podtrzymanie napięcia mięśniowego góry ciała i stabilizacji centralnej (core) przy zerowym koszcie metabolicznym i mechanicznym dla nóg.
+🏆 RAPORT TRENERSKI (AUDYT DNIA WCZORAJSZEGO) I ADAPTACJA NA DZIŚ (Środa, 2026-09-23) 🏆
 
-### Środa - Bieg: Pobudzenie w Tempie Maratońskim (MP)
-* **Rozgrzewka**: 2.0 km truchtu w strefie Z2
-* **Część główna**: 3.0 km biegu ciągłego w Tempie Maratońskim (MP). Tempo: rygorystycznie 5:35 min/km, strefa tętna: Z3 (docelowo 148–155 bpm), kadencja: 174–178 spm.
-* **Schłodzenie**: 1.0 km truchtu/marszu w strefie Z1
-* **Cel fizjologiczny**: Pobudzenie układu nerwowo-mięśniowego i kalibracja docelowego tempa startowego (MP) bez uszczuplania zasobów glikogenu.
+### 1. AUDYT DNIA WCZORAJSZEGO: Wtorek, 2026-09-22
 
-### Czwartek - Dzień wolny / Regeneracja
-* **Zalecenia regeneracyjne**: Lekki spacer w celu podtrzymania minimalnego limitu 10 000 kroków dziennie. Rozpoczęcie ładowania węglowodanów (carbo-loading: 7-8g węglowodanów na kg masy ciała) oraz drenaż ułożeniowy nóg (leżenie z nogami uniesionymi 90 stopni na ścianie przez 15 minut).
+* Typ dnia: BIEGOWY (Zamiana w planie – wykonano jednostkę biegową zaplanowaną na środę)
 
-### Piątek - Bieg: Rozruch przedstartowy
-* **Rozgrzewka**: 3.0 km truchtu w strefie Z2
-* **Część główna**: 3 x 100 m dynamicznych przebieżek (narastająco do tempa ~4:30 min/km, tętno pod koniec Z4), z przerwą 100 m w marszu do pełnego wypoczynku.
-* **Schłodzenie**: 1.0 km bardzo spokojnego truchtu w strefie Z1
-* **Cel fizjologiczny**: Podniesienie tonusu mięśniowego i potencjacja nerwowo-mięśniowa (pobudzenie włókien szybkokurczliwych) przed niedzielnym startem.
+Tabela 1: Poszczególne powtórzenia
 
-### Sobota - Dzień wolny / Regeneracja
-* **Zalecenia regeneracyjne**: Bardzo krótki spacer wyłącznie do celów logistycznych (utrzymać limit 10 000 kroków bez długiego stania i chodzenia). Szczyt carbo-loadingu (8-10g węglowodanów na kg m.c.), intensywne nawadnianie (woda + izotonik) i przygotowanie psychiczne.
+| Nr powtórzenia | Seria | Dystans | Czas | Średnie Tempo | Średnie HR | Maks HR | Średnia kadencja |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | 1 | 1.00 km | 5:26 | 5:26 min/km | 159 bpm | 163 bpm | 174 spm |
+| 2 | 1 | 1.00 km | 5:26 | 5:26 min/km | 155 bpm | 161 bpm | 175 spm |
+| 3 | 1 | 1.00 km | 5:37 | 5:37 min/km | 155 bpm | 159 bpm | 172 spm |
 
-### Niedziela - Bieg: MARATON (Start docelowy)
-* **Rozgrzewka**: Brak truchtu rozgrzewkowego. Wyłącznie 5-7 minut lekkiej mobilizacji stawowej w strefie startowej (wymachy, krążenia bioder i ramion) oraz 2 minuty bardzo lekkiego truchtu/pajacyków bezpośrednio przed wejściem w strefę startową.
-* **Strategia na sam bieg**:
-  * Km 1–5 (Start kontrolowany): Nie ulegać emocjom tłumu. Tempo: 5:45 min/km (strefa niska Z2/Z3, tętno <150 bpm).
-  * Km 6–32 (Właściwe tempo maratońskie): Tempo: 5:35 - 5:40 min/km (ścisła strefa Z3, tętno 148-158 bpm, bez przekraczania 162 bpm). Trzymać stabilną kadencję 174-176 spm i luźny krok.
-  * Km 33–42.2 (Faza zmęczenia): Utrzymać tempo 5:35 - 5:45 min/km. Tętno naturalnie wzrośnie (dryf kardiologiczny do niskiej strefy Z4, ok. 163-165 bpm) - jest to akceptowalne na tym etapie.
-  * Suplementacja i nawodnienie: Żel energetyczny na 7, 14, 21, 28 i 35 kilometrze (co ok. 40-45 minut). Każdy żel popić min. 150 ml czystej wody na punkcie odżywczym. Izotonik przyjmować na co drugim punkcie pomiędzy żelami.
-* **Schłodzenie**: Po przekroczeniu mety nie siadać od razu – maszerować przez 5-10 minut. Nałożyć folię termiczną i w ciągu 30 minut przyjąć napój regeneracyjny zawierający węglowodany i białko w stosunku 4:1.
+Tabela 2: Agregacja według serii
 
----
+| Seria | Łączny Dystans Serii | Łączny Czas Roboczy | Średnie Tempo Serii | Średnie HR Serii | Maks HR w Serii | Średnia kadencja w Serii |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | 3.00 km | 16:29 | 5:30 min/km | 156 bpm | 163 bpm | 174 spm |
 
-### Podsumowanie statystyk z poprzedniego tygodnia (14.09.2026 - 20.09.2026):
-* Średnie nocne HRV: 47.4 ms
-* Średnie tętno spoczynkowe (RHR): 57.0 bpm
+* Zgodność z planem: Przekroczona intensywność | Ocena: 6/10
 
-### Tabela porównawcza mikrocykli:
+* Zestawienie (Porównanie planu i realizacji):
+  * Dystans: Plan: 6.00 km (2.0 km rozgrzewka, 3.0 km MP, 1.0 km schłodzenie). Realizacja: 6.00 km. Zgodność: 100%.
+  * Tempo części głównej (MP): Plan: 5:35 min/km. Realizacja: ~5:30 min/km. Przekroczenie założeń o 5 sekund na kilometr (za szybko). Kilometry 1 i 2 części głównej (odcinki 3 i 4 całego biegu) pokonane zbyt agresywnie (5:26 min/km).
+  * Średnie HR części głównej: Plan: strefa Z3 (148–155 bpm). Realizacja: 156 bpm. Chwilowe przekroczenie progu i wejście w strefę Z4 (HR max 163 bpm na pierwszym kilometrze akcentu).
+  * Dryf tętna: Widoczny na pierwszym kilometrze akcentu (peaking do 163 bpm), ustabilizowany na kolejnych kilometrach po lekkim zwolnieniu. Niepokojący jest brak spadku tętna podczas schłodzenia (km 6: tempo 6:15 min/km, ale średnie HR wciąż na poziomie 152 bpm – strefa Z2/Z3 zamiast regeneracyjnej Z1 <123 bpm).
+  * Kadencja części głównej: Plan: 174–178 spm. Realizacja: średnia 174 spm. Na ostatnim kilometrze akcentu spadek do 172 spm przy jednoczesnym wydłużeniu kroku do 1.03 m.
 
-| Wskaźnik | Poprzedni tydzień | Obecny tydzień |
-| :--- | :--- | :--- |
-| Dystans całkowity biegowy (km) | 35.20 km | 52.50 km (w tym maraton) |
-| Liczba jednostek biegowych | 4 | 3 |
-| Liczba jednostek siłowych / mobility | 1 | 1 |
-| Dni pełnej regeneracji (rest days) | 3 | 3 |
+* Kluczowe anomalie biomechaniczne / fizjologiczne:
+  * Podczas schłodzenia (km 6) nastąpił drastyczny spadek kadencji do 169 spm oraz wydłużenie czasu kontaktu z podłożem (GCT) do 276.4 ms (na końcówce nawet do 283.0 ms). Świadczy to o "człapaniu" i utracie sztywności sprężystej aparatu ruchu natychmiast po zakończeniu akcentu.
+  * Brak efektywnego schłodzenia układu krążenia – tętno 152 bpm podczas truchtu 6:15 min/km wskazuje na wysokie pobudzenie powysiłkowe.
 
-*Rozkład stref tlenowych w obecnym tygodniu (łącznie z maratonem):*
-* Strefy regeneracyjne/tlenowe (Z1–Z2): ok. 23% objętości (12.0 km)
-* Strefy jakościowe (Z3–Z5): ok. 77% objętości (40.5 km – głównie czas trwania maratonu w Z3)
+### 2. KOSZT METABOLICZNY I OCENA REGENERACJI Z MINIONEJ NOCY
 
----
+* Ocena kosztu wczorajszego dnia: Kroki łączne: 16401 (wysoka aktywność pozatreningowa jak na tydzień taperingu), średni stres: 33/100, wieczorne Body Battery pod koniec wczorajszego dnia: 21/100 (głębokie rozładowanie).
+* Jakość nocnej odbudowy (sen wczoraj->dziś): Sleep Score: 78/100. Czas snu głębokiego (1h 37m) na poziomie optymalnym (odbudowa strukturalna i fizyczna). REM (0h 48m) zdecydowanie za krótki (niepełna regeneracja układu nerwowego). Stabilne, zrównoważone HRV (51 ms) oraz niski spoczynkowy RHR (54 bpm, -2 bpm poniżej średniej) wskazują na prawidłową adaptację układu przywspółczulnego i brak ukrytego przemęczenia.
+* Poranna gotowość (Readiness) na dzień Środa, 2026-09-23: Body Battery po nocy odbudowało się do poziomu 90/100, co wskazuje na wysoką gotowość fizyczną. Jednak bieżący stan naładowania spadł do 53/100, co oznacza szybkie tempo zużywania zasobów od momentu przebudzenia. Układ autonomiczny jest w stanie równowagi.
 
-### Uzasadnienie i oczekiwane efekty
-Głównym celem tego tygodnia jest realizacja strategii taperingu, która poprzez głęboką redukcję objętości biegów treningowych umożliwia pełną superkompensację glikogenu mięśniowego i odbudowę zmęczonego CUN. Wprowadzenie jednostki UPPER we wtorek podtrzymuje tonus mięśni posturalnych bez wywoływania zmęczenia obwodowego nóg, co w połączeniu z restrykcyjnym limfem kroków w dni wolne eliminuje mikrostany zapalne. Krótkie pobudzenie tempowe w środę i piątek ma za zadanie podtrzymać pobudzenie układu nerwowo-mięśniowego oraz ekonomię biegu przy tempie startowym bez generowania długu tlenowego. Strategia maratońska opiera się na rygorystycznym trzymaniu strefy Z3 (poniżej progu mleczanowego) przez pierwsze 32 km, co maksymalizuje udział lipolizy i chroni zapasy glikogenu przed przedwczesnym wyczerpaniem na końcowych kilometrach.
+### 3. ADAPTACJA TRENINGU NA DZIEŃ DZISIEJSZY: Środa, 2026-09-23
 
-✅ Zapisano plan do: output/weekly_plan.md. Będzie on podstawą do codziennej weryfikacji i adaptacji!
+* Pierwotny plan na dzień Środa, 2026-09-23: Bieg: Pobudzenie w Tempie Maratońskim (MP) - jednostka wykonana wczoraj.
+* Uwzględnienie notatki biegacza: Nastąpiła zamiana dni. Dzisiaj realizowany jest zaległy wtorkowy trening siłowy UPPER.
+
+* DECYZJA O KOREKCIE NA DZIŚ:
+Realizacja treningu uzupełniającego (siłownia UPPER) z bezwzględnym nakazem oszczędzania dolnych partii ciała. Brak modyfikacji objętości siłowej dla góry ciała. 
+
+* Uzasadnienie fizjologiczne: Wczorajszy bieg tempowy został zrealizowany zbyt szybko (tempo średnie 5:30 zamiast planowanego 5:35), co wygenerowało niepotrzebny koszt glikogenowy i zaangażowało strefę Z4 (beztlenową). Aby zniwelować ten błąd przed niedzielnym maratonem, nogi muszą dziś przejść w tryb bezwzględnej restytucji. Sesja UPPER podtrzyma tonus mięśni posturalnych i stabilizację centralną (core), co ułatwi utrzymanie prawidłowej sylwetki biegowej, nie obciążając przy tym zmęczonych włókien mięśniowych nóg.
+
+* ROZPISKA NA DZIEŃ DZISIEJSZY (Środa, 2026-09-23):
+* Trening: Siłownia UPPER (zgodnie z założeniami wtorkowymi).
+* Status dla dolnych partii: BEZWZGLĘDNIE OSZCZĘDZAĆ NOGI. Kategoryczny zakaz wykonywania przysiadów, martwych ciągów, wykroków, pracy ekscentrycznej, izometrii oraz plio. Nogi mają być w stanie spoczynku strukturalnego pod kątem piątkowego rozruchu i niedzielnego maratonu.
+* Cardio uzupełniające: Maksymalnie 10 minut lekkiej rozgrzewki na rowerze stacjonarnym lub eliptycznym przed częścią siłową. Warunek: tętno <123 bpm (strefa Z1), opór minimalny (kręcenie o charakterze drenażu limfatycznego, bez generowania oporu mięśniowego). Brak jakiegokolwiek cardio po treningu głównym.
+
+* Wytyczne okołotreningowe na dziś:
+  * Kontrola aktywności pozatreningowej: limit kroków na dziś to maksymalnie 10 000 (wczorajsze 16 400 w fazie taperingu to błąd logistyczny – ogranicz chodzenie).
+  * Nawodnienie: Minimum 3 litry płynów, w tym 1 litr izotoniku (uzupełnienie strat po wczorajszym zbyt mocnym biegu).
+  * Odżywianie: Zwiększona podaż węglowodanów złożonych w celu rozpoczęcia odbudowy uszczuplonego wczoraj glikogenu.
+  * Uwaga dla ambitnego biegacza: Tapering to nie okres na bicie rekordów na treningach. Bieganie akcentów szybciej niż w planie niszczy proces superkompensacji. Twoim celem na dziś jest rygorystyczny hamulec dla nóg.
+
+✅ Zapisano raport do: output/last_daily_report.md oraz archiwum trainings_history/2026-09-22.md

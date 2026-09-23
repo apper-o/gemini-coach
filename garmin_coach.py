@@ -29,11 +29,32 @@ logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
 
 
-def fetch_garmin_data(email, password, target_date):
+def _enrich_activities(client, acts):
+    """
+    Uzupełnia listę aktywności o splity kilometrowe oraz dane o pogodzie.
+    """
+    if acts:
+        for act in acts:
+            act_id = act.get('activityId')
+            if act_id:
+                try:
+                    act['splits_data'] = client.get_activity_splits(act_id)
+                except Exception:
+                    pass
+                try:
+                    act['weather_data'] = client.get_activity_weather(act_id)
+                except Exception:
+                    pass
+    return acts
+
+
+def fetch_garmin_data(email, password, target_date, mode="daily"):
     """
     Łączy się z Garmin Connect w celu pobrania surowych danych z zegarka.
     Obsługuje bezpieczne cache'owanie tokenów sesji OAuth (tokenstore),
     aby uniknąć blokad konta, wymuszania captcha oraz limitów zapytań logowania.
+    Wspiera tryb standardowy 'daily' oraz tryb 'yesterday' (obejmujący wczorajszy audyt,
+    sen z minionej nocy oraz kontekst dnia przedwczorajszego).
     """
     tokenstore_dir = os.getenv("GARMIN_TOKENS_DIR", os.path.expanduser("~/.garminconnect"))
     os.makedirs(tokenstore_dir, exist_ok=True)
@@ -55,6 +76,91 @@ def fetch_garmin_data(email, password, target_date):
         except Exception as e_login:
             logger.error(f"Błąd logowania do Garmin Connect: {e_login}")
             return None
+
+    if mode == "yesterday":
+        today_str = target_date.isoformat()
+        yesterday_date = target_date - datetime.timedelta(days=1)
+        yesterday_str = yesterday_date.isoformat()
+        dby_date = yesterday_date - datetime.timedelta(days=1)
+        dby_str = dby_date.isoformat()
+
+        logger.info(f"Pobieranie danych z Garmina dla trybu 'yesterday' (Przedwczoraj: {dby_str}, Wczoraj: {yesterday_str}, Dzisiaj: {today_str})...")
+
+        data = {
+            'yesterday': {},
+            'today': {},
+            'overnight_recovery': {},
+            'day_before_yesterday': {}
+        }
+
+        # 1. Wczoraj (Audytowany dzień): aktywności, kroki, stres, body battery pod koniec dnia
+        try:
+            data['yesterday']['stress'] = client.get_stress_data(yesterday_str)
+        except Exception as e:
+            logger.warning(f"Nie udało się pobrać wczorajszego stresu: {e}")
+
+        try:
+            data['yesterday']['stats'] = client.get_user_summary(yesterday_str)
+        except Exception as e:
+            logger.warning(f"Nie udało się pobrać wczorajszego bilansu kroków: {e}")
+
+        try:
+            data['yesterday']['body_battery'] = client.get_body_battery(yesterday_str)
+        except Exception as e:
+            logger.warning(f"Nie udało się pobrać wczorajszego Body Battery: {e}")
+
+        try:
+            yesterday_acts = client.get_activities_by_date(yesterday_str, yesterday_str)
+            data['yesterday']['activities'] = _enrich_activities(client, yesterday_acts)
+        except Exception as e:
+            logger.warning(f"Nie udało się pobrać wczorajszych aktywności: {e}")
+
+        # 2. Miniona noc / Dzisiaj (Odbudowa nocna i gotowość na dziś)
+        try:
+            data['today']['sleep'] = client.get_sleep_data(today_str)
+        except Exception as e:
+            logger.warning(f"Nie udało się pobrać danych snu z nocy: {e}")
+
+        try:
+            data['today']['rhr'] = client.get_rhr_day(today_str)
+        except Exception as e:
+            logger.warning(f"Nie udało się pobrać RHR: {e}")
+
+        try:
+            data['today']['rhr_history'] = client.get_heart_rates(today_str)
+        except Exception as e:
+            logger.warning(f"Nie udało się pobrać tętna i średniej 7-dniowej: {e}")
+
+        try:
+            data['today']['hrv'] = client.get_hrv_data(today_str)
+        except Exception as e:
+            logger.warning(f"Nie udało się pobrać HRV z nocy: {e}")
+
+        try:
+            data['today']['body_battery'] = client.get_body_battery(today_str)
+        except Exception as e:
+            logger.warning(f"Nie udało się pobrać porannego Body Battery: {e}")
+
+        data['overnight_recovery'] = data['today']
+
+        # 3. Przedwczoraj (Tło historyczne)
+        try:
+            data['day_before_yesterday']['stress'] = client.get_stress_data(dby_str)
+        except Exception as e:
+            logger.warning(f"Nie udało się pobrać stresu z dnia przedwczorajszego: {e}")
+
+        try:
+            data['day_before_yesterday']['stats'] = client.get_user_summary(dby_str)
+        except Exception as e:
+            logger.warning(f"Nie udało się pobrać bilansu kroków z dnia przedwczorajszego: {e}")
+
+        try:
+            dby_acts = client.get_activities_by_date(dby_str, dby_str)
+            data['day_before_yesterday']['activities'] = _enrich_activities(client, dby_acts)
+        except Exception as e:
+            logger.warning(f"Nie udało się pobrać aktywności z dnia przedwczorajszego: {e}")
+
+        return data
 
     today_str = target_date.isoformat()
     yesterday_date = target_date - datetime.timedelta(days=1)
@@ -105,19 +211,7 @@ def fetch_garmin_data(email, password, target_date):
 
     try:
         today_acts = client.get_activities_by_date(today_str, today_str)
-        if today_acts:
-            for act in today_acts:
-                act_id = act.get('activityId')
-                if act_id:
-                    try:
-                        act['splits_data'] = client.get_activity_splits(act_id)
-                    except Exception:
-                        pass
-                    try:
-                        act['weather_data'] = client.get_activity_weather(act_id)
-                    except Exception:
-                        pass
-        data['today']['activities'] = today_acts
+        data['today']['activities'] = _enrich_activities(client, today_acts)
     except Exception as e:
         logger.warning(f"Nie udało się pobrać dzisiejszych aktywności: {e}")
 
@@ -134,19 +228,7 @@ def fetch_garmin_data(email, password, target_date):
 
     try:
         acts = client.get_activities_by_date(yesterday_str, yesterday_str)
-        if acts:
-            for act in acts:
-                act_id = act.get('activityId')
-                if act_id:
-                    try:
-                        act['splits_data'] = client.get_activity_splits(act_id)
-                    except Exception:
-                        pass
-                    try:
-                        act['weather_data'] = client.get_activity_weather(act_id)
-                    except Exception:
-                        pass
-        data['yesterday']['activities'] = acts
+        data['yesterday']['activities'] = _enrich_activities(client, acts)
     except Exception as e:
         logger.warning(f"Nie udało się pobrać wczorajszych aktywności: {e}")
 
@@ -319,6 +401,189 @@ def parse_garmin_data(data):
         y_stress = yesterday_data['stress'].get('avgStressLevel')
         if y_stress is not None and y_stress != -1:
             parsed['yesterday_stress'] = f"Średni poziom stresu: {y_stress}/100"
+
+    return parsed
+
+
+def parse_garmin_data_yesterday(data):
+    """
+    Wyciąga najważniejsze informacje z JSON-ów API Garmina dla trybu 'yesterday':
+    - Audytowany dzień wczorajszy: kroki, stres, Body Battery pod koniec dnia.
+    - Miniona noc / dzisiejszy poranek: HRV, RHR, sen (jakość, fazy, uwagi), poranne Body Battery.
+    - Kontekst dnia przedwczorajszego: aktywności, kroki, stres.
+    """
+    parsed = {
+        "hrv_status": "Brak danych o HRV",
+        "rhr": "Brak danych o RHR",
+        "sleep_score": "Brak danych o śnie",
+        "deep_sleep": "Brak danych",
+        "rem_sleep": "Brak danych",
+        "sleep_insights": "Brak uwag",
+        "morning_body_battery": "Brak danych",
+        "yesterday_steps": "Brak danych o krokach",
+        "yesterday_stress": "Brak danych o stresie",
+        "yesterday_body_battery": "Brak danych",
+        "day_before_yesterday_training": "Brak aktywności (dzień wolny)"
+    }
+
+    if not data:
+        return parsed
+
+    recovery_data = data.get('overnight_recovery') or data.get('today', {})
+    yesterday_data = data.get('yesterday', {})
+    dby_data = data.get('day_before_yesterday', {})
+
+    # ==================== MINIONA NOC I PORANEK (REGENERACJA WCZORAJ -> DZIŚ) ====================
+    # --- HRV ---
+    if recovery_data.get('hrv'):
+        hrv_raw = recovery_data['hrv']
+        hrv_summary = hrv_raw.get('hrvSummary', {})
+
+        status = hrv_summary.get('status') or 'Brak statusu'
+        last_night = hrv_summary.get('lastNightAvg')
+        weekly_avg = hrv_summary.get('weeklyAvg')
+
+        baseline_info = hrv_summary.get('baseline', {})
+        b_low = baseline_info.get('balancedLow')
+        b_high = baseline_info.get('balancedUpper')
+
+        last_night_str = f"{last_night} ms" if last_night is not None else "Brak danych"
+        weekly_avg_str = f"{weekly_avg} ms" if weekly_avg is not None else "Brak danych"
+        baseline_str = f"{b_low}–{b_high} ms" if b_low and b_high else "Brak danych bazowych"
+
+        parsed['hrv_status'] = f"{status} {last_night_str} (Średnia 7-dniowa: {weekly_avg_str}, Norma bazowa: {baseline_str})"
+
+    # --- RHR (Tętno spoczynkowe) ---
+    rhr_str = "Brak danych o RHR"
+    if recovery_data.get('rhr'):
+        rhr_raw = recovery_data['rhr']
+        try:
+            rhr_list = rhr_raw.get('allMetrics', {}).get('metricsMap', {}).get('WELLNESS_RESTING_HEART_RATE', [])
+            if rhr_list and len(rhr_list) > 0:
+                today_val = rhr_list[0].get('value')
+                if today_val is not None:
+                    today_rhr = int(today_val)
+
+                    avg_7d_str = ""
+                    rhr_hist = recovery_data.get('rhr_history')
+                    if rhr_hist:
+                        avg_7d = rhr_hist.get('lastSevenDaysAvgRestingHeartRate')
+                        if avg_7d is not None:
+                            diff = today_rhr - int(avg_7d)
+                            diff_sign = f"+{diff}" if diff > 0 else f"{diff}"
+                            avg_7d_str = f" (Średnia 7-dniowa: {int(avg_7d)} bpm, odchylenie: {diff_sign} bpm)"
+
+                    rhr_str = f"{today_rhr} bpm{avg_7d_str}"
+        except Exception:
+            pass
+
+    # --- Sen (dailySleepDTO) ---
+    avg_night_hr = None
+    if recovery_data.get('sleep') and 'dailySleepDTO' in recovery_data['sleep']:
+        sleep_dto = recovery_data['sleep']['dailySleepDTO']
+
+        avg_hr_val = sleep_dto.get('avgHeartRate')
+        if avg_hr_val:
+            avg_night_hr = f"{int(avg_hr_val)} bpm"
+
+        score = sleep_dto.get('sleepScores', {}).get('overall', {}).get('value')
+        parsed['sleep_score'] = f"{score}/100" if score is not None else "Brak danych"
+
+        deep_secs = sleep_dto.get('deepSleepSeconds')
+        if deep_secs is not None:
+            parsed['deep_sleep'] = f"{deep_secs // 3600}h {(deep_secs % 3600) // 60}m"
+
+        rem_secs = sleep_dto.get('remSleepSeconds')
+        if rem_secs is not None:
+            parsed['rem_sleep'] = f"{rem_secs // 3600}h {(rem_secs % 3600) // 60}m"
+
+        feedback = sleep_dto.get('sleepScoreFeedback')
+        insight = sleep_dto.get('sleepScoreInsight')
+        insights_list = [i for i in [feedback, insight] if i]
+        if insights_list:
+            parsed['sleep_insights'] = ", ".join(insights_list)
+
+    if avg_night_hr:
+        parsed['rhr'] = f"{rhr_str} (Średnie tętno z całej nocy: {avg_night_hr})"
+    else:
+        parsed['rhr'] = rhr_str
+
+    # --- Poranne Body Battery ---
+    bb_rec = recovery_data.get('body_battery')
+    bb_entry = None
+    if isinstance(bb_rec, list) and len(bb_rec) > 0:
+        bb_entry = bb_rec[0]
+    elif isinstance(bb_rec, dict):
+        bb_entry = bb_rec
+
+    if bb_entry:
+        bb_values = bb_entry.get('bodyBatteryValuesArray', [])
+        valid_values = [v[1] for v in bb_values if len(v) >= 2 and isinstance(v[1], (int, float))]
+        if valid_values:
+            latest_bb = valid_values[-1]
+            max_bb = max(valid_values)
+            parsed['morning_body_battery'] = f"{latest_bb}/100 (Szczyt poranny po nocy: {max_bb}/100)"
+
+    # ==================== KOSZT WCZORAJSZEGO DNIA (AUDYT) ====================
+    if yesterday_data.get('stats'):
+        y_steps = yesterday_data['stats'].get('totalSteps')
+        if y_steps is not None:
+            cals = yesterday_data['stats'].get('activeKilocalories')
+            cals_str = f" (aktywne kalorie: {cals} kcal)" if cals else ""
+            parsed['yesterday_steps'] = f"{y_steps} kroków{cals_str}"
+
+    if yesterday_data.get('stress'):
+        y_stress = yesterday_data['stress'].get('avgStressLevel')
+        stress_qual = yesterday_data['stress'].get('stressQualifier')
+        if y_stress is not None and y_stress != -1:
+            qual_str = f" ({stress_qual})" if stress_qual else ""
+            parsed['yesterday_stress'] = f"Średni poziom stresu: {y_stress}/100{qual_str}"
+
+    bb_y = yesterday_data.get('body_battery')
+    bb_y_entry = None
+    if isinstance(bb_y, list) and len(bb_y) > 0:
+        bb_y_entry = bb_y[0]
+    elif isinstance(bb_y, dict):
+        bb_y_entry = bb_y
+
+    if bb_y_entry:
+        bb_values = bb_y_entry.get('bodyBatteryValuesArray', [])
+        valid_values = [v[1] for v in bb_values if len(v) >= 2 and isinstance(v[1], (int, float))]
+        if valid_values:
+            evening_bb = valid_values[-1]
+            max_bb = max(valid_values)
+            min_bb = min(valid_values)
+            drain = max_bb - evening_bb
+            drain_str = f", spadek w ciągu dnia: -{drain}" if drain > 0 else ""
+            parsed['yesterday_body_battery'] = f"Pod koniec dnia: {evening_bb}/100 (Max w ciągu dnia: {max_bb}/100, min: {min_bb}/100{drain_str})"
+
+    # ==================== KONTEKST DNIA PRZEDWCZORAJSZEGO ====================
+    if dby_data.get('activities') and len(dby_data['activities']) > 0:
+        dby_acts = sorted(
+            dby_data['activities'],
+            key=lambda x: str(x.get('startTimeLocal') or x.get('startTimeGMT') or x.get('beginTimestamp', 0))
+        )
+        dby_acts_texts = []
+        for idx, act in enumerate(dby_acts):
+            act_details = parse_activity_biomechanics(act)
+            if act_details:
+                splits_text = ""
+                if act_details.get('splits'):
+                    splits_text = "\n    * Splity kilometrowe:\n\n" + "\n".join(act_details['splits'])
+
+                time_info = f" [Start: {act_details['start_time']}]" if act_details.get('start_time') and act_details['start_time'] != "Brak danych" else ""
+                act_entry = (
+                    f"  [Jednostka {idx + 1}{time_info}]: {act_details['name']} ({act_details['distance']} w {act_details['duration']}, tempo {act_details['pace']})\n"
+                    f"    * Pogoda/Warunki: {act_details.get('weather', 'Brak danych o pogodzie')}\n"
+                    f"    * Tętno: Średnie {act_details['avg_hr']} | Maksymalne {act_details['max_hr']}\n"
+                    f"    * Biomechanika: Średnia kadencja {act_details['avg_cadence']}, krok {act_details['stride_length']}, kontakt {act_details['ground_contact_time']}, odchylenie {act_details['vertical_oscillation']}\n"
+                    f"    * Obciążenie: Aerobic TE: {act_details['aerobic_te']}, Anaerobic TE: {act_details['anaerobic_te']}, Średnia moc: {act_details['avg_power']}"
+                    f"{splits_text}"
+                )
+                dby_acts_texts.append(act_entry)
+
+        if dby_acts_texts:
+            parsed['day_before_yesterday_training'] = "\n\n".join(dby_acts_texts)
 
     return parsed
 
@@ -829,6 +1094,97 @@ AKTUALNY PLAN TYGODNIOWY (I KOLEJNE ZAPLANOWANE TRENINGI):
     )
 
 
+def generate_yesterday_verification_prompt(planned_workout, activity_stats, garmin_stats=None, weekly_plan_context=None,
+                                          user_profile=None, user_note=None, today_date_str="", yesterday_date_str="",
+                                          day_before_yesterday_date_str="", trening_z_planu=""):
+    """
+    Tworzy prompt dla Gemini w trybie 'yesterday' do audytu wczorajszego treningu,
+    oceny regeneracji z minionej nocy (sen wczoraj->dziś) oraz natychmiastowej adaptacji planu na dzień dzisiejszy.
+    """
+    if user_profile is None:
+        user_profile = {
+            "max_hr": "Brak danych",
+            "lthr": "Brak danych",
+            "hr_zones": "Brak danych"
+        }
+
+    day_before_yesterday_section = f"Brak danych o treningu z dnia {day_before_yesterday_date_str} (dzień wolny)"
+    if garmin_stats and garmin_stats.get('day_before_yesterday_training') and garmin_stats.get('day_before_yesterday_training') != "Brak aktywności (dzień wolny)":
+        day_before_yesterday_section = f"""
+====================
+KONTEKST DNIA PRZEDWCZORAJSZEGO ({day_before_yesterday_date_str}):
+{garmin_stats.get('day_before_yesterday_training')}
+"""
+
+    weekly_plan_section = "Brak planu tygodniowego w pliku output/weekly_plan.md"
+    if weekly_plan_context:
+        weekly_plan_section = f"""
+====================
+AKTUALNY PLAN TYGODNIOWY (I KOLEJNE ZAPLANOWANE TRENINGI):
+{weekly_plan_context}
+"""
+
+    note_content = user_note if user_note else f"Brak dodatkowych uwag od biegacza na dzień dzisiejszy ({today_date_str}) ani odnośnie wczorajszych jednostek."
+
+    activity_section = f"W dniu wczorajszym ({yesterday_date_str}) nie odnotowano treningu biegowego (Dzień wolny / Regeneracja)."
+    if activity_stats:
+        stats_list = activity_stats if isinstance(activity_stats, list) else [activity_stats]
+        act_blocks = []
+
+        for idx, act in enumerate(stats_list):
+            splits_text = "Brak szczegółowych splitów dla tej jednostki"
+            if act.get('splits'):
+                splits_text = "\n".join(act['splits'])
+
+            time_info = f" [Start: {act['start_time']}]" if act.get('start_time') and act['start_time'] != "Brak danych" else ""
+            prefix = f"[JEDNOSTKA {idx + 1} z {len(stats_list)}{time_info}]: " if len(stats_list) > 1 else (f"[JEDNOSTKA 1{time_info}]: " if time_info else "")
+            block = f"""{prefix}{act.get('name')} | {act.get('distance')} w czasie {act.get('duration')} (Średnie tempo: {act.get('pace')})
+- Warunki atmosferyczne i pogoda: {act.get('weather', 'Brak danych o pogodzie')}
+- Przewyższenia (wznios/spadek): +{act.get('elevation_gain')} / -{act.get('elevation_loss')}
+- Tętno: Średnie {act.get('avg_hr')} | Maksymalne {act.get('max_hr')}
+- Biomechanika kroku:
+  * Kadencja: Średnia {act.get('avg_cadence')} | Maksymalna {act.get('max_cadence')}
+  * Długość kroku: {act.get('stride_length')}
+  * Czas kontaktu z podłożem (GCT): {act.get('ground_contact_time')}
+  * Odchylenie pionowe: {act.get('vertical_oscillation')} (Vertical ratio: {act.get('vertical_ratio')})
+- Efekt treningowy i moc:
+  * Aerobic Training Effect: {act.get('aerobic_te')} | Anaerobic TE: {act.get('anaerobic_te')}
+  * Średnia moc biegowa: {act.get('avg_power')}
+- Splity kilometrowe / odcinki:
+{splits_text}"""
+            act_blocks.append(block)
+
+        activity_section = "\n\n" + "-"*35 + "\n\n".join(act_blocks)
+
+    g_stats = garmin_stats or {}
+
+    return load_prompt_template(
+        "yesterday_verification.md",
+        max_hr=user_profile.get('max_hr', 'Brak danych'),
+        lthr=user_profile.get('lthr', 'Brak danych'),
+        hr_zones=user_profile.get('hr_zones', 'Brak danych'),
+        today_date_str=today_date_str,
+        yesterday_date_str=yesterday_date_str,
+        day_before_yesterday_date_str=day_before_yesterday_date_str,
+        planned_workout=planned_workout or f'Brak sztywnego planu na dzień {yesterday_date_str}',
+        activity_section=activity_section,
+        yesterday_steps=g_stats.get('yesterday_steps', 'Brak danych o krokach'),
+        yesterday_stress=g_stats.get('yesterday_stress', 'Brak danych o stresie'),
+        yesterday_body_battery=g_stats.get('yesterday_body_battery', 'Brak danych'),
+        hrv_status=g_stats.get('hrv_status', 'Brak danych o HRV'),
+        rhr=g_stats.get('rhr', 'Brak danych o RHR'),
+        sleep_score=g_stats.get('sleep_score', 'Brak danych o śnie'),
+        deep_sleep=g_stats.get('deep_sleep', 'Brak danych'),
+        rem_sleep=g_stats.get('rem_sleep', 'Brak danych'),
+        sleep_insights=g_stats.get('sleep_insights', 'Brak uwag'),
+        morning_body_battery=g_stats.get('morning_body_battery', 'Brak danych'),
+        day_before_yesterday_section=day_before_yesterday_section,
+        weekly_plan_section=weekly_plan_section,
+        user_note=note_content,
+        trening_z_planu=trening_z_planu or f"Odszukaj w planie tygodniowym jednostkę na dzień dzisiejszy ({today_date_str})"
+    )
+
+
 def main():
     # 1. Określenie trybu działania na samym początku (Punkt 1 wytycznych)
     mode = "daily"
@@ -838,15 +1194,19 @@ def main():
             mode = "suggest"
         elif arg_mode in ["week", "tydzien", "plan-tygodnia", "weekly"]:
             mode = "week"
+        elif arg_mode == "yesterday":
+            mode = "yesterday"
 
     # 2. Precyzyjne wyliczenie dat kalendarzowych (Punkt 6 wytycznych)
     today = datetime.date.today()
     yesterday = today - datetime.timedelta(days=1)
     tomorrow = today + datetime.timedelta(days=1)
+    day_before_yesterday = yesterday - datetime.timedelta(days=1)
 
     today_date_str = f"{DAYS_PL[today.weekday()]}, {today.isoformat()}"
     yesterday_date_str = f"{DAYS_PL[yesterday.weekday()]}, {yesterday.isoformat()}"
     tomorrow_date_str = f"{DAYS_PL[tomorrow.weekday()]}, {tomorrow.isoformat()}"
+    day_before_yesterday_date_str = f"{DAYS_PL[day_before_yesterday.weekday()]}, {day_before_yesterday.isoformat()}"
 
     # 3. Przygotowanie stałych ścieżek
     os.makedirs(INPUT_DIR, exist_ok=True)
@@ -1171,6 +1531,201 @@ Aktywność: Brak biegu (Regeneracja / Odpoczynek)
 - Kroki w dniu {today_date_str} (cały dzień): {garmin_stats.get('today_steps')}
 
 ## Ocena trenera i adaptacja na dzień {tomorrow_date_str}:
+{response.text}
+"""
+            with open(history_file_path, "w", encoding="utf-8") as hf:
+                hf.write(archive_content)
+            logger.info(f"Raport z dnia {workout_date} zapisano do archiwum: {history_file_path}")
+
+            latest_daily_file = os.path.join(OUTPUT_DIR, "last_daily_report.md")
+            with open(latest_daily_file, "w", encoding="utf-8") as lf:
+                lf.write(archive_content)
+            logger.info(f"Bieżący wynik zapisano do pliku: {latest_daily_file}")
+            print(f"\n✅ Zapisano raport do: {latest_daily_file} oraz archiwum {history_file_path}")
+        except Exception as e:
+            logger.error(f"Wystąpił błąd podczas weryfikacji i adaptacji: {e}")
+            sys.exit(1)
+
+    # ==================== TRYB 4: ZASTĘPCZA WERYFIKACJA DNIA WCZORAJSZEGO (YESTERDAY) ====================
+    elif mode == "yesterday":
+        logger.info(f"Uruchomiono tryb weryfikacji wczorajszego dnia ('yesterday') dla audytu: {yesterday_date_str} oraz adaptacji na dziś: {today_date_str}...")
+
+        USE_LOCAL_DATA = os.getenv("USE_LOCAL_DATA", "False").lower() in ["true", "1"]
+
+        if USE_LOCAL_DATA:
+            logger.info(f"Omijam logowanie. Wczytuję surowe dane z pliku lokalnego: {dump_file}...")
+            try:
+                with open(dump_file, "r", encoding="utf-8") as f:
+                    raw_data = json.load(f)
+            except FileNotFoundError:
+                logger.error(f"Nie znaleziono pliku {dump_file}. Uruchom skrypt z USE_LOCAL_DATA='False', aby go stworzyć!")
+                sys.exit(1)
+        else:
+            GARMIN_EMAIL = os.getenv("GARMIN_EMAIL")
+            GARMIN_PASSWORD = os.getenv("GARMIN_PASSWORD")
+            if not GARMIN_EMAIL or not GARMIN_PASSWORD:
+                logger.error("Brak danych logowania GARMIN_EMAIL / GARMIN_PASSWORD w pliku .env!")
+                sys.exit(1)
+
+            raw_data = fetch_garmin_data(GARMIN_EMAIL, GARMIN_PASSWORD, today, mode="yesterday")
+            if raw_data is None:
+                logger.error("Nie udało się pobrać danych z serwerów Garmina.")
+                sys.exit(1)
+
+            with open(dump_file, "w", encoding="utf-8") as f:
+                json.dump(raw_data, f, indent=4, ensure_ascii=False)
+            logger.info(f"Surowe dane zapisano pomyślnie do pliku {dump_file}.")
+
+        # 1. Parsujemy dane biometryczne z wczorajszego dnia, minionej nocy i tła historycznego
+        garmin_stats = parse_garmin_data_yesterday(raw_data)
+
+        # 2. Wczytujemy plan tygodniowy, jeśli istnieje
+        weekly_plan_content = None
+        if os.path.exists(weekly_plan_file):
+            try:
+                with open(weekly_plan_file, "r", encoding="utf-8") as wf:
+                    weekly_plan_content = wf.read()
+            except Exception:
+                pass
+
+        # 3. Parsujemy wczorajsze aktywności (podlegające audytowi)
+        yesterday_acts = raw_data.get('yesterday', {}).get('activities', [])
+        yesterday_acts = sorted(
+            yesterday_acts,
+            key=lambda x: str(x.get('startTimeLocal') or x.get('startTimeGMT') or x.get('beginTimestamp', 0))
+        )
+        all_yesterday_stats = []
+        for act in yesterday_acts:
+            st = parse_activity_biomechanics(act)
+            if st:
+                all_yesterday_stats.append(st)
+
+        if all_yesterday_stats:
+            print("\n" + "="*50)
+            print(f"📊 POBRANO AKTYWNOŚCI DO AUDYTU ({len(all_yesterday_stats)} jednostek w dniu {yesterday_date_str}):")
+            print("="*50)
+            for idx, act_st in enumerate(all_yesterday_stats):
+                time_str = f" [Start: {act_st['start_time']}]" if act_st.get('start_time') and act_st['start_time'] != "Brak danych" else ""
+                prefix = f"Jednostka {idx + 1}{time_str}: " if len(all_yesterday_stats) > 1 else ""
+                print(f"\n▶️ {prefix}{act_st['name']} ({act_st['distance']}, tempo: {act_st['pace']})")
+                for k, v in act_st.items():
+                    if k not in ['splits', 'name', 'distance', 'pace', 'start_time']:
+                        print(f"   - {k}: {v}")
+
+            planned_workout_desc = (
+                f"Założenia na dzień wczorajszy ({yesterday_date_str}) według załączonego planu tygodniowego. "
+                f"W dniu {yesterday_date_str} zarejestrowano łącznie {len(all_yesterday_stats)} jednostek treningowych. "
+                f"Odszukaj sekcję odpowiadającą temu dniu ({DAYS_PL[yesterday.weekday()]}) w planie tygodniowym i sprawdź zgodność wykonania całości lub poszczególnych etapów."
+            )
+        else:
+            print("\n" + "="*50)
+            print(f"🛌 DZIEŃ BEZ BIEGU / REST DAY (WCZORAJ): {yesterday_date_str}")
+            print("="*50)
+            print("Wczoraj nie odnotowano aktywności biegowej.")
+            print("Model przeprowadzi audyt regeneracji i obciążenia wczorajszego dnia oraz snu minionej nocy!")
+
+            planned_workout_desc = (
+                f"W dniu wczorajszym ({yesterday_date_str}) NIE BYŁO TRENINGU BIEGOWEGO (Dzień wolny / Rest Day). "
+                f"Sprawdź w planie tygodniowym, czy dzień wolny był zaplanowany na {DAYS_PL[yesterday.weekday()]}. "
+                f"Skup się na ocenie regeneracji (wczorajsze obciążenie, sen z minionej nocy, HRV, RHR, poranne Body Battery) oraz adaptacji do treningu na dzień dzisiejszy ({today_date_str})."
+            )
+
+        trening_z_planu = f"Założenia na dzień dzisiejszy ({today_date_str}) według planu tygodniowego (sekcja: {DAYS_PL[today.weekday()]})"
+
+        yesterday_prompt = generate_yesterday_verification_prompt(
+            planned_workout=planned_workout_desc,
+            activity_stats=all_yesterday_stats if all_yesterday_stats else None,
+            garmin_stats=garmin_stats,
+            weekly_plan_context=weekly_plan_content,
+            user_profile=user_profile,
+            user_note=user_note,
+            today_date_str=today_date_str,
+            yesterday_date_str=yesterday_date_str,
+            day_before_yesterday_date_str=day_before_yesterday_date_str,
+            trening_z_planu=trening_z_planu
+        )
+
+        if debug:
+            with open("debug_log.md", "w", encoding="utf-8") as f_debug:
+                f_debug.write(yesterday_prompt + "\n")
+
+        print("\n" + "="*50)
+        print(f"WYSYŁANIE RAPORTU DO GEMINI (Model: {GEMINI_MODEL})...")
+        print("="*50)
+
+        try:
+            chat = client.chats.create(model=GEMINI_MODEL)
+            response = chat.send_message(yesterday_prompt)
+
+            print(f"\n🏆 RAPORT TRENERSKI (AUDYT DNIA WCZORAJSZEGO) I ADAPTACJA NA DZIŚ ({today_date_str}) 🏆\n")
+            print(response.text)
+
+            # Określenie daty audytowanego treningu do archiwum (wczorajszy dzień)
+            workout_date = yesterday.isoformat()
+            if all_yesterday_stats and yesterday_acts:
+                first_raw_act = yesterday_acts[0]
+                act_start = first_raw_act.get('startTimeLocal', '')
+                if len(act_start) >= 10:
+                    workout_date = act_start[:10]
+
+            history_file_path = os.path.join(HISTORY_DIR, f"{workout_date}.md")
+
+            if all_yesterday_stats:
+                acts_archive_blocks = []
+                for idx, act_s in enumerate(all_yesterday_stats):
+                    splits_formatted = "\n".join(act_s.get('splits', []))
+                    if not splits_formatted:
+                        splits_formatted = "Brak szczegółowych splitów dla tej jednostki"
+                    time_info = f" [Start: {act_s['start_time']}]" if act_s.get('start_time') and act_s['start_time'] != "Brak danych" else ""
+                    single_block = f"""### Jednostka {idx + 1}{time_info}: {act_s['name']}
+- Warunki pogodowe: {act_s.get('weather', 'Brak danych o pogodzie')}
+- Dystans: {act_s['distance']} | Czas: {act_s['duration']} | Średnie tempo: {act_s['pace']}
+- Tętno: Średnie {act_s['avg_hr']} | Max {act_s['max_hr']}
+- Training Effect: Aerobowy {act_s['aerobic_te']} | Beztlenowy {act_s['anaerobic_te']}
+- Biomechanika: Średnia kadencja {act_s['avg_cadence']}, Krok {act_s['stride_length']}, Kontakt z podłożem {act_s['ground_contact_time']}, Odchylenie pionowe {act_s['vertical_oscillation']}
+
+#### Splity:
+{splits_formatted}"""
+                    acts_archive_blocks.append(single_block)
+
+                archive_content = f"""# TRENING Z DNIA: {workout_date} ({yesterday_date_str}) [TRYB YESTERDAY]
+Liczba zarejestrowanych jednostek: {len(all_yesterday_stats)}
+
+## Bilans wczorajszego dnia ({yesterday_date_str}):
+- Wczorajsze kroki: {garmin_stats.get('yesterday_steps')}
+- Średni stres wczoraj: {garmin_stats.get('yesterday_stress')}
+- Body Battery pod koniec wczorajszego dnia: {garmin_stats.get('yesterday_body_battery')}
+
+## Biometria regeneracyjna z minionej nocy (sen przed dniem {today_date_str}):
+- HRV (miniona noc): {garmin_stats.get('hrv_status')}
+- RHR (miniona noc): {garmin_stats.get('rhr')}
+- Sen (miniona noc): {garmin_stats.get('sleep_score')} (Głęboki: {garmin_stats.get('deep_sleep')}, REM: {garmin_stats.get('rem_sleep')})
+- Wnioski o śnie: {garmin_stats.get('sleep_insights')}
+- Poranne Body Battery na start dnia {today_date_str}: {garmin_stats.get('morning_body_battery')}
+
+## Zarejestrowane aktywności wczoraj:
+{chr(10).join(acts_archive_blocks)}
+
+## Ocena trenera i adaptacja na dzień dzisiejszy ({today_date_str}):
+{response.text}
+"""
+            else:
+                archive_content = f"""# DZIEŃ WOLNY / REST DAY: {workout_date} ({yesterday_date_str}) [TRYB YESTERDAY]
+Aktywność: Brak biegu (Regeneracja / Odpoczynek)
+
+## Bilans wczorajszego dnia ({yesterday_date_str}):
+- Wczorajsze kroki: {garmin_stats.get('yesterday_steps')}
+- Średni stres wczoraj: {garmin_stats.get('yesterday_stress')}
+- Body Battery pod koniec wczorajszego dnia: {garmin_stats.get('yesterday_body_battery')}
+
+## Biometria regeneracyjna z minionej nocy (sen przed dniem {today_date_str}):
+- HRV (miniona noc): {garmin_stats.get('hrv_status')}
+- RHR (miniona noc): {garmin_stats.get('rhr')}
+- Sen (miniona noc): {garmin_stats.get('sleep_score')} (Głęboki: {garmin_stats.get('deep_sleep')}, REM: {garmin_stats.get('rem_sleep')})
+- Wnioski o śnie: {garmin_stats.get('sleep_insights')}
+- Poranne Body Battery na start dnia {today_date_str}: {garmin_stats.get('morning_body_battery')}
+
+## Ocena trenera i adaptacja na dzień dzisiejszy ({today_date_str}):
 {response.text}
 """
             with open(history_file_path, "w", encoding="utf-8") as hf:

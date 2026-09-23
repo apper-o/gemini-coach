@@ -1,1 +1,1 @@
-Chciałbym, jeżeli już musimy zrobić dużo rest day przed maratonem, to żeby robić w te dni cross-trening np. siłownię, jeśli to dobry pomysł.
+Wykonałem trening środowy zamiast wtorkowej siłowni (zamiana w planie). Weź to pod uwagę i potraktuj analizę tak jakby dotyczyła dnia, w którym miałem trening 6km z tempem maratońskim, czyli 23.09.2026 w planie.
