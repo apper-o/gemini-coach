@@ -27,7 +27,7 @@ Upewnij się, że plik `.env` zawiera niezbędne zmienne (wzorzec w `.env.exampl
 ```env
 # Klucz Google Gemini API (wymagany)
 GEMINI_API_KEY="twój_klucz_api"
-GEMINI_MODEL="gemini-3.6-flash"
+GEMINI_MODELS="gemini-3.5-flash,gemini-3.5-flash-lite,gemini-3.0-flash-lite"
 
 # Dane logowania Garmin Connect (wymagane w trybie daily, gdy USE_LOCAL_DATA="false")
 GARMIN_EMAIL="twoj_email@example.com"

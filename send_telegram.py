@@ -3,9 +3,11 @@ import sys
 import re
 import html
 import json
+import time
 import logging
 import urllib.request
 import urllib.parse
+from datetime import datetime
 from dotenv import load_dotenv
 
 # Załadowanie zmiennych środowiskowych z pliku .env (jeśli uruchamiane lokalnie)
@@ -362,6 +364,145 @@ def send_telegram_document(bot_token, chat_id, file_bytes, filename, caption="",
         return None
 
 
+def fetch_recent_telegram_messages(bot_token=None, chat_id=None, state_file=None, max_age_hours=36):
+    """
+    Pobiera najnowsze wiadomości od użytkownika z czatu Telegrama (np. raport z Hevy lub notatkę z siłowni).
+    Filtruje wiadomości:
+    - tylko z autoryzowanego TELEGRAM_CHAT_ID,
+    - nie starsze niż max_age_hours (domyślnie 36h),
+    - o ID wiadomości wyższym niż ostatnio przetworzone (zapisane w state_file).
+
+    Zwraca:
+      (tekst_notatek, nowy_stan_dict) lub (None, None)
+    """
+    bot_token = bot_token or os.getenv("TELEGRAM_BOT_TOKEN")
+    chat_id = chat_id or os.getenv("TELEGRAM_CHAT_ID")
+
+    if not bot_token or not chat_id:
+        logger.info("Brak TELEGRAM_BOT_TOKEN lub TELEGRAM_CHAT_ID – pomijam pobieranie wiadomości z Telegrama.")
+        return None, None
+
+    state_file = state_file or os.path.join("input", "telegram_state.json")
+    last_update_id = 0
+    last_message_id = 0
+
+    if os.path.exists(state_file):
+        try:
+            with open(state_file, "r", encoding="utf-8") as sf:
+                sdata = json.load(sf)
+                last_update_id = sdata.get("last_processed_update_id", 0)
+                last_message_id = sdata.get("last_processed_message_id", 0)
+        except Exception as e:
+            logger.warning(f"Nie udało się odczytać pliku stanu Telegrama {state_file}: {e}")
+
+    offset_param = f"&offset={last_update_id + 1}" if last_update_id > 0 else ""
+    url = f"https://api.telegram.org/bot{bot_token}/getUpdates?timeout=5&limit=100&allowed_updates=%5B%22message%22%5D{offset_param}"
+
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "GarminCoach/1.0"})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+    except Exception as e:
+        logger.warning(f"Błąd podczas odpytywania Telegram API o wiadomości: {e}")
+        return None, None
+
+    if not data.get("ok"):
+        logger.warning(f"Odpowiedź Telegram API nie jest poprawna: {data}")
+        return None, None
+
+    results = data.get("result", [])
+    if not results:
+        return None, None
+
+    now_ts = time.time()
+    valid_msgs = []
+    max_update_id = last_update_id
+    max_message_id = last_message_id
+    max_date = 0
+
+    for upd in results:
+        u_id = upd.get("update_id", 0)
+        if u_id > max_update_id:
+            max_update_id = u_id
+
+        msg = upd.get("message")
+        if not msg:
+            continue
+
+        m_chat_id = msg.get("chat", {}).get("id")
+        if str(m_chat_id) != str(chat_id):
+            continue
+
+        m_id = msg.get("message_id", 0)
+        m_date = msg.get("date", 0)
+        m_text = (msg.get("text") or msg.get("caption") or "").strip()
+
+        if not m_text:
+            continue
+
+        if m_id <= last_message_id:
+            continue
+
+        age_hours = (now_ts - m_date) / 3600.0
+        if age_hours > max_age_hours:
+            logger.info(f"Pominięto wiadomość z Telegrama starszą niż {max_age_hours}h ({age_hours:.1f}h).")
+            continue
+
+        valid_msgs.append((u_id, m_id, m_date, m_text))
+        if m_id > max_message_id:
+            max_message_id = m_id
+        if m_date > max_date:
+            max_date = m_date
+
+    if not valid_msgs:
+        return None, None
+
+    valid_msgs.sort(key=lambda x: x[2])
+
+    msg_blocks = []
+    for u_id, m_id, m_date, text in valid_msgs:
+        dt_str = datetime.fromtimestamp(m_date).strftime("%Y-%m-%d %H:%M")
+        msg_blocks.append(f"--- Treść wiadomości z Telegrama ({dt_str}) ---\n{text}")
+
+    combined_text = "\n\n".join(msg_blocks)
+    new_state = {
+        "last_processed_update_id": max_update_id,
+        "last_processed_message_id": max_message_id,
+        "last_processed_timestamp": max_date,
+        "last_updated_local": datetime.now().isoformat()
+    }
+
+    return combined_text, new_state
+
+
+def save_telegram_state(new_state, state_file=None, bot_token=None):
+    """
+    Zapisuje stan przetworzonych wiadomości (aby uniknąć dublowania w kolejnych dniach)
+    oraz potwierdza offset w Telegram API.
+    """
+    if not new_state:
+        return
+    state_file = state_file or os.path.join("input", "telegram_state.json")
+    try:
+        os.makedirs(os.path.dirname(state_file), exist_ok=True)
+        with open(state_file, "w", encoding="utf-8") as sf:
+            json.dump(new_state, sf, indent=2, ensure_ascii=False)
+        logger.info(f"Zapisano stan wiadomości Telegram do {state_file}")
+    except Exception as e:
+        logger.warning(f"Błąd zapisu stanu Telegrama do {state_file}: {e}")
+
+    bot_token = bot_token or os.getenv("TELEGRAM_BOT_TOKEN")
+    u_id = new_state.get("last_processed_update_id")
+    if bot_token and u_id:
+        try:
+            ack_url = f"https://api.telegram.org/bot{bot_token}/getUpdates?offset={u_id + 1}&limit=1"
+            req = urllib.request.Request(ack_url, headers={"User-Agent": "GarminCoach/1.0"})
+            with urllib.request.urlopen(req, timeout=5) as resp:
+                pass
+        except Exception:
+            pass
+
+
 def send_report(file_path):
     """
     Główna funkcja: konwertuje raport Markdown na HTML, generuje zwięzły podpis
@@ -437,7 +578,15 @@ if __name__ == "__main__":
             sys.exit(0)
         else:
             print("❌ Błąd połączenia z Telegramem.")
-            sys.exit(1)
+    if len(sys.argv) > 1 and sys.argv[1] == "--get-notes":
+        text, state = fetch_recent_telegram_messages()
+        if text:
+            print("\n📬 POBRANO WIADOMOŚCI Z TELEGRAMA:\n")
+            print(text)
+            print("\nNowy stan:", state)
+        else:
+            print("Brak nowych wiadomości na czacie Telegrama.")
+        sys.exit(0)
 
     target_file = sys.argv[1] if len(sys.argv) > 1 else "output/last_daily_report.md"
     sys.exit(send_report(target_file))

@@ -1,4 +1,4 @@
-name: Garmin Coach Automated Run
+name: Gemini Coach Automated Run
 
 on:
   schedule:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: 'Wybierz tryb działania Garmin Coach'
+        description: 'Wybierz tryb działania Gemini Coach'
         required: true
         default: 'yesterday'
         type: choice
@@ -68,13 +68,14 @@ jobs:
             > prompts/user_note.md
           fi
 
-      - name: Uruchomienie Garmin Coach
+      - name: Uruchomienie Gemini Coach
         env:
           GARMIN_EMAIL: ${{ secrets.GARMIN_EMAIL }}
           GARMIN_PASSWORD: ${{ secrets.GARMIN_PASSWORD }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GEMINI_MODELS: "gemini-3.5-flash-lite,gemini-3.5-flash,gemini-3.0-flash-lite"
-          GEMINI_MODEL: "gemini-3.5-flash-lite"
+          GEMINI_MODELS: "gemini-3.5-flash,gemini-3.5-flash-lite,gemini-3.0-flash-lite"
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           TARGET_MODE: ${{ github.event.inputs.mode || 'yesterday' }}
           USE_LOCAL_DATA: "false"
           DEBUG: "false"
@@ -110,11 +111,11 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add trainings_history/ output/ input/weekly_preferences.md || true
+          git add trainings_history/ output/ input/ || true
           if git diff --staged --quiet; then
             echo "Brak nowych zmian do zapisania w repozytorium."
           else
             MODE="${{ github.event.inputs.mode || 'yesterday' }}"
-            git commit -m "Automatyczny raport Garmin Coach [$MODE] [skip ci]"
+            git commit -m "Automatyczny raport Gemini Coach [$MODE] [skip ci]"
             git push
           fi

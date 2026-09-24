@@ -72,7 +72,7 @@ Dla każdego dnia stosuj stały format nagłówka: **Dzień tygodnia - Typ jedno
 
 * Dni biegowe: ### [Dzień tygodnia] - Bieg: [Typ jednostki]
 * **Rozgrzewka**: [Dystans truchtu]
-* **Część główna**: [Serie, dystans, tempo, przerwy, tętno]
+* **Część główna**: [Serie, dystans, tempo, przerwy, tętno] (wypunktowane)
 * **Schłodzenie**: [Dystans truchtu/marszu]
 * **Cel fizjologiczny**: [Opis adaptacji (1-2 zdania)]
 
