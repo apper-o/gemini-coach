@@ -1,1 +1,1 @@
-Dziś zamieniłem rest day z 24.09.2026 z dzisiejszym treningiem 23.09.2026 siłownia. Siłownie wykonam w dniu 24.09.2026.
+# Notatki i uwagi do trenera Gemini (wpisz swoje uwagi poniżej, linie z # są ignorowane)

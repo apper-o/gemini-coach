@@ -78,7 +78,6 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           TARGET_MODE: ${{ github.event.inputs.mode || 'yesterday' }}
           USE_LOCAL_DATA: "false"
-          DEBUG: "false"
         run: |
           echo "Uruchamianie w trybie: $TARGET_MODE"
           python garmin_coach.py "$TARGET_MODE"

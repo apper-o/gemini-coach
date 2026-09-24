@@ -4,9 +4,9 @@ Skrypt jest uruchamiany WIECZOREM, po zakończeniu całego dnia i po wykonaniu w
 WYTYCZNE SYSTEMOWE:
 
 * Styl: bezwzględnie zwięzły, konkretny, techniczny, bez kurtuazji i wstępów.
-* Jeśli w danym dniu (Środa, 2026-09-23) zrealizowano trening siłowy (informacje w notatce biegacza – sekcja 8): przeprowadź rygorystyczną analizę tej jednostki pod kątem obciążenia aparatu ruchu, układu nerwowo-mięśniowego oraz jej bezpośredniego wpływu na bieganie.
-* Zasada decyzyjna dla dnia kolejnego (Czwartek, 2026-09-24):
-* Jeśli w planie na dzień Czwartek, 2026-09-24 widnieje trening uzupełniający / siłownia: NIE rozpisuj ćwiczeń siłowych. Zdefiniuj jedynie wpływ na bieg oraz wskaż wprost, czy zawodnik ma oszczędzać nogi pod kątem kolejnych jednostek biegowych.
+* Jeśli w danym dniu (Czwartek, 2026-09-24) zrealizowano trening siłowy (informacje w notatce biegacza – sekcja 8): przeprowadź rygorystyczną analizę tej jednostki pod kątem obciążenia aparatu ruchu, układu nerwowo-mięśniowego oraz jej bezpośredniego wpływu na bieganie.
+* Zasada decyzyjna dla dnia kolejnego (Piątek, 2026-09-25):
+* Jeśli w planie na dzień Piątek, 2026-09-25 widnieje trening uzupełniający / siłownia: NIE rozpisuj ćwiczeń siłowych. Zdefiniuj jedynie wpływ na bieg oraz wskaż wprost, czy zawodnik ma oszczędzać nogi pod kątem kolejnych jednostek biegowych.
 * Zawsze przeczytaj i uwzględnij NOTATKI I UWAGI OD BIEGACZA (w tym raport z wykonanej siłowni).
 
 Twoim kluczowym zadaniem jest sporządzenie raportu na podstawie poniższych danych wejściowych.
@@ -19,44 +19,25 @@ DANE WEJŚCIOWE:
 * HR max: 202 bpm (szacowane) | Próg mleczanowy (LTHR): Brak danych
 * Strefy tętna: Z1: <123 bpm, regeneracja i schłodzenie, Z2: 123–148 bpm, baza tlenowa / bieg spokojny (tempo >6:00 min/km), Z3: 148–162 bpm, tempo maratońskie (tempo ok. 4:50-5:40 min/km), Z4: 162–181 bpm, próg mleczanowy LTHR (tempo ok. 4:10–4:40 min/km), Z5: >181 bpm, beztlen / interwały VO2max
 
-2. PLAN NA DZIEŃ Środa, 2026-09-23:
-W dniu Środa, 2026-09-23 NIE BYŁO TRENINGU BIEGOWEGO (Dzień wolny / Rest Day). Sprawdź w planie tygodniowym, czy dzień wolny był zaplanowany na Środa. Skup się na ocenie regeneracji (sen, HRV, RHR, Body Battery, dzisiejsze kroki i stres) oraz adaptacji do treningu na dzień Czwartek, 2026-09-24.
-3. RZECZYWISTA REALIZACJA W DNIU Środa, 2026-09-23 (JEDNOSTKI TRENINGOWE):
-W dniu Środa, 2026-09-23 nie odnotowano treningu biegowego (Dzień wolny / Regeneracja).
-4. KOSZT DNIA Środa, 2026-09-23 (WIECZORNY BILANS OBCIĄŻENIA):
+2. PLAN NA DZIEŃ Czwartek, 2026-09-24:
+W dniu Czwartek, 2026-09-24 NIE BYŁO TRENINGU BIEGOWEGO (Dzień wolny / Rest Day). Sprawdź w planie tygodniowym, czy dzień wolny był zaplanowany na Czwartek. Skup się na ocenie regeneracji (sen, HRV, RHR, Body Battery, dzisiejsze kroki i stres) oraz adaptacji do treningu na dzień Piątek, 2026-09-25.
+3. RZECZYWISTA REALIZACJA W DNIU Czwartek, 2026-09-24 (JEDNOSTKI TRENINGOWE):
+W dniu Czwartek, 2026-09-24 nie odnotowano treningu biegowego (Dzień wolny / Regeneracja).
+4. KOSZT DNIA Czwartek, 2026-09-24 (WIECZORNY BILANS OBCIĄŻENIA):
 
-* Dzisiejsze kroki (cały dzień): 12037 kroków (aktywne kalorie: 684.0 kcal)
+* Dzisiejsze kroki (cały dzień): 5967 kroków (aktywne kalorie: 321.0 kcal)
 * Średni poziom stresu w ciągu dnia: Średni poziom stresu: 34/100
-* Poziom energii Body Battery: Aktualnie wieczorem: 24/100 (Maksymalnie po nocy: 90/100, spadek w ciągu dnia: -66)
+* Poziom energii Body Battery: Aktualnie wieczorem: 32/100 (Maksymalnie po nocy: 84/100, spadek w ciągu dnia: -52)
 
-5. STAN Z NOCY PRZED DNIEM Środa, 2026-09-23 (BAZA WYJŚCIOWA NA START DNIA):
+5. STAN Z NOCY PRZED DNIEM Czwartek, 2026-09-24 (BAZA WYJŚCIOWA NA START DNIA):
 
-* Status HRV: BALANCED 51 ms (Średnia 7-dniowa: 48 ms, Norma bazowa: 46–59 ms)
-* Tętno spoczynkowe (RHR): 54 bpm (Średnia 7-dniowa: 56 bpm, odchylenie: -2 bpm) (Średnie tętno z całej nocy: 59 bpm)
-* Jakość snu (Sleep Score): 78/100 (Głęboki: 1h 37m, REM: 0h 48m)
-* Wnioski Garmina o śnie: NEGATIVE_LONG_BUT_NOT_ENOUGH_REM, NONE
+* Status HRV: BALANCED 49 ms (Średnia 7-dniowa: 48 ms, Norma bazowa: 46–59 ms)
+* Tętno spoczynkowe (RHR): 53 bpm (Średnia 7-dniowa: 56 bpm, odchylenie: -3 bpm) (Średnie tętno z całej nocy: 59 bpm)
+* Jakość snu (Sleep Score): 83/100 (Głęboki: 1h 53m, REM: 1h 19m)
+* Wnioski Garmina o śnie: POSITIVE_LONG_AND_DEEP, NONE
 
-6. KONTEKST DNIA POPRZEDNIEGO (Wtorek, 2026-09-22):
-
-====================
-KONTEKST DNIA POPRZEDNIEGO (Wtorek, 2026-09-22):
-  [Jednostka 1 [Start: 15:09]]: Rzeszow Running (6.00 km w 34.3 min, tempo 5:43 min/km)
-    * Pogoda/Warunki: Wiatr: 11.0 km/h wnw | Wilgotność: 82%
-    * Tętno: Średnie 152 bpm | Maksymalne 163 bpm
-    * Biomechanika: Średnia kadencja 173 spm, krok 1.01 m, kontakt 265.8 ms, odchylenie 8.40 cm
-    * Obciążenie: Aerobic TE: 3.1/5.0 (AEROBIC_BASE), Anaerobic TE: 0.0/5.0, Średnia moc: 338 W
-    * Splity kilometrowe:
-
-| Km | Dystans | Czas | Tempo | GAP | Tętno (śr/max) | Kadencja | Krok | GCT | Odchylenie | Moc | Wznios/Spadek |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| 1 | 1.00 km | 5:46 | 5:46 min/km | 5:44 min/km | 141 / 152 bpm | 173 spm | 0.99 m | 267.6 ms | 8.26 cm | 348 W | +5m / -0m |
-| 2 | 1.00 km | 5:47 | 5:47 min/km | 5:50 min/km | 151 / 155 bpm | 173 spm | 1.00 m | 267.1 ms | 8.38 cm | 335 W | +5m / -9m |
-| 3 | 1.00 km | 5:26 | 5:26 min/km | 5:22 min/km | 159 / 163 bpm | 174 spm | 1.06 m | 260.0 ms | 8.54 cm | 358 W | +8m / -5m |
-| 4 | 1.00 km | 5:26 | 5:26 min/km | 5:26 min/km | 155 / 161 bpm | 175 spm | 1.05 m | 259.8 ms | 8.43 cm | 357 W | +2m / -1m |
-| 5 | 1.00 km | 5:37 | 5:37 min/km | 5:33 min/km | 155 / 159 bpm | 172 spm | 1.03 m | 262.4 ms | 8.42 cm | 337 W | +4m / -5m |
-| 6 | 1.00 km | 6:15 | 6:15 min/km | 6:14 min/km | 152 / 158 bpm | 169 spm | 0.95 m | 276.4 ms | 8.37 cm | 297 W | +0m / -1m |
-| 7 | 0.00 km | 0:00 | 5:42 min/km | 6:55 min/km | 147 / 147 bpm | 169 spm | 0.87 m | 283.0 ms | 8.09 cm | 266 W | +0m / -0m |
-
+6. KONTEKST DNIA POPRZEDNIEGO (Środa, 2026-09-23):
+Brak danych z dnia Środa, 2026-09-23 (dzień wolny)
 7. AKTUALNY PLAN TYGODNIOWY:
 
 ====================
@@ -123,10 +104,40 @@ Głównym celem tego tygodnia jest realizacja strategii taperingu, która poprze
 8. BIEŻĄCA NOTATKA I UWAGI OD BIEGACZA (w tym ewentualny przebieg siłowni):
 Dziś zamieniłem rest day z 24.09.2026 z dzisiejszym treningiem 23.09.2026 siłownia. Siłownie wykonam w dniu 24.09.2026.
 
+[RAPORT Z TELEGRAMA]:
+--- Treść wiadomości z Telegrama (2026-09-24 15:19) ---
+upper
+Thursday, Sep 24, 2026 at 2:19pm
+
+Bench Press (Barbell)
+Set 1: 60 kg x 8
+Set 2: 60 kg x 8
+Set 3: 60 kg x 8
+
+Lat Pulldown (Cable)
+Set 1: 54 kg x 10
+Set 2: 55 kg x 8
+Set 3: 55 kg x 10
+
+Seated Incline Curl (Dumbbell)
+Set 1: 13 kg x 8
+Set 2: 13 kg x 8
+Set 3: 13 kg x 6
+
+Triceps Pushdown
+Set 1: 50 kg x 10
+Set 2: 50 kg x 10
+Set 3: 50 kg x 10
+
+Ab Wheel
+Set 1: 10 reps
+Set 2: 10 reps
+Set 3: 10 reps
+
 ====================
 FORMAT RAPORTU:
 
-### 1. AUDYT DNIA: Środa, 2026-09-23
+### 1. AUDYT DNIA: Czwartek, 2026-09-24
 
 * Typ dnia: [BIEGOWY / SIŁOWY / BIEG + SIŁOWNIA / REST DAY]
 
@@ -188,17 +199,17 @@ WARIANT D: TRENING BIEGOWY + JEDNOSTKA SIŁOWA
 * Koszt dzienny: Kroki łączne [X], średni stres [Y/100], wieczorne Body Battery [Z/100].
 * Wpływ bazy wyjściowej (sen/HRV): Jak stan z nocy wpłynął na tolerancję dzisiejszego obciążenia (biegowego, siłowego lub łączonego).
 
-### 3. ADAPTACJA TRENINGU NA DZIEŃ: Czwartek, 2026-09-24
+### 3. ADAPTACJA TRENINGU NA DZIEŃ: Piątek, 2026-09-25
 
-* Pierwotny plan na dzień Czwartek, 2026-09-24: Założenia na dzień Czwartek, 2026-09-24 według planu tygodniowego (sekcja: Czwartek)
+* Pierwotny plan na dzień Piątek, 2026-09-25: Założenia na dzień Piątek, 2026-09-25 według planu tygodniowego (sekcja: Piątek)
 * Uwzględnienie notatki biegacza: [Odniesienie do zgłoszonych uwag, samopoczucia, bolesności mięśniowych/DOMS po siłowni, dyspozycji czasowej lub brak uwag]
 
 * DECYZJA O KOREKCIE:
-* Jeśli wskaźniki i notatka są optymalne (brak przeciążenia CNS, mikrourazów czy długu tlenowego): potwierdź planowany trening na dzień Czwartek, 2026-09-24.
-* Jeśli wskaźniki lub notatka biegacza sygnalizują duże zmęczenie (np. wysoki koszt nerwowy po siłowni, bolesność łańcucha tylnego/czwórogłowych, spadek HRV, brak czasu): zmodyfikuj jednostkę na dzień Czwartek, 2026-09-24 (np. obniż intensywność, zamień akcent na bieg regeneracyjny Z1/Z2, zamień kolejność dni, zaleć rest lub zmodyfikuj status siłowni).
+* Jeśli wskaźniki i notatka są optymalne (brak przeciążenia CNS, mikrourazów czy długu tlenowego): potwierdź planowany trening na dzień Piątek, 2026-09-25.
+* Jeśli wskaźniki lub notatka biegacza sygnalizują duże zmęczenie (np. wysoki koszt nerwowy po siłowni, bolesność łańcucha tylnego/czwórogłowych, spadek HRV, brak czasu): zmodyfikuj jednostkę na dzień Piątek, 2026-09-25 (np. obniż intensywność, zamień akcent na bieg regeneracyjny Z1/Z2, zamień kolejność dni, zaleć rest lub zmodyfikuj status siłowni).
 
 * Uzasadnienie fizjologiczne: (1-2 zwięzłe argumenty bazujące na wieczornym bilansie obciążenia, specyfice wykonanej jednostki biegowej/siłowej i notatce biegacza).
-* ROZPISKA NA DZIEŃ Czwartek, 2026-09-24:
+* ROZPISKA NA DZIEŃ Piątek, 2026-09-25:
 * Jeśli bieg: Rozgrzewka, Część Główna (dokładne tempa/strefy HR z planu lub skorygowane), Schłodzenie.
 * Jeśli siłownia: Status dla dolnych partii (np. "Pełna intensywność" / "Oszczędzać nogi — unikać pracy ekscentrycznej i obciążeń osiowych") oraz wytyczne dot. cardio uzupełniającego (np. rowerek, mobilność). Pamiętaj: NIE rozpisuj ćwiczeń siłowych.
 * Jeśli Rest Day: Zalecenie pełnej regeneracji biernej lub lekkiego rollowania/mobilności.

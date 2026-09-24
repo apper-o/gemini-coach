@@ -1,47 +1,55 @@
-# DZIEŃ WOLNY / REST DAY: 2026-09-23 (Środa, 2026-09-23)
+# DZIEŃ WOLNY / REST DAY: 2026-09-24 (Czwartek, 2026-09-24)
 Aktywność: Brak biegu (Regeneracja / Odpoczynek)
 
-## Biometria regeneracyjna i bilans dnia (Środa, 2026-09-23):
-- HRV (miniona noc): BALANCED 51 ms (Średnia 7-dniowa: 48 ms, Norma bazowa: 46–59 ms)
-- RHR (miniona noc): 54 bpm (Średnia 7-dniowa: 56 bpm, odchylenie: -2 bpm) (Średnie tętno z całej nocy: 59 bpm)
-- Sen (miniona noc): 78/100 (Głęboki: 1h 37m, REM: 0h 48m)
-- Wnioski o śnie: NEGATIVE_LONG_BUT_NOT_ENOUGH_REM, NONE
-- Body Battery: Aktualnie wieczorem: 24/100 (Maksymalnie po nocy: 90/100, spadek w ciągu dnia: -66)
-- Całodzienny stres w dniu Środa, 2026-09-23: Średni poziom stresu: 34/100
-- Kroki w dniu Środa, 2026-09-23 (cały dzień): 12037 kroków (aktywne kalorie: 684.0 kcal)
+## Biometria regeneracyjna i bilans dnia (Czwartek, 2026-09-24):
+- HRV (miniona noc): BALANCED 49 ms (Średnia 7-dniowa: 48 ms, Norma bazowa: 46–59 ms)
+- RHR (miniona noc): 53 bpm (Średnia 7-dniowa: 56 bpm, odchylenie: -3 bpm) (Średnie tętno z całej nocy: 59 bpm)
+- Sen (miniona noc): 83/100 (Głęboki: 1h 53m, REM: 1h 19m)
+- Wnioski o śnie: POSITIVE_LONG_AND_DEEP, NONE
+- Body Battery: Aktualnie wieczorem: 32/100 (Maksymalnie po nocy: 84/100, spadek w ciągu dnia: -52)
+- Całodzienny stres w dniu Czwartek, 2026-09-24: Średni poziom stresu: 34/100
+- Kroki w dniu Czwartek, 2026-09-24 (cały dzień): 5967 kroków (aktywne kalorie: 321.0 kcal)
 
-## Ocena trenera i adaptacja na dzień Czwartek, 2026-09-24:
-### 1. AUDYT DNIA: Środa, 2026-09-23
+## Ocena trenera i adaptacja na dzień Piątek, 2026-09-25:
+### 1. AUDYT DNIA: Czwartek, 2026-09-24
 
-* Typ dnia: BIEG + SIŁOWNIA (Zamiana planu: wykonano siłownię przeniesioną z czwartku; brak zaplanowanego na środę biegu skompensowano modyfikacją harmonogramu).
+* Typ dnia: SIŁOWY
 
-WARIANT B: JEDNOSTKA SIŁOWA (na podstawie notatki biegacza: zamiana dni i wykonanie siłowni w środę)
+WARIANT B: JEDNOSTKA SIŁOWA
 
-* Profil jednostki: Siła biegowa i stabilizacja / Prehab (uwzględniając przesunięcie treningu UPPER z wtorku/czwartku).
+* Profil jednostki: Hipertrofia funkcjonalna i podtrzymanie góry ciała (UPPER)
 * ZESTAWIENIE ĆWICZEŃ:
+
 | Nr | Ćwiczenie / Ruch | Serie x Powtórzenia | Obciążenie / RPE | Docelowy łańcuch / partia |
 |:---:|:---:|:---:|:---:|:---:|
-| 1 | Brak szczegółowego rozpiszenia w notatce (notatka sygnalizuje ogólne wykonanie siłowni w dniu 23.09.2026) | - | - | - |
+| 1 | Bench Press (Barbell) | 3 x 8 | 60 kg | Góra ciała / klatka piersiowa, triceps |
+| 2 | Lat Pulldown (Cable) | 3 x 8-10 | 54-55 kg | Góra ciała / szeroki grzbiet, bicepsy |
+| 3 | Seated Incline Curl (Dumbbell) | 3 x 6-8 | 13 kg | Ramiona / biceps |
+| 4 | Triceps Pushdown | 3 x 10 | 50 kg | Ramiona / triceps |
+| 5 | Ab Wheel | 3 x 10 | Ciężar ciała | Stabilizacja centralna / core |
 
-* Koszt nerwowo-mięśniowy (CNS) i komponent ekscentryczny: Umiarkowany (zależny od faktycznie wykonanej jednostki, brak dokładnych danych w notatce poza faktem realizacji siłowni).
-* Wpływ na aparat biegowy (Running Transfer): Wprowadzenie jednostki siłowej w dniu wolnym od biegu wymaga kontroli obciążeń osiowych przed zbliżającym się startem maratońskim.
-* Zgodność z założeniami treningu uzupełniającego: Niezgodny z planem (zamiana kolejności dni – siłownia wykonana w środę zamiast w czwartek) | Ocena: 7/10
-* Zgłoszone anomalie, asymetrie i przeciążenia: Brak.
+* Koszt nerwowo-mięśniowy (CNS) i komponent ekscentryczny: Umiarkowany koszt ośrodkowy przy zerowym obciążeniu dolnych kończyn. Brak komponentu ekscentrycznego na nogi eliminuje ryzyko powstawania mikrourazów (DOMS) w strukturach biegowych.
+* Wpływ na aparat biegowy (Running Transfer): Pełne odciążenie łańcucha dolnego. Trening skoncentrowany wyłącznie na górze ciała i stabilizacji centralnej (Ab Wheel), co wspiera utrzymanie prawidłowej postawy podczas maratonu bez generowania zmęczenia obwodowego nóg.
+* Zgodność z założeniami treningu uzupełniającego: Optymalny bodziec | Ocena: 10/10
+* Zgłoszone anomalie, asymetrie i przeciążenia: Brak
 
 ### 2. KOSZT METABOLICZNY I STAN ZASOBÓW
 
-* Bodziec fizjologiczny i szlaki energetyczne: Koszt nerwowo-mięśniowy (CNS) Umiarkowany, dominujący system energetyczny: glikolityczno-atp, zmęczenie głównie obwodowo-mięśniowe połączone z obciążeniem ośrodkowym.
-* Koszt dzienny: Kroki łączne 12037, średni stres 34/100, wieczorne Body Battery 24/100.
-* Wpływ bazy wyjściowej (sen/HRV): HRV BALANCED (51 ms) oraz niskie RHR (54 bpm) utrzymały stabilną bazę autonomiczną, jednak niska jakość snu (brak wystarczającej fazy REM) oraz głęboki spadek Body Battery do 24/100 wskazują na wyczerpanie zasobów energetycznych i konieczność natychmiastowej regeneracji.
+* Bodziec fizjologiczny i szlaki energetyczne: Koszt nerwowo-mięśniowy [Umiarkowany], dominujący system energetyczny: ATP-CP oraz glikolityczny beztlenowy (lokalny góra ciała), charakter zmęczenia: obwodowy mięśni górnych partii ciała, brak mikrourazów nóg.
+* Koszt dzienny: Kroki łączne 5967, średni stres 34/100, wieczorne Body Battery 32/100.
+* Wpływ bazy wyjściowej (sen/HRV): Bardzo wysoka jakość snu (83/100, głęboki 1h 53m) oraz zbalansowane HRV (49 ms) przy obniżonym RHR (53 bpm) zapewniły doskonałą bazę wypoczynkową. Znaczny spadek Body Battery (-52 pkt) wynika z realizacji popołudniowej jednostki siłowej oraz aktywności w ciągu dnia, co mieści się w normie adaptacyjnej.
 
-### 3. ADAPTACJA TRENINGU NA DZIEŃ: Czwartek, 2026-09-24
+### 3. ADAPTACJA TRENINGU NA DZIEŃ: Piątek, 2026-09-25
 
-* Pierwotny plan na dzień Czwartek, 2026-09-24: Dzień wolny / Regeneracja (lekki spacer, carbo-loading, drenaż nóg).
-* Uwzględnienie notatki biegacza: Biegacz zamienił rest day z 24.09 na 23.09 i wykonał siłownię w środę (23.09). W czwartek (24.09) wypada zatem zaplanowany wcześniej rest day / regeneracja.
+* Pierwotny plan na dzień Piątek, 2026-09-25: Bieg: Rozruch przedstartowy (3.0 km Z2 + 3 x 100 m dynamicznych przebieżek narastająco do tempa ~4:30 min/km z przerwą 100 m w marszu + 1.0 km Z1).
+* Uwzględnienie notatki biegacza: Przeniesienie dnia wolnego z czwartku na środę/zamiana z siłownią wykonana pomyślnie. Brak obciążeń dolnych partii na wczorajszej siłowni pozwala na pełną realizację planu biegowego bez ryzyka kumulacji zmęczenia nóg.
 
-* DECYZJA O KOREKCIE: Potwierdź planowany trening na dzień Czwartek, 2026-09-24 (Dzień wolny / Regeneracja), aby zrekompensować wczorajszą siłownię i odbudować spadek Body Battery przed piątkowym rozruchem.
+* DECYZJA O KOREKCIE: Potwierdź planowany trening na dzień Piątek, 2026-09-25.
 
-* Uzasadnienie fizjologiczne: Wieczorny spadek Body Battery do 24/100 oraz wykonana w środę siłownia wymagają bezwzględnego odciążenia aparatu ruchu i układu nerwowego w czwartek, aby umożliwić superkompensację glikogenu i uniknąć mikrourazów przed niedzielnym maratonem.
-* ROZPISKA NA DZIEŃ Czwartek, 2026-09-24:
-* Rest Day: Dzień wolny od biegu i siłowni. Lekki spacer w celu podtrzymania minimalnego limitu 10 000 kroków dziennie na płaskim terenie. Rozpoczęcie intensywnego carbo-loadingu (7-8g węglowodanów na kg masy ciała) oraz drenaż ułożeniowy nóg (leżenie z nogami uniesionymi 90 stopni na ścianie przez 15 minut).
-* Wytyczne regeneracyjne na noc: Suplementacja elektrolitami, nawodnienie minimum 3 l płynów, priorytetowe wydłużenie snu nocnego (cel: min. 8 h) w celu podbicia HRV i odbudowy zasobów glikogenowych.
+* Uzasadnienie fizjologiczne: Wczorajsza siłownia dotyczyła wyłącznie górnych partii ciała, oszczędzając całkowicie aparat ruchu kończyn dolnych. Parametry regeneracyjne (stabilne HRV, niski RHR) potwierdzają gotowość układu nerwowo-mięśniowego do przeprowadzenia krótkiego rozruchu z elementami potencjacji.
+
+* ROZPISKA NA DZIEŃ Piątek, 2026-09-25:
+* Rozgrzewka: 3.0 km truchtu w strefie Z2 (<148 bpm).
+* Część Główna: 3 x 100 m dynamicznych przebieżek (narastająco do tempa ~4:30 min/km, tętno pod koniec Z4), z przerwą 100 m w marszu do pełnego wypoczynku.
+* Schłodzenie: 1.0 km bardzo spokojnego truchtu w strefie Z1 (<123 bpm).
+* Wytyczne regeneracyjne na noc: Utrzymanie wysokiego spożycia płynów z elektrolitami oraz kontynuacja strategii carbo-loadingu (węglowodany złożone) w celu pełnego wysycenia glikogenu przed niedzielnym startem. Priorytet to min. 8 godzin snu.

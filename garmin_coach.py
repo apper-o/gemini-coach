@@ -12,45 +12,56 @@ from dotenv import load_dotenv
 
 from send_telegram import fetch_recent_telegram_messages, save_telegram_state
 
-# Załadowanie zmiennych z pliku .env
+# Załadowanie zmiennych z pliku .env.
 load_dotenv()
-debug = os.getenv("DEBUG", "True").lower() in ["true", "1"]
 
-# Inicjalizacja loggera
+# Inicjalizacja loggera.
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
 
-# ==================== STAŁE GLOBALNE ====================
+# Stałe globalne.
 NO_DATA = "Brak danych"
 DAYS_PL = ["Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota", "Niedziela"]
-
 INPUT_DIR = "input"
 OUTPUT_DIR = "output"
 PROMPTS_DIR = "prompts"
 HISTORY_DIR = "trainings_history"
 
-# Konfiguracja modeli Gemini z .env (wymagana lista kaskadowa oddzielona przecinkami: główny -> zapasowe)
-env_models = os.getenv("GEMINI_MODELS")
-if not env_models or not env_models.strip():
-    logger.error(
-        "Brak zdefiniowanych modeli Gemini w pliku .env! "
-        "Zdefiniuj zmienną GEMINI_MODELS (np. GEMINI_MODELS=\"gemini-3.5-flash,gemini-3.5-flash-lite,gemini-3.0-flash-lite\")."
-    )
-    sys.exit(1)
+def get_gemini_models():
+    """
+    Wczytuje i waliduje listę modeli Gemini ze zmiennej środowiskowej GEMINI_MODELS.
+    Zwraca listę nazw modeli uporządkowaną według priorytetu.
+    """
+    env_models = os.getenv("GEMINI_MODELS")
+    if not env_models or not env_models.strip():
+        logger.error(
+            "Brak zdefiniowanych modeli Gemini w pliku .env! "
+            "Zdefiniuj zmienną GEMINI_MODELS (np. GEMINI_MODELS=\"gemini-3.5-flash,gemini-3.5-flash-lite,gemini-3.0-flash-lite\")."
+        )
+        sys.exit(1)
 
-GEMINI_MODELS_CASCADE = [m.strip() for m in env_models.split(",") if m.strip()]
-if not GEMINI_MODELS_CASCADE:
-    logger.error("Zmienna GEMINI_MODELS w pliku .env jest pusta lub nie zawiera poprawnych nazw modeli!")
-    sys.exit(1)
+    models = [m.strip() for m in env_models.split(",") if m.strip()]
+    if not models:
+        logger.error(
+            "Zmienna GEMINI_MODELS w pliku .env jest pusta lub nie zawiera poprawnych nazw modeli! "
+            "Zapisz nazwy w formacie: GEMINI_MODELS=\"gemini-3.5-flash,gemini-3.5-flash-lite,gemini-3.0-flash-lite\"."
+        )
+        sys.exit(1)
+
+    return models
 
 
-def send_gemini_prompt_with_fallback(client, prompt, models=None):
+def send_gemini_prompt_with_fallback(client, prompt, models=None, debug=False):
     """
     Wysyła prompt do Gemini z automatycznym mechanizmem fallbacku (kaskada modeli).
     Jeśli dany model jest przeciążony (429, 503, high demand), automatycznie przełącza na kolejny model w kaskadzie.
     """
-    if models is None:
-        models = GEMINI_MODELS_CASCADE
+    if debug:
+        with open("debug_log.md", "w", encoding="utf-8") as f_debug:
+            f_debug.write(prompt + "\n")
+
+    if not models:
+        models = get_gemini_models()
 
     last_error = None
     for idx, model_name in enumerate(models, 1):
@@ -549,7 +560,7 @@ def load_training_config(config_file=os.path.join(INPUT_DIR, "training_config.js
     Jeśli jakiejś wartości brakuje, przyjmuje 'Brak danych' bez wpisywania fikcyjnych danych domyślnych.
     """
     keys = ["goal", "phase", "time_left", "max_hr", "lthr", "z1", "z2", "z3", "z4", "z5"]
-    default_config = {k: "Brak danych" for k in keys}
+    default_config = {k: NO_DATA for k in keys}
 
     os.makedirs(os.path.dirname(config_file), exist_ok=True)
     if not os.path.exists(config_file):
@@ -568,7 +579,7 @@ def load_training_config(config_file=os.path.join(INPUT_DIR, "training_config.js
             merged.update(user_config)
             for k, v in merged.items():
                 if v is None or (isinstance(v, str) and (not v.strip() or v.strip().lower() in ["nieznany", "brak"])):
-                    merged[k] = "Brak danych"
+                    merged[k] = NO_DATA
             return merged
     except Exception as e:
         logger.warning(f"Błąd odczytu {config_file}: {e}. Używam pustej konfiguracji.")
@@ -626,6 +637,19 @@ def clear_user_note(note_file=None):
         logger.warning(f"Nie udało się wyczyścić pliku notatki {note_file}: {e}")
 
 
+def load_weekly_plan(weekly_plan_file):
+    """
+    Wczytuje treść planu tygodniowego, jeśli plik istnieje.
+    """
+    if os.path.exists(weekly_plan_file):
+        try:
+            with open(weekly_plan_file, "r", encoding="utf-8") as wf:
+                return wf.read()
+        except Exception as e:
+            logger.warning(f"Nie udało się odczytać planu tygodniowego z {weekly_plan_file}: {e}")
+    return None
+
+
 
 def load_strength_routines(file_path=None):
     """
@@ -668,13 +692,46 @@ def load_prompt_template(filename, **kwargs):
     return template
 
 
+def _extract_exercise_tables(text):
+    """
+    Wyszukuje i wyciąga tabele Markdown zawierające ćwiczenia biegowe (serie, powtórzenia)
+    oraz siłowe (zestawienie ćwiczeń, ciężary, serie, powtórzenia).
+    """
+    lines = text.split("\n")
+    raw_tables = []
+    current_table = []
+
+    for line in lines:
+        stripped = line.strip()
+        if stripped.startswith("|") and stripped.endswith("|") and "|" in stripped[1:]:
+            current_table.append(stripped)
+        else:
+            if current_table:
+                if len(current_table) >= 2 and any("---" in row for row in current_table):
+                    raw_tables.append(current_table)
+                current_table = []
+    if current_table:
+        if len(current_table) >= 2 and any("---" in row for row in current_table):
+            raw_tables.append(current_table)
+
+    exercise_tables = []
+    for tbl in raw_tables:
+        header = tbl[0].lower()
+        is_strength = any(k in header for k in ["ćwiczen", "obciążen", "rpe", "łańcuch", "partia", "ruch", "exercise", "weight"])
+        is_running = any(k in header for k in ["powtórzen", "seria", "akcent", "odcinek", "reps", "series", "intervals", "laps"])
+        if is_strength or is_running:
+            exercise_tables.append("\n".join(tbl))
+
+    return exercise_tables
+
+
 def load_training_history(history_dir=HISTORY_DIR, days=42, ref_date=None):
     """
     Wczytuje historię treningów z folderu trainings_history z ostatnich 42 dni (6 tygodni)
     z wielopoziomową szczegółowością:
     - Tygodnie 1–4 (Dni 1–28): podsumowanie tygodniowe (kilometry, treningi biegowe, siłowe).
-    - Tydzień 5 (Dni 29–35): zwarty opis wykonanych jednostek (data, typ, dystans, tempo, HR, decyzja trenera).
-    - Tydzień 6 (Dni 36–42, ostatnie 7 dni): pełne szczegółowe analizy dzienne.
+    - Tydzień 5 (Dni 29–35 / 8–14 dni wstecz): zwarty opis wykonanych jednostek wraz z pełnymi tabelami ćwiczeń biegowych i siłowych (bez ucinania serii, powtórzeń i ciężarów).
+    - Tydzień 6 (Dni 36–42 / ostatnie 7 dni): pełne szczegółowe analizy dzienne.
     Dla brakujących dni lub tygodni wstawia 'Brak danych'.
     """
     if not os.path.exists(history_dir):
@@ -792,7 +849,17 @@ def load_training_history(history_dir=HISTORY_DIR, days=42, ref_date=None):
                 dec_m = re.search(r'\*\s*Zgodność z planem:\s*([^\n]+)', c)
             decision_str = dec_m.group(1).strip() if dec_m else "Zgodnie z planem"
 
-            week_5_lines.append(f"- {cur_d.isoformat()} ({day_name}): {workout_desc} | Decyzja trenera: {decision_str}")
+            day_entry = f"- {cur_d.isoformat()} ({day_name}): {workout_desc} | Decyzja trenera: {decision_str}"
+            ex_tables = _extract_exercise_tables(c)
+            if ex_tables:
+                tables_formatted = "\n\n".join(ex_tables)
+                day_entry += f"\n\n  * Tabele ćwiczeń i serii ({cur_d.isoformat()}):\n{tables_formatted}\n"
+            elif is_strength:
+                wb_match = re.search(r'(WARIANT B:[^\n]+\n(?:[^\n]+\n){1,10})', c)
+                if wb_match:
+                    day_entry += f"\n\n  * Realizacja siłowa ({cur_d.isoformat()}):\n{wb_match.group(1).strip()}\n"
+
+            week_5_lines.append(day_entry)
         except Exception as e:
             week_5_lines.append(f"- {cur_d.isoformat()} ({DAYS_PL[cur_d.weekday()]}): {NO_DATA}")
 
@@ -843,16 +910,16 @@ DODATKOWE UWAGI I WIADOMOŚĆ OD BIEGACZA:
 
     return load_prompt_template(
         "weekly_plan.md",
-        goal=training_context.get('goal', 'Brak danych'),
-        phase=training_context.get('phase', 'Brak danych'),
-        time_left=training_context.get('time_left', 'Brak danych'),
-        max_hr=training_context.get('max_hr', 'Brak danych'),
-        lthr=training_context.get('lthr', 'Brak danych'),
-        z1=training_context.get('z1', 'Brak danych'),
-        z2=training_context.get('z2', 'Brak danych'),
-        z3=training_context.get('z3', 'Brak danych'),
-        z4=training_context.get('z4', 'Brak danych'),
-        z5=training_context.get('z5', 'Brak danych'),
+        goal=training_context.get('goal', NO_DATA),
+        phase=training_context.get('phase', NO_DATA),
+        time_left=training_context.get('time_left', NO_DATA),
+        max_hr=training_context.get('max_hr', NO_DATA),
+        lthr=training_context.get('lthr', NO_DATA),
+        z1=training_context.get('z1', NO_DATA),
+        z2=training_context.get('z2', NO_DATA),
+        z3=training_context.get('z3', NO_DATA),
+        z4=training_context.get('z4', NO_DATA),
+        z5=training_context.get('z5', NO_DATA),
         hist_section=hist_section,
         strength_routines=routines_section,
         days_preferences=days_preferences,
@@ -883,16 +950,16 @@ DODATKOWE UWAGI I WIADOMOŚĆ OD BIEGACZA:
 
     return load_prompt_template(
         "weekly_suggestions.md",
-        goal=training_context.get('goal', 'Brak danych'),
-        phase=training_context.get('phase', 'Brak danych'),
-        time_left=training_context.get('time_left', 'Brak danych'),
-        max_hr=training_context.get('max_hr', 'Brak danych'),
-        lthr=training_context.get('lthr', 'Brak danych'),
-        z1=training_context.get('z1', 'Brak danych'),
-        z2=training_context.get('z2', 'Brak danych'),
-        z3=training_context.get('z3', 'Brak danych'),
-        z4=training_context.get('z4', 'Brak danych'),
-        z5=training_context.get('z5', 'Brak danych'),
+        goal=training_context.get('goal', NO_DATA),
+        phase=training_context.get('phase', NO_DATA),
+        time_left=training_context.get('time_left', NO_DATA),
+        max_hr=training_context.get('max_hr', NO_DATA),
+        lthr=training_context.get('lthr', NO_DATA),
+        z1=training_context.get('z1', NO_DATA),
+        z2=training_context.get('z2', NO_DATA),
+        z3=training_context.get('z3', NO_DATA),
+        z4=training_context.get('z4', NO_DATA),
+        z5=training_context.get('z5', NO_DATA),
         hist_section=hist_section,
         note_section=note_section
     )
@@ -1148,6 +1215,49 @@ def _format_acts_archive_blocks(all_stats):
     return acts_archive_blocks
 
 
+def process_and_display_activities(raw_acts, date_str):
+    """
+    Sortuje chronologicznie pobrane aktywności, parsuje ich metryki biomechaniczne
+    oraz wyświetla czytelne podsumowanie w konsoli.
+    Zwraca krotkę: (posortowane_surowe_aktywności, lista_przeparsowanych_statystyk).
+    """
+    sorted_acts = sorted(
+        raw_acts or [],
+        key=lambda x: str(x.get('startTimeLocal') or x.get('startTimeGMT') or x.get('beginTimestamp', 0))
+    )
+    parsed_stats = []
+    for act in sorted_acts:
+        st = parse_activity_biomechanics(act)
+        if st:
+            parsed_stats.append(st)
+
+    if parsed_stats:
+        print("\n" + "="*50)
+        print(f"📊 POBRANO AKTYWNOŚCI DO AUDYTU ({len(parsed_stats)} jednostek w dniu {date_str}):")
+        print("="*50)
+        for idx, act_st in enumerate(parsed_stats):
+            time_str = f" [Start: {act_st['start_time']}]" if act_st.get('start_time') and act_st['start_time'] != NO_DATA else ""
+            prefix = f"Jednostka {idx + 1}{time_str}: " if len(parsed_stats) > 1 else ""
+            print(f"\n▶️ {prefix}{act_st['name']} ({act_st['distance']}, tempo: {act_st['pace']})")
+            for k, v in act_st.items():
+                if k not in ['splits', 'name', 'distance', 'pace', 'start_time']:
+                    print(f"   - {k}: {v}")
+
+    return sorted_acts, parsed_stats
+
+
+def determine_workout_date(default_date, acts, stats):
+    """
+    Ustala datę wykonania treningu na podstawie pierwszej aktywności lub zwraca datę domyślną.
+    """
+    if stats and acts:
+        first_raw_act = acts[0]
+        act_start = first_raw_act.get('startTimeLocal', '')
+        if len(act_start) >= 10:
+            return act_start[:10]
+    return default_date.isoformat()
+
+
 def save_daily_report(workout_date, archive_content, history_dir=HISTORY_DIR, output_dir=OUTPUT_DIR):
     """Zapisuje wygenerowany raport trenera do pliku historii oraz do bieżącego raportu."""
     history_file_path = os.path.join(history_dir, f"{workout_date}.md")
@@ -1187,32 +1297,21 @@ def load_or_fetch_garmin_data(target_date, dump_file, mode="daily"):
     else:
         raw_data = fetch_garmin_data_daily(client, target_date)
 
-    if raw_data is None:
-        logger.error("Nie udało się pobrać danych z serwerów Garmina.")
-        sys.exit(1)
-
     with open(dump_file, "w", encoding="utf-8") as f:
         json.dump(raw_data, f, indent=4, ensure_ascii=False)
     logger.info(f"Surowe dane zapisano pomyślnie do pliku {dump_file}.")
     return raw_data
 
 
-def generate_verification_prompt(planned_workout, activity_stats, garmin_stats=None, weekly_plan_context=None,
-                                 user_profile=None, user_note=None, today_date_str="", yesterday_date_str="",
-                                 tomorrow_date_str="", trening_z_planu=""):
+def generate_verification_prompt(planned_workout, activity_stats, garmin_stats, weekly_plan_context,
+                                 user_profile, user_note, today_date_str, yesterday_date_str,
+                                 tomorrow_date_str, trening_z_planu):
     """
     Tworzy prompt dla Gemini do weryfikacji wykonanego treningu oraz całodziennej/nocnej regeneracji
     oraz adaptacji planu na kolejny dzień.
     """
-    if user_profile is None:
-        user_profile = {
-            "max_hr": NO_DATA,
-            "lthr": NO_DATA,
-            "hr_zones": NO_DATA
-        }
-
     yesterday_section = f"Brak danych z dnia {yesterday_date_str} (dzień wolny)"
-    if garmin_stats and garmin_stats.get('yesterday_training') and garmin_stats.get('yesterday_training') != "Brak aktywności (dzień wolny)":
+    if garmin_stats.get('yesterday_training') and garmin_stats.get('yesterday_training') != "Brak aktywności (dzień wolny)":
         yesterday_section = f"""
 ====================
 KONTEKST DNIA POPRZEDNIEGO ({yesterday_date_str}):
@@ -1229,7 +1328,6 @@ AKTUALNY PLAN TYGODNIOWY (I KOLEJNE ZAPLANOWANE TRENINGI):
 
     note_content = user_note if user_note else f"Brak dodatkowych uwag od biegacza na dzień {today_date_str}."
     activity_section = _format_activity_section(activity_stats, today_date_str)
-    g_stats = garmin_stats or {}
 
     return load_prompt_template(
         "daily_verification.md",
@@ -1245,34 +1343,27 @@ AKTUALNY PLAN TYGODNIOWY (I KOLEJNE ZAPLANOWANE TRENINGI):
         weekly_plan_section=weekly_plan_section,
         user_note=note_content,
         trening_z_planu=trening_z_planu or f"Odszukaj w planie tygodniowym jednostkę na dzień {tomorrow_date_str}",
-        today_steps=g_stats.get('today_steps', NO_DATA),
-        today_stress=g_stats.get('today_stress', NO_DATA),
-        body_battery=g_stats.get('body_battery', NO_DATA),
-        hrv_status=g_stats.get('hrv_status', NO_DATA),
-        rhr=g_stats.get('rhr', NO_DATA),
-        sleep_score=g_stats.get('sleep_score', NO_DATA),
-        deep_sleep=g_stats.get('deep_sleep', NO_DATA),
-        rem_sleep=g_stats.get('rem_sleep', NO_DATA),
-        sleep_insights=g_stats.get('sleep_insights', NO_DATA)
+        today_steps=garmin_stats.get('today_steps', NO_DATA),
+        today_stress=garmin_stats.get('today_stress', NO_DATA),
+        body_battery=garmin_stats.get('body_battery', NO_DATA),
+        hrv_status=garmin_stats.get('hrv_status', NO_DATA),
+        rhr=garmin_stats.get('rhr', NO_DATA),
+        sleep_score=garmin_stats.get('sleep_score', NO_DATA),
+        deep_sleep=garmin_stats.get('deep_sleep', NO_DATA),
+        rem_sleep=garmin_stats.get('rem_sleep', NO_DATA),
+        sleep_insights=garmin_stats.get('sleep_insights', NO_DATA)
     )
 
 
-def generate_yesterday_verification_prompt(planned_workout, activity_stats, garmin_stats=None, weekly_plan_context=None,
-                                          user_profile=None, user_note=None, today_date_str="", yesterday_date_str="",
-                                          day_before_yesterday_date_str="", trening_z_planu=""):
+def generate_yesterday_verification_prompt(planned_workout, activity_stats, garmin_stats, weekly_plan_context,
+                                          user_profile, user_note, today_date_str, yesterday_date_str,
+                                          day_before_yesterday_date_str, trening_z_planu):
     """
     Tworzy prompt dla Gemini w trybie 'yesterday' do audytu wczorajszego treningu,
     oceny regeneracji z minionej nocy (sen wczoraj->dziś) oraz natychmiastowej adaptacji planu na dzień dzisiejszy.
     """
-    if user_profile is None:
-        user_profile = {
-            "max_hr": NO_DATA,
-            "lthr": NO_DATA,
-            "hr_zones": NO_DATA
-        }
-
     day_before_yesterday_section = f"Brak danych z dnia {day_before_yesterday_date_str} (dzień wolny)"
-    if garmin_stats and garmin_stats.get('day_before_yesterday_training') and garmin_stats.get('day_before_yesterday_training') != "Brak aktywności (dzień wolny)":
+    if garmin_stats.get('day_before_yesterday_training') and garmin_stats.get('day_before_yesterday_training') != "Brak aktywności (dzień wolny)":
         day_before_yesterday_section = f"""
 ====================
 KONTEKST DNIA PRZEDWCZORAJSZEGO ({day_before_yesterday_date_str}):
@@ -1289,7 +1380,6 @@ AKTUALNY PLAN TYGODNIOWY (I KOLEJNE ZAPLANOWANE TRENINGI):
 
     note_content = user_note if user_note else f"Brak dodatkowych uwag od biegacza na dzień dzisiejszy ({today_date_str}) ani odnośnie wczorajszych jednostek."
     activity_section = _format_activity_section(activity_stats, yesterday_date_str)
-    g_stats = garmin_stats or {}
 
     return load_prompt_template(
         "yesterday_verification.md",
@@ -1301,16 +1391,16 @@ AKTUALNY PLAN TYGODNIOWY (I KOLEJNE ZAPLANOWANE TRENINGI):
         day_before_yesterday_date_str=day_before_yesterday_date_str,
         planned_workout=planned_workout or f'Brak sztywnego planu na dzień {yesterday_date_str}',
         activity_section=activity_section,
-        yesterday_steps=g_stats.get('yesterday_steps', NO_DATA),
-        yesterday_stress=g_stats.get('yesterday_stress', NO_DATA),
-        yesterday_body_battery=g_stats.get('yesterday_body_battery', NO_DATA),
-        hrv_status=g_stats.get('hrv_status', NO_DATA),
-        rhr=g_stats.get('rhr', NO_DATA),
-        sleep_score=g_stats.get('sleep_score', NO_DATA),
-        deep_sleep=g_stats.get('deep_sleep', NO_DATA),
-        rem_sleep=g_stats.get('rem_sleep', NO_DATA),
-        sleep_insights=g_stats.get('sleep_insights', NO_DATA),
-        morning_body_battery=g_stats.get('morning_body_battery', NO_DATA),
+        yesterday_steps=garmin_stats.get('yesterday_steps', NO_DATA),
+        yesterday_stress=garmin_stats.get('yesterday_stress', NO_DATA),
+        yesterday_body_battery=garmin_stats.get('yesterday_body_battery', NO_DATA),
+        hrv_status=garmin_stats.get('hrv_status', NO_DATA),
+        rhr=garmin_stats.get('rhr', NO_DATA),
+        sleep_score=garmin_stats.get('sleep_score', NO_DATA),
+        deep_sleep=garmin_stats.get('deep_sleep', NO_DATA),
+        rem_sleep=garmin_stats.get('rem_sleep', NO_DATA),
+        sleep_insights=garmin_stats.get('sleep_insights', NO_DATA),
+        morning_body_battery=garmin_stats.get('morning_body_battery', NO_DATA),
         day_before_yesterday_section=day_before_yesterday_section,
         weekly_plan_section=weekly_plan_section,
         user_note=note_content,
@@ -1318,7 +1408,7 @@ AKTUALNY PLAN TYGODNIOWY (I KOLEJNE ZAPLANOWANE TRENINGI):
     )
 
 
-def run_suggest_mode(client, training_context, history_context, user_note, preferences_file, note_file=None, new_tg_state=None, debug=False):
+def run_suggest_mode(client, training_context, history_context, user_note, preferences_file, debug=False, models=None):
     """Tryb 1: Generowanie sugestii typów treningów na tydzień."""
     print("\n" + "="*60)
     print("💡 TRYB SUGESTII TYPÓW TRENINGÓW NA TYDZIEŃ (GEMINI COACH) 💡")
@@ -1331,16 +1421,13 @@ def run_suggest_mode(client, training_context, history_context, user_note, prefe
         user_note=user_note
     )
 
-    if debug:
-        with open("debug_log.md", "w", encoding="utf-8") as f_debug:
-            f_debug.write(suggest_prompt + "\n")
-
+    models_info = f" (Kaskada: {', '.join(models)})" if models else ""
     print("\n" + "="*50)
-    print(f"WYSYŁANIE ZAPYTANIA DO GEMINI (Kaskada: {', '.join(GEMINI_MODELS_CASCADE)})...")
+    print(f"WYSYŁANIE ZAPYTANIA DO GEMINI{models_info}...")
     print("="*50)
 
     try:
-        response, used_model = send_gemini_prompt_with_fallback(client, suggest_prompt)
+        response, used_model = send_gemini_prompt_with_fallback(client, suggest_prompt, models=models, debug=debug)
 
         print("\n💡 PROPONOWANY PODZIAŁ TYPÓW TRENINGU NA TEN TYDZIEŃ 💡\n")
         print(response.text)
@@ -1354,16 +1441,12 @@ def run_suggest_mode(client, training_context, history_context, user_note, prefe
         print(f"\n✅ Zapisano propozycję do pliku: {preferences_file}")
         print(f"👉 Jeśli chcesz coś zmienić, wyedytuj '{preferences_file}', a następnie uruchom:")
         print("   python garmin_coach.py week")
-
-        if new_tg_state and save_telegram_state:
-            save_telegram_state(new_tg_state)
-        clear_user_note(note_file)
     except Exception as e:
         logger.error(f"Wystąpił błąd podczas generowania sugestii: {e}")
         sys.exit(1)
 
 
-def run_week_mode(client, training_context, history_context, user_note, preferences_file, weekly_plan_file, strength_routines_file, note_file=None, new_tg_state=None, debug=False):
+def run_week_mode(client, training_context, history_context, user_note, preferences_file, weekly_plan_file, strength_routines_file, debug=False, models=None):
     """Tryb 2: Planowanie całego tygodnia treningowego."""
     print("\n" + "="*60)
     print("🗓️  TRYB PLANOWANIA TYGODNIOWEGO (GEMINI COACH) 🗓️")
@@ -1408,16 +1491,13 @@ def run_week_mode(client, training_context, history_context, user_note, preferen
         strength_routines=strength_routines
     )
 
-    if debug:
-        with open("debug_log.md", "w", encoding="utf-8") as f_debug:
-            f_debug.write(week_prompt + "\n")
-
+    models_info = f" (Kaskada: {', '.join(models)})" if models else ""
     print("\n" + "="*50)
-    print(f"WYSYŁANIE PLANU DO GEMINI (Kaskada: {', '.join(GEMINI_MODELS_CASCADE)})...")
+    print(f"WYSYŁANIE PLANU DO GEMINI{models_info}...")
     print("="*50)
 
     try:
-        response, used_model = send_gemini_prompt_with_fallback(client, week_prompt)
+        response, used_model = send_gemini_prompt_with_fallback(client, week_prompt, models=models, debug=debug)
 
         print("\n🏆 ROZPISKA PLANU NA CAŁY TYDZIEŃ OD TRENERA 🏆\n")
         print(response.text)
@@ -1426,16 +1506,12 @@ def run_week_mode(client, training_context, history_context, user_note, preferen
             wf.write(response.text)
         logger.info(f"Plan tygodniowy został zapisany do pliku: {weekly_plan_file}")
         print(f"\n✅ Zapisano plan do: {weekly_plan_file}. Będzie on podstawą do codziennej weryfikacji i adaptacji!")
-
-        if new_tg_state and save_telegram_state:
-            save_telegram_state(new_tg_state)
-        clear_user_note(note_file)
     except Exception as e:
         logger.error(f"Wystąpił błąd podczas generowania planu tygodniowego: {e}")
         sys.exit(1)
 
 
-def run_daily_mode(client, today, dump_file, weekly_plan_file, user_profile, user_note, note_file=None, new_tg_state=None, debug=False):
+def run_daily_mode(client, today, dump_file, weekly_plan_file, user_profile, user_note, debug=False, models=None):
     """Tryb 3: Codzienna weryfikacja i adaptacja bieżącego dnia."""
     yesterday = today - datetime.timedelta(days=1)
     tomorrow = today + datetime.timedelta(days=1)
@@ -1452,38 +1528,15 @@ def run_daily_mode(client, today, dump_file, weekly_plan_file, user_profile, use
     garmin_stats = parse_garmin_data(raw_data)
 
     # 2. Wczytujemy plan tygodniowy, jeśli istnieje
-    weekly_plan_content = None
-    if os.path.exists(weekly_plan_file):
-        try:
-            with open(weekly_plan_file, "r", encoding="utf-8") as wf:
-                weekly_plan_content = wf.read()
-        except Exception:
-            pass
+    weekly_plan_content = load_weekly_plan(weekly_plan_file)
 
-    # 3. Parsujemy dzisiejsze aktywności
-    today_acts = raw_data.get('today', {}).get('activities', [])
-    today_acts = sorted(
-        today_acts,
-        key=lambda x: str(x.get('startTimeLocal') or x.get('startTimeGMT') or x.get('beginTimestamp', 0))
+    # 3. Parsujemy i wyświetlamy dzisiejsze aktywności
+    today_acts, all_today_stats = process_and_display_activities(
+        raw_data.get('today', {}).get('activities', []),
+        today_date_str
     )
-    all_today_stats = []
-    for act in today_acts:
-        st = parse_activity_biomechanics(act)
-        if st:
-            all_today_stats.append(st)
 
     if all_today_stats:
-        print("\n" + "="*50)
-        print(f"📊 POBRANO AKTYWNOŚCI DO AUDYTU ({len(all_today_stats)} jednostek w dniu {today_date_str}):")
-        print("="*50)
-        for idx, act_st in enumerate(all_today_stats):
-            time_str = f" [Start: {act_st['start_time']}]" if act_st.get('start_time') and act_st['start_time'] != NO_DATA else ""
-            prefix = f"Jednostka {idx + 1}{time_str}: " if len(all_today_stats) > 1 else ""
-            print(f"\n▶️ {prefix}{act_st['name']} ({act_st['distance']}, tempo: {act_st['pace']})")
-            for k, v in act_st.items():
-                if k not in ['splits', 'name', 'distance', 'pace', 'start_time']:
-                    print(f"   - {k}: {v}")
-
         planned_workout_desc = (
             f"Założenia na dzień {today_date_str} według załączonego planu tygodniowego. "
             f"W dniu {today_date_str} zarejestrowano łącznie {len(all_today_stats)} jednostek treningowych. "
@@ -1506,7 +1559,7 @@ def run_daily_mode(client, today, dump_file, weekly_plan_file, user_profile, use
 
     verification_prompt = generate_verification_prompt(
         planned_workout=planned_workout_desc,
-        activity_stats=all_today_stats if all_today_stats else None,
+        activity_stats=all_today_stats,
         garmin_stats=garmin_stats,
         weekly_plan_context=weekly_plan_content,
         user_profile=user_profile,
@@ -1517,50 +1570,27 @@ def run_daily_mode(client, today, dump_file, weekly_plan_file, user_profile, use
         trening_z_planu=trening_z_planu
     )
 
-    if debug:
-        with open("debug_log.md", "w", encoding="utf-8") as f_debug:
-            f_debug.write(verification_prompt + "\n")
-
+    models_info = f" (Kaskada: {', '.join(models)})" if models else ""
     print("\n" + "="*50)
-    print(f"WYSYŁANIE RAPORTU DO GEMINI (Kaskada: {', '.join(GEMINI_MODELS_CASCADE)})...")
+    print(f"WYSYŁANIE RAPORTU DO GEMINI{models_info}...")
     print("="*50)
 
     try:
-        response, used_model = send_gemini_prompt_with_fallback(client, verification_prompt)
+        response, used_model = send_gemini_prompt_with_fallback(client, verification_prompt, models=models, debug=debug)
 
         print(f"\n🏆 RAPORT TRENERSKI I ADAPTACJA NA DZIEŃ {tomorrow_date_str} 🏆\n")
         print(response.text)
 
-        workout_date = today.isoformat()
-        if all_today_stats and today_acts:
-            first_raw_act = today_acts[0]
-            act_start = first_raw_act.get('startTimeLocal', '')
-            if len(act_start) >= 10:
-                workout_date = act_start[:10]
+        workout_date = determine_workout_date(today, today_acts, all_today_stats)
 
         if all_today_stats:
-            acts_archive_blocks = _format_acts_archive_blocks(all_today_stats)
-            archive_content = f"""# TRENING Z DNIA: {workout_date} ({today_date_str})
-Liczba zarejestrowanych jednostek: {len(all_today_stats)}
-
-## Biometria regeneracyjna i bilans dnia ({today_date_str}):
-- HRV (miniona noc): {garmin_stats.get('hrv_status')}
-- RHR (miniona noc): {garmin_stats.get('rhr')}
-- Sen (miniona noc): {garmin_stats.get('sleep_score')} (Głęboki: {garmin_stats.get('deep_sleep')}, REM: {garmin_stats.get('rem_sleep')})
-- Wnioski o śnie: {garmin_stats.get('sleep_insights')}
-- Body Battery: {garmin_stats.get('body_battery')}
-- Całodzienny stres w dniu {today_date_str}: {garmin_stats.get('today_stress')}
-- Kroki w dniu {today_date_str} (cały dzień): {garmin_stats.get('today_steps')}
-
-## Zarejestrowane aktywności:
-{chr(10).join(acts_archive_blocks)}
-
-## Ocena trenera i adaptacja na dzień {tomorrow_date_str}:
-{response.text}
-"""
+            header = f"# TRENING Z DNIA: {workout_date} ({today_date_str})\nLiczba zarejestrowanych jednostek: {len(all_today_stats)}"
+            acts_part = f"\n## Zarejestrowane aktywności:\n{chr(10).join(_format_acts_archive_blocks(all_today_stats))}\n"
         else:
-            archive_content = f"""# DZIEŃ WOLNY / REST DAY: {workout_date} ({today_date_str})
-Aktywność: Brak biegu (Regeneracja / Odpoczynek)
+            header = f"# DZIEŃ WOLNY / REST DAY: {workout_date} ({today_date_str})\nAktywność: Brak biegu (Regeneracja / Odpoczynek)"
+            acts_part = ""
+
+        archive_content = f"""{header}
 
 ## Biometria regeneracyjna i bilans dnia ({today_date_str}):
 - HRV (miniona noc): {garmin_stats.get('hrv_status')}
@@ -1570,21 +1600,17 @@ Aktywność: Brak biegu (Regeneracja / Odpoczynek)
 - Body Battery: {garmin_stats.get('body_battery')}
 - Całodzienny stres w dniu {today_date_str}: {garmin_stats.get('today_stress')}
 - Kroki w dniu {today_date_str} (cały dzień): {garmin_stats.get('today_steps')}
-
+{acts_part}
 ## Ocena trenera i adaptacja na dzień {tomorrow_date_str}:
 {response.text}
 """
         save_daily_report(workout_date, archive_content)
-
-        if new_tg_state and save_telegram_state:
-            save_telegram_state(new_tg_state)
-        clear_user_note(note_file)
     except Exception as e:
         logger.error(f"Wystąpił błąd podczas weryfikacji i adaptacji: {e}")
         sys.exit(1)
 
 
-def run_yesterday_mode(client, today, dump_file, weekly_plan_file, user_profile, user_note, note_file=None, new_tg_state=None, debug=False):
+def run_yesterday_mode(client, today, dump_file, weekly_plan_file, user_profile, user_note, debug=False, models=None):
     """Tryb 4: Zastępcza weryfikacja dnia wczorajszego i adaptacja na dziś."""
     yesterday = today - datetime.timedelta(days=1)
     day_before_yesterday = yesterday - datetime.timedelta(days=1)
@@ -1601,38 +1627,15 @@ def run_yesterday_mode(client, today, dump_file, weekly_plan_file, user_profile,
     garmin_stats = parse_garmin_data_yesterday(raw_data)
 
     # 2. Wczytujemy plan tygodniowy, jeśli istnieje
-    weekly_plan_content = None
-    if os.path.exists(weekly_plan_file):
-        try:
-            with open(weekly_plan_file, "r", encoding="utf-8") as wf:
-                weekly_plan_content = wf.read()
-        except Exception:
-            pass
+    weekly_plan_content = load_weekly_plan(weekly_plan_file)
 
-    # 3. Parsujemy wczorajsze aktywności (podlegające audytowi)
-    yesterday_acts = raw_data.get('yesterday', {}).get('activities', [])
-    yesterday_acts = sorted(
-        yesterday_acts,
-        key=lambda x: str(x.get('startTimeLocal') or x.get('startTimeGMT') or x.get('beginTimestamp', 0))
+    # 3. Parsujemy i wyświetlamy wczorajsze aktywności (podlegające audytowi)
+    yesterday_acts, all_yesterday_stats = process_and_display_activities(
+        raw_data.get('yesterday', {}).get('activities', []),
+        yesterday_date_str
     )
-    all_yesterday_stats = []
-    for act in yesterday_acts:
-        st = parse_activity_biomechanics(act)
-        if st:
-            all_yesterday_stats.append(st)
 
     if all_yesterday_stats:
-        print("\n" + "="*50)
-        print(f"📊 POBRANO AKTYWNOŚCI DO AUDYTU ({len(all_yesterday_stats)} jednostek w dniu {yesterday_date_str}):")
-        print("="*50)
-        for idx, act_st in enumerate(all_yesterday_stats):
-            time_str = f" [Start: {act_st['start_time']}]" if act_st.get('start_time') and act_st['start_time'] != NO_DATA else ""
-            prefix = f"Jednostka {idx + 1}{time_str}: " if len(all_yesterday_stats) > 1 else ""
-            print(f"\n▶️ {prefix}{act_st['name']} ({act_st['distance']}, tempo: {act_st['pace']})")
-            for k, v in act_st.items():
-                if k not in ['splits', 'name', 'distance', 'pace', 'start_time']:
-                    print(f"   - {k}: {v}")
-
         planned_workout_desc = (
             f"Założenia na dzień wczorajszy ({yesterday_date_str}) według załączonego planu tygodniowego. "
             f"W dniu {yesterday_date_str} zarejestrowano łącznie {len(all_yesterday_stats)} jednostek treningowych. "
@@ -1655,7 +1658,7 @@ def run_yesterday_mode(client, today, dump_file, weekly_plan_file, user_profile,
 
     yesterday_prompt = generate_yesterday_verification_prompt(
         planned_workout=planned_workout_desc,
-        activity_stats=all_yesterday_stats if all_yesterday_stats else None,
+        activity_stats=all_yesterday_stats,
         garmin_stats=garmin_stats,
         weekly_plan_context=weekly_plan_content,
         user_profile=user_profile,
@@ -1666,53 +1669,27 @@ def run_yesterday_mode(client, today, dump_file, weekly_plan_file, user_profile,
         trening_z_planu=trening_z_planu
     )
 
-    if debug:
-        with open("debug_log.md", "w", encoding="utf-8") as f_debug:
-            f_debug.write(yesterday_prompt + "\n")
-
+    models_info = f" (Kaskada: {', '.join(models)})" if models else ""
     print("\n" + "="*50)
-    print(f"WYSYŁANIE RAPORTU DO GEMINI (Kaskada: {', '.join(GEMINI_MODELS_CASCADE)})...")
+    print(f"WYSYŁANIE RAPORTU DO GEMINI{models_info}...")
     print("="*50)
 
     try:
-        response, used_model = send_gemini_prompt_with_fallback(client, yesterday_prompt)
+        response, used_model = send_gemini_prompt_with_fallback(client, yesterday_prompt, models=models, debug=debug)
 
         print(f"\n🏆 RAPORT TRENERSKI (AUDYT DNIA WCZORAJSZEGO) I ADAPTACJA NA DZIŚ ({today_date_str}) 🏆\n")
         print(response.text)
 
-        workout_date = yesterday.isoformat()
-        if all_yesterday_stats and yesterday_acts:
-            first_raw_act = yesterday_acts[0]
-            act_start = first_raw_act.get('startTimeLocal', '')
-            if len(act_start) >= 10:
-                workout_date = act_start[:10]
+        workout_date = determine_workout_date(yesterday, yesterday_acts, all_yesterday_stats)
 
         if all_yesterday_stats:
-            acts_archive_blocks = _format_acts_archive_blocks(all_yesterday_stats)
-            archive_content = f"""# TRENING Z DNIA: {workout_date} ({yesterday_date_str}) [TRYB YESTERDAY]
-Liczba zarejestrowanych jednostek: {len(all_yesterday_stats)}
-
-## Bilans wczorajszego dnia ({yesterday_date_str}):
-- Wczorajsze kroki: {garmin_stats.get('yesterday_steps')}
-- Średni stres wczoraj: {garmin_stats.get('yesterday_stress')}
-- Body Battery pod koniec wczorajszego dnia: {garmin_stats.get('yesterday_body_battery')}
-
-## Biometria regeneracyjna z minionej nocy (sen przed dniem {today_date_str}):
-- HRV (miniona noc): {garmin_stats.get('hrv_status')}
-- RHR (miniona noc): {garmin_stats.get('rhr')}
-- Sen (miniona noc): {garmin_stats.get('sleep_score')} (Głęboki: {garmin_stats.get('deep_sleep')}, REM: {garmin_stats.get('rem_sleep')})
-- Wnioski o śnie: {garmin_stats.get('sleep_insights')}
-- Poranne Body Battery na start dnia {today_date_str}: {garmin_stats.get('morning_body_battery')}
-
-## Zarejestrowane aktywności wczoraj:
-{chr(10).join(acts_archive_blocks)}
-
-## Ocena trenera i adaptacja na dzień dzisiejszy ({today_date_str}):
-{response.text}
-"""
+            header = f"# TRENING Z DNIA: {workout_date} ({yesterday_date_str}) [TRYB YESTERDAY]\nLiczba zarejestrowanych jednostek: {len(all_yesterday_stats)}"
+            acts_part = f"\n## Zarejestrowane aktywności wczoraj:\n{chr(10).join(_format_acts_archive_blocks(all_yesterday_stats))}\n"
         else:
-            archive_content = f"""# DZIEŃ WOLNY / REST DAY: {workout_date} ({yesterday_date_str}) [TRYB YESTERDAY]
-Aktywność: Brak biegu (Regeneracja / Odpoczynek)
+            header = f"# DZIEŃ WOLNY / REST DAY: {workout_date} ({yesterday_date_str}) [TRYB YESTERDAY]\nAktywność: Brak biegu (Regeneracja / Odpoczynek)"
+            acts_part = ""
+
+        archive_content = f"""{header}
 
 ## Bilans wczorajszego dnia ({yesterday_date_str}):
 - Wczorajsze kroki: {garmin_stats.get('yesterday_steps')}
@@ -1725,49 +1702,111 @@ Aktywność: Brak biegu (Regeneracja / Odpoczynek)
 - Sen (miniona noc): {garmin_stats.get('sleep_score')} (Głęboki: {garmin_stats.get('deep_sleep')}, REM: {garmin_stats.get('rem_sleep')})
 - Wnioski o śnie: {garmin_stats.get('sleep_insights')}
 - Poranne Body Battery na start dnia {today_date_str}: {garmin_stats.get('morning_body_battery')}
-
+{acts_part}
 ## Ocena trenera i adaptacja na dzień dzisiejszy ({today_date_str}):
 {response.text}
 """
         save_daily_report(workout_date, archive_content)
-
-        if new_tg_state and save_telegram_state:
-            save_telegram_state(new_tg_state)
-        clear_user_note(note_file)
     except Exception as e:
         logger.error(f"Wystąpił błąd podczas weryfikacji i adaptacji: {e}")
         sys.exit(1)
 
+def check_mode_compatibility(raw_mode):
+    '''
+    Sprawdza czy przekazany tryb zgadza się z dostępnymi.
+    '''
+    mode = (raw_mode or "daily").lower()
+    if mode not in ["daily", "yesterday", "week", "suggest"]:
+        logger.error(
+            f"Nieprawidłowy tryb działania: '{raw_mode}'. "
+            f"Dozwolone tryby to: daily, yesterday, week, suggest."
+        )
+        sys.exit(1)
+    return mode
 
-def main():
-    parser = argparse.ArgumentParser(description="Garmin Coach - Asystent Treningowy Gemini")
-    parser.add_argument("mode", nargs="?", default="daily", help="Tryb działania: daily, yesterday, week, suggest")
-    parser.add_argument("--debug", action="store_true", help="Włącz tryb debugowania (zapis promptów do debug_log.md)")
-    parser.add_argument("--date", type=str, default=None, help="Opcjonalna data referencyjna w formacie YYYY-MM-DD")
-    args = parser.parse_args()
 
-    raw_mode = (args.mode or "daily").lower()
-    if raw_mode in ["suggest", "sugestia", "sugeruj", "propozycja"]:
-        mode = "suggest"
-    elif raw_mode in ["week", "tydzien", "plan-tygodnia", "weekly"]:
-        mode = "week"
-    elif raw_mode == "yesterday":
-        mode = "yesterday"
-    else:
-        mode = "daily"
-
-    debug = args.debug or os.getenv("DEBUG", "False").lower() in ["true", "1"]
-
-    if args.date:
+def parse_date(date_str = None):
+    '''
+    Weryfikuje poprawność i zwraca datę. 
+    '''
+    if date_str:
         try:
-            today = datetime.date.fromisoformat(args.date)
+            return datetime.date.fromisoformat(date_str)
         except ValueError:
-            logger.error(f"Nieprawidłowy format daty: {args.date}. Użyj formatu YYYY-MM-DD.")
+            logger.error(f"Nieprawidłowy format daty: {date_str}. Użyj formatu YYYY-MM-DD.")
             sys.exit(1)
     else:
-        today = datetime.date.today()
+        return datetime.date.today()
 
-    # 3. Przygotowanie stałych ścieżek
+
+def prepare_user_note(note_file):
+    """
+    Wczytuje notatkę z pliku oraz integruje opcjonalne najnowsze wiadomości z czatu Telegrama.
+    """
+    user_note = load_user_note(note_file)
+    new_tg_state = None
+
+    try:
+        tg_note, new_tg_state = fetch_recent_telegram_messages()
+        if tg_note:
+            logger.info("Odebrano nową wiadomość z czatu Telegrama.")
+            print("\n" + "="*50)
+            print("📲 ODEBRANO WIADOMOŚĆ Z TELEGRAMA:")
+            print("="*50)
+            print(tg_note)
+            print("="*50 + "\n")
+
+            tg_payload = f"[RAPORT Z TELEGRAMA]:\n{tg_note}"
+            user_note = f"{user_note}\n\n{tg_payload}" if user_note else tg_payload
+    except Exception as e:
+        logger.warning(f"Nie udało się pobrać wiadomości z Telegrama: {e}")
+
+    if user_note:
+        logger.info("Wczytano notatkę do promptu Trenera Gemini.")
+        print(f"📝 Wiadomość dla Trenera Gemini:\n   \"{user_note}\"\n")
+
+    return user_note, new_tg_state
+
+
+def build_user_profile(training_context):
+    """
+    Formatuje profil stref tętna zawodnika do promptu.
+    """
+    return {
+        "max_hr": training_context.get("max_hr", NO_DATA),
+        "lthr": training_context.get("lthr", NO_DATA),
+        "hr_zones": (
+            f"Z1: {training_context.get('z1', NO_DATA)}, "
+            f"Z2: {training_context.get('z2', NO_DATA)}, "
+            f"Z3: {training_context.get('z3', NO_DATA)}, "
+            f"Z4: {training_context.get('z4', NO_DATA)}, "
+            f"Z5: {training_context.get('z5', NO_DATA)}"
+        )
+    }
+
+
+def finish_run(note_file, new_tg_state=None):
+    """
+    Zapisuje zaktualizowany stan Telegrama oraz czyści plik notatki użytkownika po udanym wykonaniu trybu.
+    """
+    if new_tg_state and save_telegram_state:
+        save_telegram_state(new_tg_state)
+    clear_user_note(note_file)
+
+
+def main():
+    # Inicjalizacja parsera.
+    parser = argparse.ArgumentParser(description="Gemini Coach - Asystent Treningowy Gemini")
+    parser.add_argument("mode", nargs="?", default="daily", help="daily, yesterday, week, suggest")
+    parser.add_argument("--debug", action="store_true", help="włącz tryb debugowania (zapis promptów do debug_log.md)")
+    parser.add_argument("--date", type=str, default=None, help="opcjonalna data referencyjna w formacie YYYY-MM-DD")
+    
+    args = parser.parse_args()
+    debug = args.debug
+    mode = check_mode_compatibility(args.mode)
+    today = parse_date(args.date)
+
+    # Przygotowanie stałych ścieżek.
     os.makedirs(INPUT_DIR, exist_ok=True)
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     os.makedirs(PROMPTS_DIR, exist_ok=True)
@@ -1780,62 +1819,38 @@ def main():
     dump_file = os.path.join(INPUT_DIR, "garmin_dump.json")
     strength_routines_file = os.path.join(INPUT_DIR, "strength_routines.md")
 
-    # 4. Sprawdzenie klucza Gemini
+    # Sprawdzenie klucza Gemini i modeli.
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
     if not GEMINI_API_KEY:
         logger.error("Brak klucza GEMINI_API_KEY w pliku .env!")
         sys.exit(1)
 
+    gemini_models = get_gemini_models()
     client = genai.Client(api_key=GEMINI_API_KEY)
 
-    # 5. Wczytanie konfiguracji biegacza i opcjonalnej notatki
+    # Wczytanie konfiguracji biegacza i opcjonalnej notatki.
     training_context = load_training_config(config_file)
-    user_note = load_user_note(note_file)
+    user_note, new_tg_state = prepare_user_note(note_file)
 
-    # Pobranie ewentualnych najświeższych wiadomości/raportów treningowych z Telegrama (np. z Hevy)
-    tg_note = None
-    new_tg_state = None
-    if fetch_recent_telegram_messages:
-        try:
-            tg_note, new_tg_state = fetch_recent_telegram_messages()
-            if tg_note:
-                logger.info("Odebrano nową wiadomość z czatu Telegrama (np. raport Hevy / uwagi).")
-                print("\n" + "="*50)
-                print("📲 ODEBRANO WIADOMOŚĆ Z TELEGRAMA (np. trening Hevy / uwagi):")
-                print("="*50)
-                print(tg_note)
-                print("="*50 + "\n")
-                if user_note:
-                    user_note = f"{user_note}\n\n[RAPORT Z TELEGRAMA / HEVY]:\n{tg_note}"
-                else:
-                    user_note = f"[RAPORT Z TELEGRAMA / HEVY]:\n{tg_note}"
-        except Exception as e:
-            logger.warning(f"Nie udało się pobrać wiadomości z Telegrama: {e}")
-
-    if user_note:
-        logger.info("Wczytano notatkę do promptu Trenera Gemini.")
-        print(f"📝 Wiadomość dla Trenera Gemini:\n   \"{user_note}\"\n")
-
-    # 6. Wczytanie historii treningów z ostatnich 42 dni (Punkt 8 wytycznych)
+    # Wczytanie historii treningów z ostatnich 42 dni.
     history_context = load_training_history(HISTORY_DIR, days=42, ref_date=today)
     if history_context:
         logger.info("Wczytano historię treningów z ostatnich 42 dni (6 tygodni).")
 
     # Profil tętna do prompta
-    user_profile = {
-        "max_hr": training_context.get("max_hr", NO_DATA),
-        "lthr": training_context.get("lthr", NO_DATA),
-        "hr_zones": f"Z1: {training_context.get('z1', NO_DATA)}, Z2: {training_context.get('z2', NO_DATA)}, Z3: {training_context.get('z3', NO_DATA)}, Z4: {training_context.get('z4', NO_DATA)}, Z5: {training_context.get('z5', NO_DATA)}"
-    }
+    user_profile = build_user_profile(training_context)
 
     if mode == "suggest":
-        run_suggest_mode(client, training_context, history_context, user_note, preferences_file, note_file=note_file, new_tg_state=new_tg_state, debug=debug)
+        run_suggest_mode(client, training_context, history_context, user_note, preferences_file, debug=debug, models=gemini_models)
     elif mode == "week":
-        run_week_mode(client, training_context, history_context, user_note, preferences_file, weekly_plan_file, strength_routines_file, note_file=note_file, new_tg_state=new_tg_state, debug=debug)
+        run_week_mode(client, training_context, history_context, user_note, preferences_file, weekly_plan_file, strength_routines_file, debug=debug, models=gemini_models)
     elif mode == "yesterday":
-        run_yesterday_mode(client, today, dump_file, weekly_plan_file, user_profile, user_note, note_file=note_file, new_tg_state=new_tg_state, debug=debug)
-    else:
-        run_daily_mode(client, today, dump_file, weekly_plan_file, user_profile, user_note, note_file=note_file, new_tg_state=new_tg_state, debug=debug)
+        run_yesterday_mode(client, today, dump_file, weekly_plan_file, user_profile, user_note, debug=debug, models=gemini_models)
+    elif mode == "daily":
+        run_daily_mode(client, today, dump_file, weekly_plan_file, user_profile, user_note, debug=debug, models=gemini_models)
+
+    # Sprzątanie i aktualizacja stanu Telegrama
+    finish_run(note_file, new_tg_state)
 
 
 if __name__ == "__main__":
