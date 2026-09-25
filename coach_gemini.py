@@ -42,6 +42,7 @@ from coach_prompts import (
     finish_run,
     _extract_strength_workout_from_note,
     extract_existing_strength_workout,
+    extract_existing_user_note,
 )
 
 # Parsuje .env i zapisuje klucze do pamięci procesu (os.environ).
@@ -343,13 +344,23 @@ def run_daily_mode(client, todays_date, dump_file, weekly_plan_file, user_profil
             print(f"ℹ️  Brak aktywnego planu tygodniowego ({active_weekly_plan_file}).")
             print("   Model przeprowadzi analizę treningu i regeneracji bez odniesienia do założeń tygodnia.")
 
-        # 2. Wykrywamy ewentualny trening siłowy oraz sprawdzamy istnienie wcześniejszej analizy
+        # 2. Sprawdzamy istnienie wcześniejszej analizy oraz zachowujemy jej notatki
         existing_history_file = os.path.join(HISTORY_DIR, f"{audit_date.isoformat()}.md")
         has_existing_analysis = os.path.exists(existing_history_file)
 
         if has_existing_analysis:
             logger.info(f"ℹ️  Wykryto wcześniejszą analizę dla dnia {audit_date.isoformat()} ({existing_history_file}). Zostanie ona zaktualizowana i nadpisana.")
             print(f"ℹ️  Wykryto wcześniejszą analizę z dnia {audit_date_str}. Nowy raport zaktualizuje i nadpisze dotychczasowe podsumowanie.")
+
+            # Odzyskujemy wcześniejsze uwagi biegacza, jeśli nie ma nowej porannej notatki
+            recovered_note = extract_existing_user_note(existing_history_file)
+            if recovered_note:
+                if user_note and recovered_note not in user_note:
+                    user_note = f"{recovered_note}\n\n[NOWA WIADOMOŚĆ PORANNA]:\n{user_note}"
+                    logger.info("📝 Połączono wcześniejszą notatkę z nową wiadomością poranną.")
+                elif not user_note:
+                    user_note = recovered_note
+                    logger.info(f"📝 Zachowano zarejestrowaną we wcześniejszej analizie notatkę biegacza z: {existing_history_file}")
 
         strength_workout = _extract_strength_workout_from_note(user_note)
         if not strength_workout and has_existing_analysis:
@@ -441,6 +452,7 @@ def run_daily_mode(client, todays_date, dump_file, weekly_plan_file, user_profil
             garmin_stats=garmin_stats,
             response_text=response.text,
             strength_workout=strength_workout,
+            user_note=user_note,
             debug=debug
         )
 

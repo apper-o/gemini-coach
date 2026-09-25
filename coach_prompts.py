@@ -215,6 +215,26 @@ def extract_existing_strength_workout(history_file_path):
     return None
 
 
+def extract_existing_user_note(history_file_path):
+    """
+    Jeśli dla danej daty w trainings_history/ istnieje już raport z uwagami biegacza,
+    odzyskuje treść notatki, aby poranny audyt wczorajszego dnia nie utracił komentarza z wieczora.
+    """
+    if not os.path.exists(history_file_path):
+        return None
+    try:
+        with open(history_file_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        match = re.search(r"## Uwagi biegacza \(notatka z Telegrama\):\s*\n(.*?)(?=\n## |\Z)", content, re.DOTALL)
+        if match:
+            extracted = match.group(1).strip()
+            if extracted:
+                return extracted
+    except Exception as e:
+        logger.warning(f"Nie udało się odczytać wcześniejszej notatki z {history_file_path}: {e}")
+    return None
+
+
 def prepare_user_note(note_file=None):
     """
     Wczytuje najnowsze wiadomości i uwagi od biegacza bezpośrednio z czatu Telegrama.
@@ -733,16 +753,17 @@ def save_daily_report(workout_date, archive_content, history_dir=HISTORY_DIR, ou
         logger.warning(f"Nie udało się wygenerować podglądu HTML: {he}")
 
 
-def _build_and_save_daily_archive(mode, workout_date, date_str, next_date_str, all_stats, garmin_stats, response_text, strength_workout=None, debug=False):
+def _build_and_save_daily_archive(mode, workout_date, date_str, next_date_str, all_stats, garmin_stats, response_text, strength_workout=None, user_note=None, debug=False):
     """
     Formatuje i zapisuje raport dzienny do pliku archiwum w trainings_history/.
     Obsługuje zarówno tryb 'today'/'daily' (bieżący dzień) jak i 'yesterday' (audyt wczorajszego dnia),
-    z uwzględnieniem treningów siłowych zgłoszonych poza zegarkiem.
+    z uwzględnieniem treningów siłowych oraz uwag biegacza zgłoszonych przez Telegram.
     """
     is_today = mode in ["today", "daily"]
     tag = "" if is_today else " [TRYB YESTERDAY]"
     acts_title = "Zarejestrowane aktywności" if is_today else "Zarejestrowane aktywności wczoraj"
     strength_part = f"\n### Trening siłowy / uzupełniający (raport z Telegrama):\n{strength_workout}\n" if strength_workout else ""
+    note_part = f"\n## Uwagi biegacza (notatka z Telegrama):\n{user_note}\n" if (user_note and not strength_workout) else ""
 
     if all_stats and strength_workout:
         header = f"# TRENING BIEGOWY + SIŁOWNIA: {workout_date} ({date_str}){tag}\nLiczba zarejestrowanych jednostek biegowych: {len(all_stats)} + Trening siłowy"
@@ -782,7 +803,7 @@ def _build_and_save_daily_archive(mode, workout_date, date_str, next_date_str, a
     archive_content = f"""{header}
 
 {bio_part}
-{acts_part}
+{acts_part}{note_part}
 ## Ocena trenera i adaptacja na dzień {next_date_str}:
 {response_text}
 """
