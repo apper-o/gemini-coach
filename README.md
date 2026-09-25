@@ -56,7 +56,7 @@ Skrypt `coach_gemini.py` przyjmuje jeden pozycyjny argument określający tryb d
 | **`plan`** | **Układanie pełnego planu tygodniowego**: Generuje kompletny 7-dniowy plan treningowy od poniedziałku do niedzieli. Wykorzystuje preferencje z `input/weekly_preferences.md`, profil z `input/training_config.json`, bazę ćwiczeń z `input/strength_routines.md` oraz 42-dniową historię. Zapisuje plan do `output/weekly_plan.md`. |
 
 > [!NOTE]
-> Po każdym pomyślnym wykonaniu dowolnego trybu, zawartość pliku `prompts/user_note.md` jest automatycznie czyszczona, aby jednorazowe notatki nie przechodziły na kolejne dni.
+> Wszelkie uwagi, samopoczucie oraz raporty z treningu siłowego przekazywane są bezpośrednio z czatu **Telegrama**. Po każdym pomyślnym wykonaniu analizy stan przeczytanych wiadomości jest zapisywany w `input/telegram_state.json`, dzięki czemu wiadomości nie są dublowane.
 
 ---
 
@@ -121,7 +121,6 @@ python coach_gemini.py yesterday --date 2026-09-20
 │   ├── weekly_suggestions.md # Szablon prompta dla trybu 'suggest'
 │   ├── weekly_plan.md        # Szablon prompta dla trybu 'plan'
 │   ├── daily_verification.md # Szablon prompta dla trybu 'daily'
-│   ├── yesterday_verification.md # Szablon prompta dla trybu 'yesterday'
-│   └── user_note.md          # Jednorazowa notatka biegacza do trenera (czyszczona po uruchomieniu)
+│   └── yesterday_verification.md # Szablon prompta dla trybu 'yesterday'
 └── trainings_history/        # Archiwum wygenerowanych raportów dziennych (YYYY-MM-DD.md)
 ```

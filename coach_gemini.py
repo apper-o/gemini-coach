@@ -513,7 +513,6 @@ def main():
     preferences_file = os.path.join(INPUT_DIR, "weekly_preferences.md")
     weekly_plan_file = os.path.join(OUTPUT_DIR, "weekly_plan.md")
     config_file = os.path.join(INPUT_DIR, "training_config.json")
-    note_file = os.path.join(PROMPTS_DIR, "user_note.md")
     dump_file = os.path.join(INPUT_DIR, "garmin_dump.json")
     strength_routines_file = os.path.join(INPUT_DIR, "strength_routines.md")
 
@@ -525,9 +524,9 @@ def main():
     gemini_models = get_gemini_models()
     client = genai.Client(api_key=GEMINI_API_KEY)
 
-    # Wczytanie konfiguracji biegacza i opcjonalnej notatki.
+    # Wczytanie konfiguracji biegacza i opcjonalnej notatki z Telegrama.
     training_context = load_training_config(config_file)
-    user_note, new_tg_state = prepare_user_note(note_file)
+    user_note, new_tg_state = prepare_user_note()
 
     # Profil tętna do prompta
     user_profile = build_user_profile(training_context)
@@ -558,7 +557,7 @@ def main():
         run_daily_mode(client, today, dump_file, weekly_plan_file, user_profile, user_note, day=resolved_day, debug=debug, models=gemini_models)
 
     # Sprzątanie i aktualizacja stanu Telegrama
-    finish_run(note_file, new_tg_state, debug=debug)
+    finish_run(new_tg_state, debug=debug)
 
 
 

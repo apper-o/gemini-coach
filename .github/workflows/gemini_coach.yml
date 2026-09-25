@@ -15,11 +15,6 @@ on:
           - today
           - plan
           - suggest
-      user_note:
-        description: 'Opcjonalna notatka/wiadomość dla trenera (np. siłownia, samopoczucie)'
-        required: false
-        default: ''
-        type: string
 
 permissions:
   contents: write
@@ -53,19 +48,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-
-      - name: Przygotowanie notatki użytkownika dla GitHub Actions
-        env:
-          INPUT_USER_NOTE: ${{ github.event.inputs.user_note }}
-        run: |
-          mkdir -p prompts
-          if [ -n "$INPUT_USER_NOTE" ]; then
-            echo "Ustawianie nowej notatki wpisanej w GitHub Actions..."
-            echo "$INPUT_USER_NOTE" > prompts/user_note.md
-          else
-            echo "Brak notatki dla tego uruchomienia – czyszczenie prompts/user_note.md, aby nie używać starej notatki z repozytorium."
-            > prompts/user_note.md
-          fi
 
       - name: Uruchomienie Gemini Coach
         env:

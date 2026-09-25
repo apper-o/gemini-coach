@@ -174,31 +174,25 @@ def clear_user_note(note_file=None):
 def _extract_strength_workout_from_note(note):
     """
     Wykrywa i wyodrębnia raport z treningu siłowego z notatki użytkownika (np. przesłanej przez Telegram).
-    Zwraca wyczyszczony tekst treningu siłowego wraz z ćwiczeniami, seriami i powtórzeniami,
-    lub None jeśli notatka nie zawiera danych treningu siłowego.
+    Sprawdza, czy w pierwszej linijce notatki (lub wiadomości) występuje pojedyncze słowo
+    będące nazwą treningu siłowego: 'upper', 'fbw' lub 'lower'.
+    Zwraca wyczyszczony tekst treningu siłowego lub None, jeśli notatka nie jest treningiem siłowym.
     """
     if not note or not note.strip():
         return None
 
-    strength_keywords = [
-        "siłowni", "siłow", "fbw", "upper", "lower", "push", "pull", "legs",
-        "hevy", "bench press", "squat", "deadlift", "martwy ciąg", "przysiad",
-        "wyciskanie", "podciąganie", "wiosłowanie", "biceps", "triceps", "hantl",
-        "sztang", "ab wheel", "core", "brzuch", "calf raise", "plank"
-    ]
+    # Sprawdzamy poszczególne bloki wiadomości (jeśli wiadomość pochodzi z Telegrama) lub całość notatki
+    blocks = re.split(r'---\s*Treść wiadomości z Telegrama[^\n]*---\s*', note)
+    for block in blocks:
+        cleaned = re.sub(r'\[RAPORT Z TELEGRAMA\]:\s*', '', block).strip()
+        lines = [line.strip() for line in cleaned.splitlines() if line.strip()]
+        if not lines:
+            continue
+        first_line = lines[0].strip(":.,!- #*").lower()
+        if first_line in ["upper", "fbw", "lower"]:
+            return cleaned
 
-    has_strength_kw = any(re.search(rf'\b{kw}', note, re.IGNORECASE) for kw in strength_keywords)
-    has_sets_reps = bool(re.search(r'(\d+\s*[xX*]\s*\d+|\bseri[ae]\b|\bpowtórzen|\b\d+\s*kg\b)', note, re.IGNORECASE))
-
-    if not (has_strength_kw or has_sets_reps):
-        return None
-
-    cleaned = note
-    cleaned = re.sub(r'\[RAPORT Z TELEGRAMA\]:\s*', '', cleaned)
-    cleaned = re.sub(r'---\s*Treść wiadomości z Telegrama[^\n]*---\s*', '', cleaned)
-    cleaned = cleaned.strip()
-
-    return cleaned if cleaned else None
+    return None
 
 
 def extract_existing_strength_workout(history_file_path):
@@ -221,11 +215,12 @@ def extract_existing_strength_workout(history_file_path):
     return None
 
 
-def prepare_user_note(note_file):
+def prepare_user_note(note_file=None):
     """
-    Wczytuje notatkę z pliku oraz integruje opcjonalne najnowsze wiadomości z czatu Telegrama.
+    Wczytuje najnowsze wiadomości i uwagi od biegacza bezpośrednio z czatu Telegrama.
+    Wszelkie notatki do trenera pochodzą wyłącznie z Telegrama.
     """
-    user_note = load_user_note(note_file)
+    user_note = None
     new_tg_state = None
 
     try:
@@ -237,15 +232,13 @@ def prepare_user_note(note_file):
             print("="*50)
             print(tg_note)
             print("="*50 + "\n")
-
-            tg_payload = f"[RAPORT Z TELEGRAMA]:\n{tg_note}"
-            user_note = f"{user_note}\n\n{tg_payload}" if user_note else tg_payload
+            user_note = tg_note
     except Exception as e:
         logger.warning(f"Nie udało się pobrać wiadomości z Telegrama: {e}")
 
     if user_note:
-        logger.info("Wczytano notatkę do promptu Trenera Gemini.")
-        print(f"📝 Wiadomość dla Trenera Gemini:\n   \"{user_note}\"\n")
+        logger.info("Wczytano notatkę z Telegrama do promptu Trenera Gemini.")
+        print(f"📝 Wiadomość dla Trenera Gemini (z Telegrama):\n   \"{user_note}\"\n")
 
     return user_note, new_tg_state
 
@@ -796,17 +789,20 @@ def _build_and_save_daily_archive(mode, workout_date, date_str, next_date_str, a
     save_daily_report(workout_date, archive_content, debug=debug)
 
 
-def finish_run(note_file, new_tg_state=None, debug=False):
+def finish_run(note_file=None, new_tg_state=None, debug=False):
     """
-    Zapisuje zaktualizowany stan Telegrama oraz czyści plik notatki użytkownika po udanym wykonaniu trybu.
-    W trybie debug (debug=True) operacje te są pomijane, aby chronić notatki i stan wiadomości.
+    Zapisuje zaktualizowany stan Telegrama po udanym wykonaniu trybu.
+    W trybie debug (debug=True) operacja ta jest pomijana, aby chronić stan wiadomości.
     """
     if debug:
-        logger.info("[DEBUG] Tryb debugowania aktywny: pominięto czyszczenie notatek i aktualizację stanu Telegrama.")
-        print("\n🛡️  [TRYB DEBUG] Plik notatki (user_note.md) oraz stan Telegrama pozostały nienaruszone.")
+        logger.info("[DEBUG] Tryb debugowania aktywny: pominięto aktualizację stanu Telegrama.")
+        print("\n🛡️  [TRYB DEBUG] Stan Telegrama pozostał nienaruszony.")
         return
+
+    # Obsługa wywołania z dwoma argumentami: finish_run(new_tg_state, debug=debug)
+    if isinstance(note_file, dict) and new_tg_state is None:
+        new_tg_state = note_file
 
     if new_tg_state and save_telegram_state:
         save_telegram_state(new_tg_state)
-    clear_user_note(note_file)
 
