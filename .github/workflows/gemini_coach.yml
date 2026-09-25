@@ -1,21 +1,20 @@
 name: Gemini Coach Automated Run
 
 on:
-  schedule:
-    # Codziennie o 6:42 UTC (8:42 CEST w okresie letnim / 7:42 CET w okresie zimowym)
-    - cron: '42 6 * * *'
+  # Wyzwalanie punktualne z zewnętrznego serwisu (cron-job.org) oraz ręczne przez GitHub UI / API
   workflow_dispatch:
     inputs:
       mode:
         description: 'Wybierz tryb działania Gemini Coach'
         required: true
-        default: 'yesterday'
+        default: 'daily'
         type: choice
         options:
-          - yesterday
-          - week
-          - suggest
           - daily
+          - yesterday
+          - today
+          - plan
+          - suggest
       user_note:
         description: 'Opcjonalna notatka/wiadomość dla trenera (np. siłownia, samopoczucie)'
         required: false
@@ -76,30 +75,23 @@ jobs:
           GEMINI_MODELS: "gemini-3.5-flash,gemini-3.5-flash-lite,gemini-3.0-flash-lite"
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          TARGET_MODE: ${{ github.event.inputs.mode || 'yesterday' }}
+          TARGET_MODE: ${{ github.event.inputs.mode || 'daily' }}
           USE_LOCAL_DATA: "false"
         run: |
           echo "Uruchamianie w trybie: $TARGET_MODE"
-          python garmin_coach.py "$TARGET_MODE"
+          python coach_gemini.py "$TARGET_MODE"
 
       - name: Wysyłka raportu na Telegram
         if: success()
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          if [ -f "output/last_daily_report.md" ]; then
-            python send_telegram.py output/last_daily_report.md
-          elif [ -f "output/weekly_plan.md" ]; then
-            python send_telegram.py output/weekly_plan.md
-          else
-            echo "Brak pliku raportu do wysłania na Telegram."
-          fi
+          echo "Wysyłka raportu na Telegram została zrealizowana bezpośrednio przez coach_gemini.py."
 
       - name: Wyświetlenie raportu w podsumowaniu GitHub Actions (Step Summary)
         if: success()
         run: |
-          if [ -f "output/last_daily_report.md" ]; then
+          if ([ "${{ github.event.inputs.mode }}" = "plan" ] || [ "${{ github.event.inputs.mode }}" = "week" ]) && [ -f "output/weekly_plan.md" ]; then
+            cat output/weekly_plan.md >> $GITHUB_STEP_SUMMARY
+          elif [ -f "output/last_daily_report.md" ]; then
             cat output/last_daily_report.md >> $GITHUB_STEP_SUMMARY
           elif [ -f "output/weekly_plan.md" ]; then
             cat output/weekly_plan.md >> $GITHUB_STEP_SUMMARY
@@ -114,7 +106,7 @@ jobs:
           if git diff --staged --quiet; then
             echo "Brak nowych zmian do zapisania w repozytorium."
           else
-            MODE="${{ github.event.inputs.mode || 'yesterday' }}"
+            MODE="${{ github.event.inputs.mode || 'daily' }}"
             git commit -m "Automatyczny raport Gemini Coach [$MODE] [skip ci]"
             git push
           fi

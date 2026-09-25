@@ -3,3 +3,4 @@ venv/
 __pycache__/
 input/garmin_dump.json
 debug_log.md
+debug/

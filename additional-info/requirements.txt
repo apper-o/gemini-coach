@@ -1,3 +1,0 @@
-garminconnect
-google-genai
-python-dotenv

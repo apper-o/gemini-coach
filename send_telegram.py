@@ -17,7 +17,7 @@ logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
 
 
-def markdown_to_html_doc(md_text, title="Raport Garmin Coach"):
+def markdown_to_html_doc(md_text, title="Raport Coach Gemini"):
     """
     Konwertuje raport w formacie Markdown na pełny, nowoczesny dokument HTML
     zoptymalizowany pod kątem ekranów smartfonów (Dark Mode, responsywne tabele).
@@ -240,6 +240,61 @@ def markdown_to_html_doc(md_text, title="Raport Garmin Coach"):
 </html>"""
 
 
+def is_weekly_plan_content(md_text, file_path=""):
+    """
+    Sprawdza, czy przekazany plik lub treść Markdown to plan tygodniowy.
+    """
+    if "weekly_plan" in str(file_path).lower():
+        return True
+    lower = md_text.lower()
+    days = ["poniedziałek", "wtorek", "środa", "czwartek", "piątek", "sobota", "niedziela"]
+    matched = sum(1 for d in days if f"### {d}" in lower or f"## {d}" in lower or f"* **{d}" in lower)
+    return matched >= 3 or "tabela porównawcza mikrocykli" in lower or "plan na cały tydzień" in lower
+
+
+def extract_weekly_plan_caption(md_text):
+    """
+    Ekstrahuje zwięzły dymek Telegrama dla planu tygodniowego:
+    wykaz zadeklarowanych dni z jednostkami oraz łączny planowany kilometraż biegowy.
+    """
+    days_order = ["Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota", "Niedziela"]
+    day_entries = []
+
+    for day in days_order:
+        # Szukamy nagłówków dni tygodnia: ### Poniedziałek - ... lub ### Poniedziałek: ...
+        pattern = rf'###\s*{day}\s*[-–:]\s*([^\n\r]+)'
+        day_matches = re.findall(pattern, md_text, re.IGNORECASE)
+        if day_matches:
+            titles = [re.sub(r'\*\*(.*?)\*\*', r'\1', m).strip() for m in day_matches]
+            combined = " + ".join(titles)
+            day_entries.append(f"▪️ <b>{day}:</b> {html.escape(combined)}")
+
+    # Wyszukiwanie łącznego dystansu z tabeli mikrocykli lub podsumowania
+    km_match = re.search(r'\|\s*Dystans całkowity biegowy \(km\)\s*\|[^|]*\|\s*([0-9.,]+)', md_text, re.IGNORECASE)
+    if not km_match:
+        km_match = re.search(r'Łączny planowany kilometraż.*?([0-9.,]+)\s*(?:km)?', md_text, re.IGNORECASE)
+    if not km_match:
+        km_match = re.search(r'Łączny dystans.*?([0-9.,]+)\s*(?:km)?', md_text, re.IGNORECASE)
+
+    km_val = km_match.group(1).strip() if km_match else ""
+    # Upewniamy się, że nie wyciągnęliśmy pustej wartości
+    km_info = f"\n\n📊 <b>Planowany dystans biegowy:</b> ~{km_val} km" if km_val else ""
+
+    summary_days = "\n".join(day_entries) if day_entries else "▪️ Pełny harmonogram dni tygodnia w załączniku HTML."
+
+    caption = (
+        f"🗓️ <b>PLAN TRENINGOWY NA TEN TYDZIEŃ</b>\n\n"
+        f"{summary_days}"
+        f"{km_info}\n\n"
+        f"📎 <i>Pełna rozpiska, serie, ciężary i zalecenia w załączniku HTML poniżej.</i>"
+    )
+
+    if len(caption) > 1000:
+        caption = caption[:990] + "...\n\n📎 <i>Pełny plan w załączniku HTML.</i>"
+
+    return caption
+
+
 def extract_concise_caption(md_text):
     """
     Ekstrahuje z raportu wyłącznie informację o dacie oraz treningu na dziś
@@ -251,7 +306,9 @@ def extract_concise_caption(md_text):
     if not date_match:
         date_match = re.search(r'ADAPTACJA TRENINGU NA KOLEJNY DZIEŃ:\s*([^\n\r]+)', md_text, re.IGNORECASE)
     if not date_match:
-        date_match = re.search(r'# TRENING Z DNIA:\s*([^\n\r]+)', md_text, re.IGNORECASE)
+        date_match = re.search(r'# TRENING (?:Z DNIA|SIŁOWY|BIEGOWY \+ SIŁOWNIA):\s*([^\n\r]+)', md_text, re.IGNORECASE)
+    if not date_match:
+        date_match = re.search(r'# DZIEŃ WOLNY[^:]*:\s*([^\n\r]+)', md_text, re.IGNORECASE)
 
     if date_match:
         target_date = date_match.group(1).strip()
@@ -530,11 +587,24 @@ def send_report(file_path):
         logger.warning(f"Plik {file_path} jest pusty. Brak treści do wysłania.")
         return 0
 
-    # 1. Przygotowanie zwięzłego dymku czatu (data + trening)
-    caption = extract_concise_caption(md_content)
+    # 1. Rozpoznanie typu raportu (plan tygodniowy vs raport dzienny)
+    is_plan = is_weekly_plan_content(md_content, file_path)
+
+    if is_plan:
+        caption = extract_weekly_plan_caption(md_content)
+        title = "Plan Tygodniowy - Coach Gemini"
+        date_match = re.search(r'\d{4}-\d{2}-\d{2}', md_content)
+        file_date_tag = date_match.group(0) if date_match else datetime.now().strftime("%Y-%m-%d")
+        attachment_filename = f"Plan_Tygodniowy_{file_date_tag}.html"
+    else:
+        caption = extract_concise_caption(md_content)
+        title = "Raport Coach Gemini"
+        date_match = re.search(r'\d{4}-\d{2}-\d{2}', md_content)
+        file_date_tag = date_match.group(0) if date_match else "raport"
+        attachment_filename = f"Raport_Coach_Gemini_{file_date_tag}.html"
 
     # 2. Konwersja pełnego raportu Markdown na elegancki HTML
-    html_content = markdown_to_html_doc(md_content, title="Raport Garmin Coach")
+    html_content = markdown_to_html_doc(md_content, title=title)
     html_bytes = html_content.encode("utf-8")
 
     # Zapis pliku HTML również lokalnie w katalogu output/
@@ -545,11 +615,6 @@ def send_report(file_path):
         logger.info(f"Wygenerowano lokalny plik HTML: {html_file_path}")
     except Exception as e:
         logger.warning(f"Nie udało się zapisać lokalnego pliku HTML: {e}")
-
-    # Określenie nazwy załącznika
-    date_match = re.search(r'\d{4}-\d{2}-\d{2}', md_content)
-    file_date_tag = date_match.group(0) if date_match else "raport"
-    attachment_filename = f"Raport_Garmin_{file_date_tag}.html"
 
     logger.info(f"Wysyłanie raportu jako załącznik HTML na Telegram ({attachment_filename})...")
     res = send_telegram_document(bot_token, chat_id, html_bytes, attachment_filename, caption=caption)
@@ -570,7 +635,7 @@ if __name__ == "__main__":
             print("❌ Brak skonfigurowanych zmiennych TELEGRAM_BOT_TOKEN i TELEGRAM_CHAT_ID w .env")
             sys.exit(1)
 
-        test_html = "<h1>Test Garmin Coach</h1><p>Wszystko działa idealnie!</p>".encode("utf-8")
+        test_html = "<h1>Test Coach Gemini</h1><p>Wszystko działa idealnie!</p>".encode("utf-8")
         test_caption = "📅 <b>Test</b>\n\n🎯 <b>TRENING NA DZIŚ:</b>\n▪️ Test połączenia bota z załącznikiem HTML."
         ok = send_telegram_document(bot_token, chat_id, test_html, "test.html", caption=test_caption)
         if ok:
