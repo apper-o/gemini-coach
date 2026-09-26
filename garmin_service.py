@@ -24,7 +24,7 @@ HISTORY_DIR = "trainings_history"
 def _speed_to_pace_str(speed_m_s):
     """
     Konwertuje prędkość w m/s na czytelne tempo w formacie M:SS min/km.
-    Zwraca NO_DATA ('Brak danych') jeśli prędkość jest nieprawidłowa lub <= 0.
+    Zwraca NO_DATA jeśli prędkość jest nieprawidłowa lub <= 0.
     """
     if speed_m_s and isinstance(speed_m_s, (int, float)) and speed_m_s > 0:
         total_seconds = int(round(1000.0 / speed_m_s))
@@ -38,18 +38,18 @@ def parse_activity_biomechanics(activity):
     """
     Wyciąga szczegółowe parametry biomechaniczne i fizjologiczne z konkretnego biegu.
     Oblicza średnie tempo z prędkości (m/s), jeśli Garmin nie udostępnia gotowego pola tempa.
-    Jeśli parametrów brak, wstawia 'Brak danych'.
+    Jeśli parametrów brak, wstawia NO_DATA.
     """
     if not activity:
         return None
 
     raw_dist = activity.get('distance')
     dist_km = (raw_dist / 1000) if raw_dist is not None and raw_dist > 0 else 0
-    dist_str = f"{dist_km:.2f} km" if dist_km > 0 else "Brak danych"
+    dist_str = f"{dist_km:.2f} km" if dist_km > 0 else NO_DATA
 
     raw_dur = activity.get('duration')
     duration_min = (raw_dur / 60) if raw_dur is not None and raw_dur > 0 else 0
-    duration_str = f"{duration_min:.1f} min" if duration_min > 0 else "Brak danych"
+    duration_str = f"{duration_min:.1f} min" if duration_min > 0 else NO_DATA
 
     # Średnie tempo: sprawdzamy bezpośrednie pole lub obliczamy z averageSpeed (m/s)
     avg_speed_m_s = activity.get('averageSpeed')
@@ -57,7 +57,7 @@ def parse_activity_biomechanics(activity):
     pace_str = str(avg_pace_raw) if avg_pace_raw else _speed_to_pace_str(avg_speed_m_s)
 
     start_time_raw = activity.get('startTimeLocal', '')
-    start_time_str = "Brak danych"
+    start_time_str = NO_DATA
     if start_time_raw and len(start_time_raw) >= 16:
         start_time_str = start_time_raw[11:16]
     elif start_time_raw:
@@ -65,50 +65,102 @@ def parse_activity_biomechanics(activity):
 
     # Tętno
     avg_hr_val = activity.get('averageHR')
-    avg_hr_str = f"{int(round(avg_hr_val))} bpm" if isinstance(avg_hr_val, (int, float)) else "Brak danych"
+    avg_hr_str = f"{int(round(avg_hr_val))} bpm" if isinstance(avg_hr_val, (int, float)) else NO_DATA
 
     max_hr_val = activity.get('maxHR')
-    max_hr_str = f"{int(round(max_hr_val))} bpm" if isinstance(max_hr_val, (int, float)) else "Brak danych"
+    max_hr_str = f"{int(round(max_hr_val))} bpm" if isinstance(max_hr_val, (int, float)) else NO_DATA
 
     # Kadencja
     raw_cad = activity.get('averageRunningCadenceInStepsPerMinute') or activity.get('averageRunCadence')
-    avg_cadence_str = f"{int(round(raw_cad))} spm" if raw_cad is not None else "Brak danych"
+    avg_cadence_str = f"{int(round(raw_cad))} spm" if raw_cad is not None else NO_DATA
 
     raw_max_cad = activity.get('maxRunningCadenceInStepsPerMinute') or activity.get('maxRunCadence')
-    max_cadence_str = f"{int(round(raw_max_cad))} spm" if raw_max_cad is not None else "Brak danych"
+    max_cadence_str = f"{int(round(raw_max_cad))} spm" if raw_max_cad is not None else NO_DATA
 
     # Długość kroku
     sl = activity.get('avgStrideLength')
-    stride_str = f"{sl / 100:.2f} m" if sl is not None and sl > 0 else "Brak danych"
+    stride_str = f"{sl / 100:.2f} m" if sl is not None and sl > 0 else NO_DATA
 
     # Czas kontaktu z podłożem i oscylacje
     gct = activity.get('avgGroundContactTime')
-    gct_str = f"{gct:.1f} ms" if isinstance(gct, (int, float)) else "Brak danych"
+    gct_str = f"{gct:.1f} ms" if isinstance(gct, (int, float)) else NO_DATA
 
     vo = activity.get('avgVerticalOscillation')
-    vo_str = f"{vo:.2f} cm" if isinstance(vo, (int, float)) else "Brak danych"
+    vo_str = f"{vo:.2f} cm" if isinstance(vo, (int, float)) else NO_DATA
 
     vr = activity.get('avgVerticalRatio')
-    vr_str = f"{vr:.2f} %" if isinstance(vr, (int, float)) else "Brak danych"
+    vr_str = f"{vr:.2f} %" if isinstance(vr, (int, float)) else NO_DATA
 
     # Przewyższenia
     eg = activity.get('elevationGain')
-    elevation_gain_str = f"{int(round(eg))} m" if eg is not None else "Brak danych"
+    elevation_gain_str = f"{int(round(eg))} m" if eg is not None else NO_DATA
 
     el = activity.get('elevationLoss')
-    elevation_loss_str = f"{int(round(el))} m" if el is not None else "Brak danych"
+    elevation_loss_str = f"{int(round(el))} m" if el is not None else NO_DATA
 
     # Obciążenie treningowe
     ate = activity.get('aerobicTrainingEffect')
     label = activity.get('trainingEffectLabel', '')
     label_str = f" ({label})" if label else ""
-    aerobic_te_str = f"{ate:.1f}/5.0{label_str}" if isinstance(ate, (int, float)) else "Brak danych"
+    aerobic_te_str = f"{ate:.1f}/5.0{label_str}" if isinstance(ate, (int, float)) else NO_DATA
 
     ante = activity.get('anaerobicTrainingEffect')
-    anaerobic_te_str = f"{ante:.1f}/5.0" if isinstance(ante, (int, float)) else "Brak danych"
+    anaerobic_te_str = f"{ante:.1f}/5.0" if isinstance(ante, (int, float)) else NO_DATA
 
     pwr = activity.get('avgPower')
-    power_str = f"{int(round(pwr))} W" if isinstance(pwr, (int, float)) else "Brak danych"
+    power_str = f"{int(round(pwr))} W" if isinstance(pwr, (int, float)) else NO_DATA
+
+    # Samoocena zawodnika z zegarka Garmin: perceivedEffort (int 1–10) oraz feel (string)
+    meta = activity.get('metadataDTO') or NO_DATA
+    self_eval = meta.get('selfEvaluation') if isinstance(meta, dict) else NO_DATA
+
+    raw_rpe = (
+        activity.get('perceivedEffort')
+        or (meta.get('perceivedEffort') if isinstance(meta, dict) else None)
+        or (self_eval.get('perceivedEffort') if isinstance(self_eval, dict) else None)
+        or NO_DATA
+    )
+    rpe_str = NO_DATA
+    if raw_rpe is not None and raw_rpe != NO_DATA:
+        try:
+            val = int(round(float(raw_rpe)))
+            GARMIN_RPE_MAP = {
+                1: "1 - Very Light",
+                2: "2 - Light",
+                3: "3 - Moderate",
+                4: "4 - Somewhat Hard",
+                5: "5 - Hard",
+                6: "6 - Hard",
+                7: "7 - Hard",
+                8: "8 - Very Hard",
+                9: "9 - Very Hard",
+                10: "10 - Maximum",
+            }
+            rpe_str = GARMIN_RPE_MAP.get(val, NO_DATA)
+        except (ValueError, TypeError):
+            rpe_str = NO_DATA
+
+    raw_feel = (
+        activity.get('feel')
+        or (meta.get('feel') if isinstance(meta, dict) else None)
+        or (self_eval.get('feel') if isinstance(self_eval, dict) else None)
+        or NO_DATA
+    )
+    FEEL_NUM_TO_STR = {
+        1: "VERY_WEAK",
+        2: "WEAK",
+        3: "NORMAL",
+        4: "STRONG",
+        5: "VERY_STRONG",
+    }
+    if not raw_feel or raw_feel == NO_DATA or str(raw_feel).strip().upper() in ["NONE", "NULL", "0"]:
+        feeling_str = NO_DATA
+    elif isinstance(raw_feel, (int, float)) or (isinstance(raw_feel, str) and raw_feel.strip().isdigit()):
+        feeling_str = FEEL_NUM_TO_STR.get(int(raw_feel), NO_DATA)
+    elif isinstance(raw_feel, str):
+        feeling_str = raw_feel.strip()
+    else:
+        feeling_str = NO_DATA
 
     res = {
         "name": activity.get('activityName', 'Bieg'),
@@ -129,6 +181,8 @@ def parse_activity_biomechanics(activity):
         "aerobic_te": aerobic_te_str,
         "anaerobic_te": anaerobic_te_str,
         "avg_power": power_str,
+        "rpe": rpe_str,
+        "feeling": feeling_str,
         "splits": [],
         "weather": NO_DATA
     }
@@ -193,20 +247,20 @@ def parse_activity_biomechanics(activity):
                 elif lap.get('maxHR') is not None:
                     hr_str = f"max {int(lap['maxHR'])} bpm"
                 else:
-                    hr_str = "Brak danych"
+                    hr_str = NO_DATA
 
                 ascent = f"+{int(lap['elevationGain'])}m" if lap.get('elevationGain') is not None else "+0m"
                 descent = f"-{int(lap['elevationLoss'])}m" if lap.get('elevationLoss') is not None else "-0m"
                 elev_str = f"{ascent} / {descent}"
 
-                avg_pwr = f"{int(lap['averagePower'])} W" if lap.get('averagePower') is not None else "Brak danych"
+                avg_pwr = f"{int(lap['averagePower'])} W" if lap.get('averagePower') is not None else NO_DATA
 
                 raw_cad_lap = lap.get('averageRunCadence') or lap.get('averageRunningCadenceInStepsPerMinute')
-                avg_cad = f"{int(round(raw_cad_lap))} spm" if raw_cad_lap is not None else "Brak danych"
+                avg_cad = f"{int(round(raw_cad_lap))} spm" if raw_cad_lap is not None else NO_DATA
 
-                gct_lap = f"{lap['groundContactTime']:.1f} ms" if lap.get('groundContactTime') is not None else "Brak danych"
-                stride_lap = f"{lap['strideLength']/100:.2f} m" if lap.get('strideLength') is not None else "Brak danych"
-                vert_osc_lap = f"{lap['verticalOscillation']:.2f} cm" if lap.get('verticalOscillation') is not None else "Brak danych"
+                gct_lap = f"{lap['groundContactTime']:.1f} ms" if lap.get('groundContactTime') is not None else NO_DATA
+                stride_lap = f"{lap['strideLength']/100:.2f} m" if lap.get('strideLength') is not None else NO_DATA
+                vert_osc_lap = f"{lap['verticalOscillation']:.2f} cm" if lap.get('verticalOscillation') is not None else NO_DATA
 
                 split_row = (
                     f"| {lap_num} | {lap_dist:.2f} km | {dur_str} | {lap_pace} | {gap_pace} | "
@@ -396,7 +450,8 @@ def _format_historical_activities_text(activities_list, date_str=None, history_d
                 f"    * Pogoda/Warunki: {act_details.get('weather', NO_DATA)}\n"
                 f"    * Tętno: Średnie {act_details['avg_hr']} | Maksymalne {act_details['max_hr']}\n"
                 f"    * Biomechanika: Średnia kadencja {act_details['avg_cadence']}, krok {act_details['stride_length']}, kontakt {act_details['ground_contact_time']}, odchylenie {act_details['vertical_oscillation']}\n"
-                f"    * Obciążenie: Aerobic TE: {act_details['aerobic_te']}, Anaerobic TE: {act_details['anaerobic_te']}, Średnia moc: {act_details['avg_power']}"
+                f"    * Obciążenie: Aerobic TE: {act_details['aerobic_te']}, Anaerobic TE: {act_details['anaerobic_te']}, Średnia moc: {act_details['avg_power']}\n"
+                f"    * Samoocena: RPE: {act_details.get('rpe', NO_DATA)} | Samopoczucie: {act_details.get('feeling', NO_DATA)}"
                 f"{splits_text}"
             )
             acts_texts.append(act_entry)
@@ -494,78 +549,12 @@ def parse_garmin_data(data, target_date=None):
     return parsed
 
 
-def parse_garmin_data_yesterday(data, target_date=None):
+def parse_garmin_verification_data(data, day="daily", target_date=None):
     """
-    Wyciąga najważniejsze informacje z JSON-ów API Garmina dla trybu 'yesterday':
-    - Audytowany dzień wczorajszy: kroki, stres, Body Battery pod koniec dnia.
-    - Miniona noc / dzisiejszy poranek: HRV, RHR, sen (jakość, fazy, uwagi), poranne Body Battery.
-    - Kontekst dnia przedwczorajszego: aktywności, kroki, stres.
+    Zunifikowana fasada parsowania danych biometrycznych z Garmina dla trybu 'daily'.
+    Zwraca spójny słownik ze wskaźnikami dzisiejszego dnia, regeneracji nocnej oraz tłem z wczoraj.
+    Parametr day jest zachowany dla kompatybilności wstecznej.
     """
-    parsed = {
-        "hrv_status": NO_DATA,
-        "rhr": NO_DATA,
-        "sleep_score": NO_DATA,
-        "deep_sleep": NO_DATA,
-        "rem_sleep": NO_DATA,
-        "sleep_insights": NO_DATA,
-        "morning_body_battery": NO_DATA,
-        "yesterday_steps": NO_DATA,
-        "yesterday_stress": NO_DATA,
-        "yesterday_body_battery": NO_DATA,
-        "day_before_yesterday_training": "Brak aktywności (dzień wolny)"
-    }
-
-    if not data:
-        return parsed
-
-    recovery_data = data.get('overnight_recovery') or data.get('today', {})
-    yesterday_data = data.get('yesterday', {})
-    dby_data = data.get('day_before_yesterday', {})
-
-    # Miniona noc i poranek
-    parsed['hrv_status'] = _parse_hrv_summary(recovery_data.get('hrv'))
-    parsed.update(_parse_rhr_and_sleep(recovery_data.get('rhr'), recovery_data.get('rhr_history'), recovery_data.get('sleep')))
-
-    # Poranne Body Battery
-    bb_rec_vals = _parse_body_battery_values(recovery_data.get('body_battery'))
-    if bb_rec_vals:
-        latest_bb = bb_rec_vals[-1]
-        max_bb = max(bb_rec_vals)
-        parsed['morning_body_battery'] = f"{latest_bb}/100 (Szczyt poranny po nocy: {max_bb}/100)"
-
-    # Koszt wczorajszego dnia (audyt)
-    parsed['yesterday_steps'] = _parse_steps_info(yesterday_data.get('stats'), include_active_kcal=True)
-    parsed['yesterday_stress'] = _parse_stress_info(yesterday_data.get('stress'), include_qualifier=True)
-
-    bb_y_vals = _parse_body_battery_values(yesterday_data.get('body_battery'))
-    if bb_y_vals:
-        evening_bb = bb_y_vals[-1]
-        max_bb = max(bb_y_vals)
-        min_bb = min(bb_y_vals)
-        drain = max_bb - evening_bb
-        drain_str = f", spadek w ciągu dnia: -{drain}" if drain > 0 else ""
-        parsed['yesterday_body_battery'] = f"Pod koniec dnia: {evening_bb}/100 (Max w ciągu dnia: {max_bb}/100, min: {min_bb}/100{drain_str})"
-
-    # Kontekst dnia przedwczorajszego
-    dby_date_str = dby_data.get('date')
-    if not dby_date_str and target_date:
-        dby_date_str = (target_date - datetime.timedelta(days=2)).isoformat()
-    parsed['day_before_yesterday_training'] = _format_historical_activities_text(
-        dby_data.get('activities', []),
-        date_str=dby_date_str
-    )
-
-    return parsed
-
-
-def parse_garmin_verification_data(data, day="today", target_date=None):
-    """
-    Zunifikowana fasada parsowania danych biometrycznych z Garmina.
-    Dla day="yesterday" wywołuje parse_garmin_data_yesterday.
-    Dla day in ["today", "daily"] wywołuje parse_garmin_data.
-    """
-    if day == "yesterday":
-        return parse_garmin_data_yesterday(data, target_date=target_date)
     return parse_garmin_data(data, target_date=target_date)
 
 
@@ -649,7 +638,7 @@ def get_garmin_client(email, password):
 
 def _fetch_activity_splits_and_weather(client, acts):
     """
-    Uzupełnia listę aktywności o splity kilometrowe oraz dane o pogodzie.
+    Uzupełnia listę aktywności o splity kilometrowe, dane o pogodzie oraz samoocenę (RPE i samopoczucie).
     """
     if acts:
         for act in acts:
@@ -663,6 +652,28 @@ def _fetch_activity_splits_and_weather(client, acts):
                     act['weather_data'] = client.get_activity_weather(act_id)
                 except Exception:
                     pass
+                # Pobranie samooceny (perceivedEffort i feel) z metadataDTO
+                try:
+                    if hasattr(client, 'get_activity'):
+                        full_act = client.get_activity(act_id)
+                        if full_act and isinstance(full_act, dict):
+                            meta = full_act.get('metadataDTO') or NO_DATA
+                            self_eval = meta.get('selfEvaluation') if isinstance(meta, dict) else NO_DATA
+
+                            act['perceivedEffort'] = (
+                                (meta.get('perceivedEffort') if isinstance(meta, dict) else None)
+                                or (self_eval.get('perceivedEffort') if isinstance(self_eval, dict) else None)
+                                or NO_DATA
+                            )
+
+                            act['feel'] = (
+                                (meta.get('feel') if isinstance(meta, dict) else None)
+                                or (self_eval.get('feel') if isinstance(self_eval, dict) else None)
+                                or NO_DATA
+                            )
+                except Exception:
+                    act.setdefault('perceivedEffort', NO_DATA)
+                    act.setdefault('feel', NO_DATA)
     return acts
 
 
@@ -731,15 +742,20 @@ def _fetch_day_activities_and_load(client, date_str, include_body_battery=False)
 
 
 def fetch_garmin_data_daily(client, target_date):
-    """Pobiera dane z Garmina dla trybu dziennego (daily)."""
+    """
+    Pobiera dane z Garmina dla trybu dziennego (daily):
+    - Dzisiaj: nocne wskaźniki regeneracji (sen, HRV, RHR), aktywności biegowe (ze splitami i pogodą),
+      całodzienne kroki/kalorie, stres oraz wieczorny stan Body Battery.
+    - Wczoraj: aktywności, kroki i stres jako tło historyczne obciążenia.
+    """
     today_str = target_date.isoformat()
     yesterday_date = target_date - datetime.timedelta(days=1)
     yesterday_str = yesterday_date.isoformat()
 
-    logger.info(f"Pobieranie danych z Garmina (Wczoraj: {yesterday_str}, Dzisiaj: {today_str})...")
+    logger.info(f"Pobieranie danych z Garmina dla analizy dziennej (Wczoraj: {yesterday_str}, Dzisiaj: {today_str})...")
 
     today_data = _fetch_night_recovery_biometrics(client, today_str)
-    today_load = _fetch_day_activities_and_load(client, today_str, include_body_battery=False)
+    today_load = _fetch_day_activities_and_load(client, today_str, include_body_battery=True)
     today_data.update(today_load)
     today_data['date'] = today_str
 
@@ -752,38 +768,8 @@ def fetch_garmin_data_daily(client, target_date):
     }
 
 
-def fetch_garmin_data_yesterday(client, target_date):
-    """Pobiera dane z Garmina dla trybu wczorajszego (yesterday)."""
-    today_str = target_date.isoformat()
-    yesterday_date = target_date - datetime.timedelta(days=1)
-    yesterday_str = yesterday_date.isoformat()
-    dby_date = yesterday_date - datetime.timedelta(days=1)
-    dby_str = dby_date.isoformat()
-
-    logger.info(f"Pobieranie danych z Garmina dla trybu 'yesterday' (Przedwczoraj: {dby_str}, Wczoraj: {yesterday_str}, Dzisiaj: {today_str})...")
-
-    # 1. Wczoraj (Audytowany dzień): aktywności, kroki, stres, body battery pod koniec dnia
-    yesterday_data = _fetch_day_activities_and_load(client, yesterday_str, include_body_battery=True)
-    yesterday_data['date'] = yesterday_str
-
-    # 2. Miniona noc / Dzisiaj (Odbudowa nocna i gotowość na dziś)
-    overnight_data = _fetch_night_recovery_biometrics(client, today_str)
-    overnight_data['date'] = today_str
-
-    # 3. Przedwczoraj (Tło historyczne)
-    dby_data = _fetch_day_activities_and_load(client, dby_str, include_body_battery=False)
-    dby_data['date'] = dby_str
-
-    return {
-        'yesterday': yesterday_data,
-        'today': overnight_data,
-        'overnight_recovery': overnight_data,
-        'day_before_yesterday': dby_data
-    }
-
-
-def load_or_fetch_garmin_data(target_date, dump_file, mode="today", debug=False):
-    """Wczytuje dane z pliku lokalnego lub pobiera je bezpośrednio z Garmin Connect dla trybu 'today' (lub 'daily') lub 'yesterday'."""
+def load_or_fetch_garmin_data(target_date, dump_file, mode="daily", debug=False):
+    """Wczytuje dane z pliku lokalnego lub pobiera je bezpośrednio z Garmin Connect dla trybu 'daily'."""
     use_local_data = os.getenv("USE_LOCAL_DATA", "False").lower() in ["true", "1"]
     if use_local_data:
         read_file = os.path.join("debug", "garmin_dump.json") if (debug and os.path.exists(os.path.join("debug", "garmin_dump.json"))) else dump_file
@@ -802,10 +788,7 @@ def load_or_fetch_garmin_data(target_date, dump_file, mode="today", debug=False)
         sys.exit(1)
 
     client = get_garmin_client(garmin_email, garmin_password)
-    if mode == "yesterday":
-        raw_data = fetch_garmin_data_yesterday(client, target_date)
-    else:
-        raw_data = fetch_garmin_data_daily(client, target_date)
+    raw_data = fetch_garmin_data_daily(client, target_date)
 
     target_dump_file = os.path.join("debug", "garmin_dump.json") if debug else dump_file
     if debug:

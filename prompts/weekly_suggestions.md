@@ -5,9 +5,11 @@ Twoim jedynym zadaniem jest strategiczne ZAPROPONOWANIE TYPÓW I GŁÓWNYCH CEL�
 ====================
 KONTEKST I CELE BIEGACZA:
 
-* Główny cel biegowy: {goal}
+* Cel główny: {primary_goal}
+* Cel poboczny: {secondary_goal}
 * Faza treningowa: {phase}
 * Czas do startu / celu głównego: {time_left}
+* Parametry antropometryczne: Wzrost: {height} | Waga: {weight}
 * HR max: {max_hr} | Próg mleczanowy (LTHR): {lthr}
 * Strefy tętna i tempa bazowe:
   - Z1 (Rozgrzewka / Regeneracja): {z1}
@@ -15,6 +17,8 @@ KONTEKST I CELE BIEGACZA:
   - Z3 (Tempo maratońskie): {z3}
   - Z4 (Próg mleczanowy LTHR): {z4}
   - Z5 (VO2max / Beztlen): {z5}
+* Aktualne rekordy życiowe (PB) z datami:
+{personal_records}
 
 ====================
 HISTORIA TRENINGÓW:
@@ -62,6 +66,9 @@ ZASADY ARCHITEKTURY MIKROCYKLU:
 
 5. Autoregulacja na podstawie historii treningów i uwag:
 * Jeśli z historii wynika wysokie zmęczenie, spadek HRV, podwyższone RHR lub zawodnik zgłasza przeciążenie w notatkach: zredukuj mikrocykl do 1 akcentu, wyeliminuj jednostkę LOWER i zwiększ objętość regeneracji.
+
+6. Uwzględnienie profilu antropometrycznego i rekordów biegacza:
+* Bierz pod uwagę parametry fizyczne ({height}, {weight}) oraz rekordy życiowe na dystansach 400m–maraton, aby strategicznie dobrać proporcje akcentów szybkościowych, progowych i objętościowych w mikrocyklu pod kątem rezerwy prędkości oraz profilu zawodnika.
 
 ====================
 FORMAT ODPOWIEDZI:

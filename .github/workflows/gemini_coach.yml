@@ -11,8 +11,6 @@ on:
         type: choice
         options:
           - daily
-          - yesterday
-          - today
           - plan
           - suggest
 

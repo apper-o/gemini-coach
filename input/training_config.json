@@ -1,12 +1,45 @@
 {
-    "goal": "Maraton poniżej 4:00",
+    "primary_goal": "Maraton poniżej 4:00",
+    "secondary_goal": "5km poniżej 20 minut",
     "phase": "Taper",
     "time_left": "0 tygodni (maraton w tym tygodniu 27.09.2026)",
+    "height": "185 cm",
+    "weight": "78 kg",
     "max_hr": "202 bpm (szacowane)",
     "lthr": "Brak danych",
-    "z1": "<123 bpm, regeneracja i schłodzenie",
-    "z2": "123–148 bpm, baza tlenowa / bieg spokojny (tempo >6:00 min/km)",
-    "z3": "148–162 bpm, tempo maratońskie (tempo ok. 4:50-5:40 min/km)",
-    "z4": "162–181 bpm, próg mleczanowy LTHR (tempo ok. 4:10–4:40 min/km)",
-    "z5": ">181 bpm, beztlen / interwały VO2max"
+    "z1": "<123 bpm",
+    "z2": "123–148 bpm (tempo >6:00 min/km)",
+    "z3": "148–162 bpm (tempo ok. 4:50-5:40 min/km)",
+    "z4": "162–181 bpm (tempo ok. 4:10–4:40 min/km)",
+    "z5": ">181 bpm",
+    "personal_records": {
+        "400m": {
+            "time": "0:59s",
+            "date": "2026-05-24"
+        },
+        "800m": {
+            "time": "2:17",
+            "date": "2023-06-03"
+        },
+        "1500m": {
+            "time": "Brak danych",
+            "date": "Brak danych"
+        },
+        "5km": {
+            "time": "20:47",
+            "date": "2024-11-05"
+        },
+        "10km": {
+            "time": "45:12",
+            "date": "2026-10-06"
+        },
+        "polmaraton": {
+            "time": "1:40:55",
+            "date": "2025-04-06"
+        },
+        "maraton": {
+            "time": "Brak danych",
+            "date": "Brak danych"
+        }
+    }
 }

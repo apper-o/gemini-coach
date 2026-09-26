@@ -6,7 +6,7 @@ Funkcja get_gemini_models() w pliku coach_gemini nie weryfikuje, czy model ma po
 
 Inteligentny asystent treningowy integrujący dane biometryczne i biegowe z **Garmin Connect** z modelami językowymi **Google Gemini** oraz powiadomieniami na **Telegramie**.
 
-Skrypt analizuje całodobową biometrię (sen, HRV, RHR, Body Battery, stres, bilans kroków), biomechanikę biegową (splity, kadencja, czas kontaktu z podłożem, moc, przewyższenia) oraz historię treningową z ostatnich 42 dni (6 tygodni), proponując optymalne plany treningowe i codzienne adaptacje obciążeń.
+Skrypt analizuje całodobową biometrię (sen, HRV, RHR, Body Battery, stres, bilans kroków), biomechanikę biegową (splity, kadencja, czas kontaktu z podłożem, moc, przewyższenia), samoocenę zawodnika z zegarka Garmin (RPE w skali 1–10 oraz subiektywne samopoczucie) oraz historię treningową z ostatnich 42 dni (6 tygodni), proponując optymalne plany treningowe i codzienne adaptacje obciążeń.
 
 ---
 
@@ -49,14 +49,99 @@ Skrypt `coach_gemini.py` przyjmuje jeden pozycyjny argument określający tryb d
 
 | Tryb | Opis działania |
 | :--- | :--- |
-| **`daily`** *(domyślny)* | **Inteligentny tryb automatyczny**: Automatycznie decyduje o wyborze zakresu weryfikacji na podstawie pory dnia:<br>• **Przed godziną 12:00**: Automatycznie uruchamia audyt wczorajszego dnia (`yesterday`) i adaptację na dziś po nocy regeneracyjnej.<br>• **Od godziny 12:00**: Automatycznie uruchamia weryfikację dzisiejszego dnia (`today`) i adaptację na jutro.<br>Uruchamiany także przy wywołaniu bez argumentów (`python coach_gemini.py`). |
-| **`today`** | **Weryfikacja bieżącego dnia i adaptacja na jutro**: Pobiera dane z dzisiejszego dnia (wykonany trening, kroki, stres) oraz minionej nocy (HRV, RHR, jakość snu, Body Battery). Ocenia realizację założeń i wyznacza adaptację planu na kolejny dzień. Zapisuje raport do `output/last_daily_report.md` oraz archiwizuje w `trainings_history/`. |
-| **`yesterday`** | **Audyt wczorajszego dnia i adaptacja na dziś**: Audytuje dzień wczorajszy (treningi, obciążenie, stres, wieczorne Body Battery) oraz minioną noc i dzisiejszy poranek (HRV z nocy, RHR, sen, poranne Body Battery). Dokonuje natychmiastowej korekty i adaptacji treningu na dzień dzisiejszy. Standardowy tryb porannego harmonogramu GitHub Actions. |
+| **`daily`** *(domyślny)* | **Główny wieczorny tryb audytu i adaptacji (uruchamiany codziennie o 20:57)**:<br>• **Główny priorytet**: Dogłębny audyt wykonanego dzisiaj treningu (bieg ze szczegółowymi splitami, tętno, kadencja, tempo vs założenia, samoocena RPE i samopoczucie z Garmina, trening siłowy/notatki z Telegrama, koszt OUN).<br>• **Biometria**: Analiza nocnej bazy regeneracyjnej przed dzisiejszym wysiłkiem (sen, HRV, RHR), obciążenia całodniowego (stres, kroki, wieczorne Body Battery) oraz kontekstu historycznego z dnia poprzedniego.<br>• **Zalecenia regeneracyjne**: Praktyczne wytyczne na wieczór i noc (zapotrzebowanie na sen pod kątem regeneracji OUN, dedykowana sesja rolowania/mobilności ze wskazaniem konkretnych partii mięśniowych, nawodnienie).<br>• **Gotowość i adaptacja**: Ocena gotowości na jutrzejszy trening wraz z jednoznacznym werdyktem: `[ZWIĘKSZAMY INTENSYWNOŚĆ / POZOSTAJE TAKA SAMA / ZMNIEJSZAMY INTENSYWNOŚĆ / MODYFIKACJA ZAŁOŻEŃ]` i gotową rozpiską.<br>Zapisuje raport do `output/last_daily_report.md` oraz archiwizuje w `trainings_history/YYYY-MM-DD.md`. *(Alias: `today`)*. |
 | **`suggest`** | **Sugestia podziału dni i typów treningu**: Model analizuje cele biegacza, fazę przygotowań oraz historię ostatnich 42 dni (6 tygodni), proponując optymalny układ jednostek (Easy, Tempo, Siłownia, Rest Day) na nadchodzący tydzień. Zapisuje propozycję do `input/weekly_preferences.md`. |
 | **`plan`** | **Układanie pełnego planu tygodniowego**: Generuje kompletny 7-dniowy plan treningowy od poniedziałku do niedzieli. Wykorzystuje preferencje z `input/weekly_preferences.md`, profil z `input/training_config.json`, bazę ćwiczeń z `input/strength_routines.md` oraz 42-dniową historię. Zapisuje plan do `output/weekly_plan.md`. |
 
 > [!NOTE]
 > Wszelkie uwagi, samopoczucie oraz raporty z treningu siłowego przekazywane są bezpośrednio z czatu **Telegrama**. Po każdym pomyślnym wykonaniu analizy stan przeczytanych wiadomości jest zapisywany w `input/telegram_state.json`, dzięki czemu wiadomości nie są dublowane.
+
+---
+
+## Formatowanie Notatek z Telegrama (Komunikacja Zawodnik -> Trener)
+
+Wszelkie uwagi, samopoczucie oraz raporty z treningu siłowego przekazywane są bezpośrednio z czatu **Telegrama**. System automatycznie rozróżnia typ przesyłanej wiadomości na podstawie **pierwszej linijki tekstu**:
+
+### 1. Trening siłowy / uzupełniający (Strength Workout)
+- W 1. niepustej linijce musi znajdować się **wyłącznie nazwa zestawu** ze zbioru `STRENGTH_WORKOUT_NAMES` (`upper`, `lower`, `fbw`, `core`, `push`, `pull`, `legs`). Wielkość liter nie ma znaczenia.
+- Następnie opcjonalnie data/godzina oraz wykaz wykonanych ćwiczeń, serii, powtórzeń i obciążeń (np. bezpośredni eksport z aplikacji Hevy).
+- Treść trafia w całości do sekcji jednostki siłowej promptu, a w archiwum raportu zapisywany jest wskaźnik zaangażowanych partii mięśniowych (`GÓRA`, `DÓŁ`, `GÓRA + DÓŁ`, `CORE / STABILIZACJA`).
+
+**Przykład wiadomości z treningiem siłowym (Hevy):**
+```text
+upper
+Thursday, Sep 24, 2026 at 2:19pm
+
+Bench Press (Barbell)
+Set 1: 60 kg x 8
+Set 2: 60 kg x 8
+Set 3: 60 kg x 8
+
+Lat Pulldown (Cable)
+Set 1: 54 kg x 10
+Set 2: 55 kg x 8
+Set 3: 55 kg x 10
+Set 4: 55 kg x 10
+
+Incline Dumbbell Curl
+Set 1: 12 kg x 10
+Set 2: 12 kg x 10
+Set 3: 12 kg x 8
+
+Triceps Pushdown
+Set 1: 45 kg x 12
+Set 2: 50 kg x 10
+Set 3: 50 kg x 10
+
+Ab Wheel
+Set 1: 10 reps
+Set 2: 10 reps
+Set 3: 10 reps
+```
+
+### 2. Notatka i uwagi biegacza (Runner Note)
+- Wiadomość **zawsze rozpoczyna się od słowa kluczowego `NOTE`** w pierwszej linijce (i tylko tego słowa, wielkość liter dowolna).
+- Kolejne linie to pary:
+  ```text
+  nagłówek_i
+  notatka do nagłówka_i
+  ```
+- Słowo `NOTE` jest automatycznie usuwane (stripowane) podczas wczytywania, dzięki czemu Trener Gemini otrzymuje czyste uwagi z nagłówkami.
+
+**Przykład wiadomości z uwagami biegacza:**
+```text
+NOTE
+Samopoczucie i zmęczenie
+Czułem lekkie zmęczenie nóg po wczorajszej siłowni, ale bieg w strefie Z2 wszedł stabilnie. Tętno w normie.
+
+Dolegliwości bólowe
+Lekkie spięcie w lewym pasmie biodrowo-piszczelowym pod koniec 8. kilometra, ustąpiło po rolowaniu.
+
+Dieta i nawodnienie
+Wypite 3 litry wody z elektrolitami, posiłek regeneracyjny zjedzony 30 min po biegu.
+```
+
+### 3. Wiadomości ogólne (Fallback)
+Jeśli wiadomość nie zawiera słowa `NOTE` w pierwszej linii ani nazwy treningu siłowego, system traktuje ją tolerancyjnie jako ogólną uwagę biegacza i dołącza do promptu bez modyfikacji.
+
+### 4. Ochrona przed dublowaniem wiadomości
+Po każdym pomyślnym wykonaniu analizy identyfikator ostatnio odczytanej wiadomości zapisywany jest w pliku `input/telegram_state.json`, dzięki czemu wiadomości nie są dublowane przy kolejnych uruchomieniach. W trybie `--debug` stan ten nie jest modyfikowany.
+
+---
+
+## Ustandaryzowany Format Archiwum (`trainings_history/YYYY-MM-DD.md`)
+
+Każdy zarchiwizowany raport treningowy zawiera na początku ustandaryzowany blok 6 linii metadanych:
+```markdown
+# AUDYT DZIENNY: YYYY-MM-DD (DzieńTygodnia, YYYY-MM-DD)
+- Typ dnia: BIEG | SIŁOWNIA | BIEG + SIŁOWNIA | REGENERACJA
+- Bieg: TAK (X.XX km, sesje: Y) | NIE (0.00 km, sesje: 0)
+- Typ treningu biegowego: [nazwa / profil jednostki]
+- Struktura biegu: Rozgrzewka: ... | Główna seria: ... | Schłodzenie: ...
+- Siłownia: TAK (NAZWA) | NIE
+- Partie mięśniowe (siłownia): GÓRA | DÓŁ | GÓRA + DÓŁ | CORE / STABILIZACJA | BRAK
+```
+Dzięki temu moduł wczytywania historii (`coach_prompts.py`) przetwarza historię 42 dni w złożoności $\mathcal{O}(1)$ bez konieczności przeszukiwania całych plików Markdown czy parsowania tabel serii siłowych.
 
 ---
 
@@ -73,28 +158,22 @@ Skrypt `coach_gemini.py` przyjmuje jeden pozycyjny argument określający tryb d
 ## Przykłady Użycia
 
 ```bash
-# 1. Inteligentny tryb daily (przed 12:00 weryfikuje wczoraj, po 12:00 dzisiaj)
+# 1. Główny wieczorny audyt dnia i adaptacja na jutro (godz. 20:57)
 python coach_gemini.py
 # lub jawnie:
 python coach_gemini.py daily
 
-# 2. Wymuszenie audytu dnia wczorajszego i adaptacji na dziś (np. rano)
-python coach_gemini.py yesterday
-
-# 3. Wymuszenie weryfikacji dzisiejszego treningu i adaptacji na jutro (np. wieczorem)
-python coach_gemini.py today
-
-# 4. Wygenerowanie sugestii podziału dni na nadchodzący tydzień
+# 2. Wygenerowanie sugestii podziału dni na nadchodzący tydzień
 python coach_gemini.py suggest
 
-# 5. Rozpisanie szczegółowego planu na cały tydzień
+# 3. Rozpisanie szczegółowego planu na cały tydzień
 python coach_gemini.py plan
 
-# 6. Uruchomienie w trybie debugowania (piaskownica w debug/)
+# 4. Uruchomienie w trybie debugowania (piaskownica w debug/)
 python coach_gemini.py daily --debug
 
-# 7. Audyt historyczny dla konkretnego dnia
-python coach_gemini.py yesterday --date 2026-09-20
+# 5. Audyt historyczny dla konkretnego dnia
+python coach_gemini.py daily --date 2026-09-20
 ```
 
 ---
@@ -110,7 +189,7 @@ python coach_gemini.py yesterday --date 2026-09-20
 ├── .env                      # Konfiguracja środowiskowa i klucze API (lokalna, ignorowana przez git)
 ├── .env.example              # Wzorzec pliku konfiguracyjnego .env
 ├── input/
-│   ├── training_config.json  # Profil biegacza, cele startowe, strefy tętna (Z1-Z5)
+│   ├── training_config.json  # Profil biegacza, cel główny i poboczny (primary_goal, secondary_goal), wzrost, waga, rekordy życiowe (PB), strefy tętna (Z1-Z5)
 │   ├── weekly_preferences.md # Podział dni treningowych na dany tydzień (dla trybu 'plan')
 │   ├── strength_routines.md  # Baza własnych zestawów ćwiczeń siłowych (FBW, UPPER, LOWER)
 │   └── garmin_dump.json      # Zrzut danych Garmin Connect (dla USE_LOCAL_DATA=true)
@@ -120,7 +199,6 @@ python coach_gemini.py yesterday --date 2026-09-20
 ├── prompts/
 │   ├── weekly_suggestions.md # Szablon prompta dla trybu 'suggest'
 │   ├── weekly_plan.md        # Szablon prompta dla trybu 'plan'
-│   ├── daily_verification.md # Szablon prompta dla trybu 'daily'
-│   └── yesterday_verification.md # Szablon prompta dla trybu 'yesterday'
+│   └── daily_verification.md # Szablon prompta dla wieczornego trybu 'daily' (audyt, regeneracja, adaptacja)
 └── trainings_history/        # Archiwum wygenerowanych raportów dziennych (YYYY-MM-DD.md)
 ```

@@ -1,5 +1,10 @@
-# TRENING Z DNIA: 2026-09-25 (Piątek, 2026-09-25)
-Liczba zarejestrowanych jednostek: 1
+# AUDYT DZIENNY: 2026-09-25 (Piątek, 2026-09-25)
+- Typ dnia: BIEG
+- Bieg: TAK (4.01 km, sesje: 1)
+- Typ treningu biegowego: Bieg regeneracyjny (Recovery Run)
+- Struktura biegu: Rozgrzewka: Brak | Główna seria: 4.01 km Z1/Z2 (tempo 6:23 min/km) | Schłodzenie: Brak
+- Siłownia: NIE
+- Partie mięśniowe (siłownia): BRAK
 
 ## Biometria regeneracyjna i bilans dnia (Piątek, 2026-09-25):
 - HRV (miniona noc): BALANCED 50 ms (Średnia 7-dniowa: 48 ms, Norma bazowa: 46–59 ms)
