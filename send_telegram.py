@@ -16,6 +16,42 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
 
+# Prekompilowane wyrażenia regularne dla parsowania Markdown i podpisów
+RE_HR = re.compile(r'^(?:-{3,}|={3,})$')
+RE_TABLE_DIVIDER = re.compile(r'^:?-+:?$')
+RE_BOLD = re.compile(r'\*\*(.*?)\*\*')
+RE_DATE_ISO = re.compile(r'\d{4}-\d{2}-\d{2}')
+
+RE_PLAN_KM = re.compile(
+    r'(?:\|\s*Dystans całkowity biegowy \(km\)\s*\|[^|]*\|\s*([0-9.,]+)|'
+    r'Łączny planowany kilometraż.*?([0-9.,]+)\s*(?:km)?|'
+    r'Łączny dystans.*?([0-9.,]+)\s*(?:km)?)',
+    re.IGNORECASE
+)
+
+RE_DAY_HEADERS = {
+    day: re.compile(rf'###\s*{day}\s*[-–:]\s*([^\n\r]+)', re.IGNORECASE)
+    for day in ["Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota", "Niedziela"]
+}
+
+RE_CAPTION_DATE = re.compile(
+    r'(?:ADAPTACJA TRENINGU NA (?:DZIEŃ DZISIEJSZY|KOLEJNY DZIEŃ|DZIEŃ)|'
+    r'OCENA GOTOWOŚCI I ADAPTACJA NA DZIEŃ KOLEJNY|'
+    r'## Ocena trenera i adaptacja na dzień|'
+    r'# TRENING (?:Z DNIA|SIŁOWY|BIEGOWY \+ SIŁOWNIA)|'
+    r'# DZIEŃ WOLNY[^:]*):\s*([^\n\r]+)',
+    re.IGNORECASE
+)
+RE_CLEAN_BRACKETS = re.compile(r'\[.*?\]')
+RE_DECISION_SECTION = re.compile(
+    r'\*\s*(?:DECYZJA ADAPTACYJNA(?:\s*/\s*STOPIEŃ GOTOWOŚCI)?|DECYZJA O KOREKCIE).*?:(.*?)(?=\*\s*Uzasadnienie|\*\s*ROZPISKA|###|\Z)',
+    re.DOTALL | re.IGNORECASE
+)
+RE_SCHEDULE_SECTION = re.compile(
+    r'\*\s*ROZPISKA NA (?:KOLEJNY )?DZIEŃ.*?:(.*?)(?=\*\s*Wytyczne|\*\s*Zalecenia|###|\Z)',
+    re.DOTALL | re.IGNORECASE
+)
+
 
 def markdown_to_html_doc(md_text, title="Raport Coach Gemini"):
     """
@@ -51,7 +87,7 @@ def markdown_to_html_doc(md_text, title="Raport Coach Gemini"):
             continue
 
         # Pozioma kreska
-        if re.match(r'^-{3,}$', stripped) or re.match(r'^={3,}$', stripped):
+        if RE_HR.match(stripped):
             close_list()
             close_table()
             html_lines.append("<hr>")
@@ -63,7 +99,7 @@ def markdown_to_html_doc(md_text, title="Raport Coach Gemini"):
             cells = [c.strip() for c in stripped.split("|")[1:-1]]
 
             # Sprawdzenie czy to linia podziału |---|---|
-            if all(re.match(r'^:?-+:?$', c) for c in cells if c):
+            if all(RE_TABLE_DIVIDER.match(c) for c in cells if c):
                 continue
 
             if not in_table:
@@ -79,7 +115,7 @@ def markdown_to_html_doc(md_text, title="Raport Coach Gemini"):
                 for c in cells:
                     cell_html = html.escape(c)
                     # Zamiana **tekst** na pogrubienie wewnątrz komórki
-                    cell_html = re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', cell_html)
+                    cell_html = RE_BOLD.sub(r'<strong>\1</strong>', cell_html)
                     html_lines.append(f"<td>{cell_html}</td>")
                 html_lines.append("</tr>")
             continue
@@ -114,7 +150,7 @@ def markdown_to_html_doc(md_text, title="Raport Coach Gemini"):
                 in_list = True
                 html_lines.append("<ul>")
             item_text = html.escape(stripped[2:].strip())
-            item_text = re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', item_text)
+            item_text = RE_BOLD.sub(r'<strong>\1</strong>', item_text)
             html_lines.append(f"<li>{item_text}</li>")
             continue
         else:
@@ -122,7 +158,7 @@ def markdown_to_html_doc(md_text, title="Raport Coach Gemini"):
 
         # Zwykły akapit
         p_text = html.escape(stripped)
-        p_text = re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', p_text)
+        p_text = RE_BOLD.sub(r'<strong>\1</strong>', p_text)
         html_lines.append(f"<p>{p_text}</p>")
 
     close_list()
@@ -132,16 +168,17 @@ def markdown_to_html_doc(md_text, title="Raport Coach Gemini"):
 
     css = """
     :root {
-      --bg: #0b0f19;
-      --card-bg: #161f30;
-      --border: #23324d;
-      --accent: #38bdf8;
-      --accent-green: #22c55e;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --th-bg: #1e293b;
-      --tr-even: #121a29;
-      --tr-odd: #182337;
+      --bg: #09090b;
+      --card-bg: #121214;
+      --border: #27272a;
+      --border-subtle: #1c1c1f;
+      --accent: #f4f4f5;
+      --accent-muted: #a1a1aa;
+      --text: #f4f4f5;
+      --text-muted: #a1a1aa;
+      --th-bg: #18181b;
+      --tr-even: #0e0e10;
+      --tr-odd: #141416;
     }
     * { box-sizing: border-box; }
     body {
@@ -159,32 +196,34 @@ def markdown_to_html_doc(md_text, title="Raport Coach Gemini"):
       border: 1px solid var(--border);
       border-radius: 14px;
       padding: 18px 22px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.85);
     }
     h1 {
-      font-size: 1.45rem;
-      color: var(--accent);
+      font-size: 1.4rem;
+      color: #ffffff;
       margin-top: 6px;
       margin-bottom: 16px;
-      border-bottom: 2px solid var(--accent);
+      border-bottom: 2px solid #3f3f46;
       padding-bottom: 8px;
+      letter-spacing: -0.01em;
     }
     h2 {
-      font-size: 1.25rem;
-      color: #7dd3fc;
+      font-size: 1.2rem;
+      color: #f4f4f5;
       margin-top: 26px;
       border-bottom: 1px solid var(--border);
       padding-bottom: 6px;
+      letter-spacing: -0.01em;
     }
     h3 {
-      font-size: 1.1rem;
-      color: #bae6fd;
+      font-size: 1.05rem;
+      color: #e4e4e7;
       margin-top: 20px;
       margin-bottom: 8px;
     }
     h4 {
-      font-size: 0.98rem;
-      color: #e0f2fe;
+      font-size: 0.95rem;
+      color: #d4d4d8;
       margin-top: 14px;
       margin-bottom: 6px;
     }
@@ -199,6 +238,7 @@ def markdown_to_html_doc(md_text, title="Raport Coach Gemini"):
       margin: 16px 0;
       border-radius: 8px;
       border: 1px solid var(--border);
+      background: var(--card-bg);
     }
     table {
       width: 100%;
@@ -208,7 +248,7 @@ def markdown_to_html_doc(md_text, title="Raport Coach Gemini"):
     }
     th {
       background: var(--th-bg);
-      color: var(--accent);
+      color: #ffffff;
       padding: 10px 12px;
       font-weight: 600;
       text-align: left;
@@ -216,12 +256,12 @@ def markdown_to_html_doc(md_text, title="Raport Coach Gemini"):
     }
     td {
       padding: 9px 12px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid var(--border-subtle);
       color: var(--text);
     }
     tr:nth-child(even) { background: var(--tr-even); }
     tr:nth-child(odd) { background: var(--tr-odd); }
-    tr:hover { background: rgba(56, 189, 248, 0.12); }
+    tr:hover { background: rgba(255, 255, 255, 0.05); }
     """
 
     return f"""<!DOCTYPE html>
@@ -262,24 +302,22 @@ def extract_weekly_plan_caption(md_text):
 
     for day in days_order:
         # Szukamy nagłówków dni tygodnia: ### Poniedziałek - ... lub ### Poniedziałek: ...
-        pattern = rf'###\s*{day}\s*[-–:]\s*([^\n\r]+)'
-        day_matches = re.findall(pattern, md_text, re.IGNORECASE)
+        day_matches = RE_DAY_HEADERS[day].findall(md_text)
         if day_matches:
-            titles = [re.sub(r'\*\*(.*?)\*\*', r'\1', m).strip() for m in day_matches]
+            titles = [RE_BOLD.sub(r'\1', m).strip() for m in day_matches]
             combined = " + ".join(titles)
             day_entries.append(f"▪️ <b>{day}:</b> {html.escape(combined)}")
 
     # Wyszukiwanie łącznego dystansu z tabeli mikrocykli lub podsumowania
-    km_match = re.search(r'\|\s*Dystans całkowity biegowy \(km\)\s*\|[^|]*\|\s*([0-9.,]+)', md_text, re.IGNORECASE)
-    if not km_match:
-        km_match = re.search(r'Łączny planowany kilometraż.*?([0-9.,]+)\s*(?:km)?', md_text, re.IGNORECASE)
-    if not km_match:
-        km_match = re.search(r'Łączny dystans.*?([0-9.,]+)\s*(?:km)?', md_text, re.IGNORECASE)
+    km_match = RE_PLAN_KM.search(md_text)
+    km_val = ""
+    if km_match:
+        for g in km_match.groups():
+            if g:
+                km_val = g.strip()
+                break
 
-    km_val = km_match.group(1).strip() if km_match else ""
-    # Upewniamy się, że nie wyciągnęliśmy pustej wartości
     km_info = f"\n\n📊 <b>Planowany dystans biegowy:</b> ~{km_val} km" if km_val else ""
-
     summary_days = "\n".join(day_entries) if day_entries else "▪️ Pełny harmonogram dni tygodnia w załączniku HTML."
 
     caption = (
@@ -299,54 +337,58 @@ def extract_concise_caption(md_text):
     """
     Ekstrahuje z raportu wyłącznie informację o dacie oraz treningu na dziś
     zgodnie z wytycznymi użytkownika (krótki, czytelny dymek czatu).
+    W niedzielę (koniec mikrocyklu) prezentuje ogólny stopień gotowości bez treningu.
     """
     # 1. Poszukiwanie daty
     target_date = "Dzisiaj"
-    date_match = re.search(r'ADAPTACJA TRENINGU NA DZIEŃ DZISIEJSZY:\s*([^\n\r]+)', md_text, re.IGNORECASE)
-    if not date_match:
-        date_match = re.search(r'ADAPTACJA TRENINGU NA KOLEJNY DZIEŃ:\s*([^\n\r]+)', md_text, re.IGNORECASE)
-    if not date_match:
-        date_match = re.search(r'# TRENING (?:Z DNIA|SIŁOWY|BIEGOWY \+ SIŁOWNIA):\s*([^\n\r]+)', md_text, re.IGNORECASE)
-    if not date_match:
-        date_match = re.search(r'# DZIEŃ WOLNY[^:]*:\s*([^\n\r]+)', md_text, re.IGNORECASE)
+    date_match = RE_CAPTION_DATE.search(md_text)
 
     if date_match:
         target_date = date_match.group(1).strip()
         # Wyczyszczenie zbędnych dopisków
-        target_date = re.sub(r'\[.*?\]', '', target_date).strip()
+        target_date = RE_CLEAN_BRACKETS.sub('', target_date).strip()
 
     # 2. Poszukiwanie sekcji treningu / adaptacji
-    workout_lines = []
+    decision_match = RE_DECISION_SECTION.search(md_text)
+    schedule_match = RE_SCHEDULE_SECTION.search(md_text)
 
-    # Szukamy sekcji 'ROZPISKA NA DZIEŃ DZISIEJSZY' lub 'DECYZJA O KOREKCIE'
-    decision_match = re.search(
-        r'\*\s*DECYZJA O KOREKCIE.*?:(.*?)(?=\*\s*Uzasadnienie|\*\s*ROZPISKA|###|\Z)',
-        md_text,
-        re.DOTALL | re.IGNORECASE
-    )
-    schedule_match = re.search(
-        r'\*\s*ROZPISKA NA DZIEŃ DZISIEJSZY.*?:(.*?)(?=\*\s*Wytyczne|###|\Z)',
-        md_text,
-        re.DOTALL | re.IGNORECASE
+    raw_schedule = schedule_match.group(1).strip() if schedule_match else ""
+    raw_decision = decision_match.group(1).strip() if decision_match else ""
+
+    is_end_of_microcycle = (
+        "koniec mikrocyklu" in raw_schedule.lower()
+        or "koniec mikrocyklu" in raw_decision.lower()
+        or any(w in raw_decision.upper() for w in ["PEŁNA GOTOWOŚĆ", "UMIARKOWANE ZMĘCZENIE", "GŁĘBOKIE ZMĘCZENIE", "WYMAGANA REGENERACJA"])
     )
 
-    if not schedule_match:
-        schedule_match = re.search(
-            r'\*\s*ROZPISKA NA KOLEJNY DZIEŃ.*?:(.*?)(?=\*\s*Wytyczne|###|\Z)',
-            md_text,
-            re.DOTALL | re.IGNORECASE
+    if is_end_of_microcycle:
+        readiness_str = ""
+        for line in raw_decision.split("\n"):
+            clean = line.strip().strip("* -[]")
+            if clean:
+                readiness_str = clean
+                break
+        readiness_part = f"\n▪️ <b>Stopień gotowości:</b> {html.escape(readiness_str)}" if readiness_str else ""
+        caption = (
+            f"📅 <b>{html.escape(target_date)}</b>\n\n"
+            f"🏁 <b>KONIEC MIKROCYKLU:</b>{readiness_part}\n"
+            f"▪️ Za ułożenie nowego planu na kolejny tydzień odpowiada tryb <code>plan</code>.\n\n"
+            f"📎 <i>Pełna analiza audytu i zalecenia regeneracyjne w załączniku HTML poniżej.</i>"
         )
+        if len(caption) > 1000:
+            caption = caption[:990] + "...\n\n📎 <i>Pełny raport w załączniku.</i>"
+        return caption
 
-    # Budujemy pigułkę informacyjną
+    workout_lines = []
+    # Budujemy pigułkę informacyjną dla zwykłych dni
     if schedule_match:
-        raw_schedule = schedule_match.group(1).strip()
         for l in raw_schedule.split("\n"):
             clean_l = l.strip().lstrip("* -").strip()
             if clean_l and not clean_l.startswith("###"):
                 workout_lines.append(f"▪️ {clean_l}")
 
     if decision_match and not workout_lines:
-        clean_dec = decision_match.group(1).strip()
+        clean_dec = raw_decision.strip()
         if clean_dec:
             workout_lines.append(f"▪️ {clean_dec}")
 
@@ -560,6 +602,24 @@ def save_telegram_state(new_state, state_file=None, bot_token=None):
             pass
 
 
+def finish_run(new_tg_state=None, debug=False, note_file=None):
+    """
+    Zapisuje zaktualizowany stan Telegrama po udanym wykonaniu trybu.
+    W trybie debug (debug=True) operacja ta jest pomijana, aby chronić stan wiadomości.
+    """
+    if debug:
+        logger.info("[DEBUG] Tryb debugowania aktywny: pominięto aktualizację stanu Telegrama.")
+        print("\n🛡️  [TRYB DEBUG] Stan Telegrama pozostał nienaruszony.")
+        return
+
+    # Kompatybilność wsteczna na wypadek wywołania ze starej sygnatury finish_run(note_file, new_tg_state, debug)
+    if isinstance(note_file, dict) and new_tg_state is None:
+        new_tg_state = note_file
+
+    if new_tg_state:
+        save_telegram_state(new_tg_state)
+
+
 def send_report(file_path):
     """
     Główna funkcja: konwertuje raport Markdown na HTML, generuje zwięzły podpis
@@ -587,34 +647,51 @@ def send_report(file_path):
         logger.warning(f"Plik {file_path} jest pusty. Brak treści do wysłania.")
         return 0
 
-    # 1. Rozpoznanie typu raportu (plan tygodniowy vs raport dzienny)
+    # 1. Rozpoznanie typu raportu (plan tygodniowy vs raport dzienny) oraz trybu debug
     is_plan = is_weekly_plan_content(md_content, file_path)
+    is_debug_file = "debug" in os.path.normpath(file_path).split(os.sep)
+
+    date_match = RE_DATE_ISO.search(md_content)
 
     if is_plan:
         caption = extract_weekly_plan_caption(md_content)
         title = "Plan Tygodniowy - Coach Gemini"
-        date_match = re.search(r'\d{4}-\d{2}-\d{2}', md_content)
         file_date_tag = date_match.group(0) if date_match else datetime.now().strftime("%Y-%m-%d")
         attachment_filename = f"Plan_Tygodniowy_{file_date_tag}.html"
     else:
         caption = extract_concise_caption(md_content)
         title = "Raport Coach Gemini"
-        date_match = re.search(r'\d{4}-\d{2}-\d{2}', md_content)
         file_date_tag = date_match.group(0) if date_match else "raport"
         attachment_filename = f"Raport_Coach_Gemini_{file_date_tag}.html"
 
-    # 2. Konwersja pełnego raportu Markdown na elegancki HTML
-    html_content = markdown_to_html_doc(md_content, title=title)
-    html_bytes = html_content.encode("utf-8")
+    # Wyróżnienie wizualne dla raportów z trybu piaskownicy (debug)
+    if is_debug_file:
+        caption = "🛠️ <b>[TRYB DEBUG / TEST]</b>\n\n" + caption
+        title = f"[DEBUG] {title}"
+        attachment_filename = f"DEBUG_{attachment_filename}"
 
-    # Zapis pliku HTML również lokalnie w katalogu output/
+    # 2. Odczyt pre-renderowanego HTML lub konwersja raportu Markdown
     html_file_path = os.path.splitext(file_path)[0] + ".html"
-    try:
-        with open(html_file_path, "w", encoding="utf-8") as hf:
-            hf.write(html_content)
-        logger.info(f"Wygenerowano lokalny plik HTML: {html_file_path}")
-    except Exception as e:
-        logger.warning(f"Nie udało się zapisać lokalnego pliku HTML: {e}")
+    html_content = None
+    if os.path.exists(html_file_path) and os.path.getmtime(html_file_path) >= os.path.getmtime(file_path):
+        try:
+            with open(html_file_path, "r", encoding="utf-8") as hf:
+                cached_html = hf.read()
+            if cached_html.strip():
+                html_content = cached_html
+        except Exception:
+            pass
+
+    if not html_content:
+        html_content = markdown_to_html_doc(md_content, title=title)
+        try:
+            with open(html_file_path, "w", encoding="utf-8") as hf:
+                hf.write(html_content)
+            logger.info(f"Wygenerowano lokalny plik HTML: {html_file_path}")
+        except Exception as e:
+            logger.warning(f"Nie udało się zapisać lokalnego pliku HTML: {e}")
+
+    html_bytes = html_content.encode("utf-8")
 
     logger.info(f"Wysyłanie raportu jako załącznik HTML na Telegram ({attachment_filename})...")
     res = send_telegram_document(bot_token, chat_id, html_bytes, attachment_filename, caption=caption)
@@ -628,30 +705,5 @@ def send_report(file_path):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1 and sys.argv[1] == "--test":
-        bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
-        chat_id = os.getenv("TELEGRAM_CHAT_ID")
-        if not bot_token or not chat_id:
-            print("❌ Brak skonfigurowanych zmiennych TELEGRAM_BOT_TOKEN i TELEGRAM_CHAT_ID w .env")
-            sys.exit(1)
-
-        test_html = "<h1>Test Coach Gemini</h1><p>Wszystko działa idealnie!</p>".encode("utf-8")
-        test_caption = "📅 <b>Test</b>\n\n🎯 <b>TRENING NA DZIŚ:</b>\n▪️ Test połączenia bota z załącznikiem HTML."
-        ok = send_telegram_document(bot_token, chat_id, test_html, "test.html", caption=test_caption)
-        if ok:
-            print("✅ Testowy załącznik wysłany pomyślnie na Telegram!")
-            sys.exit(0)
-        else:
-            print("❌ Błąd połączenia z Telegramem.")
-    if len(sys.argv) > 1 and sys.argv[1] == "--get-notes":
-        text, state = fetch_recent_telegram_messages()
-        if text:
-            print("\n📬 POBRANO WIADOMOŚCI Z TELEGRAMA:\n")
-            print(text)
-            print("\nNowy stan:", state)
-        else:
-            print("Brak nowych wiadomości na czacie Telegrama.")
-        sys.exit(0)
-
     target_file = sys.argv[1] if len(sys.argv) > 1 else "output/last_daily_report.md"
     sys.exit(send_report(target_file))

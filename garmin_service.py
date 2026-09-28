@@ -16,6 +16,11 @@ logger = logging.getLogger(__name__)
 NO_DATA = "Brak danych"
 HISTORY_DIR = "trainings_history"
 
+# Prekompilowane wyrażenia regularne dla parsowania historii
+RE_STRENGTH_KW = re.compile(r'(siłowni|siłowa|hevy|fbw|upper|lower|strength)', re.IGNORECASE)
+RE_PROFILE_HEADER = re.compile(r'\*\s*Profil jednostki:\s*([^\n]+)')
+RE_VARIANT_B_HEADER = re.compile(r'(WARIANT B:[^\n]+)')
+
 
 # ==============================================================================
 # 1. PARSERY BIOMETRII I BIOMECHANIKI AKTYWNOŚCI
@@ -110,58 +115,6 @@ def parse_activity_biomechanics(activity):
     pwr = activity.get('avgPower')
     power_str = f"{int(round(pwr))} W" if isinstance(pwr, (int, float)) else NO_DATA
 
-    # Samoocena zawodnika z zegarka Garmin: perceivedEffort (int 1–10) oraz feel (string)
-    meta = activity.get('metadataDTO') or NO_DATA
-    self_eval = meta.get('selfEvaluation') if isinstance(meta, dict) else NO_DATA
-
-    raw_rpe = (
-        activity.get('perceivedEffort')
-        or (meta.get('perceivedEffort') if isinstance(meta, dict) else None)
-        or (self_eval.get('perceivedEffort') if isinstance(self_eval, dict) else None)
-        or NO_DATA
-    )
-    rpe_str = NO_DATA
-    if raw_rpe is not None and raw_rpe != NO_DATA:
-        try:
-            val = int(round(float(raw_rpe)))
-            GARMIN_RPE_MAP = {
-                1: "1 - Very Light",
-                2: "2 - Light",
-                3: "3 - Moderate",
-                4: "4 - Somewhat Hard",
-                5: "5 - Hard",
-                6: "6 - Hard",
-                7: "7 - Hard",
-                8: "8 - Very Hard",
-                9: "9 - Very Hard",
-                10: "10 - Maximum",
-            }
-            rpe_str = GARMIN_RPE_MAP.get(val, NO_DATA)
-        except (ValueError, TypeError):
-            rpe_str = NO_DATA
-
-    raw_feel = (
-        activity.get('feel')
-        or (meta.get('feel') if isinstance(meta, dict) else None)
-        or (self_eval.get('feel') if isinstance(self_eval, dict) else None)
-        or NO_DATA
-    )
-    FEEL_NUM_TO_STR = {
-        1: "VERY_WEAK",
-        2: "WEAK",
-        3: "NORMAL",
-        4: "STRONG",
-        5: "VERY_STRONG",
-    }
-    if not raw_feel or raw_feel == NO_DATA or str(raw_feel).strip().upper() in ["NONE", "NULL", "0"]:
-        feeling_str = NO_DATA
-    elif isinstance(raw_feel, (int, float)) or (isinstance(raw_feel, str) and raw_feel.strip().isdigit()):
-        feeling_str = FEEL_NUM_TO_STR.get(int(raw_feel), NO_DATA)
-    elif isinstance(raw_feel, str):
-        feeling_str = raw_feel.strip()
-    else:
-        feeling_str = NO_DATA
-
     res = {
         "name": activity.get('activityName', 'Bieg'),
         "start_time": start_time_str,
@@ -181,8 +134,6 @@ def parse_activity_biomechanics(activity):
         "aerobic_te": aerobic_te_str,
         "anaerobic_te": anaerobic_te_str,
         "avg_power": power_str,
-        "rpe": rpe_str,
-        "feeling": feeling_str,
         "splits": [],
         "weather": NO_DATA
     }
@@ -450,8 +401,7 @@ def _format_historical_activities_text(activities_list, date_str=None, history_d
                 f"    * Pogoda/Warunki: {act_details.get('weather', NO_DATA)}\n"
                 f"    * Tętno: Średnie {act_details['avg_hr']} | Maksymalne {act_details['max_hr']}\n"
                 f"    * Biomechanika: Średnia kadencja {act_details['avg_cadence']}, krok {act_details['stride_length']}, kontakt {act_details['ground_contact_time']}, odchylenie {act_details['vertical_oscillation']}\n"
-                f"    * Obciążenie: Aerobic TE: {act_details['aerobic_te']}, Anaerobic TE: {act_details['anaerobic_te']}, Średnia moc: {act_details['avg_power']}\n"
-                f"    * Samoocena: RPE: {act_details.get('rpe', NO_DATA)} | Samopoczucie: {act_details.get('feeling', NO_DATA)}"
+                f"    * Obciążenie: Aerobic TE: {act_details['aerobic_te']}, Anaerobic TE: {act_details['anaerobic_te']}, Średnia moc: {act_details['avg_power']}"
                 f"{splits_text}"
             )
             acts_texts.append(act_entry)
@@ -464,7 +414,7 @@ def _format_historical_activities_text(activities_list, date_str=None, history_d
                 with open(hist_file, "r", encoding="utf-8") as hf:
                     h_content = hf.read()
 
-                is_strength = bool(re.search(r'(siłowni|siłowa|hevy|fbw|upper|lower|strength)', h_content, re.IGNORECASE))
+                is_strength = bool(RE_STRENGTH_KW.search(h_content))
                 if is_strength:
                     tables = _extract_exercise_tables(h_content)
                     strength_tables = []
@@ -473,8 +423,8 @@ def _format_historical_activities_text(activities_list, date_str=None, history_d
                         if any(k in header for k in ["ćwiczen", "obciążen", "rpe", "łańcuch", "partia", "ruch", "exercise", "weight"]):
                             strength_tables.append(tbl)
 
-                    profile_m = re.search(r'\*\s*Profil jednostki:\s*([^\n]+)', h_content)
-                    variant_m = re.search(r'(WARIANT B:[^\n]+)', h_content)
+                    profile_m = RE_PROFILE_HEADER.search(h_content)
+                    variant_m = RE_VARIANT_B_HEADER.search(h_content)
                     profile_str = ""
                     if profile_m:
                         profile_str = f" ({profile_m.group(1).strip()})"
@@ -605,40 +555,85 @@ def determine_workout_date(default_date, acts, stats):
 # 2. KOMUNIKACJA I POBIERANIE DANYCH Z GARMIN CONNECT
 # ==============================================================================
 
+def _dump_tokens_safe(client, tokenstore_dir):
+    """Bezpieczny zapis tokenów dla różnych wersji biblioteki garminconnect."""
+    try:
+        if hasattr(client, "dump"):
+            client.dump(tokenstore_dir)
+        elif hasattr(client, "client") and hasattr(client.client, "dump"):
+            client.client.dump(tokenstore_dir)
+        elif hasattr(client, "garth") and hasattr(client.garth, "dump"):
+            client.garth.dump(tokenstore_dir)
+    except Exception as e:
+        logger.debug(f"Manualny zrzut tokenów nie był wymagany lub zwrócił błąd: {e}")
+
+
 def get_garmin_client(email, password):
     """
     Inicjalizuje połączenie i loguje do Garmin Connect.
-    Obsługuje bezpieczne cache'owanie tokenów sesji OAuth (tokenstore) w ~/.garminconnect.
+    Obsługuje bezpieczne cache'owanie tokenów sesji OAuth (tokenstore) w ~/.garminconnect
+    oraz opcjonalne wstrzykiwanie tokenów ze zmiennej środowiskowej GARMIN_TOKENS_BASE64 / GARMIN_TOKENS_JSON.
     W przypadku błędu logowania natychmiast kończy działanie przez sys.exit(1).
     """
     tokenstore_dir = os.path.expanduser(os.getenv("GARMIN_TOKENS_DIR", "~/.garminconnect"))
     os.makedirs(tokenstore_dir, exist_ok=True)
+    token_file = os.path.join(tokenstore_dir, "garmin_tokens.json")
+
+    # Obsługa tokenów przekazanych bezpośrednio w zmiennych środowiskowych (np. GitHub Secret)
+    tokens_base64 = os.getenv("GARMIN_TOKENS_BASE64")
+    tokens_json = os.getenv("GARMIN_TOKENS_JSON")
+
+    if tokens_base64 and tokens_base64.strip():
+        try:
+            import base64
+            decoded_tokens = base64.b64decode(tokens_base64.strip()).decode("utf-8")
+            with open(token_file, "w", encoding="utf-8") as f:
+                f.write(decoded_tokens)
+            try:
+                os.chmod(token_file, 0o600)
+            except OSError:
+                pass
+            logger.info("Zainicjalizowano plik sesji z sekretu GARMIN_TOKENS_BASE64.")
+        except Exception as e:
+            logger.warning(f"Nie udało się załadować tokenów z GARMIN_TOKENS_BASE64: {e}")
+    elif tokens_json and tokens_json.strip():
+        try:
+            with open(token_file, "w", encoding="utf-8") as f:
+                f.write(tokens_json.strip())
+            try:
+                os.chmod(token_file, 0o600)
+            except OSError:
+                pass
+            logger.info("Zainicjalizowano plik sesji z sekretu GARMIN_TOKENS_JSON.")
+        except Exception as e:
+            logger.warning(f"Nie udało się załadować tokenów z GARMIN_TOKENS_JSON: {e}")
 
     logger.info("Inicjalizacja połączenia z Garmin Connect...")
-    client = None
 
-    # Próba wznowienia sesji z zapisanego tokena
+    # Logowanie z obsługą magazynu tokenów (garminconnect >= 0.3.0)
     try:
-        client = Garmin()
+        client = Garmin(email, password)
         client.login(tokenstore_dir)
-        logger.info("Pomyślnie zalogowano do Garmina przy użyciu zapisanego tokena sesji.")
+        _dump_tokens_safe(client, tokenstore_dir)
+        logger.info("Pomyślnie zalogowano do Garmin Connect.")
         return client
-    except Exception as e_token:
-        logger.info(f"Logowanie z tokena nie powiodło się ({e_token}). Próba pełnego logowania danymi...")
-        try:
-            client = Garmin(email, password)
-            client.login()
-            client.garth.dump(tokenstore_dir)
-            logger.info("Pomyślnie zalogowano pełnymi danymi i zapisano nowe tokeny sesji.")
-            return client
-        except Exception as e_login:
-            logger.error(f"Błąd logowania do Garmin Connect: {e_login}")
-            sys.exit(1)
+    except Exception as e:
+        err_msg = str(e)
+        logger.error(f"Błąd logowania do Garmin Connect: {err_msg}")
+        if "429" in err_msg or "rate limit" in err_msg.lower():
+            logger.error(
+                "Otrzymano błąd 429 (Zbyt wiele zapytań / Rate Limited przez Garmina). "
+                "Serwery Garmin tymczasowo zablokowały logowanie hasłem z tego adresu IP (częste w chmurze / GitHub Actions). "
+                "Aby uniezależnić się od blokad IP, wygeneruj token lokalnie na komputerze (plik ~/.garminconnect/garmin_tokens.json) "
+                "i dodaj go w GitHub Secrets jako GARMIN_TOKENS_BASE64."
+            )
+        sys.exit(1)
+
 
 
 def _fetch_activity_splits_and_weather(client, acts):
     """
-    Uzupełnia listę aktywności o splity kilometrowe, dane o pogodzie oraz samoocenę (RPE i samopoczucie).
+    Uzupełnia listę aktywności o splity kilometrowe oraz dane o pogodzie.
     """
     if acts:
         for act in acts:
@@ -652,34 +647,13 @@ def _fetch_activity_splits_and_weather(client, acts):
                     act['weather_data'] = client.get_activity_weather(act_id)
                 except Exception:
                     pass
-                # Pobranie samooceny (perceivedEffort i feel) z metadataDTO
-                try:
-                    if hasattr(client, 'get_activity'):
-                        full_act = client.get_activity(act_id)
-                        if full_act and isinstance(full_act, dict):
-                            meta = full_act.get('metadataDTO') or NO_DATA
-                            self_eval = meta.get('selfEvaluation') if isinstance(meta, dict) else NO_DATA
-
-                            act['perceivedEffort'] = (
-                                (meta.get('perceivedEffort') if isinstance(meta, dict) else None)
-                                or (self_eval.get('perceivedEffort') if isinstance(self_eval, dict) else None)
-                                or NO_DATA
-                            )
-
-                            act['feel'] = (
-                                (meta.get('feel') if isinstance(meta, dict) else None)
-                                or (self_eval.get('feel') if isinstance(self_eval, dict) else None)
-                                or NO_DATA
-                            )
-                except Exception:
-                    act.setdefault('perceivedEffort', NO_DATA)
-                    act.setdefault('feel', NO_DATA)
     return acts
 
 
 def _fetch_night_recovery_biometrics(client, date_str):
     """
-    Pobiera nocne dane regeneracyjne (sen, RHR, HRV, Body Battery) dla podanej daty.
+    Pobiera nocne dane regeneracyjne (sen, RHR, HRV) dla podanej daty.
+    Body Battery dla całego dnia pobierane jest w _fetch_day_activities_and_load.
     """
     recovery = {}
     try:
@@ -701,11 +675,6 @@ def _fetch_night_recovery_biometrics(client, date_str):
         recovery['hrv'] = client.get_hrv_data(date_str)
     except Exception as e:
         logger.warning(f"Nie udało się pobrać HRV z {date_str}: {e}")
-
-    try:
-        recovery['body_battery'] = client.get_body_battery(date_str)
-    except Exception as e:
-        logger.warning(f"Nie udało się pobrać Body Battery z {date_str}: {e}")
 
     return recovery
 

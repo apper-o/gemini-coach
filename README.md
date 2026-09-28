@@ -6,7 +6,7 @@ Funkcja get_gemini_models() w pliku coach_gemini nie weryfikuje, czy model ma po
 
 Inteligentny asystent treningowy integrujący dane biometryczne i biegowe z **Garmin Connect** z modelami językowymi **Google Gemini** oraz powiadomieniami na **Telegramie**.
 
-Skrypt analizuje całodobową biometrię (sen, HRV, RHR, Body Battery, stres, bilans kroków), biomechanikę biegową (splity, kadencja, czas kontaktu z podłożem, moc, przewyższenia), samoocenę zawodnika z zegarka Garmin (RPE w skali 1–10 oraz subiektywne samopoczucie) oraz historię treningową z ostatnich 42 dni (6 tygodni), proponując optymalne plany treningowe i codzienne adaptacje obciążeń.
+Skrypt analizuje całodobową biometrię (sen, HRV, RHR, Body Battery, stres, bilans kroków), biomechanikę biegową (splity, kadencja, czas kontaktu z podłożem, moc, przewyższenia), uwagi i notatki zawodnika z Telegrama oraz historię treningową z ostatnich 42 dni (6 tygodni), proponując optymalne plany treningowe i codzienne adaptacje obciążeń.
 
 ---
 
@@ -27,7 +27,7 @@ Utwórz plik `.env` w katalogu głównym na podstawie wzorca `.env.example`:
 ```env
 # Modele Google Gemini (kaskada modeli oddzielona przecinkami: główny -> zapasowe)
 GEMINI_API_KEY="twój_klucz_api"
-GEMINI_MODELS="gemini-3.5-flash,gemini-3.5-flash-lite,gemini-3.0-flash-lite"
+GEMINI_MODELS="gemini-3.5-flash,gemini-3.5-flash-lite,gemini-2.5-flash,gemini-2.5-flash-lite"
 
 # Dane logowania Garmin Connect (wymagane w trybie online)
 GARMIN_EMAIL="twoj_email@example.com"
@@ -39,7 +39,22 @@ USE_LOCAL_DATA="false"
 # Konfiguracja powiadomień Telegram (opcjonalne)
 TELEGRAM_BOT_TOKEN="twój_token_z_botfather"
 TELEGRAM_CHAT_ID="twój_chat_id"
+
+# Opcjonalny token sesji w base64 (zalecany w GitHub Actions / CI/CD, aby uniknąć błędu 429 Rate Limit)
+# GARMIN_TOKENS_BASE64="ey..."
 ```
+
+### Konfiguracja GitHub Actions (CI/CD)
+
+W ustawieniach repozytorium GitHub (**Settings -> Secrets and variables -> Actions**) zdefiniuj sekrety:
+* `GARMIN_EMAIL` oraz `GARMIN_PASSWORD` – dane konta Garmin Connect.
+* `GARMIN_TOKENS_BASE64` *(zalecane)* – zawartość lokalnego pliku sesji `~/.garminconnect/garmin_tokens.json` zakodowana w base64. Garmin blokuje logowanie hasłem z serwerów chmurowych (błąd HTTP 429 Rate Limited), dlatego przekazanie gotowego tokena pozwala na bezpośrednie odpytywanie API bez przechodzenia przez SSO.
+  * Wygenerowanie na maszynie lokalnej:
+    ```bash
+    base64 -w 0 ~/.garminconnect/garmin_tokens.json
+    ```
+* `GEMINI_API_KEY` – klucz API Google AI Studio.
+* `TELEGRAM_BOT_TOKEN` oraz `TELEGRAM_CHAT_ID` – dane bota Telegram do wysyłki raportów.
 
 ---
 
@@ -49,7 +64,7 @@ Skrypt `coach_gemini.py` przyjmuje jeden pozycyjny argument określający tryb d
 
 | Tryb | Opis działania |
 | :--- | :--- |
-| **`daily`** *(domyślny)* | **Główny wieczorny tryb audytu i adaptacji (uruchamiany codziennie o 20:57)**:<br>• **Główny priorytet**: Dogłębny audyt wykonanego dzisiaj treningu (bieg ze szczegółowymi splitami, tętno, kadencja, tempo vs założenia, samoocena RPE i samopoczucie z Garmina, trening siłowy/notatki z Telegrama, koszt OUN).<br>• **Biometria**: Analiza nocnej bazy regeneracyjnej przed dzisiejszym wysiłkiem (sen, HRV, RHR), obciążenia całodniowego (stres, kroki, wieczorne Body Battery) oraz kontekstu historycznego z dnia poprzedniego.<br>• **Zalecenia regeneracyjne**: Praktyczne wytyczne na wieczór i noc (zapotrzebowanie na sen pod kątem regeneracji OUN, dedykowana sesja rolowania/mobilności ze wskazaniem konkretnych partii mięśniowych, nawodnienie).<br>• **Gotowość i adaptacja**: Ocena gotowości na jutrzejszy trening wraz z jednoznacznym werdyktem: `[ZWIĘKSZAMY INTENSYWNOŚĆ / POZOSTAJE TAKA SAMA / ZMNIEJSZAMY INTENSYWNOŚĆ / MODYFIKACJA ZAŁOŻEŃ]` i gotową rozpiską.<br>Zapisuje raport do `output/last_daily_report.md` oraz archiwizuje w `trainings_history/YYYY-MM-DD.md`. *(Alias: `today`)*. |
+| **`daily`** *(domyślny)* | **Główny wieczorny tryb audytu i adaptacji (uruchamiany codziennie o 20:57)**:<br>• **Główny priorytet**: Dogłębny audyt wykonanego dzisiaj treningu (bieg ze szczegółowymi splitami, tętno, kadencja, tempo vs założenia, trening siłowy/notatki z Telegrama, koszt OUN).<br>• **Biometria**: Analiza nocnej bazy regeneracyjnej przed dzisiejszym wysiłkiem (sen, HRV, RHR), obciążenia całodniowego (stres, kroki, wieczorne Body Battery) oraz kontekstu historycznego z dnia poprzedniego.<br>• **Zalecenia regeneracyjne**: Praktyczne wytyczne na wieczór i noc (zapotrzebowanie na sen pod kątem regeneracji OUN, dedykowana sesja rolowania/mobilności ze wskazaniem konkretnych partii mięśniowych, nawodnienie).<br>• **Gotowość i adaptacja**: Ocena gotowości na jutrzejszy trening wraz z jednoznacznym werdyktem: `[ZWIĘKSZAMY INTENSYWNOŚĆ / POZOSTAJE TAKA SAMA / ZMNIEJSZAMY INTENSYWNOŚĆ / MODYFIKACJA ZAŁOŻEŃ]` i gotową rozpiską.<br>Zapisuje raport do `output/last_daily_report.md` oraz archiwizuje w `trainings_history/YYYY-MM-DD.md`. *(Alias: `today`)*. |
 | **`suggest`** | **Sugestia podziału dni i typów treningu**: Model analizuje cele biegacza, fazę przygotowań oraz historię ostatnich 42 dni (6 tygodni), proponując optymalny układ jednostek (Easy, Tempo, Siłownia, Rest Day) na nadchodzący tydzień. Zapisuje propozycję do `input/weekly_preferences.md`. |
 | **`plan`** | **Układanie pełnego planu tygodniowego**: Generuje kompletny 7-dniowy plan treningowy od poniedziałku do niedzieli. Wykorzystuje preferencje z `input/weekly_preferences.md`, profil z `input/training_config.json`, bazę ćwiczeń z `input/strength_routines.md` oraz 42-dniową historię. Zapisuje plan do `output/weekly_plan.md`. |
 

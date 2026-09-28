@@ -8,7 +8,12 @@ import datetime
 import logging
 import re
 
-from send_telegram import fetch_recent_telegram_messages, save_telegram_state, markdown_to_html_doc
+from send_telegram import (
+    fetch_recent_telegram_messages,
+    save_telegram_state,
+    markdown_to_html_doc,
+    finish_run,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +27,7 @@ HISTORY_DIR = "trainings_history"
 DEBUG_DIR = "debug"
 
 TRAINING_CONFIG_KEYS = (
-    "primary_goal", "secondary_goal", "phase", "time_left", "height", "weight", "max_hr", "lthr",
+    "primary_goal", "secondary_goal", "phase", "last_event_date", "height", "weight", "max_hr", "lthr",
     "z1", "z2", "z3", "z4", "z5", "personal_records"
 )
 UNKNOWN_VALUE_KEYWORDS = frozenset({"nieznany", "brak", "none", "null"})
@@ -38,6 +43,21 @@ STRENGTH_WORKOUT_NAMES = frozenset({
     "legs",
 })
 NOTE_KEYWORD = "note"
+
+# Prekompilowane wyrażenia regularne dla parsowania historii i metadanych
+RE_RUN_META = re.compile(r'^-\s*Bieg:\s*TAK\s*\(([0-9.,]+)\s*km,\s*sesje:\s*([0-9]+)\)', re.MULTILINE)
+RE_STR_TAK = re.compile(r'^-\s*Siłownia:\s*TAK', re.MULTILINE)
+RE_DAY_TYPE = re.compile(r'^-\s*Typ dnia:\s*([^\n]+)', re.MULTILINE)
+RE_RUN_W5 = re.compile(r'^-\s*Bieg:\s*(TAK|NIE)(?:\s*\(([0-9.,]+)\s*km,\s*sesje:\s*([0-9]+)\))?', re.MULTILINE)
+RE_RUN_TYPE = re.compile(r'^-\s*Typ treningu biegowego:\s*([^\n]+)', re.MULTILINE)
+RE_RUN_STRUCT = re.compile(r'^-\s*Struktura biegu:\s*([^\n]+)', re.MULTILINE)
+RE_STR_W5 = re.compile(r'^-\s*Siłownia:\s*(TAK|NIE)', re.MULTILINE)
+RE_MUSCLE = re.compile(r'^-\s*Partie mięśniowe \(siłownia\):\s*([^\n]+)', re.MULTILINE)
+RE_DECISION_CORR = re.compile(r'\*\s*DECYZJA O KOREKCIE[^\n:]*:\s*([^\n]+)', re.IGNORECASE)
+RE_DECISION_ACC = re.compile(r'\*\s*Zgodność z planem[^\n:]*:\s*([^\n]+)', re.IGNORECASE)
+
+RE_DIST_FLOAT = re.compile(r'([0-9]+(?:[.,][0-9]+)?)')
+RE_PLAN_STRUCT = re.compile(r'Dystans:\s*Plan:[^\n\(]*\(([^)]*(?:rozgrzewk|schłodzen|główn|mp|tempo)[^)]*)\)', re.IGNORECASE)
 
 
 # ==============================================================================
@@ -119,6 +139,18 @@ def load_training_config(config_filepath=os.path.join(INPUT_DIR, "training_confi
             f"Plik '{config_filepath}' musi zawierać obiekt JSON (słownik), a otrzymano: {type(runner_config).__name__}"
         )
 
+    # Walidacja struktury celów (brak wstecznej kompatybilności - wymagane obiekty słownikowe)
+    for goal_key in ("primary_goal", "secondary_goal"):
+        goal_val = runner_config.get(goal_key)
+        if not isinstance(goal_val, dict):
+            raise ValueError(
+                f"Klucz '{goal_key}' w '{config_filepath}' musi być obiektem JSON (słownikiem) z polami 'target', 'date', 'stimulus_share'. Otrzymano: {type(goal_val).__name__}"
+            )
+        if "target" not in goal_val:
+            raise ValueError(f"Obiekt '{goal_key}' w '{config_filepath}' musi zawierać pole 'target'.")
+        if "stimulus_share" not in goal_val:
+            raise ValueError(f"Obiekt '{goal_key}' w '{config_filepath}' musi zawierać pole 'stimulus_share'.")
+
     # 4. Scalenie z szablonem bazowym (gwarancja obecności wszystkich wymaganych kluczy)
     default_training_profile = {field: NO_DATA for field in TRAINING_CONFIG_KEYS}
     runner_records = runner_config.get("personal_records")
@@ -175,13 +207,101 @@ def format_personal_records(records):
     return "\n".join(formatted_lines)
 
 
-def build_user_profile(training_context):
+def format_goal(goal_data):
     """
-    Formatuje profil zawodnika (cele główne/poboczne, faza treningowa, czas do startu,
-    antropometria, strefy tętna Z1-Z5 oraz rekordy życiowe PB) do postaci słownika dla promptów.
+    Formatuje cel biegowy z obiektu słownika zawierającego pola:
+    - target: treść celu (np. '5km < 20:00')
+    - date: termin startu docelowego (YYYY-MM-DD lub None)
+    - stimulus_share: udział procentowy bodźca treningowego (np. 0.75 -> 75%)
+    """
+    if not isinstance(goal_data, dict):
+        raise ValueError(f"Oczekiwano słownika dla celu biegowego, a otrzymano: {type(goal_data).__name__}")
+
+    target = str(goal_data.get("target", NO_DATA)).strip()
+    date_val = goal_data.get("date")
+    share = goal_data.get("stimulus_share")
+
+    share_str = ""
+    if share is not None and share != NO_DATA:
+        try:
+            share_pct = int(round(float(share) * 100))
+            share_str = f" | Udział bodźca: {share_pct}%"
+        except (ValueError, TypeError):
+            share_str = f" | Udział bodźca: {share}"
+
+    if date_val and date_val != NO_DATA:
+        return f"{target} (Termin: {date_val}{share_str})"
+    else:
+        return f"{target} (Termin: brak / cel ciągły{share_str})"
+
+
+def calculate_time_left(goal_data, ref_date=None):
+    """
+    Oblicza pozostały czas do startu na podstawie daty celu głównego ze słownika.
+    """
+    if not isinstance(goal_data, dict):
+        return NO_DATA
+
+    target_date_str = goal_data.get("date")
+    if not target_date_str or target_date_str == NO_DATA:
+        return NO_DATA
+
+    try:
+        ref_d = ref_date or datetime.date.today()
+        target_d = datetime.date.fromisoformat(str(target_date_str).strip())
+        delta = (target_d - ref_d).days
+
+        if delta < 0:
+            return f"Cel minął ({abs(delta)} dni temu, data: {target_date_str})"
+        elif delta == 0:
+            return f"Dziś dzień startu! ({target_date_str})"
+        elif delta == 1:
+            return f"1 dzień (jutro start! data: {target_date_str})"
+        else:
+            weeks = delta // 7
+            rem_days = delta % 7
+            if weeks > 0 and rem_days > 0:
+                weeks_detail = f"{weeks} tyg. i {rem_days} dni"
+            elif weeks > 0:
+                weeks_detail = f"{weeks} tyg."
+            else:
+                weeks_detail = f"{delta} dni"
+            return f"{delta} dni ({weeks_detail}, data startu: {target_date_str})"
+    except Exception as e:
+        logger.debug(f"Nie udało się obliczyć czasu do celu: {e}")
+        return str(target_date_str)
+
+
+def format_last_event_info(last_event_date, ref_date=None):
+    """
+    Formatuje informację o dacie ostatniego startu i liczbie dni, które od niego upłynęły.
+    """
+    if not last_event_date or last_event_date == NO_DATA:
+        return NO_DATA
+    try:
+        ref_d = ref_date or datetime.date.today()
+        ev_d = datetime.date.fromisoformat(str(last_event_date).strip())
+        days_ago = (ref_d - ev_d).days
+        if days_ago == 0:
+            return f"{last_event_date} (dzisiaj)"
+        elif days_ago == 1:
+            return f"{last_event_date} (wczoraj / 1 dzień temu)"
+        elif days_ago > 1:
+            return f"{last_event_date} ({days_ago} dni temu)"
+        else:
+            return f"{last_event_date} (za {abs(days_ago)} dni)"
+    except Exception:
+        return str(last_event_date)
+
+
+def build_user_profile(training_context, ref_date=None):
+    """
+    Formatuje profil zawodnika (cele główny i poboczny z udziałami bodźca, faza treningowa,
+    czas do startu, data ostatniego startu, antropometria, strefy tętna Z1-Z5 oraz rekordy PB)
+    do postaci słownika parametrów dla promptów.
     """
     if not isinstance(training_context, dict):
-        training_context = {}
+        raise ValueError(f"Oczekiwano słownika konfiguracji treningowej, a otrzymano: {type(training_context).__name__}")
 
     profile = dict(training_context)
     z1 = profile.get("z1", NO_DATA)
@@ -192,6 +312,40 @@ def build_user_profile(training_context):
 
     profile["hr_zones"] = f"Z1: {z1}, Z2: {z2}, Z3: {z3}, Z4: {z4}, Z5: {z5}"
     profile["personal_records"] = format_personal_records(profile.get("personal_records"))
+
+    raw_primary = profile.get("primary_goal")
+    raw_secondary = profile.get("secondary_goal")
+
+    # Formatowanie celów ze słowników
+    profile["primary_goal"] = format_goal(raw_primary)
+    profile["secondary_goal"] = format_goal(raw_secondary)
+
+    # Wyodrębnienie szczegółowych pól celów i proporcji bodźców
+    p_target = raw_primary.get("target", NO_DATA) if isinstance(raw_primary, dict) else NO_DATA
+    s_target = raw_secondary.get("target", NO_DATA) if isinstance(raw_secondary, dict) else NO_DATA
+    p_share = raw_primary.get("stimulus_share", 0.75) if isinstance(raw_primary, dict) else 0.75
+    s_share = raw_secondary.get("stimulus_share", 0.25) if isinstance(raw_secondary, dict) else 0.25
+    p_pct = int(round(float(p_share) * 100)) if isinstance(p_share, (int, float)) else str(p_share)
+    s_pct = int(round(float(s_share) * 100)) if isinstance(s_share, (int, float)) else str(s_share)
+
+    profile["primary_stimulus_share"] = f"{p_pct}%"
+    profile["secondary_stimulus_share"] = f"{s_pct}%"
+    profile["stimulus_distribution"] = f"{p_pct}% cel główny ({p_target}) / {s_pct}% cel poboczny ({s_target})"
+
+    # Dynamiczny czas do celu na podstawie daty w primary_goal
+    profile["time_left"] = calculate_time_left(raw_primary, ref_date=ref_date)
+
+    # Informacje o ostatnim starcie
+    last_event_date = profile.get("last_event_date")
+    if last_event_date and last_event_date != NO_DATA:
+        ev_info = format_last_event_info(last_event_date, ref_date=ref_date)
+        profile["last_event_info"] = ev_info
+        raw_phase = profile.get("phase", NO_DATA)
+        if raw_phase != NO_DATA and "ostatni start" not in raw_phase.lower():
+            profile["phase"] = f"{raw_phase} (ostatni start: {ev_info})"
+    else:
+        profile["last_event_info"] = NO_DATA
+
     return profile
 
 
@@ -355,14 +509,14 @@ def _parse_message_blocks(note: str) -> list[tuple[str, str]]:
     return blocks
 
 
-def separate_strength_and_user_notes(note: str | None) -> tuple[str | None, str | None]:
+def separate_strength_and_user_notes(note):
     """
     Rozdziela treść notatek użytkownika z Telegrama na:
-    1. Trening(i) siłowy(e) – bloki, w których 1. linijka to nazwa rutyny (fbw, upper, lower, core, push, pull, legs).
-    2. Uwagi biegacza – wiadomości rozpoczynające się od słowa 'NOTE' w 1. linijce (ze stripowaniem znacznika NOTE)
+    1. Treningi siłowe: bloki, w których 1. linijka to nazwa rutyny (fbw, upper, lower, core, push, pull, legs).
+    2. Uwagi biegacza: wiadomości rozpoczynające się od słowa 'note` w 1. linijce (ze stripowaniem znacznika note)
        oraz inne ogólne komentarze, z zachowaniem ich znaczników czasowych.
 
-    Zwraca:
+    Returns:
         (strength_workout, remaining_user_note)
         gdzie każda wartość to str lub None.
     """
@@ -435,21 +589,18 @@ def _find_history_anchor_date(history_dir, all_files, ref_date):
     if os.path.exists(today_file):
         return ref_date
 
-    past_dates = []
+    # all_files jest posortowane malejąco (reverse=True), więc pierwszy pasujący element to najnowsza data przeszła
     for f in all_files:
         try:
             d = datetime.date.fromisoformat(f[:-3])
             if d <= ref_date:
-                past_dates.append(d)
+                return d
         except ValueError:
             pass
 
-    if past_dates:
-        return max(past_dates)
-
     try:
         return datetime.date.fromisoformat(all_files[0][:-3])
-    except ValueError:
+    except (ValueError, IndexError):
         return ref_date
 
 
@@ -475,8 +626,8 @@ def _summarize_history_weeks_1_4(history_dir, start_date):
                 try:
                     with open(f_path, "r", encoding="utf-8") as hf:
                         c = hf.read()
-                    m_run = re.search(r'^-\s*Bieg:\s*TAK\s*\(([0-9.,]+)\s*km,\s*sesje:\s*([0-9]+)\)', c, re.MULTILINE)
-                    m_str = re.search(r'^-\s*Siłownia:\s*TAK', c, re.MULTILINE)
+                    m_run = RE_RUN_META.search(c)
+                    m_str = RE_STR_TAK.search(c)
 
                     if m_run:
                         w_km += float(m_run.group(1).replace(',', '.'))
@@ -516,12 +667,12 @@ def _summarize_history_week_5(history_dir, start_date):
 
             day_name = DAYS_PL[cur_d.weekday()]
 
-            m_day_type = re.search(r'^-\s*Typ dnia:\s*([^\n]+)', c, re.MULTILINE)
-            m_run = re.search(r'^-\s*Bieg:\s*(TAK|NIE)(?:\s*\(([0-9.,]+)\s*km,\s*sesje:\s*([0-9]+)\))?', c, re.MULTILINE)
-            m_run_type = re.search(r'^-\s*Typ treningu biegowego:\s*([^\n]+)', c, re.MULTILINE)
-            m_run_struct = re.search(r'^-\s*Struktura biegu:\s*([^\n]+)', c, re.MULTILINE)
-            m_str = re.search(r'^-\s*Siłownia:\s*(TAK|NIE)', c, re.MULTILINE)
-            m_muscle = re.search(r'^-\s*Partie mięśniowe \(siłownia\):\s*([^\n]+)', c, re.MULTILINE)
+            m_day_type = RE_DAY_TYPE.search(c)
+            m_run = RE_RUN_W5.search(c)
+            m_run_type = RE_RUN_TYPE.search(c)
+            m_run_struct = RE_RUN_STRUCT.search(c)
+            m_str = RE_STR_W5.search(c)
+            m_muscle = RE_MUSCLE.search(c)
 
             is_run = (m_run and m_run.group(1).upper() == "TAK")
             is_str = (m_str and m_str.group(1).upper() == "TAK")
@@ -547,9 +698,9 @@ def _summarize_history_week_5(history_dir, start_date):
                 workout_desc = " + ".join(parts_desc)
 
             # Ekstrakcja decyzji trenera
-            dec_m = re.search(r'\*\s*DECYZJA O KOREKCIE[^\n:]*:\s*([^\n]+)', c, re.IGNORECASE)
+            dec_m = RE_DECISION_CORR.search(c)
             if not dec_m:
-                dec_m = re.search(r'\*\s*Zgodność z planem[^\n:]*:\s*([^\n]+)', c, re.IGNORECASE)
+                dec_m = RE_DECISION_ACC.search(c)
             decision_str = dec_m.group(1).strip() if dec_m else "Zgodnie z planem"
 
             day_entry = f"- {cur_d.isoformat()} ({day_name}): {workout_desc} | Decyzja trenera: {decision_str}"
@@ -645,7 +796,6 @@ def _format_activity_section(activity_stats, date_str, strength_workout=None):
 - Efekt treningowy i moc:
   * Aerobic Training Effect: {act.get('aerobic_te')} | Anaerobic TE: {act.get('anaerobic_te')}
   * Średnia moc biegowa: {act.get('avg_power')}
-- Samoocena zawodnika (Garmin): RPE: {act.get('rpe', NO_DATA)} | Samopoczucie: {act.get('feeling', NO_DATA)}
 - Splity kilometrowe / odcinki:
 {splits_text}"""
             act_blocks.append(block)
@@ -664,14 +814,14 @@ def _format_activity_section(activity_stats, date_str, strength_workout=None):
     return "\n\n".join(parts)
 
 
-def generate_weekly_suggestions_prompt(training_context, history_context=None, user_note=None):
+def generate_weekly_suggestions_prompt(training_context, history_context=None, user_note=None, ref_date=None):
     """
     Tworzy prompt dla Gemini w trybie 'suggest' bez przesyłania biometrii z Garmina.
     Model proponuje typy/cele treningów na podstawie profilu biegacza, historii z ostatnich 42 dni i notatki.
     """
     hist_section = history_context if history_context else "Brak zarejestrowanej historii treningów z ostatnich 42 dni."
     note_section = user_note if user_note else "Brak dodatkowych uwag od biegacza."
-    profile = build_user_profile(training_context)
+    profile = build_user_profile(training_context, ref_date=ref_date)
 
     return load_prompt_template(
         "weekly_suggestions.md",
@@ -681,14 +831,14 @@ def generate_weekly_suggestions_prompt(training_context, history_context=None, u
     )
 
 
-def generate_weekly_plan_prompt(days_preferences, training_context, history_context=None, user_note=None, strength_routines=None):
+def generate_weekly_plan_prompt(days_preferences, training_context, history_context=None, user_note=None, strength_routines=None, ref_date=None):
     """
     Tworzy prompt dla Gemini do ułożenia kompletnego planu treningowego na cały tydzień.
     """
     hist_section = history_context if history_context else "Brak zarejestrowanej historii treningów z ostatnich 42 dni."
     note_section = user_note if user_note else "Brak dodatkowych uwag od biegacza."
     routines_section = strength_routines if strength_routines else "Brak zdefiniowanych zestawów siłowych w pliku input/strength_routines.md."
-    profile = build_user_profile(training_context)
+    profile = build_user_profile(training_context, ref_date=ref_date)
 
     return load_prompt_template(
         "weekly_plan.md",
@@ -789,7 +939,6 @@ def _format_acts_archive_blocks(all_stats):
 - Dystans: {act_s['distance']} | Czas: {act_s['duration']} | Średnie tempo: {act_s['pace']}
 - Tętno: Średnie {act_s['avg_hr']} | Max {act_s['max_hr']}
 - Training Effect: Aerobowy {act_s['aerobic_te']} | Beztlenowy {act_s['anaerobic_te']}
-- Samoocena: RPE: {act_s.get('rpe', NO_DATA)} | Samopoczucie: {act_s.get('feeling', NO_DATA)}
 - Biomechanika: Średnia kadencja {act_s['avg_cadence']}, Krok {act_s['stride_length']}, Kontakt z podłożem {act_s['ground_contact_time']}, Odchylenie pionowe {act_s['vertical_oscillation']}
 
 #### Splity:
@@ -905,7 +1054,7 @@ def _extract_run_metadata(all_stats, response_text=None, strength_workout=None) 
     run_km = 0.0
     for act in stats_list:
         d_raw = str(act.get("distance", "0"))
-        m = re.search(r'([0-9]+(?:[.,][0-9]+)?)', d_raw)
+        m = RE_DIST_FLOAT.search(d_raw)
         if m:
             run_km += float(m.group(1).replace(",", "."))
 
@@ -921,32 +1070,73 @@ def _extract_run_metadata(all_stats, response_text=None, strength_workout=None) 
     run_line = f"TAK ({run_km:.2f} km, sesje: {run_count})"
     day_type = "BIEG + SIŁOWNIA" if strength_workout else "BIEG"
 
-    # Wykrywanie typu treningu biegowego
+    # Wykrywanie typu treningu biegowego na podstawie raportu trenera oraz danych aktywności
     run_type = None
-    m_profile = re.search(r'\*\s*Profil jednostki:\s*([^\n]+)', resp)
-    if m_profile:
-        run_type = m_profile.group(1).strip()
-    if not run_type:
-        m_day = re.search(r'\*\s*Typ dnia:\s*BIEGOWY\s*\(([^)]+)\)', resp)
-        if m_day:
-            run_type = m_day.group(1).strip()
+    resp_lower = resp.lower()
 
+    # 1. Sprawdzamy jawny profil jednostki biegowej podany przez trenera w sekcji audytu biegowego
+    run_section_text = resp
+    if "część biegowa" in resp_lower:
+        run_section_text = resp[resp_lower.find("część biegowa"):]
+        if "część siłowa" in run_section_text.lower():
+            run_section_text = run_section_text[:run_section_text.lower().find("część siłowa")]
+
+    m_profile = re.search(r'\*\s*Profil jednostki:\s*([^\n]+)', run_section_text, re.IGNORECASE)
+    if m_profile:
+        cand = m_profile.group(1).strip().strip("[]")
+        if cand and cand.lower() not in ("brak", "n/d", "nie dotyczy", "brak danych"):
+            run_type = cand
+
+    # 2. Jeśli brak jawnego profilu w raporcie, sprawdzamy specyficzne nazwy z Garmina (act_names)
     if not run_type:
         act_names = " ".join([str(a.get("name", "")) for a in stats_list]).lower()
-        if "vo2max" in resp.lower() or "interwał" in resp.lower() or any("interwał" in str(a.get("name", "")).lower() for a in stats_list):
+        if "półmaraton" in act_names:
+            run_type = "Półmaraton / Bieg startowy"
+        elif "maraton" in act_names:
+            run_type = "Maraton / Bieg startowy"
+        elif any(k in act_names for k in ["zawody", "bieg startowy", "parkrun", "mistrzostwa", "puchar", "start"]):
+            run_type = "Zawody / Bieg startowy"
+        elif any(k in act_names for k in ["interwał", "vo2max", "odcinki", "rytm", "podbieg", "intervals", "repeats"]):
             run_type = "Interwały / Próg (VO2max / Threshold)"
-        elif "mp" in resp.lower() or "maratoński" in resp.lower() or "maraton" in resp.lower():
-            run_type = "Tempo Maratońskie (MP)"
-        elif run_km >= 14.0:
+        elif any(k in act_names for k in ["tempo", "progowy", "threshold"]):
+            run_type = "Bieg progowy / Tempo (Threshold / MP)"
+        elif any(k in act_names for k in ["długie wybieganie", "long run", "wybieganie"]):
             run_type = "Długie wybieganie (Long Run)"
-        elif any("recovery" in str(a.get("name", "")).lower() for a in stats_list) or "regenerac" in resp.lower():
+        elif any(k in act_names for k in ["recovery", "regenerac", "regeneracyjny"]):
             run_type = "Bieg regeneracyjny (Recovery Run)"
-        else:
+        elif "bieżni" in act_names or "treadmill" in act_names:
+            run_type = "Bieg na bieżni mechanicznej (Treadmill)"
+        elif "przełajowy" in act_names or "trail" in act_names:
+            run_type = "Bieg przełajowy (Trail)"
+        elif "lekkoatletyczny" in act_names or "track" in act_names:
+            run_type = "Bieg na bieżni lekkoatletycznej (Track)"
+
+    # 3. Pogłębiona analiza kontekstu raportu trenera (resp_lower), gdy brak jawnego profilu i nazwa w Garminie jest domyślna
+    if not run_type:
+        if any(k in resp_lower for k in ["dzień startowy", "bieg startowy", "start w zawodach", "udział w zawodach"]):
+            if "maraton" in resp_lower and any(w in resp_lower for w in ["42.", "królewski", "maraton warszawski", "trasa maratonu"]):
+                run_type = "Maraton / Bieg startowy"
+            elif "półmaraton" in resp_lower:
+                run_type = "Półmaraton / Bieg startowy"
+            else:
+                run_type = "Zawody / Bieg startowy"
+        elif any(k in resp_lower for k in ["trening interwałowy", "interwały", "sesja vo2max", "odcinki robocze", "trening powtórzeniowy", "fartlek", "podbiegi"]):
+            run_type = "Interwały / Akcent (VO2max / Threshold)"
+        elif any(k in resp_lower for k in ["tempo maratońskie", "blok mp", "akcent mp", "trening progowy", "próg mleczanowy", "lthr", "strefa z4", "strefa z3", "drugi zakres", "ii zakres"]):
+            run_type = "Bieg progowy / Tempo (Threshold / MP)"
+        elif any(k in resp_lower for k in ["długie wybieganie", "long run", "trening objętościowy", "wybieganie"]):
+            run_type = "Długie wybieganie (Long Run)"
+        elif any(k in resp_lower for k in ["bieg regeneracyjny", "trucht regeneracyjny", "recovery run", "strefa z1", "regeneracja aktywna"]):
+            run_type = "Bieg regeneracyjny (Recovery Run)"
+        elif any(k in resp_lower for k in ["baza tlenowa", "bieg spokojny", "strefa z2", "pierwszy zakres", "i zakres", "easy run", "rozbieganie"]):
             run_type = "Bieg spokojny (Easy Run / Z2)"
+        else:
+            # W przypadku braku specyficznych cech nie zgadujemy "biegu spokojnego", lecz opieramy się na ogólnym charakterze z audytu
+            run_type = "Bieg ciągły (według analizy trenera)"
 
     # Wykrywanie struktury biegu (Rozgrzewka, Główna seria, Schłodzenie)
     run_structure = None
-    m_plan_struct = re.search(r'Dystans:\s*Plan:[^\n\(]*\(([^)]*(?:rozgrzewk|schłodzen|główn|mp|tempo)[^)]*)\)', resp, re.IGNORECASE)
+    m_plan_struct = RE_PLAN_STRUCT.search(resp)
     if m_plan_struct:
         raw_struct = m_plan_struct.group(1).strip()
         parts = [p.strip() for p in raw_struct.split(",") if p.strip()]
@@ -1022,8 +1212,8 @@ def build_daily_archive_content(workout_date, date_str, next_date_str, all_stats
 - Sen (miniona noc przed treningiem): {garmin_stats.get('sleep_score')} (Głęboki: {garmin_stats.get('deep_sleep')}, REM: {garmin_stats.get('rem_sleep')})
 - Wnioski o śnie: {garmin_stats.get('sleep_insights')}
 - Body Battery pod koniec dnia: {garmin_stats.get('body_battery')}
-- Całodzienny stres w dniu {date_str}: {garmin_stats.get('today_stress')}
-- Kroki w dniu {date_str} (cały dzień): {garmin_stats.get('today_steps')}"""
+- Całodzienny stres: {garmin_stats.get('today_stress')}
+- Kroki (cały dzień): {garmin_stats.get('today_steps')}"""
 
     return f"""{metadata_header}
 
@@ -1034,7 +1224,7 @@ def build_daily_archive_content(workout_date, date_str, next_date_str, all_stats
 """
 
 
-def _build_and_save_daily_archive(workout_date, date_str, next_date_str, all_stats, garmin_stats, response_text, strength_workout=None, user_note=None, debug=False, mode="daily"):
+def build_and_save_daily_archive(workout_date, date_str, next_date_str, all_stats, garmin_stats, response_text, strength_workout=None, user_note=None, debug=False, mode="daily"):
     """
     Formatuje i zapisuje raport dzienny do pliku archiwum w trainings_history/.
     Podsumowuje audytowany dzień (date_str), biometrię snu/dnia oraz adaptację na dzień kolejny (next_date_str).
@@ -1053,20 +1243,6 @@ def _build_and_save_daily_archive(workout_date, date_str, next_date_str, all_sta
     save_daily_report(workout_date, archive_content, debug=debug)
 
 
-def finish_run(new_tg_state=None, debug=False, note_file=None):
-    """
-    Zapisuje zaktualizowany stan Telegrama po udanym wykonaniu trybu.
-    W trybie debug (debug=True) operacja ta jest pomijana, aby chronić stan wiadomości.
-    """
-    if debug:
-        logger.info("[DEBUG] Tryb debugowania aktywny: pominięto aktualizację stanu Telegrama.")
-        print("\n🛡️  [TRYB DEBUG] Stan Telegrama pozostał nienaruszony.")
-        return
-
-    # Kompatybilność wsteczna na wypadek wywołania ze starej sygnatury finish_run(note_file, new_tg_state, debug)
-    if isinstance(note_file, dict) and new_tg_state is None:
-        new_tg_state = note_file
-
-    if new_tg_state and save_telegram_state:
-        save_telegram_state(new_tg_state)
+# Alias dla pełnej kompatybilności wstecznej
+_build_and_save_daily_archive = build_and_save_daily_archive
 

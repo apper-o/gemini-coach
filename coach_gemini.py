@@ -15,7 +15,11 @@ import time
 from dotenv import load_dotenv
 from google import genai
 
-from send_telegram import send_report, markdown_to_html_doc
+from send_telegram import (
+    send_report,
+    markdown_to_html_doc,
+    finish_run,
+)
 from garmin_service import (
     load_or_fetch_garmin_data,
     parse_garmin_verification_data,
@@ -32,8 +36,7 @@ from coach_prompts import (
     generate_weekly_suggestions_prompt,
     generate_weekly_plan_prompt,
     build_verification_prompt,
-    _build_and_save_daily_archive,
-    finish_run,
+    build_and_save_daily_archive,
     separate_strength_and_user_notes,
 )
 
@@ -125,12 +128,13 @@ def send_gemini_prompt_with_fallback(client, prompt, models=None, debug=False):
             return response
         except Exception as e:
             err_msg = str(e)
-            logger.warning(f"⚠️ Model {model_name} zwrócił błąd ({err_msg}).")
             last_error = e
-            if idx < len(models):
-                logger.info(f"🔄 Przełączam na model zapasowy: {models[idx]}...")
-                time.sleep(2)
-                continue
+            logger.warning(f"⚠️ Model {model_name} zwrócił błąd ({err_msg}).")
+
+        if idx < len(models):
+            logger.info(f"🔄 Przełączam na model zapasowy: {models[idx]}...")
+            time.sleep(5)
+            continue
 
     models_list_str = ', '.join(models) if models else 'Brak'
     exit_with_error(
@@ -145,7 +149,7 @@ def send_gemini_prompt_with_fallback(client, prompt, models=None, debug=False):
 # GŁÓWNE TRYBY DZIAŁANIA
 # ==============================================================================
 
-def run_suggest_mode(client, training_context, history_context, user_note, preferences_file, debug=False, models=None):
+def run_suggest_mode(client, training_context, history_context, user_note, preferences_file, debug=False, models=None, ref_date=None):
     """
     Tryb suggest: Generowanie sugestii typów treningów na tydzień.
     Model analizuje historię ostatnich 42 dni, fazę i cele, aby zaproponować podział jednostek.
@@ -162,7 +166,8 @@ def run_suggest_mode(client, training_context, history_context, user_note, prefe
     suggest_prompt = generate_weekly_suggestions_prompt(
         training_context=training_context,
         history_context=history_context,
-        user_note=user_note
+        user_note=user_note,
+        ref_date=ref_date
     )
 
     try:
@@ -188,7 +193,7 @@ def run_suggest_mode(client, training_context, history_context, user_note, prefe
         exit_with_error("Wystąpił błąd podczas generowania sugestii.", error=e)
 
 
-def run_plan_mode(client, training_context, history_context, user_note, preferences_file, weekly_plan_file, strength_routines_file, debug=False, models=None):
+def run_plan_mode(client, training_context, history_context, user_note, preferences_file, weekly_plan_file, strength_routines_file, debug=False, models=None, ref_date=None, send_tg=False):
     """Tryb planowania: Planowanie całego tygodnia treningowego."""
     print("\n" + "="*60)
     print("🗓️  TRYB PLANOWANIA TYGODNIOWEGO (GEMINI COACH) 🗓️")
@@ -265,7 +270,8 @@ def run_plan_mode(client, training_context, history_context, user_note, preferen
         training_context=training_context,
         history_context=history_context,
         user_note=user_note,
-        strength_routines=strength_routines
+        strength_routines=strength_routines,
+        ref_date=ref_date
     )
 
     try:
@@ -280,15 +286,19 @@ def run_plan_mode(client, training_context, history_context, user_note, preferen
             wf.write(response.text)
 
         if debug:
-            print(f"\n✅ [TRYB DEBUG] Zapisano plan do: {target_plan_file} (Plik produkcyjny {weekly_plan_file} pozostał nienaruszony)")
+            print(f"\n🛡️  [TRYB DEBUG] Zapisano plan do: {target_plan_file} (Plik produkcyjny {weekly_plan_file} pozostał nienaruszony)")
 
-            # Wygenerowanie podglądu HTML w folderze debug/ bez wysyłki na Telegram
+            # Wygenerowanie podglądu HTML w folderze debug/
             try:
                 html_path = os.path.join(DEBUG_DIR, "weekly_plan.html")
                 html_content = markdown_to_html_doc(response.text, title="Plan Tygodniowy - Coach Gemini (Debug)")
                 with open(html_path, "w", encoding="utf-8") as hf:
                     hf.write(html_content)
-                print(f"📄 [TRYB DEBUG] Wygenerowano podgląd HTML: {html_path} (Wysyłka na Telegram została wstrzymana)")
+                if send_tg:
+                    print(f"📄 [TRYB DEBUG] Wygenerowano podgląd HTML: {html_path}. Wysyłanie na Telegram (--send)...")
+                    send_report(target_plan_file)
+                else:
+                    print(f"📄 [TRYB DEBUG] Wygenerowano podgląd HTML: {html_path} (Wysyłka na Telegram została wstrzymana)")
             except Exception as he:
                 logger.warning(f"Nie udało się wygenerować podglądu HTML: {he}")
         else:
@@ -304,7 +314,7 @@ def run_plan_mode(client, training_context, history_context, user_note, preferen
 
 
 
-def run_daily_mode(client, todays_date, dump_file, weekly_plan_file, user_profile, user_note, strength_routines_file=None, debug=False, models=None, day="daily"):
+def run_daily_mode(client, todays_date, dump_file, weekly_plan_file, user_profile, user_note, strength_routines_file=None, debug=False, models=None, day="daily", send_tg=False):
     """
     Wieczorny audyt treningu i biometrii z dnia dzisiejszego oraz adaptacja planu na jutro (uruchamiany o 20:57).
     """
@@ -355,6 +365,7 @@ def run_daily_mode(client, todays_date, dump_file, weekly_plan_file, user_profil
 
         audit_day_name = DAYS_PL[audit_date.weekday()]
         target_day_name = DAYS_PL[target_date.weekday()]
+        is_sunday = (audit_date.weekday() == 6)
 
         # Wyświetlenie informacji o siłowni lub dniu wolnym w konsoli
         if strength_workout:
@@ -379,7 +390,9 @@ def run_daily_mode(client, todays_date, dump_file, weekly_plan_file, user_profil
             workout_summary = "nie było treningu biegowego ani siłowego (Dzień wolny / Rest Day)"
 
         if weekly_plan_content:
-            if activity_stats and strength_workout:
+            if is_sunday:
+                plan_action = f"Odszukaj sekcję ({audit_day_name}) w planie tygodniowym i sprawdź zgodność wykonania treningu kończącego mikrocykl."
+            elif activity_stats and strength_workout:
                 plan_action = f"Odszukaj sekcję ({audit_day_name}) w planie tygodniowym, sprawdź zgodność wykonania biegu oraz audytuj jednostkę siłową."
             elif activity_stats:
                 plan_action = f"Odszukaj sekcję ({audit_day_name}) w planie tygodniowym i sprawdź zgodność wykonania całości lub poszczególnych etapów."
@@ -395,7 +408,12 @@ def run_daily_mode(client, todays_date, dump_file, weekly_plan_file, user_profil
                 f"Dokonaj autonomicznej oceny treningu i wskaźników regeneracji oraz zaproponuj plan działania na dzień {target_date_str}."
             )
 
-        target_plan_desc = f"Założenia na dzień {target_date_str} według planu tygodniowego (sekcja: {target_day_name})" if weekly_plan_content else f"Zaproponuj rekomendację treningową na dzień {target_date_str}"
+        if is_sunday:
+            target_plan_desc = "Brak (koniec mikrocyklu tygodniowego; nowy plan generuje tryb 'plan')"
+        elif weekly_plan_content:
+            target_plan_desc = f"Założenia na dzień {target_date_str} według planu tygodniowego (sekcja: {target_day_name})"
+        else:
+            target_plan_desc = f"Zaproponuj rekomendację treningową na dzień {target_date_str}"
 
         verification_prompt = build_verification_prompt(
             planned_workout=planned_workout_desc,
@@ -418,7 +436,7 @@ def run_daily_mode(client, todays_date, dump_file, weekly_plan_file, user_profil
         print(response.text)
 
         workout_date = determine_workout_date(audit_date, sorted_activities, activity_stats)
-        _build_and_save_daily_archive(
+        build_and_save_daily_archive(
             workout_date=workout_date,
             date_str=audit_date_str,
             next_date_str=target_date_str,
@@ -430,11 +448,18 @@ def run_daily_mode(client, todays_date, dump_file, weekly_plan_file, user_profil
             debug=debug
         )
 
-        # Wysłanie raportu dziennego na Telegram w formacie załącznika HTML (pomijane w trybie debug)
+        # Wysłanie raportu dziennego na Telegram w formacie załącznika HTML
         if not debug:
             try:
                 latest_report_file = os.path.join(OUTPUT_DIR, "last_daily_report.md")
                 send_report(latest_report_file)
+            except Exception as te:
+                logger.warning(f"Nie udało się wysłać raportu na Telegram: {te}")
+        elif send_tg:
+            try:
+                debug_report_file = os.path.join(DEBUG_DIR, "last_daily_report.md")
+                print(f"📄 [TRYB DEBUG] Wysyłanie testowego raportu na Telegram (--send): {debug_report_file}...")
+                send_report(debug_report_file)
             except Exception as te:
                 logger.warning(f"Nie udało się wysłać raportu na Telegram: {te}")
 
@@ -501,10 +526,10 @@ def setup_environment(debug=False):
     return api_key
 
 
-def dispatch_mode(mode, client, gemini_models, today, training_context, user_note, paths, debug=False):
+def dispatch_mode(mode, client, gemini_models, today, training_context, user_note, paths, debug=False, send_tg=False):
     """Kieruje wykonanie do odpowiedniego modułu na podstawie wybranego trybu."""
     if mode == "daily":
-        user_profile = build_user_profile(training_context)
+        user_profile = build_user_profile(training_context, ref_date=today)
         run_daily_mode(
             client=client,
             todays_date=today,
@@ -514,7 +539,8 @@ def dispatch_mode(mode, client, gemini_models, today, training_context, user_not
             user_note=user_note,
             strength_routines_file=paths["strength"],
             debug=debug,
-            models=gemini_models
+            models=gemini_models,
+            send_tg=send_tg
         )
         return
 
@@ -523,15 +549,16 @@ def dispatch_mode(mode, client, gemini_models, today, training_context, user_not
         logger.info("Wczytano historię treningów z ostatnich 42 dni (6 tygodni).")
 
     if mode == "suggest":
-        run_suggest_mode(client, training_context, history_context, user_note, paths["preferences"], debug=debug, models=gemini_models)
+        run_suggest_mode(client, training_context, history_context, user_note, paths["preferences"], debug=debug, models=gemini_models, ref_date=today)
     elif mode == "plan":
-        run_plan_mode(client, training_context, history_context, user_note, paths["preferences"], paths["plan"], paths["strength"], debug=debug, models=gemini_models)
+        run_plan_mode(client, training_context, history_context, user_note, paths["preferences"], paths["plan"], paths["strength"], debug=debug, models=gemini_models, ref_date=today, send_tg=send_tg)
 
 
 def main():
     parser = argparse.ArgumentParser(description="Coach Gemini - Asystent Treningowy Gemini")
     parser.add_argument("mode", nargs="?", default="daily", help="daily (domyślny, audyt wieczorny o 20:57), plan, suggest")
     parser.add_argument("--debug", action="store_true", help="włącz tryb debugowania (bezpieczna piaskownica w katalogu debug/)")
+    parser.add_argument("--send", action="store_true", help="wyślij raport na Telegram w trybie debugowania (używaj razem z --debug)")
     parser.add_argument("--date", type=str, default=None, help="opcjonalna data referencyjna w formacie YYYY-MM-DD")
 
     args = parser.parse_args()
@@ -541,6 +568,9 @@ def main():
     api_key = setup_environment(debug=args.debug)
     client = genai.Client(api_key=api_key)
     gemini_models = get_gemini_models()
+
+    if args.send and not args.debug:
+        logger.info("Flaga --send została użyta w trybie produkcyjnym (raporty są wysyłane domyślnie).")
 
     try:
         training_context = load_training_config(os.path.join(INPUT_DIR, "training_config.json"))
@@ -555,7 +585,7 @@ def main():
         "strength": os.path.join(INPUT_DIR, "strength_routines.md"),
     }
 
-    dispatch_mode(mode, client, gemini_models, today, training_context, user_note, paths, debug=args.debug)
+    dispatch_mode(mode, client, gemini_models, today, training_context, user_note, paths, debug=args.debug, send_tg=args.send)
     finish_run(new_tg_state=new_tg_state, debug=args.debug)
 
 
