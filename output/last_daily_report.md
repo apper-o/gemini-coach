@@ -1,41 +1,62 @@
-# AUDYT DZIENNY: 2026-09-28 (Poniedziałek, 2026-09-28)
-- Typ dnia: REGENERACJA
+# AUDYT DZIENNY: 2026-09-29 (Wtorek, 2026-09-29)
+- Typ dnia: TRENING UZUPEŁNIAJĄCY
 - Bieg: NIE (0.00 km, sesje: 0)
 - Typ treningu biegowego: Brak biegu
 - Struktura biegu: Brak
 - Siłownia: NIE
 - Partie mięśniowe (siłownia): BRAK
 
-## Biometria regeneracyjna i bilans dnia (Poniedziałek, 2026-09-28):
-- HRV (miniona noc przed treningiem): UNBALANCED 31 ms (Średnia 7-dniowa: 45 ms, Norma bazowa: 46–59 ms)
-- RHR (miniona noc przed treningiem): 59 bpm (Średnia 7-dniowa: 56 bpm, odchylenie: +3 bpm) (Średnie tętno z całej nocy: 71 bpm)
-- Sen (miniona noc przed treningiem): 66/100 (Głęboki: 1h 15m, REM: 0h 36m)
-- Wnioski o śnie: NEGATIVE_LONG_BUT_NOT_ENOUGH_REM, NEGATIVE_VERY_STRENUOUS_EXERCISE
-- Body Battery pod koniec dnia: Aktualnie wieczorem: 15/100 (Maksymalnie po nocy: 37/100, spadek w ciągu dnia: -22)
-- Całodzienny stres: Średni poziom stresu: 38/100
-- Kroki (cały dzień): 8124 kroków (aktywne kalorie: 414.0 kcal)
+## Biometria regeneracyjna i bilans dnia (Wtorek, 2026-09-29):
+- HRV (miniona noc przed treningiem): LOW 39 ms (Średnia 7-dniowa: 43 ms, Norma bazowa: 46–58 ms)
+- RHR (miniona noc przed treningiem): 59 bpm (Średnia 7-dniowa: 56 bpm, odchylenie: +3 bpm) (Średnie tętno z całej nocy: 67 bpm)
+- Sen (miniona noc przed treningiem): 76/100 (Głęboki: 1h 41m, REM: 0h 55m)
+- Wnioski o śnie: NEGATIVE_LONG_BUT_NOT_RESTORATIVE, NONE
+- Body Battery pod koniec dnia: Aktualnie wieczorem: 22/100 (Maksymalnie po nocy: 66/100, spadek w ciągu dnia: -44)
+- Całodzienny stres: Średni poziom stresu: 36/100
+- Kroki (cały dzień): 11486 kroków (aktywne kalorie: 650.0 kcal)
 
-## Ocena trenera i adaptacja na dzień Wtorek, 2026-09-29:
-# 1. AUDYT DNIA: Poniedziałek, 2026-09-28
+## Zarejestrowane aktywności:
+### Trening Uzupełniający 1 [Start: 14:00]: Pool Swim
+- Dystans: 0.88 km | Czas: 50.8 min
+- Tętno: Średnie 114 bpm | Max 166 bpm
+- Training Effect: Aerobowy 2.0/5.0 (RECOVERY) | Beztlenowy 0.9/5.0
+
+## Ocena trenera i adaptacja na dzień Środa, 2026-09-30:
+# 1. AUDYT DNIA: Wtorek, 2026-09-29
+
+## CZĘŚĆ SIŁOWA
+
+| Nr | Ćwiczenie | Serie x Powtórzenia | Ciężar | Docelowa partia |
+|:---:|:---:|:---:|:---:|:---:|
+| 1 | Pływanie regeneracyjne (Pool Swim) | 0.88 km / 50.8 min | Opór wody | Układ krążenia, pas barkowy, rozluźnienie powięziowe |
+
+* **Profil jednostki**: Trening uzupełniający / Aktywna regeneracja hydrostatyczna
+* **Ocena treningu**: 6/10
+
+* **Koszt nerwowo-mięśniowy (CNS) i komponent ekscentryczny**: Całkowity brak obciążenia uderzeniowego oraz komponentu ekscentrycznego pozwolił na odciążenie zmaltretowanych włókien mięśniowych po maratonie. Zarejestrowany skok tętna (maksymalnie 166 bpm) to jednak ewidentny błąd taktyczny – w fazie ostrej regeneracji pomaratońskiej jakiekolwiek mocniejsze zrywy w wodzie niepotrzebnie drenują układ współczulny.
+* **Wpływ na aparat biegowy (Running Transfer)**: Wypór wody oraz ciśnienie hydrostatyczne przyspieszyły drenaż limfatyczny i usuwanie obrzęków obwodowych z kończyn dolnych bez generowania mikrourazów.
+* **Zgłoszone anomalie, asymetrie i przeciążenia**: Chwilowy niekontrolowany wyrzut tętna ponad strefę tlenową, kłócący się z czystą regeneracją.
 
 ## KOSZT METABOLICZNY I STAN ZASOBÓW
 
-* **Bodziec fizjologiczny i szlaki energetyczne**: Brak jednostki treningowej. Układ po maratonie znajduje się w fazie głębokiej przebudowy strukturalnej i usuwania metabolitów.
-* **Koszt dzienny i stan zasobów (stres / Body Battery / aktywność pozatreningowa)**: Poziom energii jest skrajnie niski, co odzwierciedla głębokie wyczerpanie ustrojowe po długotrwałym wysiłku. Codzienna aktywność ruchowa pozostaje w granicach normy, ale wymaga pełnej pasywności w obszarze treningowym.
-* **Subiektywny koszt i percepcja zmęczenia**: Brak odnotowanych uwag biegacza, jednak obiektywne wskaźniki wskazują na potrzebę pełnej izolacji od obciążeń.
-* **Wpływ bazy wyjściowej (sen/HRV):** Układ autonomiczny znajduje się w stanie wyraźnej nierównowagi. Niewystarczająca regeneracja jakościowa snu oraz podwyższony poziom tętna spoczynkowego potwierdzają, że organizm nadal utylizuje skutki maratonu.
-* **Wpływ tła dnia poprzedniego (Niedziela, 2026-09-27)**: Maraton był jednostką o maksymalnym koszcie metabolicznym, co zdominowało dzisiejszy profil regeneracyjny.
+* **Bodziec fizjologiczny i szlaki energetyczne**: Dominacja tlenowej stymulacji krążenia obwodowego (TE tlenowy 2.0) z niepożądanym, chwilowym wejściem w przemiany beztlenowe (TE beztlenowy 0.9).
+* **Koszt dzienny i stan zasobów (stres / Body Battery / aktywność pozatreningowa)**: Umiarkowany poziom napięcia w ciągu dnia przy wysokim wydatku kroków (powyżej 11 tys.) i głębokim wyczerpaniu zasobów energetycznych pod wieczór (niski poziom Body Battery).
+* **Subiektywny koszt i percepcja zmęczenia (uwzględnij faktyczne dane i notatkę jeśli występuje)**: Brak notatki zawodnika, jednak telemetria jednoznacznie wskazuje na trwające obciążenie ustroju powysiłkową kaskadą zapalną po maratonie.
+* **Wpływ bazy wyjściowej (sen/HRV):** Wyraźne zahamowanie aktywności przywspółczulnej i stłumienie autonomicznego układu nerwowego (obniżone HRV oraz podwyższone tętno spoczynkowe); sen nie zapewnił pełnej odbudowy biologicznej.
+* **Wpływ tła dnia poprzedniego (Poniedziałek, 2026-09-28)**: Narastające zmęczenie skumulowane po niedzielnym starcie, wymagające bezwzględnego trzymania rygoru niskich intensywności.
 
 ## ZALECENIA REGENERACYJNE PO TRENINGU (WIECZÓR I NOC)
 
-* **Protokół rolowania i mobilności**: Bezwzględnie unikaj intensywnego rolowania mięśni czworogłowych i łydek – skup się wyłącznie na lekkim drenażu limfatycznym i ułożeniu nóg w elewacji.
-* **Sen i regeneracja układu nerwowego**: Kluczowe jest wydłużenie czasu snu oraz zapewnienie pełnej higieny wieczornej (wyciszenie, niska temperatura w sypialni) w celu naprawy deficytów fazy REM.
-* **Nawodnienie i protokół żywieniowy**: Wysoka podaż węglowodanów złożonych oraz zwiększona suplementacja elektrolitowa w celu wyrównania gospodarki wodno-mineralnej po wysiłku startowym.
+* **Protokół rolowania i mobilności**: Zakaz agresywnego rolowania powięzi głębokiej na podudziach i czworogłowych. Dopuszczalny jedynie delikatny drenaż pneumatyczny lub uniesienie nóg pod kątem 45 stopni przez 15 minut.
+* **Sen i regeneracja układu nerwowego**: Bezwzględne odcięcie światła niebieskiego na 60 minut przed snem, obniżenie temperatury w sypialni do 18°C w celu stymulacji fazy głębokiej snu i odbudowy HRV.
+* **Nawodnienie i protokół żywieniowy**: Uzupełnienie elektrolitów (magnez, sód, potas) wraz z posiłkiem bogatym w antyoksydanty i pełnowartościowe białko celem wygaszenia stanu zapalnego.
 
-### 4. OCENA GOTOWOŚCI I ADAPTACJA NA DZIEŃ KOLEJNY: Wtorek, 2026-09-29
+### 4. OCENA GOTOWOŚCI I ADAPTACJA NA DZIEŃ KOLEJNY: Środa, 2026-09-30
 
-* **Pierwotny plan na dzień Wtorek, 2026-09-29**: Zalecenia regeneracyjne: Aktywna regeneracja w postaci 20–30 minut spokojnego pływania stylem grzbietowym lub kraulem w strefie Z1.
-* **DECYZJA ADAPTACYJNA / STOPIEŃ GOTOWOŚCI**: ZMNIEJSZAMY INTENSYWNOŚĆ / MODYFIKACJA ZAŁOŻEŃ.
-* **Uzasadnienie fizjologiczne**: Stan organizmu (niskie zasoby energii, zaburzona praca układu autonomicznego) wymusza rezygnację z jakiejkolwiek aktywności wymagającej nawet minimalnego wysiłku. Zamiast pływania, zalecam pełny, pasywny odpoczynek, aby pozwolić układowi nerwowemu na ustabilizowanie wskaźników przed powrotem do treningu.
-* **ROZPISKA NA DZIEŃ Wtorek, 2026-09-29**: 
-  - Wytyczne: Dzień wolny od jakiegokolwiek treningu (Total Rest). Zakaz pływania. Priorytetem jest sen i całkowite odciążenie tkanek. Spacer dozwolony tylko w charakterze rekreacyjnym, bez obciążania aparatu ruchu.
+* **Pierwotny plan na dzień Środa, 2026-09-30**: Bieg regeneracyjny (Recovery Run) – 1.0 km Z2 rozgrzewka + 4.0 km Z2 (tempo >6:15 min/km, tętno 123–140 bpm) + 1.0 km Z1 schłodzenie. Łącznie 6.0 km.
+* **DECYZJA ADAPTACYJNA / STOPIEŃ GOTOWOŚCI**: POZOSTAJE TAKA SAMA
+* **Uzasadnienie fizjologiczne**: Wskaźniki autonomiczne (obniżone HRV, podniesione RHR) potwierdzają trwający proces restytucji po maratonie. Zaplanowany bieg regeneracyjny w twardych ryzach niskiego tętna jest optymalnym bodźcem do pobudzenia krążenia bez przeciążania układu mięśniowo-szkieletowego. Obowiązuje bezwzględny zakaz przyspieszania ponad wyznaczone strefy.
+* **ROZPISKA NA DZIEŃ Środa, 2026-09-30**:
+  * Rozgrzewka: 1.0 km bardzo spokojnego truchtu w strefie Z2.
+  * Część Główna: 4.0 km w strefie Z2, tempo >6:15 min/km, tętno docelowe 123–140 bpm (dolny zakres strefy Z2).
+  * Schłodzenie: 1.0 km marszu lub bardzo wolnego truchtu w strefie Z1 (tętno <123 bpm).

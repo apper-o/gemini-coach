@@ -115,8 +115,12 @@ def parse_activity_biomechanics(activity):
     pwr = activity.get('avgPower')
     power_str = f"{int(round(pwr))} W" if isinstance(pwr, (int, float)) else NO_DATA
 
+    type_key = activity.get('activityType', {}).get('typeKey', '')
+    is_run = 'run' in type_key.lower() if type_key else True
+
     res = {
-        "name": activity.get('activityName', 'Bieg'),
+        "name": activity.get('activityName', 'Aktywność'),
+        "is_run": is_run,
         "start_time": start_time_str,
         "distance": dist_str,
         "duration": duration_str,
@@ -499,13 +503,7 @@ def parse_garmin_data(data, target_date=None):
     return parsed
 
 
-def parse_garmin_verification_data(data, day="daily", target_date=None):
-    """
-    Zunifikowana fasada parsowania danych biometrycznych z Garmina dla trybu 'daily'.
-    Zwraca spójny słownik ze wskaźnikami dzisiejszego dnia, regeneracji nocnej oraz tłem z wczoraj.
-    Parametr day jest zachowany dla kompatybilności wstecznej.
-    """
-    return parse_garmin_data(data, target_date=target_date)
+
 
 
 def process_and_display_activities(raw_acts, date_str):
@@ -532,8 +530,15 @@ def process_and_display_activities(raw_acts, date_str):
             time_str = f" [Start: {act_st['start_time']}]" if act_st.get('start_time') and act_st['start_time'] != NO_DATA else ""
             prefix = f"Jednostka {idx + 1}{time_str}: " if len(parsed_stats) > 1 else ""
             print(f"\n▶️ {prefix}{act_st['name']} ({act_st['distance']}, tempo: {act_st['pace']})")
+            
+            is_run = act_st.get('is_run', True)
+            exclude_keys = ['splits', 'name', 'distance', 'pace', 'start_time', 'is_run']
+            if not is_run:
+                exclude_keys.extend(['avg_cadence', 'max_cadence', 'stride_length', 
+                                     'ground_contact_time', 'vertical_oscillation', 'vertical_ratio'])
+                                     
             for k, v in act_st.items():
-                if k not in ['splits', 'name', 'distance', 'pace', 'start_time']:
+                if k not in exclude_keys:
                     print(f"   - {k}: {v}")
 
     return sorted_acts, parsed_stats
@@ -604,25 +609,25 @@ def get_garmin_client(email, password):
                 os.chmod(token_file, 0o600)
             except OSError:
                 pass
-            logger.info("Zainicjalizowano plik sesji z sekretu GARMIN_TOKENS_JSON.")
+            logger.info("📄 Zainicjalizowano plik sesji z sekretu GARMIN_TOKENS_JSON.")
         except Exception as e:
             logger.warning(f"Nie udało się załadować tokenów z GARMIN_TOKENS_JSON: {e}")
 
-    logger.info("Inicjalizacja połączenia z Garmin Connect...")
+    logger.info("🚀 Inicjalizacja połączenia z Garmin Connect...")
 
     # Logowanie z obsługą magazynu tokenów (garminconnect >= 0.3.0)
     try:
         client = Garmin(email, password)
         client.login(tokenstore_dir)
         _dump_tokens_safe(client, tokenstore_dir)
-        logger.info("Pomyślnie zalogowano do Garmin Connect.")
+        logger.info("✅ Pomyślnie zalogowano do Garmin Connect.")
         return client
     except Exception as e:
         err_msg = str(e)
-        logger.error(f"Błąd logowania do Garmin Connect: {err_msg}")
+        logger.error(f"❌ Błąd logowania do Garmin Connect: {err_msg}")
         if "429" in err_msg or "rate limit" in err_msg.lower():
             logger.error(
-                "Otrzymano błąd 429 (Zbyt wiele zapytań / Rate Limited przez Garmina). "
+                "❌ Otrzymano błąd 429 (Zbyt wiele zapytań / Rate Limited przez Garmina). "
                 "Serwery Garmin tymczasowo zablokowały logowanie hasłem z tego adresu IP (częste w chmurze / GitHub Actions). "
                 "Aby uniezależnić się od blokad IP, wygeneruj token lokalnie na komputerze (plik ~/.garminconnect/garmin_tokens.json) "
                 "i dodaj go w GitHub Secrets jako GARMIN_TOKENS_BASE64."
@@ -650,33 +655,26 @@ def _fetch_activity_splits_and_weather(client, acts):
     return acts
 
 
+def _safe_fetch(func, log_msg, *args, **kwargs):
+    """Pomocnicza funkcja do bezpiecznego wywoływania metod API z łapaniem wyjątków."""
+    try:
+        return func(*args, **kwargs)
+    except Exception as e:
+        logger.warning(f"{log_msg}: {e}")
+        return None
+
+
 def _fetch_night_recovery_biometrics(client, date_str):
     """
     Pobiera nocne dane regeneracyjne (sen, RHR, HRV) dla podanej daty.
     Body Battery dla całego dnia pobierane jest w _fetch_day_activities_and_load.
     """
-    recovery = {}
-    try:
-        recovery['sleep'] = client.get_sleep_data(date_str)
-    except Exception as e:
-        logger.warning(f"Nie udało się pobrać danych snu z {date_str}: {e}")
-
-    try:
-        recovery['rhr'] = client.get_rhr_day(date_str)
-    except Exception as e:
-        logger.warning(f"Nie udało się pobrać RHR z {date_str}: {e}")
-
-    try:
-        recovery['rhr_history'] = client.get_heart_rates(date_str)
-    except Exception as e:
-        logger.warning(f"Nie udało się pobrać tętna i średniej 7-dniowej z {date_str}: {e}")
-
-    try:
-        recovery['hrv'] = client.get_hrv_data(date_str)
-    except Exception as e:
-        logger.warning(f"Nie udało się pobrać HRV z {date_str}: {e}")
-
-    return recovery
+    return {
+        'sleep': _safe_fetch(client.get_sleep_data, f"Nie udało się pobrać danych snu z {date_str}", date_str),
+        'rhr': _safe_fetch(client.get_rhr_day, f"Nie udało się pobrać RHR z {date_str}", date_str),
+        'rhr_history': _safe_fetch(client.get_heart_rates, f"Nie udało się pobrać tętna i średniej 7-dniowej z {date_str}", date_str),
+        'hrv': _safe_fetch(client.get_hrv_data, f"Nie udało się pobrać HRV z {date_str}", date_str)
+    }
 
 
 def _fetch_day_activities_and_load(client, date_str, include_body_battery=False):
@@ -684,28 +682,17 @@ def _fetch_day_activities_and_load(client, date_str, include_body_battery=False)
     Pobiera dzienny stres, bilans kroków/kalorii oraz aktywności z danego dnia.
     Opcjonalnie pobiera także całodzienne Body Battery.
     """
-    day_data = {}
-    try:
-        day_data['stress'] = client.get_stress_data(date_str)
-    except Exception as e:
-        logger.warning(f"Nie udało się pobrać stresu z {date_str}: {e}")
-
-    try:
-        day_data['stats'] = client.get_user_summary(date_str)
-    except Exception as e:
-        logger.warning(f"Nie udało się pobrać bilansu kroków z {date_str}: {e}")
+    day_data = {
+        'stress': _safe_fetch(client.get_stress_data, f"Nie udało się pobrać stresu z {date_str}", date_str),
+        'stats': _safe_fetch(client.get_user_summary, f"Nie udało się pobrać bilansu kroków z {date_str}", date_str)
+    }
 
     if include_body_battery:
-        try:
-            day_data['body_battery'] = client.get_body_battery(date_str)
-        except Exception as e:
-            logger.warning(f"Nie udało się pobrać Body Battery z {date_str}: {e}")
+        day_data['body_battery'] = _safe_fetch(client.get_body_battery, f"Nie udało się pobrać Body Battery z {date_str}", date_str)
 
-    try:
-        acts = client.get_activities_by_date(date_str, date_str)
+    acts = _safe_fetch(client.get_activities_by_date, f"Nie udało się pobrać aktywności z {date_str}", date_str, date_str)
+    if acts is not None:
         day_data['activities'] = _fetch_activity_splits_and_weather(client, acts)
-    except Exception as e:
-        logger.warning(f"Nie udało się pobrać aktywności z {date_str}: {e}")
 
     return day_data
 
@@ -721,7 +708,7 @@ def fetch_garmin_data_daily(client, target_date):
     yesterday_date = target_date - datetime.timedelta(days=1)
     yesterday_str = yesterday_date.isoformat()
 
-    logger.info(f"Pobieranie danych z Garmina dla analizy dziennej (Wczoraj: {yesterday_str}, Dzisiaj: {today_str})...")
+    logger.info(f"🚀 Pobieranie danych z Garmina dla analizy dziennej (Wczoraj: {yesterday_str}, Dzisiaj: {today_str})...")
 
     today_data = _fetch_night_recovery_biometrics(client, today_str)
     today_load = _fetch_day_activities_and_load(client, today_str, include_body_battery=True)
@@ -742,18 +729,18 @@ def load_or_fetch_garmin_data(target_date, dump_file, mode="daily", debug=False)
     use_local_data = os.getenv("USE_LOCAL_DATA", "False").lower() in ["true", "1"]
     if use_local_data:
         read_file = os.path.join("debug", "garmin_dump.json") if (debug and os.path.exists(os.path.join("debug", "garmin_dump.json"))) else dump_file
-        logger.info(f"Omijam logowanie. Wczytuję surowe dane z pliku lokalnego: {read_file}...")
+        logger.info(f"📄 Omijam logowanie. Wczytuję surowe dane z pliku lokalnego: {read_file}...")
         try:
             with open(read_file, "r", encoding="utf-8") as f:
                 return json.load(f)
         except FileNotFoundError:
-            logger.error(f"Nie znaleziono pliku {read_file}. Uruchom skrypt z USE_LOCAL_DATA='False', aby go stworzyć!")
+            logger.error(f"❌ Nie znaleziono pliku {read_file}. Uruchom skrypt z USE_LOCAL_DATA='False', aby go stworzyć!")
             sys.exit(1)
 
     garmin_email = os.getenv("GARMIN_EMAIL")
     garmin_password = os.getenv("GARMIN_PASSWORD")
     if not garmin_email or not garmin_password:
-        logger.error("Brak danych logowania GARMIN_EMAIL / GARMIN_PASSWORD w pliku .env!")
+        logger.error("❌ Brak danych logowania GARMIN_EMAIL / GARMIN_PASSWORD w pliku .env!")
         sys.exit(1)
 
     client = get_garmin_client(garmin_email, garmin_password)
@@ -766,8 +753,8 @@ def load_or_fetch_garmin_data(target_date, dump_file, mode="daily", debug=False)
     with open(target_dump_file, "w", encoding="utf-8") as f:
         json.dump(raw_data, f, indent=4, ensure_ascii=False)
     if debug:
-        logger.info(f"[DEBUG] Surowe dane zapisano w trybie piaskownicy do pliku: {target_dump_file}")
-        print(f"📦 [TRYB DEBUG] Zapisano surowy zrzut Garmina do: {target_dump_file} (Plik {dump_file} pozostał nienaruszony)")
+        logger.info(f"📄 [DEBUG] Surowe dane zapisano w trybie piaskownicy do pliku: {target_dump_file}")
+        print(f"📄 [DEBUG] Zapisano surowy zrzut Garmina do: {target_dump_file} (Plik {dump_file} pozostał nienaruszony)")
     else:
-        logger.info(f"Surowe dane zapisano pomyślnie do pliku {target_dump_file}.")
+        logger.info(f"✅ Surowe dane zapisano pomyślnie do pliku {target_dump_file}.")
     return raw_data

@@ -609,7 +609,7 @@ def finish_run(new_tg_state=None, debug=False, note_file=None):
     """
     if debug:
         logger.info("[DEBUG] Tryb debugowania aktywny: pominięto aktualizację stanu Telegrama.")
-        print("\n🛡️  [TRYB DEBUG] Stan Telegrama pozostał nienaruszony.")
+        print("\n📄 [DEBUG] Stan Telegrama pozostał nienaruszony.")
         return
 
     # Kompatybilność wsteczna na wypadek wywołania ze starej sygnatury finish_run(note_file, new_tg_state, debug)

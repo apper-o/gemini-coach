@@ -199,16 +199,18 @@ Zestawienie: Plan vs Realizacja:
    - ZMNIEJSZAMY INTENSYWNOŚĆ / MODYFIKACJA ZAŁOŻEŃ: wyłącznie przy twardych dowodach przeciążenia CUN, załamaniu HRV/RHR lub alarmujących sygnałach bólowych w notatce.
    W NIEDZIELĘ wybierz wyłącznie ogólny stopień gotowości: [PEŁNA GOTOWOŚĆ / UMIARKOWANE ZMĘCZENIE / GŁĘBOKIE ZMĘCZENIE / WYMAGANA REGENERACJA]).
 * **Uzasadnienie fizjologiczne**: (nie cytuj liczb)
-* **ROZPISKA NA DZIEŃ {tomorrow_date_str}** (generuj WYŁĄCZNIE od poniedziałku do soboty; w niedzielę POMIŃ CAŁKOWICIE):
+* **ROZPISKA NA DZIEŃ {tomorrow_date_str}** (generuj WYŁĄCZNIE od poniedziałku do soboty; w niedzielę POMIŃ CAŁKOWICIE. Na podstawie planu wybierz właściwy scenariusz i wypisz TYLKO parametry dla planowanego treningu. Zrezygnuj całkowicie z warunkowych etykiet typu "Jeśli bieg:", "Jeśli siłownia:". Od razu wypisz kluczowe punkty):
   
-  - Jeśli bieg:
-    * Rozgrzewka: 
-    * Część Główna: 
-    * Schłodzenie: 
-  - Jeśli siłownia:
-    * Zestaw: 
-    * Status dolnych partii: [Pełna intensywność / Oszczędzać nogi – rygor RIR >= 2-3, unikać pracy ekscentrycznej i obciążeń osiowych]
-    * Potwierdzenie i modyfikacje ćwiczeń: 
-    * Wytyczne cardio / rozgrzewki:
-  - Jeśli Rest Day:
-    * Wytyczne:
+  [Zastosuj ten format dla biegu]:
+  * Rozgrzewka: 
+  * Część Główna: 
+  * Schłodzenie: 
+  
+  [Zastosuj ten format dla treningu siłowego]:
+  * Zestaw / Trening: 
+  * Status dolnych partii: [Pełna intensywność / Oszczędzać nogi – rygor RIR >= 2-3, unikać pracy ekscentrycznej i obciążeń osiowych]
+  * Potwierdzenie i modyfikacje ćwiczeń: 
+  * Wytyczne cardio / rozgrzewki:
+  
+  [Zastosuj ten format dla Rest Day oraz trenigu innego niż bieg i siłownia]:
+  * Wytyczne:

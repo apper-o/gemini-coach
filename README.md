@@ -165,6 +165,7 @@ Dzięki temu moduł wczytywania historii (`coach_prompts.py`) przetwarza histori
 | Flaga | Typ | Domyślnie | Opis |
 | :--- | :---: | :---: | :--- |
 | **`--debug`** | flaga | `False` | Włącza tryb debugowania. Zapisuje pełną treść promptu przesłanego do Gemini do pliku `debug_log.md` oraz izoluje wyniki w katalogu `debug/`. |
+| **`--send_debug`** | flaga | `False` | Włącza tryb debugowania ORAZ wysyła wygenerowany (testowy) raport na Telegram. |
 | **`--date YYYY-MM-DD`** | string | data bieżąca | Uruchamia skrypt z określoną datą referencyjną zamiast dzisiejszej (np. `--date 2026-09-22`). Przydatne do testów, symulacji oraz ponownego przeliczania raportów archiwalnych. |
 | **`-h`, `--help`** | flaga | — | Wyświetla wbudowaną pomoc CLI i listę dostępnych opcji. |
 
