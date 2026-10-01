@@ -272,13 +272,12 @@ def _parse_hrv_summary(hrv_raw):
     return f"{status} {last_night_str} (Średnia 7-dniowa: {weekly_avg_str}, Norma bazowa: {baseline_str})"
 
 
-def _parse_rhr_and_sleep(rhr_raw, rhr_hist, sleep_raw):
+def _parse_rhr_and_sleep(stats_raw, sleep_raw):
     """
     Parsuje tętno spoczynkowe RHR oraz dane snu (score, fazy głęboka/REM, wnioski).
     
     Args:
-        rhr_raw (dict): Dane o dzisiejszym tętnie spoczynkowym.
-        rhr_hist (dict): Dane historyczne o tętnie spoczynkowym.
+        stats_raw (dict): Słownik zawierający dzienne statystyki (zawiera RHR).
         sleep_raw (dict): Dane dotyczące snu.
         
     Returns:
@@ -293,23 +292,17 @@ def _parse_rhr_and_sleep(rhr_raw, rhr_hist, sleep_raw):
     }
 
     rhr_str = NO_DATA
-    if rhr_raw:
-        try:
-            rhr_list = rhr_raw.get('allMetrics', {}).get('metricsMap', {}).get('WELLNESS_RESTING_HEART_RATE', [])
-            if rhr_list and len(rhr_list) > 0:
-                today_val = rhr_list[0].get('value')
-                if today_val is not None:
-                    today_rhr = int(today_val)
-                    avg_7d_str = ""
-                    if rhr_hist:
-                        avg_7d = rhr_hist.get('lastSevenDaysAvgRestingHeartRate')
-                        if avg_7d is not None:
-                            diff = today_rhr - int(avg_7d)
-                            diff_sign = f"+{diff}" if diff > 0 else f"{diff}"
-                            avg_7d_str = f" (Średnia 7-dniowa: {int(avg_7d)} bpm, odchylenie: {diff_sign} bpm)"
-                    rhr_str = f"{today_rhr} bpm{avg_7d_str}"
-        except Exception:
-            pass
+    if stats_raw:
+        today_val = stats_raw.get('restingHeartRate')
+        if today_val is not None:
+            today_rhr = int(today_val)
+            avg_7d_str = ""
+            avg_7d = stats_raw.get('lastSevenDaysAvgRestingHeartRate')
+            if avg_7d is not None:
+                diff = today_rhr - int(avg_7d)
+                diff_sign = f"+{diff}" if diff > 0 else f"{diff}"
+                avg_7d_str = f" (Średnia 7-dniowa: {int(avg_7d)} bpm, odchylenie: {diff_sign} bpm)"
+            rhr_str = f"{today_rhr} bpm{avg_7d_str}"
 
     avg_night_hr = None
     if sleep_raw and 'dailySleepDTO' in sleep_raw:
@@ -553,7 +546,7 @@ def parse_garmin_data(data, target_date=None):
 
     # Poranek / miniona noc
     parsed['hrv_status'] = _parse_hrv_summary(today_data.get('hrv'))
-    parsed.update(_parse_rhr_and_sleep(today_data.get('rhr'), today_data.get('rhr_history'), today_data.get('sleep')))
+    parsed.update(_parse_rhr_and_sleep(today_data.get('stats'), today_data.get('sleep')))
 
     # Body Battery w ciągu dnia
     bb_vals = _parse_body_battery_values(today_data.get('body_battery'))
@@ -787,20 +780,17 @@ def _safe_fetch(func, log_msg, *args, **kwargs):
 
 def _fetch_night_recovery_biometrics(client, date_str):
     """
-    Pobiera nocne dane regeneracyjne (sen, RHR, HRV) dla podanej daty.
-    Body Battery dla całego dnia pobierane jest oddzielnie.
+    Pobiera nocne dane regeneracyjne (sen, HRV) dla podanej daty.
     
     Args:
         client (Garmin): Obiekt zalogowanego klienta Garmin.
         date_str (str): Data, dla której mają zostać pobrane dane.
         
     Returns:
-        dict: Słownik z danymi o śnie, RHR, historii RHR i HRV.
+        dict: Słownik z danymi o śnie i HRV.
     """
     return {
         'sleep': _safe_fetch(client.get_sleep_data, f"Nie udało się pobrać danych snu z {date_str}", date_str),
-        'rhr': _safe_fetch(client.get_rhr_day, f"Nie udało się pobrać RHR z {date_str}", date_str),
-        'rhr_history': _safe_fetch(client.get_heart_rates, f"Nie udało się pobrać tętna i średniej 7-dniowej z {date_str}", date_str),
         'hrv': _safe_fetch(client.get_hrv_data, f"Nie udało się pobrać HRV z {date_str}", date_str)
     }
 
