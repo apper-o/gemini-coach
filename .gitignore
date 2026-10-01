@@ -1,6 +1,4 @@
-.env*
-venv/
+.env
+.venv/
 __pycache__/
-input/garmin_dump.json
-debug_log.md
 debug/

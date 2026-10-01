@@ -21,10 +21,9 @@ from send_telegram import (
     finish_run,
 )
 from garmin_service import (
-    load_or_fetch_garmin_data,
+    fetch_garmin_data,
     parse_garmin_data,
     process_and_display_activities,
-    determine_workout_date,
 )
 from coach_prompts import (
     load_personal_data,
@@ -35,7 +34,7 @@ from coach_prompts import (
     load_training_history,
     generate_weekly_suggestions_prompt,
     generate_weekly_plan_prompt,
-    build_verification_prompt,
+    generate_verification_prompt,
     build_and_save_daily_archive,
     separate_strength_and_user_notes,
 )
@@ -410,14 +409,13 @@ def _build_daily_evaluation_context(audit_date, target_date, run_stats, other_st
     return planned_workout_desc, target_plan_desc
 
 
-def run_daily_mode(client, todays_date, dump_file, weekly_plan_file, user_profile, user_note, strength_workout, strength_routines_file=None, debug=False, models=None, day="daily", send_tg=False):
+def run_daily_mode(client, todays_date, weekly_plan_file, user_profile, user_note, strength_workout, strength_routines_file=None, debug=False, models=None, day="daily", send_tg=False):
     """
     Wieczorny audyt treningu i biometrii z dnia dzisiejszego oraz adaptacja planu na jutro.
 
     Args:
         client: Zainicjowany klient Gemini.
         todays_date (date): Data audytowanego treningu.
-        dump_file (str): Ścieżka pliku garmin_dump.json.
         weekly_plan_file (str): Ścieżka pliku weekly_plan.md.
         user_profile (str): Informacje o profilu i sprzęcie.
         user_note (str): Opcjonalna notatka zawodnika.
@@ -441,10 +439,8 @@ def run_daily_mode(client, todays_date, dump_file, weekly_plan_file, user_profil
     print(f"Audyt: {audit_date_str} | Adaptacja na: {target_date_str}")
     print("="*60)
 
-    logger.info(f"Uruchomiono wieczorny tryb weryfikacji dla dnia: {audit_date_str} oraz adaptacji na: {target_date_str}...")
-
     try:
-        raw_data = load_or_fetch_garmin_data(todays_date, dump_file, mode="daily", debug=debug)
+        raw_data = fetch_garmin_data(todays_date)
         garmin_stats = parse_garmin_data(raw_data, target_date=todays_date)
         raw_activities = raw_data.get('today', {}).get('activities', [])
 
@@ -497,7 +493,7 @@ def run_daily_mode(client, todays_date, dump_file, weekly_plan_file, user_profil
             weekly_plan_content=weekly_plan_content
         )
 
-        verification_prompt = build_verification_prompt(
+        verification_prompt = generate_verification_prompt(
             planned_workout=planned_workout_desc,
             activity_stats=activity_stats,
             garmin_stats=garmin_stats,
@@ -516,9 +512,8 @@ def run_daily_mode(client, todays_date, dump_file, weekly_plan_file, user_profil
 
         
 
-        workout_date = determine_workout_date(audit_date, sorted_activities, activity_stats)
         build_and_save_daily_archive(
-            workout_date=workout_date,
+            workout_date=audit_date_str,
             date_str=audit_date_str,
             next_date_str=target_date_str,
             all_stats=activity_stats,
@@ -702,7 +697,6 @@ def main():
     paths = {
         "weekly_workout_structure": os.path.join(INPUT_DIR, "weekly_workout_structure.md"),
         "plan": os.path.join(OUTPUT_DIR, "weekly_plan.md"),
-        "dump": os.path.join(INPUT_DIR, "garmin_dump.json"),
         "strength": os.path.join(INPUT_DIR, "strength_routines.md"),
     }
 

@@ -33,8 +33,6 @@ GEMINI_MODELS="gemini-3.5-flash,gemini-3.5-flash-lite,gemini-2.5-flash,gemini-2.
 GARMIN_EMAIL="twoj_email@example.com"
 GARMIN_PASSWORD="twoje_haslo"
 
-# Tryb lokalny (true = wczytuje dane z pliku input/garmin_dump.json bez łączenia z Garminem)
-USE_LOCAL_DATA="false"
 
 # Konfiguracja powiadomień Telegram (opcjonalne)
 TELEGRAM_BOT_TOKEN="twój_token_z_botfather"
@@ -208,7 +206,6 @@ python coach_gemini.py daily --date 2026-09-20
 │   ├── personal_data.json  # Profil biegacza, cel główny i poboczny (primary_goal, secondary_goal), wzrost, waga, rekordy życiowe (PB), strefy tętna (Z1-Z5)
 │   ├── weekly_preferences.md # Podział dni treningowych na dany tydzień (dla trybu 'plan')
 │   ├── strength_routines.md  # Baza własnych zestawów ćwiczeń siłowych (FBW, UPPER, LOWER)
-│   └── garmin_dump.json      # Zrzut danych Garmin Connect (dla USE_LOCAL_DATA=true)
 ├── output/
 │   ├── weekly_plan.md        # Aktualny plan treningowy na tydzień
 │   └── last_daily_report.md  # Ostatni wygenerowany raport trenerski

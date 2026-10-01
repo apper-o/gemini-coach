@@ -8,9 +8,9 @@ import datetime
 import logging
 import re
 
+from utils_html import markdown_to_html_doc
 from send_telegram import (
     fetch_recent_telegram_messages,
-    markdown_to_html_doc,
 )
 
 logger = logging.getLogger(__name__)
@@ -51,8 +51,8 @@ RE_RUN_TYPE = re.compile(r'^-\s*Typ treningu biegowego:\s*([^\n]+)', re.MULTILIN
 RE_RUN_STRUCT = re.compile(r'^-\s*Struktura biegu:\s*([^\n]+)', re.MULTILINE)
 RE_STR_W5 = re.compile(r'^-\s*Siłownia:\s*(TAK|NIE)', re.MULTILINE)
 RE_MUSCLE = re.compile(r'^-\s*Partie mięśniowe \(siłownia\):\s*([^\n]+)', re.MULTILINE)
-RE_DECISION_CORR = re.compile(r'\*\s*DECYZJA O KOREKCIE[^\n:]*:\s*([^\n]+)', re.IGNORECASE)
-RE_DECISION_ACC = re.compile(r'\*\s*Zgodność z planem[^\n:]*:\s*([^\n]+)', re.IGNORECASE)
+RE_DECISION_CORR = re.compile(r'\*\s*\*\*(?:DECYZJA ADAPTACYJNA(?:.*?)?|DECYZJA O KOREKCIE)[^\n:]*:\s*([^\n]+)', re.IGNORECASE)
+RE_DECISION_ACC = re.compile(r'\*\s*\*\*STOPIEŃ GOTOWOŚCI[^\n:]*:\s*([^\n]+)', re.IGNORECASE)
 
 RE_DIST_FLOAT = re.compile(r'([0-9]+(?:[.,][0-9]+)?)')
 RE_PLAN_STRUCT = re.compile(r'Dystans:\s*Plan:[^\n\(]*\(([^)]*(?:rozgrzewk|schłodzen|główn|mp|tempo)[^)]*)\)', re.IGNORECASE)
@@ -167,7 +167,6 @@ def load_personal_data(config_filepath=os.path.join(INPUT_DIR, "personal_data.js
             f"Plik '{config_filepath}' musi zawierać obiekt JSON (słownik), a otrzymano: {type(runner_config).__name__}"
         )
 
-    # Walidacja struktury celów (brak wstecznej kompatybilności - wymagane obiekty słownikowe)
     for goal_key in ("primary_goal", "secondary_goal"):
         goal_val = runner_config.get(goal_key)
         if not isinstance(goal_val, dict):
@@ -537,13 +536,9 @@ def separate_strength_and_user_notes(note):
     return strength_workout, remaining_user_note
 
 
-def prepare_user_note(note_file=None):
+def prepare_user_note():
     """
     Wczytuje najnowsze wiadomości i uwagi od biegacza bezpośrednio z czatu Telegrama.
-    Parametr note_file jest zachowany dla kompatybilności wstecznej (notatki pochodzą wyłącznie z Telegrama).
-
-    Args:
-        note_file (str, optional): Ścieżka do pliku notatki, domyślnie None.
 
     Returns:
         tuple[str | None, any]: Wczytana notatka użytkownika oraz nowy stan telegrama.
@@ -554,7 +549,6 @@ def prepare_user_note(note_file=None):
     try:
         tg_note, new_tg_state = fetch_recent_telegram_messages()
         if tg_note:
-            logger.info("Odebrano nową wiadomość z czatu Telegrama.")
             print("\n" + "="*60)
             print("📲 ODEBRANO WIADOMOŚĆ Z TELEGRAMA:")
             print("="*60)
@@ -565,7 +559,6 @@ def prepare_user_note(note_file=None):
         logger.warning(f"Nie udało się pobrać wiadomości z Telegrama: {e}")
 
     if user_note:
-        logger.info("Wczytano notatkę z Telegrama do promptu Trenera Gemini.")
         print(f"📄 Wiadomość dla Trenera Gemini (z Telegrama):\n   \"{user_note}\"\n")
 
     return user_note, new_tg_state
@@ -693,7 +686,7 @@ def _summarize_history_week_5(history_data, start_date):
             else:
                 workout_desc = " + ".join(parts_desc)
 
-            # Ekstrakcja decyzji trenera
+            # Wyciąganie decyzji trenera
             dec_m = RE_DECISION_CORR.search(c)
             if not dec_m:
                 dec_m = RE_DECISION_ACC.search(c)
@@ -940,12 +933,19 @@ def generate_verification_prompt(planned_workout, activity_stats, garmin_stats, 
     target_str = tomorrow_date_str or target_date_str
     plan_desc = trening_z_planu or target_plan_desc
 
-    yesterday_section = f"Brak danych z dnia {history_str} (dzień wolny)"
-    if garmin_stats.get('yesterday_training') and garmin_stats.get('yesterday_training') != "Brak aktywności (dzień wolny)":
+    y_training = garmin_stats.get('yesterday_training', 'Brak aktywności (dzień wolny)')
+    y_steps = garmin_stats.get('yesterday_steps', 'Brak danych')
+    y_stress = garmin_stats.get('yesterday_stress', 'Brak danych')
+    
+    if y_training == "Brak aktywności (dzień wolny)" and "Brak danych" in y_steps and "Brak danych" in y_stress:
+        yesterday_section = f"Brak danych z dnia {history_str} (dzień wolny)"
+    else:
         yesterday_section = f"""
 ====================
 KONTEKST DNIA POPRZEDNIEGO ({history_str}):
-{garmin_stats.get('yesterday_training')}
+* Trening: {y_training}
+* Kroki z całego dnia: {y_steps}
+* Średni poziom stresu: {y_stress}
 """
 
     weekly_plan_section = "Brak planu tygodniowego w pliku output/weekly_plan.md"
@@ -994,8 +994,6 @@ AKTUALNY PLAN TYGODNIOWY (I KOLEJNE ZAPLANOWANE TRENINGI):
     )
 
 
-# Alias dla kompatybilności wstecznej (jedna wspólna implementacja)
-build_verification_prompt = generate_verification_prompt
 
 
 # ==============================================================================
@@ -1329,7 +1327,7 @@ def build_daily_archive_content(workout_date, date_str, next_date_str, all_stats
 
     note_part = f"\n## Uwagi biegacza (notatka z Telegrama):\n{user_note.strip()}\n" if (user_note and user_note.strip() and not is_only_strength) else ""
 
-    # Ekstrakcja ustandaryzowanych metadanych
+    # Wyciąganie ustandaryzowanych metadanych
     run_line, run_type, run_structure, day_type = _extract_run_metadata(all_stats, response_text, strength_workout)
     strength_line, muscle_groups = _extract_strength_muscle_groups(strength_workout)
 
@@ -1368,11 +1366,10 @@ def build_daily_archive_content(workout_date, date_str, next_date_str, all_stats
 """
 
 
-def build_and_save_daily_archive(workout_date, date_str, next_date_str, all_stats, garmin_stats, response_text, strength_workout=None, user_note=None, debug=False, mode="daily"):
+def build_and_save_daily_archive(workout_date, date_str, next_date_str, all_stats, garmin_stats, response_text, strength_workout=None, user_note=None, debug=False):
     """
     Formatuje i zapisuje raport dzienny do pliku archiwum w trainings_history/.
     Podsumowuje audytowany dzień (date_str), biometrię snu/dnia oraz adaptację na dzień kolejny (next_date_str).
-    Parametr mode jest zachowany dla pełnej kompatybilności wstecznej.
 
     Args:
         workout_date (str): Data treningu.
@@ -1399,6 +1396,4 @@ def build_and_save_daily_archive(workout_date, date_str, next_date_str, all_stat
     save_daily_report(workout_date, archive_content, debug=debug)
 
 
-# Alias dla pełnej kompatybilności wstecznej
-_build_and_save_daily_archive = build_and_save_daily_archive
 
