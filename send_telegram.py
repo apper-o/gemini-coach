@@ -402,22 +402,22 @@ def send_telegram_document(file_bytes, filename, caption="", parse_mode="HTML"):
     boundary = "----WebKitFormBoundary" + os.urandom(16).hex()
     body = bytearray()
 
-    body.extend(f"--{boundary}\\r\\n".encode("utf-8"))
-    body.extend(f'Content-Disposition: form-data; name="chat_id"\\r\\n\\r\\n{chat_id}\\r\\n'.encode("utf-8"))
+    body.extend(f"--{boundary}\r\n".encode("utf-8"))
+    body.extend(f'Content-Disposition: form-data; name="chat_id"\r\n\r\n{chat_id}\r\n'.encode("utf-8"))
 
     if caption:
-        body.extend(f"--{boundary}\\r\\n".encode("utf-8"))
-        body.extend(f'Content-Disposition: form-data; name="caption"\\r\\n\\r\\n{caption}\\r\\n'.encode("utf-8"))
+        body.extend(f"--{boundary}\r\n".encode("utf-8"))
+        body.extend(f'Content-Disposition: form-data; name="caption"\r\n\r\n{caption}\r\n'.encode("utf-8"))
         if parse_mode:
-            body.extend(f"--{boundary}\\r\\n".encode("utf-8"))
-            body.extend(f'Content-Disposition: form-data; name="parse_mode"\\r\\n\\r\\n{parse_mode}\\r\\n'.encode("utf-8"))
+            body.extend(f"--{boundary}\r\n".encode("utf-8"))
+            body.extend(f'Content-Disposition: form-data; name="parse_mode"\r\n\r\n{parse_mode}\r\n'.encode("utf-8"))
 
-    body.extend(f"--{boundary}\\r\\n".encode("utf-8"))
-    body.extend(f'Content-Disposition: form-data; name="document"; filename="{filename}"\\r\\n'.encode("utf-8"))
-    body.extend(b'Content-Type: text/html; charset=utf-8\\r\\n\\r\\n')
+    body.extend(f"--{boundary}\r\n".encode("utf-8"))
+    body.extend(f'Content-Disposition: form-data; name="document"; filename="{filename}"\r\n'.encode("utf-8"))
+    body.extend(b'Content-Type: text/html; charset=utf-8\r\n\r\n')
     body.extend(file_bytes)
-    body.extend(b'\\r\\n')
-    body.extend(f"--{boundary}--\\r\\n".encode("utf-8"))
+    body.extend(b'\r\n')
+    body.extend(f"--{boundary}--\r\n".encode("utf-8"))
 
     url = f"https://api.telegram.org/bot{bot_token}/sendDocument"
     headers = {"Content-Type": f"multipart/form-data; boundary={boundary}"}
@@ -625,7 +625,7 @@ def _send_telegram_report(file_path, report_type="daily"):
         attachment_filename = f"Raport_Coach_Gemini_{file_date_tag}.html"
 
     if is_debug_file:
-        caption = "🛠️ <b>[TRYB DEBUG]</b>\\n\\n" + caption
+        caption = "🛠️ <b>[TRYB DEBUG]</b>\n\n" + caption
         title = f"[DEBUG] {title}"
         attachment_filename = f"DEBUG_{attachment_filename}"
 
@@ -642,7 +642,7 @@ def _send_telegram_report(file_path, report_type="daily"):
     html_bytes = html_content.encode("utf-8")
     logger.info(f"Wysyłanie raportu jako załącznik HTML na Telegram ({attachment_filename})...")
     
-    if send_telegram_document(bot_token, chat_id, html_bytes, attachment_filename, caption=caption):
+    if send_telegram_document(html_bytes, attachment_filename, caption=caption):
         logger.info("✅ Raport został pomyślnie wysłany na Telegram jako załącznik HTML z podpisem!")
         return 0
     

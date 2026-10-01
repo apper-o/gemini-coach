@@ -27,10 +27,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Konfiguracja Pythona 3.11
+      - name: Konfiguracja Pythona 3.12
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.12'
           cache: 'pip'
 
       - name: Cache sesji i tokenów OAuth Garmina
