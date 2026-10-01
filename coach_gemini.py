@@ -16,8 +16,8 @@ from dotenv import load_dotenv
 from google import genai
 
 from send_telegram import (
-    send_report,
-    markdown_to_html_doc,
+    send_daily_report,
+    send_weekly_plan,
     finish_run,
 )
 from garmin_service import (
@@ -330,25 +330,17 @@ def run_plan_mode(client, personal_data, trainings_history, user_note, weekly_wo
         if debug:
             print(f"\n📄 [DEBUG] Zapisano plan do: {target_plan_file} (Plik produkcyjny {weekly_plan_file} pozostał nienaruszony)")
 
-            # Wygenerowanie podglądu HTML w folderze debug/
-            try:
-                html_path = os.path.join(DEBUG_DIR, "weekly_plan.html")
-                html_content = markdown_to_html_doc(response.text, title="Plan Tygodniowy - Coach Gemini (Debug)")
-                with open(html_path, "w", encoding="utf-8") as hf:
-                    hf.write(html_content)
-                if send_tg:
-                    print(f"🚀 [DEBUG] Wygenerowano podgląd HTML: {html_path}. Dane zostaną wysłane na Telegrama")
-                    send_report(target_plan_file)
-                else:
-                    print(f"📄 [DEBUG] Wygenerowano podgląd HTML: {html_path} (Dane NIE zostaną wysłane na Telegrama)")
-            except Exception as he:
-                logger.warning(f"Nie udało się wygenerować podglądu HTML: {he}")
+            if send_tg:
+                print(f"🚀 [DEBUG] Raport zostanie wysłany na Telegrama (z flagą debug)")
+                send_weekly_plan(target_plan_file)
+            else:
+                print(f"📄 [DEBUG] Dane NIE zostaną wysłane na Telegrama.")
         else:
             print(f"\n✅ Zapisano plan do: {target_plan_file}. Będzie on podstawą do codziennej weryfikacji i adaptacji!")
 
             # Wysłanie planu tygodniowego na Telegram w formacie załącznika HTML
             try:
-                send_report(weekly_plan_file)
+                send_weekly_plan(weekly_plan_file)
             except Exception as te:
                 logger.warning(f"Nie udało się wysłać planu na Telegram: {te}")
     except Exception as e:
@@ -541,14 +533,14 @@ def run_daily_mode(client, todays_date, dump_file, weekly_plan_file, user_profil
         if not debug:
             try:
                 latest_report_file = os.path.join(OUTPUT_DIR, "last_daily_report.md")
-                send_report(latest_report_file)
+                send_daily_report(latest_report_file)
             except Exception as te:
                 logger.warning(f"Nie udało się wysłać raportu na Telegram: {te}")
         elif send_tg:
             try:
                 debug_report_file = os.path.join(DEBUG_DIR, "last_daily_report.md")
                 print(f"🚀 [DEBUG] Wysyłanie testowego raportu na Telegram (--send_debug): {debug_report_file}...")
-                send_report(debug_report_file)
+                send_daily_report(debug_report_file)
             except Exception as te:
                 logger.warning(f"Nie udało się wysłać raportu na Telegram: {te}")
 
