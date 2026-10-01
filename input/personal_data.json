@@ -1,15 +1,16 @@
 {
     "phase": "Post-Marathon Recovery",
     "last_event_date": "2026-09-27",
+    "last_event_type": "maraton",
     "primary_goal": {
         "target": "5km < 20:00",
         "date": "2026-10-24",
-        "stimulus_share": 0.75
+        "stimulus_share": 90
     },
     "secondary_goal": {
         "target": "800m < 2:17",
         "date": null,
-        "stimulus_share": 0.25
+        "stimulus_share": 10
     },
     "height": "185 cm",
     "weight": "78 kg",

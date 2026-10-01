@@ -27,7 +27,7 @@ from garmin_service import (
     determine_workout_date,
 )
 from coach_prompts import (
-    load_training_config,
+    load_personal_data,
     build_user_profile,
     load_weekly_plan,
     load_strength_routines,
@@ -106,7 +106,7 @@ def save_debug_prompt(prompt, debug=False):
 
     Args:
         prompt (str): Kompletny tekst promptu wysyłanego do modelu.
-        debug (bool): Flaga trybu piaskownicy.
+        debug (bool): Flaga trybu debug.
     """
     if debug:
         debug_log_path = os.path.join(DEBUG_DIR, "debug_log.md")
@@ -117,21 +117,18 @@ def save_debug_prompt(prompt, debug=False):
 
 def send_gemini_prompt_with_fallback(client, prompt, models=None, debug=False):
     """
-    Wysyła prompt do Gemini z automatycznym mechanizmem przełączania na kolejny model (fallback).
+    Wysyła prompt do Gemini z automatycznym mechanizmem fallbacku.
     Jeśli dany model jest przeciążony lub zawiedzie, próbuje kolejnego z listy modeli.
     
     Args:
         client: Zainicjowany klient Gemini.
         prompt (str): Treść zapytania dla asystenta.
-        models (list): Lista modeli do wypróbowania w kaskadzie.
+        models (list): Lista modeli w kaskadzie.
         debug (bool): Czy zapisywać prompt do plików lokalnych.
 
     Returns:
-        Obiekt odpowiedzi wygenerowanej przez model.
+        Odpowiedzi wygenerowana przez model.
     """
-    if not models:
-        exit_with_error("Brak modeli do wysłania promptu do Gemini (lista modeli jest pusta).")
-
     save_debug_prompt(prompt, debug=debug)
 
     print("\n" + "="*60)
@@ -153,7 +150,6 @@ def send_gemini_prompt_with_fallback(client, prompt, models=None, debug=False):
             logger.warning(f"⚠️ Model {model_name} zwrócił błąd ({err_msg}).")
 
         if idx < len(models):
-            logger.info(f"🔄 Przełączam na model zapasowy: {models[idx]}...")
             time.sleep(5)
             continue
 
@@ -170,16 +166,16 @@ def send_gemini_prompt_with_fallback(client, prompt, models=None, debug=False):
 # GŁÓWNE TRYBY DZIAŁANIA
 # ==============================================================================
 
-def run_suggest_mode(client, training_context, history_context, user_note, preferences_file, debug=False, models=None, ref_date=None):
+def run_suggest_mode(client, personal_data, trainings_history, user_note, weekly_workout_structure, debug=False, models=None, ref_date=None):
     """
     Generowanie sugestii typów treningów na cały nadchodzący tydzień.
 
     Args:
         client: Zainicjowany klient Gemini API.
-        training_context (str): Konfiguracja treningowa biegacza.
-        history_context (str): Kontekst wyników z 42 ostatnich dni.
+        personal_data (str): Dane zawodnika.
+        trainings_history (str): Kontekst wyników z 42 ostatnich dni.
         user_note (str): Zgłoszone dyspozycje lub tekst do trenera.
-        preferences_file (str): Ścieżka do docelowego pliku preferencji.
+        weekly_workout_structure (str): Ścieżka do docelowego pliku preferencji.
         debug (bool): Ochrona zapisu w pliku produkcyjnym.
         models (list): Dostępne modele Gemini.
         ref_date (date): Data wygenerowania układu.
@@ -190,8 +186,8 @@ def run_suggest_mode(client, training_context, history_context, user_note, prefe
     print("="*60)
 
     suggest_prompt = generate_weekly_suggestions_prompt(
-        training_context=training_context,
-        history_context=history_context,
+        personal_data=personal_data,
+        trainings_history=trainings_history,
         user_note=user_note,
         ref_date=ref_date
     )
@@ -199,55 +195,52 @@ def run_suggest_mode(client, training_context, history_context, user_note, prefe
     try:
         response = send_gemini_prompt_with_fallback(client, suggest_prompt, models=models, debug=debug)
 
-        print("\n💡 PROPONOWANY PODZIAŁ TYPÓW TRENINGU NA TEN TYDZIEŃ 💡\n")
-        print(response.text)
+        target_structure = os.path.join(DEBUG_DIR, "weekly_workout_structure.md") if debug else weekly_workout_structure
 
-        target_preferences = os.path.join(DEBUG_DIR, "weekly_preferences.md") if debug else preferences_file
-
-        with open(target_preferences, "w", encoding="utf-8") as pf:
+        with open(target_structure, "w", encoding="utf-8") as pf:
             pf.write("# Sugestia wygenerowana przez Trenera Gemini na podstawie historii treningowej i profilu\n")
             pf.write("# Możesz zmodyfikować poniższe linie według własnych planów, a następnie uruchomić 'python coach_gemini.py plan'\n\n")
             pf.write(response.text)
 
         if debug:
-            print(f"\n✅ [DEBUG] Zapisano propozycję do pliku: {target_preferences}")
+            print(f"\n✅ [DEBUG] Zapisano propozycję do pliku: {target_structure}")
         else:
-            print(f"\n✅ Zapisano propozycję do pliku: {target_preferences}")
-            print(f"📄 Jeśli chcesz coś zmienić, wyedytuj '{preferences_file}', a następnie uruchom:")
+            print(f"\n✅ Zapisano propozycję do pliku: {target_structure}")
+            print(f"📄 Jeśli chcesz coś zmienić, wyedytuj '{weekly_workout_structure}', a następnie uruchom:")
             print("   python coach_gemini.py plan")
     except Exception as e:
         exit_with_error("Wystąpił błąd podczas generowania sugestii.", error=e)
 
 
-def _read_and_validate_preferences(preferences_file, debug=False):
+def _read_and_validate_preferences(weekly_workout_structure, debug=False):
     """
     Otwiera plik preferencji, weryfikuje jego zawartość i zwraca gotowy ciąg dni.
     Jeśli plik nie istnieje, tworzy pusty szablon i przerywa działanie z ostrzeżeniem.
 
     Args:
-        preferences_file (str): Ścieżka do głównego pliku preferencji.
+        weekly_workout_structure (str): Ścieżka do głównego pliku preferencji.
         debug (bool): Flaga trybu piaskownicy.
 
     Returns:
         tuple: Sformatowany string z preferencjami (str) oraz ścieżka do załadowanego pliku (str).
     """
-    debug_preferences_file = os.path.join(DEBUG_DIR, "weekly_preferences.md")
-    if debug and os.path.exists(debug_preferences_file):
-        active_preferences_file = debug_preferences_file
-    elif os.path.exists(preferences_file):
-        active_preferences_file = preferences_file
+    debug_weekly_workout_structure = os.path.join(DEBUG_DIR, "weekly_workout_structure.md")
+    if debug and os.path.exists(debug_weekly_workout_structure):
+        active_weekly_workout_structure = debug_weekly_workout_structure
+    elif os.path.exists(weekly_workout_structure):
+        active_weekly_workout_structure = weekly_workout_structure
     else:
-        active_preferences_file = debug_preferences_file if debug else preferences_file
-        with open(active_preferences_file, "w", encoding="utf-8") as pf:
+        active_weekly_workout_structure = debug_weekly_workout_structure if debug else weekly_workout_structure
+        with open(active_weekly_workout_structure, "w", encoding="utf-8") as pf:
             pf.write("# Wpisz w jakie dni jaki typ treningu chcesz wykonać, np.:\n")
             pf.write("# Poniedziałek: Easy + przebieżki\n# Wtorek: Tempo progowe\n# Środa: FBW\n")
         exit_with_error(
-            f"Nie znaleziono pliku '{active_preferences_file}'. "
+            f"Nie znaleziono pliku '{active_weekly_workout_structure}'. "
             f"Utworzono pusty szablon. Uzupełnij go lub uruchom 'python coach_gemini.py suggest'.",
             code=2
         )
 
-    with open(active_preferences_file, "r", encoding="utf-8") as pf:
+    with open(active_weekly_workout_structure, "r", encoding="utf-8") as pf:
         raw_lines = pf.readlines()
 
     valid_lines = []
@@ -270,34 +263,34 @@ def _read_and_validate_preferences(preferences_file, debug=False):
             invalid_lines.append(s)
 
     if invalid_lines:
-        msg = f"W pliku '{active_preferences_file}' znaleziono niepoprawne linie:\n"
+        msg = f"W pliku '{active_weekly_workout_structure}' znaleziono niepoprawne linie:\n"
         for inv in invalid_lines:
             msg += f"   - {inv}\n"
         msg += "Każda linia powinna zaczynać się od dnia tygodnia, np.: 'Poniedziałek: Easy run'."
         exit_with_error(msg, code=2)
 
-    days_preferences = "\n".join(valid_lines).strip()
+    days_structure = "\n".join(valid_lines).strip()
 
-    if not days_preferences:
+    if not days_structure:
         exit_with_error(
-            f"Plik '{active_preferences_file}' nie zawiera zdefiniowanych dni treningowych.\n"
+            f"Plik '{active_weekly_workout_structure}' nie zawiera zdefiniowanych dni treningowych.\n"
             "Wpisz w nim preferencje lub uruchom: python coach_gemini.py suggest",
             code=2
         )
 
-    return days_preferences, active_preferences_file
+    return days_structure, active_weekly_workout_structure
 
 
-def run_plan_mode(client, training_context, history_context, user_note, preferences_file, weekly_plan_file, strength_routines_file, debug=False, models=None, ref_date=None, send_tg=False):
+def run_plan_mode(client, personal_data, trainings_history, user_note, weekly_workout_structure, weekly_plan_file, strength_routines_file, debug=False, models=None, ref_date=None, send_tg=False):
     """
     Tryb planowania: Generuje kompletny plan na tydzień treningowy.
 
     Args:
         client: Zainicjowany klient Gemini.
-        training_context (str): Konfiguracja (training_config.json).
-        history_context (str): Kontekst historyczny (ostatnie 42 dni).
-        user_note (str): Zgłoszona notatka tekstowa.
-        preferences_file (str): Ścieżka pliku weekly_preferences.md.
+        personal_data (str): Dane zawodnika.
+        trainings_history (str): Kontekst historyczny (ostatnie 42 dni).
+        user_note (str): Notatka zawodnika.
+        weekly_workout_structure (str): Ścieżka pliku weekly_workout_structure.md.
         weekly_plan_file (str): Ścieżka zapisu dla planu (weekly_plan.md).
         strength_routines_file (str): Ścieżka pliku siłowego (strength_routines.md).
         debug (bool): Ochrona przed nadpisywaniem plików.
@@ -309,20 +302,18 @@ def run_plan_mode(client, training_context, history_context, user_note, preferen
     print("🗓️  TRYB PLANOWANIA TYGODNIOWEGO (GEMINI COACH) 🗓️")
     print("="*60)
 
-    days_preferences, active_preferences_file = _read_and_validate_preferences(preferences_file, debug=debug)
+    days_structure, active_weekly_workout_structure = _read_and_validate_preferences(weekly_workout_structure, debug=debug)
 
-    print(f"📄 Wczytano preferencje z pliku {active_preferences_file}:\n")
-    print(days_preferences)
+    print(f"📄 Wczytano preferencje z pliku {active_weekly_workout_structure}:\n")
+    print(days_structure)
     print("\n" + "="*60)
 
     strength_routines = load_strength_routines(strength_routines_file)
 
-
-
     plan_prompt = generate_weekly_plan_prompt(
-        days_preferences=days_preferences,
-        training_context=training_context,
-        history_context=history_context,
+        days_structure=days_structure,
+        personal_data=personal_data,
+        trainings_history=trainings_history,
         user_note=user_note,
         strength_routines=strength_routines,
         ref_date=ref_date
@@ -331,8 +322,7 @@ def run_plan_mode(client, training_context, history_context, user_note, preferen
     try:
         response = send_gemini_prompt_with_fallback(client, plan_prompt, models=models, debug=debug)
 
-        print("\n🏆 ROZPISKA PLANU NA CAŁY TYDZIEŃ OD TRENERA 🏆\n")
-        print(response.text)
+        
 
         target_plan_file = os.path.join(DEBUG_DIR, "weekly_plan.md") if debug else weekly_plan_file
 
@@ -534,8 +524,7 @@ def run_daily_mode(client, todays_date, dump_file, weekly_plan_file, user_profil
 
         response = send_gemini_prompt_with_fallback(client, verification_prompt, models=models, debug=debug)
 
-        print(f"\n🏆 RAPORT TRENERSKI I ADAPTACJA NA {target_date_str} 🏆\n")
-        print(response.text)
+        
 
         workout_date = determine_workout_date(audit_date, sorted_activities, activity_stats)
         build_and_save_daily_archive(
@@ -647,7 +636,7 @@ def setup_environment(debug=False):
     return api_key
 
 
-def dispatch_mode(mode, client, gemini_models, today, training_context, user_note, paths, debug=False, send_tg=False):
+def dispatch_mode(mode, client, gemini_models, today, personal_data, user_note, paths, debug=False, send_tg=False):
     """
     Kieruje wykonanie do odpowiedniego modułu na podstawie wybranego trybu działania.
 
@@ -656,7 +645,7 @@ def dispatch_mode(mode, client, gemini_models, today, training_context, user_not
         client: Zainicjowany klient API Gemini.
         gemini_models (list): Dostępne nazwy modeli (kaskada).
         today (date): Data uruchomienia.
-        training_context (str): Konfiguracja treningowa biegacza.
+        personal_data (str): Dane zawodnika.
         user_note (str): Zgłoszona przez użytkownika notatka (Telegram).
         paths (dict): Słownik zawierający wymagane ścieżki do plików.
         debug (bool): Czy operujemy w trybie debugowania.
@@ -668,7 +657,7 @@ def dispatch_mode(mode, client, gemini_models, today, training_context, user_not
     combined_note = "\n\n".join(parts) if parts else None
 
     if mode == "daily":
-        user_profile = build_user_profile(training_context, ref_date=today)
+        user_profile = build_user_profile(personal_data, ref_date=today)
         run_daily_mode(
             client=client,
             todays_date=today,
@@ -684,14 +673,14 @@ def dispatch_mode(mode, client, gemini_models, today, training_context, user_not
         )
         return
 
-    history_context = load_training_history(HISTORY_DIR, days=42, ref_date=today)
-    if history_context:
+    trainings_history = load_training_history(ref_date=today, history_dir=HISTORY_DIR)
+    if trainings_history:
         logger.info("Wczytano historię treningów z ostatnich 42 dni (6 tygodni).")
 
     if mode == "suggest":
-        run_suggest_mode(client, training_context, history_context, combined_note, paths["preferences"], debug=debug, models=gemini_models, ref_date=today)
+        run_suggest_mode(client, personal_data, trainings_history, combined_note, paths["weekly_workout_structure"], debug=debug, models=gemini_models, ref_date=today)
     elif mode == "plan":
-        run_plan_mode(client, training_context, history_context, combined_note, paths["preferences"], paths["plan"], paths["strength"], debug=debug, models=gemini_models, ref_date=today, send_tg=send_tg)
+        run_plan_mode(client, personal_data, trainings_history, combined_note, paths["weekly_workout_structure"], paths["plan"], paths["strength"], debug=debug, models=gemini_models, ref_date=today, send_tg=send_tg)
 
 
 def main():
@@ -715,19 +704,19 @@ def main():
     gemini_models = get_gemini_models()
 
     try:
-        training_context = load_training_config(os.path.join(INPUT_DIR, "training_config.json"))
+        personal_data = load_personal_data(os.path.join(INPUT_DIR, "personal_data.json"))
     except Exception as e:
         exit_with_error("Nie udało się załadować konfiguracji treningowej.", error=e)
     user_note, new_tg_state = prepare_user_note()
 
     paths = {
-        "preferences": os.path.join(INPUT_DIR, "weekly_preferences.md"),
+        "weekly_workout_structure": os.path.join(INPUT_DIR, "weekly_workout_structure.md"),
         "plan": os.path.join(OUTPUT_DIR, "weekly_plan.md"),
         "dump": os.path.join(INPUT_DIR, "garmin_dump.json"),
         "strength": os.path.join(INPUT_DIR, "strength_routines.md"),
     }
 
-    dispatch_mode(mode, client, gemini_models, today, training_context, user_note, paths, debug=args.debug, send_tg=args.send_debug)
+    dispatch_mode(mode, client, gemini_models, today, personal_data, user_note, paths, debug=args.debug, send_tg=args.send_debug)
     finish_run(new_tg_state=new_tg_state, debug=args.debug)
 
 

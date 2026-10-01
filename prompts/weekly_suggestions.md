@@ -9,7 +9,7 @@ KONTEKST I CELE BIEGACZA:
 * Cel poboczny: {secondary_goal}
 * Proporcja bodźców treningowych: {stimulus_distribution}
 * Faza treningowa: {phase}
-* Czas do startu / celu głównego: {time_left}
+
 * Ostatni start / zawody: {last_event_info}
 * Parametry antropometryczne: Wzrost: {height} | Waga: {weight}
 * HR max: {max_hr} | Próg mleczanowy (LTHR): {lthr}

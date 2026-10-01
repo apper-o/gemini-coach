@@ -37,7 +37,7 @@ SEKCJA 2: DANE WEJŚCIOWE DO ANALIZY
 * Cel główny: {primary_goal}
 * Cel poboczny: {secondary_goal}
 * Proporcja bodźców treningowych: {stimulus_distribution}
-* Faza treningowa: {phase} | Czas do startu: {time_left}
+* Faza treningowa: {phase}
 * Ostatni start / zawody: {last_event_info}
 * Wzrost: {height} | Waga: {weight}
 * HR max: {max_hr} | Próg mleczanowy (LTHR): {lthr}
@@ -152,15 +152,6 @@ Zestawienie: Plan vs Realizacja:
   - Dryf tętna: 
   - Inne anomalie fizjologiczne:
 
-### Dedykowana analiza biomechaniczna i techniki biegu:
-* **Ocena kadencji**: (jakościowa diagnoza rytmu i pracy nóg – bez cytowania liczb)
-* **Ekonomia i zwrot energii (SSC)**: (jakościowa diagnoza sztywności sprężystej i kontaktu z podłożem – bez cytowania ms/watów)
-* **Bezwzględne błędy techniczne**: 
-* **Inne anomalie biomechaniczne**: 
-### Czynniki Fizjologiczne:
-* **Dryf tętna**: (jakościowa ocena dryfu i stabilności krążeniowej – bez cytowania bpm)
-* **Inne anomalie fizjologiczne**: 
-
 ## CZĘŚĆ SIŁOWA (wypisuj tę część tylko, gdy dzień zawierał trening siłowy / uzupełniający):
 
 | Nr | Ćwiczenie | Serie x Powtórzenia | Ciężar | Docelowa partia |
@@ -176,9 +167,9 @@ Zestawienie: Plan vs Realizacja:
 ## KOSZT METABOLICZNY I STAN ZASOBÓW
 
 * **Bodziec fizjologiczny i szlaki energetyczne**: 
-* **Koszt dzienny i stan zasobów (stres / Body Battery / aktywność pozatreningowa)** (nie cytuj liczb – wyłącznie diagnoza): 
-* **Subiektywny koszt i percepcja zmęczenia (uwzględnij faktyczne dane i notatkę jeśli występuje)** (nie cytuj liczb): 
-* **Wpływ bazy wyjściowej (sen/HRV):** (nie cytuj liczb – wyłącznie diagnoza stanu CUN i gotowości): 
+* **Koszt dzienny i stan zasobów (stres / Body Battery / aktywność pozatreningowa)**: 
+* **Subiektywny koszt i percepcja zmęczenia (uwzględnij faktyczne dane i notatkę jeśli występuje)**: 
+* **Wpływ bazy wyjściowej (sen/HRV):**: 
 * **Wpływ tła dnia poprzedniego ({yesterday_date_str})**: 
 
 ## ZALECENIA REGENERACYJNE PO TRENINGU (WIECZÓR I NOC)

@@ -48,7 +48,7 @@ SEKCJA 2: DANE WEJŚCIOWE DO GENEROWANIA PLANU
 * Cel poboczny: {secondary_goal}
 * Proporcja bodźców treningowych: {stimulus_distribution}
 * Faza treningowa: {phase}
-* Czas do startu / celu głównego: {time_left}
+
 * Ostatni start / zawody: {last_event_info}
 * Parametry antropometryczne: Wzrost: {height} | Waga: {weight}
 * HR max: {max_hr} | Próg mleczanowy (LTHR): {lthr}
@@ -98,7 +98,6 @@ SEKCJA 4: BEZWZGLĘDNY SZABLON PLANU TYGODNIOWEGO (FORMAT WYJŚCIA)
 * **Rozgrzewka**: [Dystans truchtu w km]
 * **Część główna**:
 * [Odcinek / Seria, dystans, tempo min/km, przerwa w marszu/truchcie, tętno docelowe i strefa]
-
 
 * **Schłodzenie**: [Dystans truchtu lub marszu w km]
 * **Cel fizjologiczny**: [Zwięzły opis adaptacji – maksymalnie 1-2 zdania]

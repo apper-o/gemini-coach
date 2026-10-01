@@ -21,6 +21,29 @@ RE_STRENGTH_KW = re.compile(r'(siłowni|siłowa|hevy|fbw|upper|lower|strength)',
 RE_PROFILE_HEADER = re.compile(r'\*\s*Profil jednostki:\s*([^\n]+)')
 RE_VARIANT_B_HEADER = re.compile(r'(WARIANT B:[^\n]+)')
 
+def _get_or_nodata(d, key, formatter=None):
+    """
+    Pobiera wartość ze słownika, a jeśli jej nie ma, zwraca NO_DATA.
+    
+    Args:
+        d (dict): Słownik, z którego pobierana jest wartość.
+        key (str): Klucz do pobrania ze słownika.
+        formatter (callable, optional): Funkcja formatująca pobraną wartość. Defaults to None.
+        
+    Returns:
+        Any: Pobrana (i ewentualnie sformatowana) wartość lub NO_DATA w przypadku jej braku.
+    """
+    if not isinstance(d, dict):
+        return NO_DATA
+    val = d.get(key)
+    if val is None:
+        return NO_DATA
+    if formatter:
+        try:
+            return formatter(val)
+        except Exception:
+            return NO_DATA
+    return val
 
 # ==============================================================================
 # 1. PARSERY BIOMETRII I BIOMECHANIKI AKTYWNOŚCI
@@ -29,7 +52,12 @@ RE_VARIANT_B_HEADER = re.compile(r'(WARIANT B:[^\n]+)')
 def _speed_to_pace_str(speed_m_s):
     """
     Konwertuje prędkość w m/s na czytelne tempo w formacie M:SS min/km.
-    Zwraca NO_DATA jeśli prędkość jest nieprawidłowa lub <= 0.
+    
+    Args:
+        speed_m_s (float): Prędkość w metrach na sekundę.
+        
+    Returns:
+        str: Sformatowane tempo (np. "5:30 min/km") lub NO_DATA.
     """
     if speed_m_s and isinstance(speed_m_s, (int, float)) and speed_m_s > 0:
         total_seconds = int(round(1000.0 / speed_m_s))
@@ -44,19 +72,23 @@ def parse_activity_biomechanics(activity):
     Wyciąga szczegółowe parametry biomechaniczne i fizjologiczne z konkretnego biegu.
     Oblicza średnie tempo z prędkości (m/s), jeśli Garmin nie udostępnia gotowego pola tempa.
     Jeśli parametrów brak, wstawia NO_DATA.
+    
+    Args:
+        activity (dict): Słownik reprezentujący dane aktywności z Garmina.
+        
+    Returns:
+        dict: Słownik zawierający przeparsowane metryki aktywności, lub None jeśli activity jest puste.
     """
     if not activity:
         return None
 
-    raw_dist = activity.get('distance')
-    dist_km = (raw_dist / 1000) if raw_dist is not None and raw_dist > 0 else 0
-    dist_str = f"{dist_km:.2f} km" if dist_km > 0 else NO_DATA
+    dist_str = _get_or_nodata(activity, 'distance', lambda x: f"{x / 1000:.2f} km" if x > 0 else NO_DATA)
+    if dist_str == NO_DATA and activity.get('distance', 0) > 0:
+        dist_str = f"{activity.get('distance') / 1000:.2f} km"
+        
+    duration_str = _get_or_nodata(activity, 'duration', lambda x: f"{x / 60:.1f} min" if x > 0 else NO_DATA)
 
-    raw_dur = activity.get('duration')
-    duration_min = (raw_dur / 60) if raw_dur is not None and raw_dur > 0 else 0
-    duration_str = f"{duration_min:.1f} min" if duration_min > 0 else NO_DATA
-
-    # Średnie tempo: sprawdzamy bezpośrednie pole lub obliczamy z averageSpeed (m/s)
+    # Średnie tempo
     avg_speed_m_s = activity.get('averageSpeed')
     avg_pace_raw = activity.get('averagePace') or activity.get('avgPace')
     pace_str = str(avg_pace_raw) if avg_pace_raw else _speed_to_pace_str(avg_speed_m_s)
@@ -69,11 +101,8 @@ def parse_activity_biomechanics(activity):
         start_time_str = start_time_raw
 
     # Tętno
-    avg_hr_val = activity.get('averageHR')
-    avg_hr_str = f"{int(round(avg_hr_val))} bpm" if isinstance(avg_hr_val, (int, float)) else NO_DATA
-
-    max_hr_val = activity.get('maxHR')
-    max_hr_str = f"{int(round(max_hr_val))} bpm" if isinstance(max_hr_val, (int, float)) else NO_DATA
+    avg_hr_str = _get_or_nodata(activity, 'averageHR', lambda x: f"{int(round(x))} bpm" if isinstance(x, (int, float)) else NO_DATA)
+    max_hr_str = _get_or_nodata(activity, 'maxHR', lambda x: f"{int(round(x))} bpm" if isinstance(x, (int, float)) else NO_DATA)
 
     # Kadencja
     raw_cad = activity.get('averageRunningCadenceInStepsPerMinute') or activity.get('averageRunCadence')
@@ -83,25 +112,16 @@ def parse_activity_biomechanics(activity):
     max_cadence_str = f"{int(round(raw_max_cad))} spm" if raw_max_cad is not None else NO_DATA
 
     # Długość kroku
-    sl = activity.get('avgStrideLength')
-    stride_str = f"{sl / 100:.2f} m" if sl is not None and sl > 0 else NO_DATA
+    stride_str = _get_or_nodata(activity, 'avgStrideLength', lambda x: f"{x / 100:.2f} m" if x > 0 else NO_DATA)
 
     # Czas kontaktu z podłożem i oscylacje
-    gct = activity.get('avgGroundContactTime')
-    gct_str = f"{gct:.1f} ms" if isinstance(gct, (int, float)) else NO_DATA
-
-    vo = activity.get('avgVerticalOscillation')
-    vo_str = f"{vo:.2f} cm" if isinstance(vo, (int, float)) else NO_DATA
-
-    vr = activity.get('avgVerticalRatio')
-    vr_str = f"{vr:.2f} %" if isinstance(vr, (int, float)) else NO_DATA
+    gct_str = _get_or_nodata(activity, 'avgGroundContactTime', lambda x: f"{x:.1f} ms" if isinstance(x, (int, float)) else NO_DATA)
+    vo_str = _get_or_nodata(activity, 'avgVerticalOscillation', lambda x: f"{x:.2f} cm" if isinstance(x, (int, float)) else NO_DATA)
+    vr_str = _get_or_nodata(activity, 'avgVerticalRatio', lambda x: f"{x:.2f} %" if isinstance(x, (int, float)) else NO_DATA)
 
     # Przewyższenia
-    eg = activity.get('elevationGain')
-    elevation_gain_str = f"{int(round(eg))} m" if eg is not None else NO_DATA
-
-    el = activity.get('elevationLoss')
-    elevation_loss_str = f"{int(round(el))} m" if el is not None else NO_DATA
+    elevation_gain_str = _get_or_nodata(activity, 'elevationGain', lambda x: f"{int(round(x))} m")
+    elevation_loss_str = _get_or_nodata(activity, 'elevationLoss', lambda x: f"{int(round(x))} m")
 
     # Obciążenie treningowe
     ate = activity.get('aerobicTrainingEffect')
@@ -109,11 +129,8 @@ def parse_activity_biomechanics(activity):
     label_str = f" ({label})" if label else ""
     aerobic_te_str = f"{ate:.1f}/5.0{label_str}" if isinstance(ate, (int, float)) else NO_DATA
 
-    ante = activity.get('anaerobicTrainingEffect')
-    anaerobic_te_str = f"{ante:.1f}/5.0" if isinstance(ante, (int, float)) else NO_DATA
-
-    pwr = activity.get('avgPower')
-    power_str = f"{int(round(pwr))} W" if isinstance(pwr, (int, float)) else NO_DATA
+    anaerobic_te_str = _get_or_nodata(activity, 'anaerobicTrainingEffect', lambda x: f"{x:.1f}/5.0" if isinstance(x, (int, float)) else NO_DATA)
+    power_str = _get_or_nodata(activity, 'avgPower', lambda x: f"{int(round(x))} W" if isinstance(x, (int, float)) else NO_DATA)
 
     type_key = activity.get('activityType', {}).get('typeKey', '')
     is_run = 'run' in type_key.lower() if type_key else True
@@ -229,7 +246,15 @@ def parse_activity_biomechanics(activity):
 
 
 def _parse_hrv_summary(hrv_raw):
-    """Parsuje status i średnie wartości HRV z surowych danych Garmina."""
+    """
+    Parsuje status i średnie wartości HRV z surowych danych Garmina.
+    
+    Args:
+        hrv_raw (dict): Słownik zawierający surowe dane HRV.
+        
+    Returns:
+        str: Sformatowany łańcuch znaków z podsumowaniem HRV lub NO_DATA.
+    """
     if not hrv_raw:
         return NO_DATA
     hrv_summary = hrv_raw.get('hrvSummary', {})
@@ -250,7 +275,14 @@ def _parse_hrv_summary(hrv_raw):
 def _parse_rhr_and_sleep(rhr_raw, rhr_hist, sleep_raw):
     """
     Parsuje tętno spoczynkowe RHR oraz dane snu (score, fazy głęboka/REM, wnioski).
-    Zwraca słownik z polami: rhr, sleep_score, deep_sleep, rem_sleep, sleep_insights.
+    
+    Args:
+        rhr_raw (dict): Dane o dzisiejszym tętnie spoczynkowym.
+        rhr_hist (dict): Dane historyczne o tętnie spoczynkowym.
+        sleep_raw (dict): Dane dotyczące snu.
+        
+    Returns:
+        dict: Słownik zawierający informacje o rhr, sleep_score, deep_sleep, rem_sleep, sleep_insights.
     """
     result = {
         "rhr": NO_DATA,
@@ -312,7 +344,15 @@ def _parse_rhr_and_sleep(rhr_raw, rhr_hist, sleep_raw):
 
 
 def _parse_body_battery_values(bb_raw):
-    """Ekstrahuje wartości liczbowe z tablicy bodyBatteryValuesArray."""
+    """
+    Ekstrahuje wartości liczbowe z tablicy bodyBatteryValuesArray.
+    
+    Args:
+        bb_raw (list|dict): Surowe dane Body Battery.
+        
+    Returns:
+        list: Lista wartości całkowitych lub zmiennoprzecinkowych reprezentujących Body Battery.
+    """
     if not bb_raw:
         return []
     bb_entry = bb_raw[0] if isinstance(bb_raw, list) and bb_raw else (bb_raw if isinstance(bb_raw, dict) else None)
@@ -323,7 +363,16 @@ def _parse_body_battery_values(bb_raw):
 
 
 def _parse_steps_info(stats_raw, include_active_kcal=True):
-    """Parsuje kroki i opcjonalnie aktywne kalorie."""
+    """
+    Parsuje kroki i opcjonalnie aktywne kalorie.
+    
+    Args:
+        stats_raw (dict): Słownik zawierający dzienne statystyki (kroki, kalorie).
+        include_active_kcal (bool, optional): Czy włączyć aktywne kalorie do wyniku. Defaults to True.
+        
+    Returns:
+        str: Sformatowany ciąg znaków z krokami i ew. kaloriami lub NO_DATA.
+    """
     if not stats_raw:
         return NO_DATA
     steps = stats_raw.get('totalSteps')
@@ -335,7 +384,16 @@ def _parse_steps_info(stats_raw, include_active_kcal=True):
 
 
 def _parse_stress_info(stress_raw, include_qualifier=True):
-    """Parsuje poziom stresu i opcjonalnie kwalifikator słowny."""
+    """
+    Parsuje poziom stresu i opcjonalnie kwalifikator słowny.
+    
+    Args:
+        stress_raw (dict): Słownik z informacjami o stresie.
+        include_qualifier (bool, optional): Czy włączyć opis słowny stresu. Defaults to True.
+        
+    Returns:
+        str: Sformatowany opis poziomu stresu lub NO_DATA.
+    """
     if not stress_raw:
         return NO_DATA
     s_level = stress_raw.get('avgStressLevel')
@@ -350,6 +408,12 @@ def _extract_exercise_tables(text):
     """
     Wyszukuje i wyciąga tabele Markdown zawierające ćwiczenia biegowe (serie, powtórzenia)
     oraz siłowe (zestawienie ćwiczeń, ciężary, serie, powtórzenia).
+    
+    Args:
+        text (str): Tekst w formacie Markdown do przeszukania.
+        
+    Returns:
+        list: Lista stringów, z których każdy reprezentuje pojedynczą tabelę ćwiczeń.
     """
     lines = text.split("\n")
     raw_tables = []
@@ -382,8 +446,15 @@ def _extract_exercise_tables(text):
 def _format_historical_activities_text(activities_list, date_str=None, history_dir=HISTORY_DIR):
     """
     Formatuje listę aktywności z poprzedniego dnia jako zwarty tekst poglądowy.
-    Uwzględnia aktywności biegowe z Garmina oraz treningi siłowe (ćwiczenia, serie, powtórzenia)
-    zarejestrowane w archiwum trainings_history/.
+    Uwzględnia aktywności biegowe z Garmina oraz treningi siłowe.
+    
+    Args:
+        activities_list (list): Lista aktywności do sformatowania.
+        date_str (str, optional): Data z jaką powiązane są aktywności. Defaults to None.
+        history_dir (str, optional): Katalog z historią treningów. Defaults to HISTORY_DIR.
+        
+    Returns:
+        str: Sformatowany wielolinijkowy tekst reprezentujący jednostki treningowe.
     """
     acts_texts = []
     if activities_list:
@@ -412,7 +483,8 @@ def _format_historical_activities_text(activities_list, date_str=None, history_d
 
     # Sprawdzamy czy dla danej daty w historii istnieje odnotowany trening siłowy
     if date_str and os.path.exists(history_dir):
-        hist_file = os.path.join(history_dir, f"{date_str}.md")
+        year, month = date_str.split('-')[:2]
+        hist_file = os.path.join(history_dir, year, month, f"{date_str}.md")
         if os.path.exists(hist_file):
             try:
                 with open(hist_file, "r", encoding="utf-8") as hf:
@@ -450,6 +522,13 @@ def _format_historical_activities_text(activities_list, date_str=None, history_d
 def parse_garmin_data(data, target_date=None):
     """
     Wyciąga najważniejsze informacje z JSON-ów API Garmina dla trybu 'daily'.
+    
+    Args:
+        data (dict): Pełne dane pobrane z Garmina.
+        target_date (datetime.date, optional): Data docelowa. Defaults to None.
+        
+    Returns:
+        dict: Przeparsowane najważniejsze metryki dnia dzisiejszego i wczorajszego.
     """
     parsed = {
         "hrv_status": NO_DATA,
@@ -503,14 +582,17 @@ def parse_garmin_data(data, target_date=None):
     return parsed
 
 
-
-
-
 def process_and_display_activities(raw_acts, date_str):
     """
     Sortuje chronologicznie pobrane aktywności, parsuje ich metryki biomechaniczne
     oraz wyświetla czytelne podsumowanie w konsoli.
-    Zwraca krotkę: (posortowane_surowe_aktywności, lista_przeparsowanych_statystyk).
+    
+    Args:
+        raw_acts (list): Surowa lista aktywności.
+        date_str (str): Data powiązana z aktywnościami.
+        
+    Returns:
+        tuple: Krotka (posortowane_surowe_aktywności, lista_przeparsowanych_statystyk).
     """
     sorted_acts = sorted(
         raw_acts or [],
@@ -547,6 +629,14 @@ def process_and_display_activities(raw_acts, date_str):
 def determine_workout_date(default_date, acts, stats):
     """
     Ustala datę wykonania treningu na podstawie pierwszej aktywności lub zwraca datę domyślną.
+    
+    Args:
+        default_date (datetime.date): Data domyślna.
+        acts (list): Lista aktywności.
+        stats (list): Dodatkowe statystyki.
+        
+    Returns:
+        str: Data w formacie ISO (YYYY-MM-DD).
     """
     if stats and acts:
         first_raw_act = acts[0]
@@ -561,7 +651,16 @@ def determine_workout_date(default_date, acts, stats):
 # ==============================================================================
 
 def _dump_tokens_safe(client, tokenstore_dir):
-    """Bezpieczny zapis tokenów dla różnych wersji biblioteki garminconnect."""
+    """
+    Bezpieczny zapis tokenów dla różnych wersji biblioteki garminconnect.
+    
+    Args:
+        client (Garmin): Obiekt klienta Garmin.
+        tokenstore_dir (str): Ścieżka do katalogu zapisu tokenów.
+        
+    Returns:
+        None
+    """
     try:
         if hasattr(client, "dump"):
             client.dump(tokenstore_dir)
@@ -576,9 +675,14 @@ def _dump_tokens_safe(client, tokenstore_dir):
 def get_garmin_client(email, password):
     """
     Inicjalizuje połączenie i loguje do Garmin Connect.
-    Obsługuje bezpieczne cache'owanie tokenów sesji OAuth (tokenstore) w ~/.garminconnect
-    oraz opcjonalne wstrzykiwanie tokenów ze zmiennej środowiskowej GARMIN_TOKENS_BASE64 / GARMIN_TOKENS_JSON.
-    W przypadku błędu logowania natychmiast kończy działanie przez sys.exit(1).
+    Obsługuje bezpieczne cache'owanie tokenów sesji OAuth (tokenstore) w ~/.garminconnect.
+    
+    Args:
+        email (str): Adres e-mail konta Garmin.
+        password (str): Hasło do konta Garmin.
+        
+    Returns:
+        Garmin: Zalogowany instancja klienta Garmin.
     """
     tokenstore_dir = os.path.expanduser(os.getenv("GARMIN_TOKENS_DIR", "~/.garminconnect"))
     os.makedirs(tokenstore_dir, exist_ok=True)
@@ -635,10 +739,16 @@ def get_garmin_client(email, password):
         sys.exit(1)
 
 
-
 def _fetch_activity_splits_and_weather(client, acts):
     """
     Uzupełnia listę aktywności o splity kilometrowe oraz dane o pogodzie.
+    
+    Args:
+        client (Garmin): Obiekt zalogowanego klienta Garmin.
+        acts (list): Lista aktywności pobranych z Garmina.
+        
+    Returns:
+        list: Lista aktywności z ewentualnie doklejonymi splitami i pogodą.
     """
     if acts:
         for act in acts:
@@ -656,7 +766,18 @@ def _fetch_activity_splits_and_weather(client, acts):
 
 
 def _safe_fetch(func, log_msg, *args, **kwargs):
-    """Pomocnicza funkcja do bezpiecznego wywoływania metod API z łapaniem wyjątków."""
+    """
+    Pomocnicza funkcja do bezpiecznego wywoływania metod API z łapaniem wyjątków.
+    
+    Args:
+        func (callable): Funkcja/metoda do wywołania.
+        log_msg (str): Wiadomość logowania na wypadek błędu.
+        *args: Argumenty pozycyjne dla funkcji.
+        **kwargs: Argumenty nazwane dla funkcji.
+        
+    Returns:
+        Any: Wynik działania funkcji lub None w przypadku błędu.
+    """
     try:
         return func(*args, **kwargs)
     except Exception as e:
@@ -667,7 +788,14 @@ def _safe_fetch(func, log_msg, *args, **kwargs):
 def _fetch_night_recovery_biometrics(client, date_str):
     """
     Pobiera nocne dane regeneracyjne (sen, RHR, HRV) dla podanej daty.
-    Body Battery dla całego dnia pobierane jest w _fetch_day_activities_and_load.
+    Body Battery dla całego dnia pobierane jest oddzielnie.
+    
+    Args:
+        client (Garmin): Obiekt zalogowanego klienta Garmin.
+        date_str (str): Data, dla której mają zostać pobrane dane.
+        
+    Returns:
+        dict: Słownik z danymi o śnie, RHR, historii RHR i HRV.
     """
     return {
         'sleep': _safe_fetch(client.get_sleep_data, f"Nie udało się pobrać danych snu z {date_str}", date_str),
@@ -681,6 +809,14 @@ def _fetch_day_activities_and_load(client, date_str, include_body_battery=False)
     """
     Pobiera dzienny stres, bilans kroków/kalorii oraz aktywności z danego dnia.
     Opcjonalnie pobiera także całodzienne Body Battery.
+    
+    Args:
+        client (Garmin): Obiekt zalogowanego klienta Garmin.
+        date_str (str): Data, dla której mają zostać pobrane dane.
+        include_body_battery (bool, optional): Czy dołączyć Body Battery. Defaults to False.
+        
+    Returns:
+        dict: Słownik zawierający dane stresu, statystyk (kroki) oraz aktywności.
     """
     day_data = {
         'stress': _safe_fetch(client.get_stress_data, f"Nie udało się pobrać stresu z {date_str}", date_str),
@@ -699,10 +835,15 @@ def _fetch_day_activities_and_load(client, date_str, include_body_battery=False)
 
 def fetch_garmin_data_daily(client, target_date):
     """
-    Pobiera dane z Garmina dla trybu dziennego (daily):
-    - Dzisiaj: nocne wskaźniki regeneracji (sen, HRV, RHR), aktywności biegowe (ze splitami i pogodą),
-      całodzienne kroki/kalorie, stres oraz wieczorny stan Body Battery.
-    - Wczoraj: aktywności, kroki i stres jako tło historyczne obciążenia.
+    Pobiera dane z Garmina dla trybu dziennego (daily).
+    Obejmuje wskaźniki dzisiejsze oraz wczorajsze jako tło.
+    
+    Args:
+        client (Garmin): Zalogowany obiekt klienta Garmin.
+        target_date (datetime.date): Główna data analizy.
+        
+    Returns:
+        dict: Słownik grupujący dane na klucze 'today' oraz 'yesterday'.
     """
     today_str = target_date.isoformat()
     yesterday_date = target_date - datetime.timedelta(days=1)
@@ -725,7 +866,18 @@ def fetch_garmin_data_daily(client, target_date):
 
 
 def load_or_fetch_garmin_data(target_date, dump_file, mode="daily", debug=False):
-    """Wczytuje dane z pliku lokalnego lub pobiera je bezpośrednio z Garmin Connect dla trybu 'daily'."""
+    """
+    Wczytuje dane z pliku lokalnego lub pobiera je bezpośrednio z Garmin Connect dla trybu 'daily'.
+    
+    Args:
+        target_date (datetime.date): Data docelowa pobierania.
+        dump_file (str): Ścieżka do zapisu/odczytu zrzutu pobranych danych.
+        mode (str, optional): Tryb pobierania (domyślnie "daily"). Defaults to "daily".
+        debug (bool, optional): Flaga oznaczająca tryb debug (zapis w piaskownicy). Defaults to False.
+        
+    Returns:
+        dict: Złożone dane pobrane lub wczytane z Garmina.
+    """
     use_local_data = os.getenv("USE_LOCAL_DATA", "False").lower() in ["true", "1"]
     if use_local_data:
         read_file = os.path.join("debug", "garmin_dump.json") if (debug and os.path.exists(os.path.join("debug", "garmin_dump.json"))) else dump_file

@@ -10,9 +10,7 @@ import re
 
 from send_telegram import (
     fetch_recent_telegram_messages,
-    save_telegram_state,
     markdown_to_html_doc,
-    finish_run,
 )
 
 logger = logging.getLogger(__name__)
@@ -26,8 +24,8 @@ PROMPTS_DIR = "prompts"
 HISTORY_DIR = "trainings_history"
 DEBUG_DIR = "debug"
 
-TRAINING_CONFIG_KEYS = (
-    "primary_goal", "secondary_goal", "phase", "last_event_date", "height", "weight", "max_hr", "lthr",
+PERSONAL_DATA_KEYS = (
+    "primary_goal", "secondary_goal", "phase", "last_event_date", "last_event_type", "height", "weight", "max_hr", "lthr",
     "z1", "z2", "z3", "z4", "z5", "personal_records"
 )
 UNKNOWN_VALUE_KEYWORDS = frozenset({"nieznany", "brak", "none", "null"})
@@ -64,12 +62,39 @@ RE_PLAN_STRUCT = re.compile(r'Dystans:\s*Plan:[^\n\(]*\(([^)]*(?:rozgrzewk|schł
 # PLIKI WEJŚCIOWE, NOTATKA BIEGACZA I HISTORIA 42 DNI
 # ==============================================================================
 
+def _read_file_safe(filepath, default_return=None):
+    """
+    Bezpiecznie odczytuje plik tekstowy.
+
+    Args:
+        filepath (str): Ścieżka do pliku.
+        default_return (any, optional): Wartość do zwrotu w przypadku błędu. Defaults to None.
+
+    Returns:
+        str: Zawartość pliku, lub default_return jeśli plik nie istnieje.
+    """
+    if not filepath or not os.path.exists(filepath):
+        return default_return
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            return f.read()
+    except Exception as e:
+        raise RuntimeError(f"Błąd odczytu pliku {filepath}: {e}") from e
+
 def _normalize_training_parameter(raw_value):
     """
-    Czyści i normalizuje pojedynczą wartość parametru treningowego:
+    Czyści i normalizuje pojedynczą wartość parametru treningowego.
+
+    Zasada działania:
     - zamienia None, pusty ciąg oraz słowa kluczowe ('brak', 'nieznany') na NO_DATA ('Brak danych'),
     - dla słowników rekursywnie normalizuje klucze i wartości,
     - dla poprawnych ciągów znaków usuwa zbędne spacje brzegowe (strip).
+
+    Args:
+        raw_value: Surowa wartość do znormalizowania.
+
+    Returns:
+        Znormalizowana wartość lub znormalizowany słownik.
     """
     if raw_value is None:
         return NO_DATA
@@ -83,7 +108,7 @@ def _normalize_training_parameter(raw_value):
     return raw_value
 
 
-def load_training_config(config_filepath=os.path.join(INPUT_DIR, "training_config.json")):
+def load_personal_data(config_filepath=os.path.join(INPUT_DIR, "personal_data.json")):
     """
     Wczytuje kontekst treningowy, strefy tętna, antropometrię i rekordy biegacza z pliku JSON.
 
@@ -95,6 +120,9 @@ def load_training_config(config_filepath=os.path.join(INPUT_DIR, "training_confi
        W przypadku błędu odczytu I/O lub składni JSON rzuca RuntimeError.
     3. Scala wczytaną konfigurację z kompletem kluczy domyślnych oraz
        przeprowadza sanityzację wartości (zamienia puste pola i napisy 'brak'/'nieznany' na 'Brak danych').
+
+    Args:
+        config_filepath (str, optional): Ścieżka do pliku konfiguracji. Domyślnie używa 'input/personal_data.json'.
 
     Returns:
         dict: Znormalizowany słownik parametrów treningowych.
@@ -112,11 +140,11 @@ def load_training_config(config_filepath=os.path.join(INPUT_DIR, "training_confi
     # 1. Sprawdzenie istnienia pliku i utworzenie szablonu startowego w razie potrzeby
     os.makedirs(os.path.dirname(config_filepath), exist_ok=True)
     if not os.path.exists(config_filepath):
-        default_training_profile = {field: NO_DATA for field in TRAINING_CONFIG_KEYS}
-        default_training_profile["personal_records"] = default_personal_records
+        default_personal_data = {field: NO_DATA for field in PERSONAL_DATA_KEYS}
+        default_personal_data["personal_records"] = default_personal_records
         try:
             with open(config_filepath, "w", encoding="utf-8") as file_handle:
-                json.dump(default_training_profile, file_handle, indent=4, ensure_ascii=False)
+                json.dump(default_personal_data, file_handle, indent=4, ensure_ascii=False)
             logger.info(f"Utworzono pusty szablon konfiguracji treningowej: {config_filepath}")
         except Exception as write_error:
             logger.error(f"Nie udało się utworzyć pliku szablonu {config_filepath}: {write_error}")
@@ -152,158 +180,123 @@ def load_training_config(config_filepath=os.path.join(INPUT_DIR, "training_confi
             raise ValueError(f"Obiekt '{goal_key}' w '{config_filepath}' musi zawierać pole 'stimulus_share'.")
 
     # 4. Scalenie z szablonem bazowym (gwarancja obecności wszystkich wymaganych kluczy)
-    default_training_profile = {field: NO_DATA for field in TRAINING_CONFIG_KEYS}
+    default_personal_data = {field: NO_DATA for field in PERSONAL_DATA_KEYS}
     runner_records = runner_config.get("personal_records")
     if isinstance(runner_records, dict):
         merged_records = {**default_personal_records, **runner_records}
     else:
         merged_records = default_personal_records
 
-    complete_training_config = {**default_training_profile, **runner_config}
-    complete_training_config["personal_records"] = merged_records
+    complete_personal_data = {**default_personal_data, **runner_config}
+    complete_personal_data["personal_records"] = merged_records
 
     # 5. Sanityzacja i normalizacja wszystkich pól do jednolitego formatu
     return {
         param_name: _normalize_training_parameter(param_value)
-        for param_name, param_value in complete_training_config.items()
+        for param_name, param_value in complete_personal_data.items()
     }
 
 
 def format_personal_records(records):
     """
-    Formatuje rekordy życiowe zawodnika (dystans, czas, data uzyskania) do czytelnego bloku tekstu dla promptu.
-    Obsługuje dystanse: 400m, 800m, 1500m, 5km, 10km, półmaraton, maraton.
+    Formatuje rekordy życiowe zawodnika do czytelnego bloku tekstu dla promptu.
+
+    Args:
+        records (dict): Słownik zawierający rekordy życiowe.
+
+    Returns:
+        str: Sformatowany tekst z rekordami życiowymi.
     """
     if not records or not isinstance(records, dict):
-        return "- Brak zarejestrowanych rekordów życiowych."
-
-    distance_definitions = [
-        ("400m", "400 m"),
-        ("800m", "800 m"),
-        ("1500m", "1500 m"),
-        ("5km", "5 km"),
-        ("10km", "10 km"),
-        ("polmaraton", "Półmaraton"),
-        ("maraton", "Maraton"),
-    ]
+        return "* Brak zarejestrowanych rekordów życiowych."
 
     formatted_lines = []
-    for dist_key, label in distance_definitions:
-        data = records.get(dist_key)
+    for distance, data in records.items():
         if isinstance(data, dict):
-            time_val = data.get("time", NO_DATA)
-            date_val = data.get("date", NO_DATA)
-            if time_val != NO_DATA and date_val != NO_DATA:
-                formatted_lines.append(f"- {label}: {time_val} (data: {date_val})")
-            elif time_val != NO_DATA:
-                formatted_lines.append(f"- {label}: {time_val}")
-            else:
-                formatted_lines.append(f"- {label}: {NO_DATA}")
-        elif isinstance(data, str) and data != NO_DATA:
-            formatted_lines.append(f"- {label}: {data}")
+            time = data.get("time", NO_DATA)
+            date = data.get("date", NO_DATA)
+            formatted_lines.append(f"* {distance}: {time} (data: {date})")
+        elif isinstance(data, str):
+            formatted_lines.append(f"* {distance}: {data}")
         else:
-            formatted_lines.append(f"- {label}: {NO_DATA}")
+            raise ValueError(f"Nieprawidłowe dane dla rekordu {distance}: {data}")
 
     return "\n".join(formatted_lines)
 
 
-def format_goal(goal_data):
+def format_goal(goal_data, time_rel=None):
     """
-    Formatuje cel biegowy z obiektu słownika zawierającego pola:
+    Formatuje cel biegowy z obiektu słownika.
+
+    Obiekt zawiera pola:
     - target: treść celu (np. '5km < 20:00')
     - date: termin startu docelowego (YYYY-MM-DD lub None)
     - stimulus_share: udział procentowy bodźca treningowego (np. 0.75 -> 75%)
+
+    Args:
+        goal_data (dict): Słownik zawierający dane celu.
+
+    Returns:
+        str: Sformatowany cel biegowy.
     """
     if not isinstance(goal_data, dict):
         raise ValueError(f"Oczekiwano słownika dla celu biegowego, a otrzymano: {type(goal_data).__name__}")
 
     target = str(goal_data.get("target", NO_DATA)).strip()
     date_val = goal_data.get("date")
-    share = goal_data.get("stimulus_share")
-
-    share_str = ""
-    if share is not None and share != NO_DATA:
-        try:
-            share_pct = int(round(float(share) * 100))
-            share_str = f" | Udział bodźca: {share_pct}%"
-        except (ValueError, TypeError):
-            share_str = f" | Udział bodźca: {share}"
-
     if date_val and date_val != NO_DATA:
-        return f"{target} (Termin: {date_val}{share_str})"
+        time_str = f", {time_rel}" if time_rel and time_rel != NO_DATA else ""
+        return f"{target} (Termin: {date_val}{time_str})"
     else:
-        return f"{target} (Termin: brak / cel ciągły{share_str})"
+        return f"{target} (Termin: brak)"
 
 
-def calculate_time_left(goal_data, ref_date=None):
+def format_relative_time(date_str, ref_date=None):
     """
-    Oblicza pozostały czas do startu na podstawie daty celu głównego ze słownika.
-    """
-    if not isinstance(goal_data, dict):
-        return NO_DATA
+    Oblicza różnicę czasu między datą odniesienia a podaną datą i zwraca sformatowany tekst.
 
-    target_date_str = goal_data.get("date")
-    if not target_date_str or target_date_str == NO_DATA:
+    Args:
+        date_str (str): Data wydarzenia/celu.
+        ref_date (datetime.date, optional): Data odniesienia, domyślnie dzisiaj.
+
+    Returns:
+        str: Sformatowany tekst z informacją o czasie (np. 'za 5 dni' lub '5 dni temu').
+    """
+    if not date_str or date_str == NO_DATA:
         return NO_DATA
 
     try:
         ref_d = ref_date or datetime.date.today()
-        target_d = datetime.date.fromisoformat(str(target_date_str).strip())
-        delta = (target_d - ref_d).days
+        ev_d = datetime.date.fromisoformat(str(date_str).strip())
+        delta = (ev_d - ref_d).days
 
         if delta < 0:
-            return f"Cel minął ({abs(delta)} dni temu, data: {target_date_str})"
-        elif delta == 0:
-            return f"Dziś dzień startu! ({target_date_str})"
-        elif delta == 1:
-            return f"1 dzień (jutro start! data: {target_date_str})"
+            return f"{abs(delta)} dni temu"
+        elif delta > 0:
+            return f"za {delta} dni"
         else:
-            weeks = delta // 7
-            rem_days = delta % 7
-            if weeks > 0 and rem_days > 0:
-                weeks_detail = f"{weeks} tyg. i {rem_days} dni"
-            elif weeks > 0:
-                weeks_detail = f"{weeks} tyg."
-            else:
-                weeks_detail = f"{delta} dni"
-            return f"{delta} dni ({weeks_detail}, data startu: {target_date_str})"
+            return "dzisiaj"
     except Exception as e:
-        logger.debug(f"Nie udało się obliczyć czasu do celu: {e}")
-        return str(target_date_str)
+        logger.debug(f"Nie udało się obliczyć czasu dla daty {date_str}: {e}")
+        return str(date_str)
 
 
-def format_last_event_info(last_event_date, ref_date=None):
+def build_user_profile(personal_data, ref_date=None):
     """
-    Formatuje informację o dacie ostatniego startu i liczbie dni, które od niego upłynęły.
-    """
-    if not last_event_date or last_event_date == NO_DATA:
-        return NO_DATA
-    try:
-        ref_d = ref_date or datetime.date.today()
-        ev_d = datetime.date.fromisoformat(str(last_event_date).strip())
-        days_ago = (ref_d - ev_d).days
-        if days_ago == 0:
-            return f"{last_event_date} (dzisiaj)"
-        elif days_ago == 1:
-            return f"{last_event_date} (wczoraj / 1 dzień temu)"
-        elif days_ago > 1:
-            return f"{last_event_date} ({days_ago} dni temu)"
-        else:
-            return f"{last_event_date} (za {abs(days_ago)} dni)"
-    except Exception:
-        return str(last_event_date)
+    Formatuje profil zawodnika do postaci słownika parametrów dla promptów.
 
+    Args:
+        personal_data (dict): Słownik konfiguracji treningowej.
+        ref_date (datetime.date, optional): Data odniesienia.
 
-def build_user_profile(training_context, ref_date=None):
+    Returns:
+        dict: Profil użytkownika przygotowany dla promptów.
     """
-    Formatuje profil zawodnika (cele główny i poboczny z udziałami bodźca, faza treningowa,
-    czas do startu, data ostatniego startu, antropometria, strefy tętna Z1-Z5 oraz rekordy PB)
-    do postaci słownika parametrów dla promptów.
-    """
-    if not isinstance(training_context, dict):
-        raise ValueError(f"Oczekiwano słownika konfiguracji treningowej, a otrzymano: {type(training_context).__name__}")
+    if not isinstance(personal_data, dict):
+        raise ValueError(f"Oczekiwano słownika konfiguracji treningowej, a otrzymano: {type(personal_data).__name__}")
 
-    profile = dict(training_context)
+    # Strefy tętna
+    profile = dict(personal_data)
     z1 = profile.get("z1", NO_DATA)
     z2 = profile.get("z2", NO_DATA)
     z3 = profile.get("z3", NO_DATA)
@@ -311,40 +304,40 @@ def build_user_profile(training_context, ref_date=None):
     z5 = profile.get("z5", NO_DATA)
 
     profile["hr_zones"] = f"Z1: {z1}, Z2: {z2}, Z3: {z3}, Z4: {z4}, Z5: {z5}"
+   
+    # Formatowanie celów
     profile["personal_records"] = format_personal_records(profile.get("personal_records"))
-
+    
     raw_primary = profile.get("primary_goal")
     raw_secondary = profile.get("secondary_goal")
 
-    # Formatowanie celów ze słowników
-    profile["primary_goal"] = format_goal(raw_primary)
+    target_date = raw_primary.get("date") if isinstance(raw_primary, dict) else NO_DATA
+    time_rel = format_relative_time(target_date, ref_date=ref_date) if target_date != NO_DATA else None
+
+    profile["primary_goal"] = format_goal(raw_primary, time_rel=time_rel)
     profile["secondary_goal"] = format_goal(raw_secondary)
 
-    # Wyodrębnienie szczegółowych pól celów i proporcji bodźców
     p_target = raw_primary.get("target", NO_DATA) if isinstance(raw_primary, dict) else NO_DATA
     s_target = raw_secondary.get("target", NO_DATA) if isinstance(raw_secondary, dict) else NO_DATA
-    p_share = raw_primary.get("stimulus_share", 0.75) if isinstance(raw_primary, dict) else 0.75
-    s_share = raw_secondary.get("stimulus_share", 0.25) if isinstance(raw_secondary, dict) else 0.25
-    p_pct = int(round(float(p_share) * 100)) if isinstance(p_share, (int, float)) else str(p_share)
-    s_pct = int(round(float(s_share) * 100)) if isinstance(s_share, (int, float)) else str(s_share)
+    p_share = raw_primary.get("stimulus_share", 75) if isinstance(raw_primary, dict) else 75
+    s_share = raw_secondary.get("stimulus_share", 25) if isinstance(raw_secondary, dict) else 25
 
-    profile["primary_stimulus_share"] = f"{p_pct}%"
-    profile["secondary_stimulus_share"] = f"{s_pct}%"
-    profile["stimulus_distribution"] = f"{p_pct}% cel główny ({p_target}) / {s_pct}% cel poboczny ({s_target})"
-
-    # Dynamiczny czas do celu na podstawie daty w primary_goal
-    profile["time_left"] = calculate_time_left(raw_primary, ref_date=ref_date)
+    profile["stimulus_distribution"] = f"{p_share}% cel główny ({p_target}) / {s_share}% cel poboczny ({s_target})"
 
     # Informacje o ostatnim starcie
     last_event_date = profile.get("last_event_date")
+    last_event_type = profile.get("last_event_type")
     if last_event_date and last_event_date != NO_DATA:
-        ev_info = format_last_event_info(last_event_date, ref_date=ref_date)
+        time_rel = format_relative_time(last_event_date, ref_date=ref_date)
+        prefix = f"{last_event_type} - " if last_event_type and last_event_type != NO_DATA else ""
+        ev_info = f"{prefix}{last_event_date} ({time_rel})"
         profile["last_event_info"] = ev_info
-        raw_phase = profile.get("phase", NO_DATA)
-        if raw_phase != NO_DATA and "ostatni start" not in raw_phase.lower():
-            profile["phase"] = f"{raw_phase} (ostatni start: {ev_info})"
     else:
         profile["last_event_info"] = NO_DATA
+
+    # Czyszczenie duplikatów
+    for k in ["last_event_date", "last_event_type", "primary_stimulus_share", "secondary_stimulus_share", "time_left"]:
+        profile.pop(k, None)
 
     return profile
 
@@ -362,16 +355,7 @@ def load_weekly_plan(weekly_plan_file):
     Returns:
         str | None: Zawartość planu tygodniowego lub None, gdy plik nie istnieje.
     """
-    if not weekly_plan_file or not os.path.exists(weekly_plan_file):
-        return None
-
-    try:
-        with open(weekly_plan_file, "r", encoding="utf-8") as file_handle:
-            return file_handle.read()
-    except Exception as read_error:
-        raise RuntimeError(
-            f"Błąd podczas otwierania lub odczytu pliku planu tygodniowego '{weekly_plan_file}': {read_error}"
-        ) from read_error
+    return _read_file_safe(weekly_plan_file, default_return=None)
 
 
 def load_strength_routines(strength_routines_file=None):
@@ -390,39 +374,37 @@ def load_strength_routines(strength_routines_file=None):
     """
     filepath = strength_routines_file or os.path.join(INPUT_DIR, "strength_routines.md")
 
-    if not os.path.exists(filepath):
-        return None
-
-    try:
-        with open(filepath, "r", encoding="utf-8") as file_handle:
-            content = file_handle.read().strip()
+    content = _read_file_safe(filepath, default_return=None)
+    if content:
+        content = content.strip()
         if content:
             logger.info(f"Wczytano bazę zestawów siłowych z pliku: {filepath}")
             return content
-        return None
-    except Exception as read_error:
-        raise RuntimeError(
-            f"Błąd podczas otwierania lub odczytu pliku zestawów siłowych '{filepath}': {read_error}"
-        ) from read_error
+    return None
 
 
 def load_prompt_template(filename, **kwargs):
     """
     Wczytuje szablon prompta z folderu prompts/ i podstawia przekazane zmienne {nazwa_zmiennej}.
+
+    Args:
+        filename (str): Nazwa pliku z szablonem.
+        **kwargs: Zmienne do podstawienia w szablonie.
+
+    Returns:
+        str: Szablon z uzupełnionymi wartościami.
     """
     prompt_path = os.path.join(PROMPTS_DIR, filename)
-    if not os.path.exists(prompt_path):
+    template = _read_file_safe(prompt_path)
+    if not template:
         raise FileNotFoundError(f"Nie znaleziono pliku szablonu prompta: {prompt_path}")
-
-    with open(prompt_path, "r", encoding="utf-8") as f:
-        template = f.read()
 
     for key, val in kwargs.items():
         template = template.replace(f"{{{key}}}", str(val) if val is not None else "")
     return template
 
 
-def _classify_telegram_message(body: str) -> tuple[str, str]:
+def _classify_telegram_message(body: str):
     """
     Klasyfikuje treść pojedynczego bloku wiadomości z Telegrama na podstawie pierwszej linii tekstu.
 
@@ -439,6 +421,9 @@ def _classify_telegram_message(body: str) -> tuple[str, str]:
     3. Wiadomość ogólna: Jeśli pierwsza linia nie zawiera ani 'NOTE', ani nazwy treningu siłowego,
        treść jest traktowana jako notatka użytkownika bez zmian.
        Zwraca ('general', body.strip()).
+
+    Args:
+        body (str): Treść wiadomości.
 
     Returns:
         tuple[str, str]: (typ_wiadomości, przetworzona_treść)
@@ -473,17 +458,19 @@ def _classify_telegram_message(body: str) -> tuple[str, str]:
     return ("general", body.strip())
 
 
-def _is_strength_workout_block(body: str) -> bool:
-    """Sprawdza, czy blok wiadomości reprezentuje trening siłowy."""
-    msg_type, _ = _classify_telegram_message(body)
-    return msg_type == "strength"
 
 
-def _parse_message_blocks(note: str) -> list[tuple[str, str]]:
+def _parse_message_blocks(note: str):
     """
     Dzieli notatkę na listę bloków (nagłówek, treść_wiadomości).
     Rozpoznaje nagłówki pojedynczych wiadomości z Telegrama oraz znaczniki systemowe.
     Jeśli notatka nie zawiera nagłówków, zwraca pojedynczy blok ('', note.strip()).
+
+    Args:
+        note (str): Notatka do podzielenia.
+
+    Returns:
+        list[tuple[str, str]]: Lista bloków (nagłówek, treść_wiadomości).
     """
     if not note or not note.strip():
         return []
@@ -516,9 +503,11 @@ def separate_strength_and_user_notes(note):
     2. Uwagi biegacza: wiadomości rozpoczynające się od słowa 'note` w 1. linijce (ze stripowaniem znacznika note)
        oraz inne ogólne komentarze, z zachowaniem ich znaczników czasowych.
 
+    Args:
+        note (str): Notatka z Telegrama.
+
     Returns:
-        (strength_workout, remaining_user_note)
-        gdzie każda wartość to str lub None.
+        tuple[str | None, str | None]: (strength_workout, remaining_user_note)
     """
     if not note or not note.strip():
         return None, None
@@ -552,6 +541,12 @@ def prepare_user_note(note_file=None):
     """
     Wczytuje najnowsze wiadomości i uwagi od biegacza bezpośrednio z czatu Telegrama.
     Parametr note_file jest zachowany dla kompatybilności wstecznej (notatki pochodzą wyłącznie z Telegrama).
+
+    Args:
+        note_file (str, optional): Ścieżka do pliku notatki, domyślnie None.
+
+    Returns:
+        tuple[str | None, any]: Wczytana notatka użytkownika oraz nowy stan telegrama.
     """
     user_note = None
     new_tg_state = None
@@ -576,31 +571,38 @@ def prepare_user_note(note_file=None):
     return user_note, new_tg_state
 
 
-def _find_history_anchor_date(history_dir, all_files, ref_date):
-    """Wyznacza datę bazową (anchor) dla 42-dniowego okna historii treningowej."""
-    today_file = os.path.join(history_dir, f"{ref_date.isoformat()}.md")
-    if os.path.exists(today_file):
-        return ref_date
+def _find_history_anchor_date(history_dir, ref_date):
+    """Wyznacza datę bazową (anchor) dla 42-dniowego okna historii treningowej.
 
-    # all_files jest posortowane malejąco (reverse=True), więc pierwszy pasujący element to najnowsza data przeszła
-    for f in all_files:
-        try:
-            d = datetime.date.fromisoformat(f[:-3])
-            if d <= ref_date:
-                return d
-        except ValueError:
-            pass
+    Args:
+        history_dir (str): Ścieżka do katalogu historii.
+        ref_date (datetime.date): Data odniesienia.
 
-    try:
-        return datetime.date.fromisoformat(all_files[0][:-3])
-    except (ValueError, IndexError):
-        return ref_date
+    Returns:
+        datetime.date: Data bazowa.
+    """
+    for i in range(60):
+        test_date = ref_date - datetime.timedelta(days=i)
+        d_str = test_date.isoformat()
+        year, month = d_str.split('-')[:2]
+        test_file = os.path.join(history_dir, year, month, f"{d_str}.md")
+        if os.path.exists(test_file):
+            return test_date
+            
+    return ref_date
 
 
 def _summarize_history_weeks_1_4(history_data, start_date):
     """
     Generuje podsumowanie tygodni 1–4 (Dni 1–28) historii: kilometry, biegi, siłownia.
     Odczytuje bezpośrednio linie metadanych (- Bieg: i - Siłownia:) z nagłówka każdego pliku raportu.
+
+    Args:
+        history_data (dict): Słownik z historią treningów.
+        start_date (datetime.date): Data początkowa historii.
+
+    Returns:
+        str: Podsumowanie z 4 tygodni.
     """
     weeks_1_4_lines = []
     for w in range(4):
@@ -640,6 +642,13 @@ def _summarize_history_week_5(history_data, start_date):
     Generuje zwarty opis jednostek z tygodnia 5 (Dni 29–35) na podstawie ustandaryzowanego nagłówka metadanych.
     Uwzględnia poszczególne typy treningów, rozgrzewkę, główną serię, schłodzenie, a dla treningów siłowych
     wskaźnik zaangażowanych partii mięśniowych (góra / dół), bez zamieszczania tabel ćwiczeń.
+
+    Args:
+        history_data (dict): Słownik z historią treningów.
+        start_date (datetime.date): Data początkowa historii.
+
+    Returns:
+        str: Opis jednostek z 5. tygodnia.
     """
     week_5_lines = []
     w5_start = start_date + datetime.timedelta(days=28)
@@ -699,7 +708,15 @@ def _summarize_history_week_5(history_data, start_date):
 
 
 def _load_history_week_6(history_data, start_date):
-    """Wczytuje pełne raporty dzienne z tygodnia 6 (Dni 36–42 / ostatnie 7 dni)."""
+    """Wczytuje pełne raporty dzienne z tygodnia 6 (Dni 36–42 / ostatnie 7 dni).
+
+    Args:
+        history_data (dict): Słownik z historią.
+        start_date (datetime.date): Data początkowa.
+
+    Returns:
+        str: Raporty z ostatnich 7 dni.
+    """
     week_6_entries = []
     w6_start = start_date + datetime.timedelta(days=35)
     for d_offset in range(7):
@@ -713,38 +730,39 @@ def _load_history_week_6(history_data, start_date):
     return ("\n\n" + "-" * 40 + "\n\n").join(week_6_entries)
 
 
-def load_training_history(history_dir=HISTORY_DIR, days=42, ref_date=None):
+def load_training_history(ref_date, history_dir=HISTORY_DIR):
     """
     Wczytuje historię treningów z folderu trainings_history z ostatnich 42 dni (6 tygodni)
     z wielopoziomową szczegółowością:
     - Tygodnie 1–4: podsumowanie makrocyklu (kilometry, treningi biegowe i siłowe).
     - Tydzień 5: zwarty przegląd mezocyklu z pełnymi tabelami ćwiczeń.
     - Tydzień 6: pełne szczegółowe raporty z ostatnich 7 dni.
+
+    Args:
+        ref_date (datetime.date): Data odniesienia.
+        history_dir (str, optional): Ścieżka do katalogu z historią.
+
+    Returns:
+        str | None: Sformatowana historia treningów z ostatnich 42 dni.
     """
     if not os.path.exists(history_dir):
         return None
 
-    if ref_date is None:
-        ref_date = datetime.date.today()
-
-    all_files = sorted([f for f in os.listdir(history_dir) if f.endswith(".md")], reverse=True)
-    if not all_files:
-        return None
-
-    anchor_date = _find_history_anchor_date(history_dir, all_files, ref_date)
+    anchor_date = _find_history_anchor_date(history_dir, ref_date)
     start_date = anchor_date - datetime.timedelta(days=41)
 
-    # Jednorazowe odpytanie systemu plików (I/O) i wczytanie danych z ostatnich 42 dni
     history_data = {}
     for d_offset in range(42):
         d_str = (start_date + datetime.timedelta(days=d_offset)).isoformat()
-        f_path = os.path.join(history_dir, f"{d_str}.md")
+        year, month = d_str.split('-')[:2]
+        f_path = os.path.join(history_dir, year, month, f"{d_str}.md")
         if os.path.exists(f_path):
-            try:
-                with open(f_path, "r", encoding="utf-8") as hf:
-                    history_data[d_str] = hf.read()
-            except Exception as e:
-                logger.warning(f"Błąd ładowania pliku historii {f_path}: {e}")
+            content = _read_file_safe(f_path)
+            if content is not None:
+                history_data[d_str] = content
+                
+    if not history_data:
+        return None
 
     weeks_1_4 = _summarize_history_weeks_1_4(history_data, start_date)
     week_5 = _summarize_history_week_5(history_data, start_date)
@@ -766,6 +784,14 @@ def _format_activity_section(activity_stats, date_str, strength_workout=None):
     """
     Formatuje blok Markdown z listą jednostek treningowych i biomechaniką dla promptu.
     Uwzględnia aktywności biegowe oraz opcjonalny trening siłowy (np. zgłoszony przez Telegram).
+
+    Args:
+        activity_stats (dict | list): Statystyki aktywności.
+        date_str (str): Data treningu.
+        strength_workout (str, optional): Opis treningu siłowego.
+
+    Returns:
+        str: Sformatowany blok jednostek treningowych.
     """
     parts = []
     if activity_stats:
@@ -822,14 +848,23 @@ def _format_activity_section(activity_stats, date_str, strength_workout=None):
     return "\n\n".join(parts)
 
 
-def generate_weekly_suggestions_prompt(training_context, history_context=None, user_note=None, ref_date=None):
+def generate_weekly_suggestions_prompt(personal_data, trainings_history=None, user_note=None, ref_date=None):
     """
     Tworzy prompt dla Gemini w trybie 'suggest' bez przesyłania biometrii z Garmina.
     Model proponuje typy/cele treningów na podstawie profilu biegacza, historii z ostatnich 42 dni i notatki.
+
+    Args:
+        personal_data (dict): Konfiguracja treningowa.
+        trainings_history (str, optional): Historia treningów.
+        user_note (str, optional): Notatka od użytkownika.
+        ref_date (datetime.date, optional): Data odniesienia.
+
+    Returns:
+        str: Wygenerowany prompt.
     """
-    hist_section = history_context if history_context else "Brak zarejestrowanej historii treningów z ostatnich 42 dni."
-    note_section = user_note if user_note else "Brak dodatkowych uwag od biegacza."
-    profile = build_user_profile(training_context, ref_date=ref_date)
+    hist_section = trainings_history if trainings_history else "Brak zarejestrowanej historii treningów z ostatnich 42 dni."
+    note_section = user_note if user_note else "Brak notatki od biegacza."
+    profile = build_user_profile(personal_data, ref_date=ref_date)
 
     return load_prompt_template(
         "weekly_suggestions.md",
@@ -839,21 +874,32 @@ def generate_weekly_suggestions_prompt(training_context, history_context=None, u
     )
 
 
-def generate_weekly_plan_prompt(days_preferences, training_context, history_context=None, user_note=None, strength_routines=None, ref_date=None):
+def generate_weekly_plan_prompt(days_structure, personal_data, trainings_history=None, user_note=None, strength_routines=None, ref_date=None):
     """
     Tworzy prompt dla Gemini do ułożenia kompletnego planu treningowego na cały tydzień.
+
+    Args:
+        days_structure (str): Struktura dni tygodnia.
+        personal_data (dict): Konfiguracja treningowa.
+        trainings_history (str, optional): Historia treningów.
+        user_note (str, optional): Notatka użytkownika.
+        strength_routines (str, optional): Rutyny siłowe.
+        ref_date (datetime.date, optional): Data odniesienia.
+
+    Returns:
+        str: Wygenerowany prompt planu tygodniowego.
     """
-    hist_section = history_context if history_context else "Brak zarejestrowanej historii treningów z ostatnich 42 dni."
+    hist_section = trainings_history if trainings_history else "Brak zarejestrowanej historii treningów z ostatnich 42 dni."
     note_section = user_note if user_note else "Brak dodatkowych uwag od biegacza."
     routines_section = strength_routines if strength_routines else "Brak zdefiniowanych zestawów siłowych w pliku input/strength_routines.md."
-    profile = build_user_profile(training_context, ref_date=ref_date)
+    profile = build_user_profile(personal_data, ref_date=ref_date)
 
     return load_prompt_template(
         "weekly_plan.md",
         **profile,
         hist_section=hist_section,
         strength_routines=routines_section,
-        days_preferences=days_preferences,
+        days_structure=days_structure,
         note_section=note_section
     )
 
@@ -866,6 +912,28 @@ def generate_verification_prompt(planned_workout, activity_stats, garmin_stats, 
     """
     Tworzy prompt dla Gemini do weryfikacji wykonanego treningu oraz całodziennej/nocnej regeneracji
     oraz adaptacji planu na kolejny dzień.
+
+    Args:
+        planned_workout (str): Zaplanowany trening.
+        activity_stats (dict | list): Statystyki aktywności.
+        garmin_stats (dict): Statystyki garmina.
+        weekly_plan_context (str): Kontekst planu tygodniowego.
+        user_profile (dict): Profil użytkownika.
+        user_note (str): Notatki użytkownika.
+        today_date_str (str, optional): Dzisiejsza data.
+        yesterday_date_str (str, optional): Wczorajsza data.
+        tomorrow_date_str (str, optional): Jutrzejsza data.
+        trening_z_planu (str, optional): Trening z planu.
+        strength_workout (str, optional): Trening siłowy.
+        strength_routines (str, optional): Rutyny siłowe.
+        audit_date_str (str, optional): Data audytu.
+        target_date_str (str, optional): Data celu.
+        history_date_str (str, optional): Data historii.
+        target_plan_desc (str, optional): Opis planu celu.
+        day (any, optional): Dzień.
+
+    Returns:
+        str: Prompt weryfikacyjny.
     """
     audit_str = today_date_str or audit_date_str
     history_str = yesterday_date_str or history_date_str
@@ -935,7 +1003,14 @@ build_verification_prompt = generate_verification_prompt
 # ==============================================================================
 
 def _format_acts_archive_blocks(all_stats):
-    """Generuje bloki jednostek treningowych do pliku archiwum markdown."""
+    """Generuje bloki jednostek treningowych do pliku archiwum markdown.
+
+    Args:
+        all_stats (list): Statystyki wszystkich aktywności.
+
+    Returns:
+        list[str]: Lista wygenerowanych bloków.
+    """
     acts_archive_blocks = []
     for idx, act_s in enumerate(all_stats):
         is_run = act_s.get('is_run', True)
@@ -965,7 +1040,15 @@ def _format_acts_archive_blocks(all_stats):
 
 
 def save_daily_report(workout_date, archive_content, history_dir=HISTORY_DIR, output_dir=OUTPUT_DIR, debug=False):
-    """Zapisuje wygenerowany raport trenera do pliku historii oraz do bieżącego raportu."""
+    """Zapisuje wygenerowany raport trenera do pliku historii oraz do bieżącego raportu.
+
+    Args:
+        workout_date (str): Data treningu.
+        archive_content (str): Treść do zapisania.
+        history_dir (str, optional): Katalog historii.
+        output_dir (str, optional): Katalog wyjściowy.
+        debug (bool, optional): Tryb debugowania.
+    """
     if debug:
         os.makedirs(DEBUG_DIR, exist_ok=True)
         debug_archive_path = os.path.join(DEBUG_DIR, f"{workout_date}.md")
@@ -987,8 +1070,11 @@ def save_daily_report(workout_date, archive_content, history_dir=HISTORY_DIR, ou
         except Exception as he:
             logger.warning(f"Nie udało się wygenerować podglądu HTML: {he}")
         return
-
-    history_file_path = os.path.join(history_dir, f"{workout_date}.md")
+    year, month = workout_date.split("-")[:2]
+    target_history_dir = os.path.join(history_dir, year, month)
+    os.makedirs(target_history_dir, exist_ok=True)
+    history_file_path = os.path.join(target_history_dir, f"{workout_date}.md")
+    
     latest_daily_file = os.path.join(output_dir, "last_daily_report.md")
 
     already_existed = os.path.exists(history_file_path)
@@ -1014,9 +1100,12 @@ def save_daily_report(workout_date, archive_content, history_dir=HISTORY_DIR, ou
         logger.warning(f"Nie udało się wygenerować podglądu HTML: {he}")
 
 
-def _extract_strength_muscle_groups(strength_workout: str | None) -> tuple[str, str]:
+def _extract_strength_muscle_groups(strength_workout: str | None):
     """
     Wyznacza nazwę treningu siłowego oraz wskaźnik zaangażowanych partii mięśniowych (góra / dół / góra + dół / brak).
+
+    Args:
+        strength_workout (str | None): Opis treningu siłowego.
 
     Returns:
         tuple[str, str]: (strength_line, muscle_groups)
@@ -1057,10 +1146,15 @@ def _extract_strength_muscle_groups(strength_workout: str | None) -> tuple[str, 
     return (strength_line, muscle_groups)
 
 
-def _extract_run_metadata(all_stats, response_text=None, strength_workout=None) -> tuple[str, str, str, str]:
+def _extract_run_metadata(all_stats, response_text=None, strength_workout=None):
     """
     Wyciąga ustrukturyzowane metadane biegu: linię biegu, typ treningu, strukturę (rozgrzewka, główna seria, schłodzenie)
     oraz ogólny typ dnia.
+
+    Args:
+        all_stats (list | dict): Statystyki aktywności.
+        response_text (str, optional): Treść odpowiedzi trenera.
+        strength_workout (str, optional): Opis treningu siłowego.
 
     Returns:
         tuple[str, str, str, str]: (run_line, run_type, run_structure, day_type)
@@ -1208,6 +1302,19 @@ def build_daily_archive_content(workout_date, date_str, next_date_str, all_stats
     Formatuje treść raportu dziennego do zapisu w archiwum trainings_history/.
     Na początku pliku zapisywane są ustandaryzowane metadane (typ dnia, bieg, typ treningu, struktura,
     siłownia, wskaźnik partii mięśniowych), a następnie biometria, aktywności, uwagi i odpowiedź trenera.
+
+    Args:
+        workout_date (str): Data treningu.
+        date_str (str): Data string.
+        next_date_str (str): Kolejna data string.
+        all_stats (list): Statystyki aktywności.
+        garmin_stats (dict): Statystyki garmin.
+        response_text (str): Odpowiedź trenera.
+        strength_workout (str, optional): Trening siłowy.
+        user_note (str, optional): Notatki.
+
+    Returns:
+        str: Zawartość archiwum dziennego.
     """
     acts_title = "Zarejestrowane aktywności"
     strength_part = f"\n### Trening siłowy / uzupełniający (raport z Telegrama):\n{strength_workout}\n" if strength_workout else ""
@@ -1266,6 +1373,18 @@ def build_and_save_daily_archive(workout_date, date_str, next_date_str, all_stat
     Formatuje i zapisuje raport dzienny do pliku archiwum w trainings_history/.
     Podsumowuje audytowany dzień (date_str), biometrię snu/dnia oraz adaptację na dzień kolejny (next_date_str).
     Parametr mode jest zachowany dla pełnej kompatybilności wstecznej.
+
+    Args:
+        workout_date (str): Data treningu.
+        date_str (str): Sformatowana data.
+        next_date_str (str): Sformatowana kolejna data.
+        all_stats (list): Statystyki.
+        garmin_stats (dict): Statystyki garmina.
+        response_text (str): Odpowiedź trenera.
+        strength_workout (str, optional): Trening siłowy.
+        user_note (str, optional): Notatka.
+        debug (bool, optional): Tryb debug.
+        mode (str, optional): Tryb uruchomienia.
     """
     archive_content = build_daily_archive_content(
         workout_date=workout_date,

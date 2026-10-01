@@ -66,7 +66,7 @@ Skrypt `coach_gemini.py` przyjmuje jeden pozycyjny argument określający tryb d
 | :--- | :--- |
 | **`daily`** *(domyślny)* | **Główny wieczorny tryb audytu i adaptacji (uruchamiany codziennie o 20:57)**:<br>• **Główny priorytet**: Dogłębny audyt wykonanego dzisiaj treningu (bieg ze szczegółowymi splitami, tętno, kadencja, tempo vs założenia, trening siłowy/notatki z Telegrama, koszt OUN).<br>• **Biometria**: Analiza nocnej bazy regeneracyjnej przed dzisiejszym wysiłkiem (sen, HRV, RHR), obciążenia całodniowego (stres, kroki, wieczorne Body Battery) oraz kontekstu historycznego z dnia poprzedniego.<br>• **Zalecenia regeneracyjne**: Praktyczne wytyczne na wieczór i noc (zapotrzebowanie na sen pod kątem regeneracji OUN, dedykowana sesja rolowania/mobilności ze wskazaniem konkretnych partii mięśniowych, nawodnienie).<br>• **Gotowość i adaptacja**: Ocena gotowości na jutrzejszy trening wraz z jednoznacznym werdyktem: `[ZWIĘKSZAMY INTENSYWNOŚĆ / POZOSTAJE TAKA SAMA / ZMNIEJSZAMY INTENSYWNOŚĆ / MODYFIKACJA ZAŁOŻEŃ]` i gotową rozpiską.<br>Zapisuje raport do `output/last_daily_report.md` oraz archiwizuje w `trainings_history/YYYY-MM-DD.md`. *(Alias: `today`)*. |
 | **`suggest`** | **Sugestia podziału dni i typów treningu**: Model analizuje cele biegacza, fazę przygotowań oraz historię ostatnich 42 dni (6 tygodni), proponując optymalny układ jednostek (Easy, Tempo, Siłownia, Rest Day) na nadchodzący tydzień. Zapisuje propozycję do `input/weekly_preferences.md`. |
-| **`plan`** | **Układanie pełnego planu tygodniowego**: Generuje kompletny 7-dniowy plan treningowy od poniedziałku do niedzieli. Wykorzystuje preferencje z `input/weekly_preferences.md`, profil z `input/training_config.json`, bazę ćwiczeń z `input/strength_routines.md` oraz 42-dniową historię. Zapisuje plan do `output/weekly_plan.md`. |
+| **`plan`** | **Układanie pełnego planu tygodniowego**: Generuje kompletny 7-dniowy plan treningowy od poniedziałku do niedzieli. Wykorzystuje preferencje z `input/weekly_preferences.md`, profil z `input/personal_data.json`, bazę ćwiczeń z `input/strength_routines.md` oraz 42-dniową historię. Zapisuje plan do `output/weekly_plan.md`. |
 
 > [!NOTE]
 > Wszelkie uwagi, samopoczucie oraz raporty z treningu siłowego przekazywane są bezpośrednio z czatu **Telegrama**. Po każdym pomyślnym wykonaniu analizy stan przeczytanych wiadomości jest zapisywany w `input/telegram_state.json`, dzięki czemu wiadomości nie są dublowane.
@@ -205,7 +205,7 @@ python coach_gemini.py daily --date 2026-09-20
 ├── .env                      # Konfiguracja środowiskowa i klucze API (lokalna, ignorowana przez git)
 ├── .env.example              # Wzorzec pliku konfiguracyjnego .env
 ├── input/
-│   ├── training_config.json  # Profil biegacza, cel główny i poboczny (primary_goal, secondary_goal), wzrost, waga, rekordy życiowe (PB), strefy tętna (Z1-Z5)
+│   ├── personal_data.json  # Profil biegacza, cel główny i poboczny (primary_goal, secondary_goal), wzrost, waga, rekordy życiowe (PB), strefy tętna (Z1-Z5)
 │   ├── weekly_preferences.md # Podział dni treningowych na dany tydzień (dla trybu 'plan')
 │   ├── strength_routines.md  # Baza własnych zestawów ćwiczeń siłowych (FBW, UPPER, LOWER)
 │   └── garmin_dump.json      # Zrzut danych Garmin Connect (dla USE_LOCAL_DATA=true)
