@@ -4,6 +4,8 @@ Twoim jedynym zadaniem jest strategiczne ZAPROPONOWANIE TYPÓW I GŁÓWNYCH CEL�
 
 ====================
 KONTEKST I CELE BIEGACZA:
+* UWAGI O STYLU ŻYCIA ZAWODNIKA:
+{additional_notes}
 
 * Cel główny: {primary_goal}
 * Cel poboczny: {secondary_goal}

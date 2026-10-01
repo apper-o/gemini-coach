@@ -44,6 +44,8 @@ SEKCJA 2: DANE WEJŚCIOWE DO GENEROWANIA PLANU
 ================================================================================
 
 1. KONTEKST I CELE BIEGACZA:
+* UWAGI O STYLU ŻYCIA ZAWODNIKA:
+{additional_notes}
 * Cel główny: {primary_goal}
 * Cel poboczny: {secondary_goal}
 * Proporcja bodźców treningowych: {stimulus_distribution}
@@ -52,7 +54,6 @@ SEKCJA 2: DANE WEJŚCIOWE DO GENEROWANIA PLANU
 * Ostatni start / zawody: {last_event_info}
 * Parametry antropometryczne: Wzrost: {height} | Waga: {weight}
 * HR max: {max_hr} | Próg mleczanowy (LTHR): {lthr}
-* Średnia dzienna aktywność pozatreningowa: ~10 000 kroków (norma bazowa)
 * Strefy tętna i tempa bazowe:
   - Z1 (Rozgrzewka / Regeneracja): {z1}
   - Z2 (Bieg spokojny): {z2}

@@ -26,7 +26,7 @@ DEBUG_DIR = "debug"
 
 PERSONAL_DATA_KEYS = (
     "primary_goal", "secondary_goal", "phase", "last_event_date", "last_event_type", "height", "weight", "max_hr", "lthr",
-    "z1", "z2", "z3", "z4", "z5", "personal_records"
+    "z1", "z2", "z3", "z4", "z5", "personal_records", "additional_notes"
 )
 UNKNOWN_VALUE_KEYWORDS = frozenset({"nieznany", "brak", "none", "null"})
 
