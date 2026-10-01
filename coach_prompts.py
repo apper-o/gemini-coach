@@ -286,7 +286,7 @@ def build_user_profile(personal_data, ref_date=None):
     Formatuje profil zawodnika do postaci słownika parametrów dla promptów.
 
     Args:
-        personal_data (dict): Słownik konfiguracji treningowej.
+        personal_data (dict): Dane zawodnika (HR Zones, PB, ...).
         ref_date (datetime.date, optional): Data odniesienia.
 
     Returns:
@@ -854,9 +854,9 @@ def generate_weekly_suggestions_prompt(personal_data, trainings_history=None, us
     Model proponuje typy/cele treningów na podstawie profilu biegacza, historii z ostatnich 42 dni i notatki.
 
     Args:
-        personal_data (dict): Konfiguracja treningowa.
+        personal_data (dict): Dane zawodnika (HR Zones, PB, ...).
         trainings_history (str, optional): Historia treningów.
-        user_note (str, optional): Notatka od użytkownika.
+        user_note (str): Opcjonalna notatka zawodnika.
         ref_date (datetime.date, optional): Data odniesienia.
 
     Returns:
@@ -880,9 +880,9 @@ def generate_weekly_plan_prompt(days_structure, personal_data, trainings_history
 
     Args:
         days_structure (str): Struktura dni tygodnia.
-        personal_data (dict): Konfiguracja treningowa.
+        personal_data (dict): Dane zawodnika (HR Zones, PB, ...).
         trainings_history (str, optional): Historia treningów.
-        user_note (str, optional): Notatka użytkownika.
+        user_note (str): Opcjonalna notatka zawodnika.
         strength_routines (str, optional): Rutyny siłowe.
         ref_date (datetime.date, optional): Data odniesienia.
 
@@ -919,7 +919,7 @@ def generate_verification_prompt(planned_workout, activity_stats, garmin_stats, 
         garmin_stats (dict): Statystyki garmina.
         weekly_plan_context (str): Kontekst planu tygodniowego.
         user_profile (dict): Profil użytkownika.
-        user_note (str): Notatki użytkownika.
+        user_note (str): Opcjonalna notatka zawodnika.
         today_date_str (str, optional): Dzisiejsza data.
         yesterday_date_str (str, optional): Wczorajsza data.
         tomorrow_date_str (str, optional): Jutrzejsza data.
@@ -1047,7 +1047,7 @@ def save_daily_report(workout_date, archive_content, history_dir=HISTORY_DIR, ou
         archive_content (str): Treść do zapisania.
         history_dir (str, optional): Katalog historii.
         output_dir (str, optional): Katalog wyjściowy.
-        debug (bool, optional): Tryb debugowania.
+        debug (bool): Flaga trybu debug.
     """
     if debug:
         os.makedirs(DEBUG_DIR, exist_ok=True)
@@ -1311,7 +1311,7 @@ def build_daily_archive_content(workout_date, date_str, next_date_str, all_stats
         garmin_stats (dict): Statystyki garmin.
         response_text (str): Odpowiedź trenera.
         strength_workout (str, optional): Trening siłowy.
-        user_note (str, optional): Notatki.
+        user_note (str): Opcjonalna notatka zawodnika.
 
     Returns:
         str: Zawartość archiwum dziennego.
@@ -1382,8 +1382,8 @@ def build_and_save_daily_archive(workout_date, date_str, next_date_str, all_stat
         garmin_stats (dict): Statystyki garmina.
         response_text (str): Odpowiedź trenera.
         strength_workout (str, optional): Trening siłowy.
-        user_note (str, optional): Notatka.
-        debug (bool, optional): Tryb debug.
+        user_note (str): Opcjonalna notatka zawodnika.
+        debug (bool): Flaga trybu debug.
         mode (str, optional): Tryb uruchomienia.
     """
     archive_content = build_daily_archive_content(

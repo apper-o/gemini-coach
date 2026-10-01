@@ -124,7 +124,7 @@ def send_gemini_prompt_with_fallback(client, prompt, models=None, debug=False):
         client: Zainicjowany klient Gemini.
         prompt (str): Treść zapytania dla asystenta.
         models (list): Lista modeli w kaskadzie.
-        debug (bool): Czy zapisywać prompt do plików lokalnych.
+        debug (bool): Flaga trybu debug.
 
     Returns:
         Odpowiedzi wygenerowana przez model.
@@ -172,11 +172,11 @@ def run_suggest_mode(client, personal_data, trainings_history, user_note, weekly
 
     Args:
         client: Zainicjowany klient Gemini API.
-        personal_data (str): Dane zawodnika.
+        personal_data (dict): Dane zawodnika (HR Zones, PB, ...).
         trainings_history (str): Kontekst wyników z 42 ostatnich dni.
-        user_note (str): Zgłoszone dyspozycje lub tekst do trenera.
+        user_note (str): Opcjonalna notatka zawodnika.
         weekly_workout_structure (str): Ścieżka do docelowego pliku preferencji.
-        debug (bool): Ochrona zapisu w pliku produkcyjnym.
+        debug (bool): Flaga trybu debug.
         models (list): Dostępne modele Gemini.
         ref_date (date): Data wygenerowania układu.
     """
@@ -219,7 +219,7 @@ def _read_and_validate_preferences(weekly_workout_structure, debug=False):
 
     Args:
         weekly_workout_structure (str): Ścieżka do głównego pliku preferencji.
-        debug (bool): Flaga trybu piaskownicy.
+        debug (bool): Flaga trybu debug.
 
     Returns:
         tuple: Sformatowany string z preferencjami (str) oraz ścieżka do załadowanego pliku (str).
@@ -287,13 +287,13 @@ def run_plan_mode(client, personal_data, trainings_history, user_note, weekly_wo
 
     Args:
         client: Zainicjowany klient Gemini.
-        personal_data (str): Dane zawodnika.
+        personal_data (dict): Dane zawodnika (HR Zones, PB, ...).
         trainings_history (str): Kontekst historyczny (ostatnie 42 dni).
-        user_note (str): Notatka zawodnika.
+        user_note (str): Opcjonalna notatka zawodnika.
         weekly_workout_structure (str): Ścieżka pliku weekly_workout_structure.md.
         weekly_plan_file (str): Ścieżka zapisu dla planu (weekly_plan.md).
         strength_routines_file (str): Ścieżka pliku siłowego (strength_routines.md).
-        debug (bool): Ochrona przed nadpisywaniem plików.
+        debug (bool): Flaga trybu debug.
         models (list): Lista dostępnych modeli Gemini.
         ref_date (date): Data referencyjna bieżącego układania planu.
         send_tg (bool): Czy wysłać plik na telegram (również dla debug).
@@ -322,8 +322,6 @@ def run_plan_mode(client, personal_data, trainings_history, user_note, weekly_wo
     try:
         response = send_gemini_prompt_with_fallback(client, plan_prompt, models=models, debug=debug)
 
-        
-
         target_plan_file = os.path.join(DEBUG_DIR, "weekly_plan.md") if debug else weekly_plan_file
 
         with open(target_plan_file, "w", encoding="utf-8") as wf:
@@ -339,10 +337,10 @@ def run_plan_mode(client, personal_data, trainings_history, user_note, weekly_wo
                 with open(html_path, "w", encoding="utf-8") as hf:
                     hf.write(html_content)
                 if send_tg:
-                    print(f"🚀 [DEBUG] Wygenerowano podgląd HTML: {html_path}. Wysyłanie na Telegram (--send_debug)...")
+                    print(f"🚀 [DEBUG] Wygenerowano podgląd HTML: {html_path}. Dane zostaną wysłane na Telegrama")
                     send_report(target_plan_file)
                 else:
-                    print(f"📄 [DEBUG] Wygenerowano podgląd HTML: {html_path} (Wysyłka na Telegram została wstrzymana)")
+                    print(f"📄 [DEBUG] Wygenerowano podgląd HTML: {html_path} (Dane NIE zostaną wysłane na Telegrama)")
             except Exception as he:
                 logger.warning(f"Nie udało się wygenerować podglądu HTML: {he}")
         else:
@@ -430,10 +428,10 @@ def run_daily_mode(client, todays_date, dump_file, weekly_plan_file, user_profil
         dump_file (str): Ścieżka pliku garmin_dump.json.
         weekly_plan_file (str): Ścieżka pliku weekly_plan.md.
         user_profile (str): Informacje o profilu i sprzęcie.
-        user_note (str): Tekst wiadomości z Telegrama (notatka).
+        user_note (str): Opcjonalna notatka zawodnika.
         strength_workout (str): Odseparowany tekst treningu siłowego (jeśli występuje).
         strength_routines_file (str, optional): Ścieżka pliku siłowego (strength_routines.md).
-        debug (bool): Ochrona przed nadpisywaniem plików.
+        debug (bool): Flaga trybu debug.
         models (list): Lista dostępnych modeli Gemini.
         day (str): Rodzaj dnia, domyślnie "daily".
         send_tg (bool): Flaga wymuszająca wysyłkę w trybie debug.
@@ -617,7 +615,7 @@ def setup_environment(debug=False):
     Inicjalizuje strukturę katalogów oraz sprawdza konfigurację klucza API Gemini.
     
     Args:
-        debug (bool): Czy aktywny jest tryb piaskownicy (tworzy katalog 'debug/').
+        debug (bool): Flaga trybu debug.
 
     Returns:
         str: Pobrany z .env klucz dostępu GEMINI_API_KEY.
@@ -645,10 +643,10 @@ def dispatch_mode(mode, client, gemini_models, today, personal_data, user_note, 
         client: Zainicjowany klient API Gemini.
         gemini_models (list): Dostępne nazwy modeli (kaskada).
         today (date): Data uruchomienia.
-        personal_data (str): Dane zawodnika.
-        user_note (str): Zgłoszona przez użytkownika notatka (Telegram).
+        personal_data (dict): Dane zawodnika (HR Zones, PB, ...).
+        user_note (str): Opcjonalna notatka zawodnika.
         paths (dict): Słownik zawierający wymagane ścieżki do plików.
-        debug (bool): Czy operujemy w trybie debugowania.
+        debug (bool): Flaga trybu debug.
         send_tg (bool): Czy wymusić wysyłkę raportu przy debugowaniu.
     """
     strength_workout, final_user_note = separate_strength_and_user_notes(user_note)
