@@ -646,7 +646,6 @@ def dispatch_mode(mode, client, gemini_models, today, personal_data, user_note, 
         run_daily_mode(
             client=client,
             todays_date=today,
-            dump_file=paths["dump"],
             weekly_plan_file=paths["plan"],
             user_profile=user_profile,
             user_note=final_user_note,
