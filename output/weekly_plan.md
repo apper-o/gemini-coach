@@ -65,20 +65,9 @@ Wyjaśnienie decyzji: Utrzymanie objętości z ostatniej sesji w celu bezpieczne
 * **Cardio / Rower eliptyczny**: 12 minut w strefie Z1 (tętno <123 bpm) przed częścią siłową w ramach podniesienia temperatury ciała i tlenowego przygotowania układu krążenia.
 * **Cel i zalecenia adaptacyjne**: Wzmocnienie góry ciała i mięśni posturalnych bez wywoływania zmęczenia w obwodowym aparacie ruchu kończyn dolnych.
 
-### Piątek - Bieg: Bieg spokojny + Przebieżki (Easy + Strides)
+### Piątek - Basen Recovery
 
-* **Rozgrzewka**: 1.0 km spokojnego truchtu w strefie Z2.
-* **Część główna**: 5.0 km biegu spokojnego w strefie Z2 (tempo 6:00–6:15 min/km, tętno 123–148 bpm) + 5 x 100 m dynamicznych przebieżek narastająco do tempa ~4:05–4:15 min/km (przerwa: 100 m w marszu, tętno pod koniec przebieżki w strefie Z4).
-* **Schłodzenie**: 1.0 km truchtu w strefie Z1 (<123 bpm).
-* **Cel fizjologiczny**: Podtrzymanie objętości tlenowej oraz pobudzenie układu nerwowo-mięśniowego i rekrutacja szybkurczliwych włókien mięśniowych przed sobotnim akcentem progowym.
-
-### Sobota - Bieg: Bieg progowy (Threshold Z4)
-
-* **Rozgrzewka**: 2.0 km truchtu w strefie Z2 (tempo ~6:00 min/km, tętno <148 bpm).
-* **Część główna**: 4 x 1000 m w tempie progowym 4:20–4:25 min/km (strefa Z4, tętno docelowe 162–178 bpm), przerwa: 2:00 minuty w truchcie lub marszu (strefa Z1/Z2).
-* **Schłodzenie**: 1.5 km spokojnego truchtu w strefie Z1/Z2 (tempo >6:15 min/km).
-* **Cel fizjologiczny**: Podniesienie drugiego progu przemian beztlenowych (LT2) oraz stymulacja utylizacji mleczanu przy prędkościach zbliżonych do docelowego tempa na 5 km.
-* **Strategia paliwowa**: Spożycie 30 g Węglowodanów (1 żel startowy) oraz wypicie 300 ml wody z elektrolitami na 15 minut przed rozpoczęciem części głównej w celu przetestowania wchłaniania przy wysokiej intensywności.
+### Sobota - Basen VO2MAX
 
 ### Niedziela - Siłownia: FBW
 
