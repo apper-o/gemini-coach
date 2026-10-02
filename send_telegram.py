@@ -136,18 +136,18 @@ def extract_weekly_plan_caption(md_text):
                 km_val = g.strip()
                 break
 
-    km_info = f"\\n\\n📊 <b>Planowany dystans biegowy:</b> ~{km_val} km" if km_val else ""
-    summary_days = "\\n".join(day_entries) if day_entries else "▪️ Pełny harmonogram dni tygodnia w załączniku HTML."
+    km_info = f"\n\n📊 <b>Planowany dystans biegowy:</b> ~{km_val} km" if km_val else ""
+    summary_days = "\n".join(day_entries) if day_entries else "▪️ Pełny harmonogram dni tygodnia w załączniku HTML."
 
     caption = (
-        f"🗓️ <b>PLAN TRENINGOWY NA TEN TYDZIEŃ</b>\\n\\n"
+        f"🗓️ <b>PLAN TRENINGOWY NA TEN TYDZIEŃ</b>\n\n"
         f"{summary_days}"
-        f"{km_info}\\n\\n"
+        f"{km_info}\n\n"
         f"📎 <i>Pełny plan w załączniku HTML poniżej.</i>"
     )
 
     if len(caption) > 1000:
-        caption = caption[:990] + "...\\n\\n📎 <i>Pełny plan w załączniku HTML.</i>"
+        caption = caption[:990] + "...\n\n📎 <i>Pełny plan w załączniku HTML.</i>"
 
     return caption
 
@@ -347,11 +347,11 @@ def fetch_recent_telegram_messages(max_age_hours=36):
 
     valid_msgs.sort(key=lambda x: x[2])
     msg_blocks = [
-        f"--- Treść wiadomości z Telegrama ({datetime.fromtimestamp(m_date).strftime('%Y-%m-%d %H:%M')}) ---\\n{text}"
+        f"--- Treść wiadomości z Telegrama ({datetime.fromtimestamp(m_date).strftime('%Y-%m-%d %H:%M')}) ---\n{text}"
         for _, _, m_date, text in valid_msgs
     ]
     
-    return "\\n\\n".join(msg_blocks), {
+    return "\n\n".join(msg_blocks), {
         "last_processed_update_id": max_update_id,
         "last_processed_message_id": max_message_id,
         "last_processed_timestamp": max_date,

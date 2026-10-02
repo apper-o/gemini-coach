@@ -435,9 +435,10 @@ def _classify_telegram_message(body: str):
         return ("empty", "")
 
     first_line_clean = lines[0].strip(":.,!- #*[]()\"'").lower()
+    first_word = first_line_clean.split()[0] if first_line_clean else ""
 
     # 1. Kwalifikacja jako trening siłowy
-    if first_line_clean in STRENGTH_WORKOUT_NAMES:
+    if first_word in STRENGTH_WORKOUT_NAMES:
         return ("strength", body.strip())
 
     # 2. Kwalifikacja jako notatka biegacza ze znacznikiem NOTE

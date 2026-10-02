@@ -1,23 +1,23 @@
-# AUDYT DZIENNY: Czwartek, 2026-10-01 (Czwartek, 2026-10-01)
-- Typ dnia: REGENERACJA
+# AUDYT DZIENNY: Piątek, 2026-10-02 (Piątek, 2026-10-02)
+- Typ dnia: SIŁOWNIA
 - Bieg: NIE (0.00 km, sesje: 0)
 - Typ treningu biegowego: Brak biegu
 - Struktura biegu: Brak
-- Siłownia: NIE
-- Partie mięśniowe (siłownia): BRAK
+- Siłownia: TAK (UPPER)
+- Partie mięśniowe (siłownia): GÓRA
 
-## Biometria regeneracyjna i bilans dnia (Czwartek, 2026-10-01):
-- HRV (miniona noc przed treningiem): UNBALANCED 55 ms (Średnia 7-dniowa: 44 ms, Norma bazowa: 46–58 ms)
-- RHR (miniona noc przed treningiem): 55 bpm (Średnia 7-dniowa: 56 bpm, odchylenie: -1 bpm) (Średnie tętno z całej nocy: 58 bpm)
-- Sen (miniona noc przed treningiem): 86/100 (Głęboki: 1h 47m, REM: 0h 51m)
-- Wnioski o śnie: NEGATIVE_LONG_BUT_NOT_ENOUGH_REM, NONE
-- Body Battery pod koniec dnia: Aktualnie wieczorem: 60/100 (Maksymalnie po nocy: 100/100, spadek w ciągu dnia: -40)
-- Całodzienny stres: Średni poziom stresu: 26/100
-- Kroki (cały dzień): 3106 kroków (aktywne kalorie: 158.0 kcal)
+## Biometria regeneracyjna i bilans dnia (Piątek, 2026-10-02):
+- HRV (miniona noc przed treningiem): UNBALANCED 47 ms (Średnia 7-dniowa: 43 ms, Norma bazowa: 46–58 ms)
+- RHR (miniona noc przed treningiem): 53 bpm (Średnia 7-dniowa: 56 bpm, odchylenie: -3 bpm) (Średnie tętno z całej nocy: 58 bpm)
+- Sen (miniona noc przed treningiem): 84/100 (Głęboki: 1h 58m, REM: 1h 9m)
+- Wnioski o śnie: POSITIVE_LONG_AND_DEEP, POSITIVE_LATE_BED_TIME
+- Body Battery pod koniec dnia: Aktualnie wieczorem: 85/100 (Maksymalnie po nocy: 85/100)
+- Całodzienny stres: Średni poziom stresu: 15/100
+- Kroki (cały dzień): 134 kroków
 
-## Uwagi biegacza (notatka z Telegrama):
---- Treść wiadomości z Telegrama (2026-10-01 08:40) ---\nPo wczorajszym biegu wystąpił u mnie ból w okolicy pachwiny (mięsień grzbietowy). Podczas chodzenia jest ok, ale przy bieganiu jest lekki problem.\n\n--- Treść wiadomości z Telegrama (2026-10-01 19:38) ---
-\nupper
+## Zarejestrowane aktywności:
+### Trening siłowy / uzupełniający (raport z Telegrama):
+upper
 Thursday, Oct 01, 2026 at 8:16pm
 
 Bench Press (Barbell)
@@ -58,48 +58,50 @@ Set 3: 10 reps
 @hevyapp
 https://hevy.com/workout/ohVFIFn6JFr
 
-## Ocena trenera i adaptacja na dzień Piątek, 2026-10-02:
-# 1. AUDYT DNIA: Czwartek, 2026-10-01
+## Ocena trenera i adaptacja na dzień Sobota, 2026-10-03:
+# 1. AUDYT DNIA: Piątek, 2026-10-02
 
-## CZĘŚĆ SIŁOWA
+## CZĘŚĆ SIŁOWA (wypisuj tę część tylko, gdy dzień zawierał trening siłowy / uzupełniający):
 
 | Nr | Ćwiczenie | Serie x Powtórzenia | Ciężar | Docelowa partia |
-|:---:|:---|:---:|:---:|:---|
-| 1 | Bench Press (Barbell) | 3 x 8 | 60 kg | Klatka piersiowa |
-| 2 | Lat Pulldown (Cable) | 1 x 8, 1 x 6, 1 x 4 | 55 kg / 55 kg / 50 kg | Najszerszy grzbietu |
-| 3 | Overhead Press (Barbell) | 1 x 5, 2 x 6 | 40 kg / 35 kg | Obręcz barkowa |
-| 4 | Seated Cable Row - Bar Grip | 3 x 10 | 50 kg | Środek grzbietu |
-| 5 | Triceps Pushdown | 3 x 10 | 50 kg | Triceps |
-| 6 | Cable Core Pallof Press | 3 x 10 | 18 kg | Core / antyrotacja |
-| 7 | Ab Wheel | 3 x 10 | m.c. | Core / tłocznia brzuszna |
+|:---:|:---:|:---:|:---:|:---:|
+| 1 | Bench Press (Barbell) | 3 x 8 | 60 kg | Klatka piersiowa / Góra |
+| 2 | Lat Pulldown (Cable) | 3 x 8, 6, 4 | 55/50 kg | Mięśnie grzbietu |
+| 3 | Overhead Press (Barbell) | 3 x 5, 6, 6 | 40/35 kg | Obręcz barkowa |
+| 4 | Seated Cable Row - Bar Grip | 3 x 10 | 50 kg | Mięśnie grzbietu |
+| 5 | Triceps Pushdown | 3 x 10 | 50 kg | Ramiona (triceps) |
+| 6 | Cable Core Pallof Press | 3 x 10 | 18 kg | Core / Stabilizacja |
+| 7 | Ab Wheel | 3 x 10 | Masa ciała | Core / Tłocznia brzuszna |
 
-* **Profil jednostki**: UPPER (Góra ciała + Core) – siła posturalna i stabilizacja antyrotacyjna.
-* **Ocena treningu**: [6/10]
+* **Profil jednostki**: Trening siłowy (Upper) realizowany zgodnie z planem w celu podtrzymania siły górnych partii ciała przy bezwzględnym oszczędzaniu dolnych partii przed nadchodzącym akcentem progowym.
+* **Ocena treningu**: 8/10
 
-* **Koszt nerwowo-mięśniowy (CNS) i komponent ekscentryczny**: Wysoki w obrębie górnej taśmy mięśniowej. Niedoszacowanie zmęczenia powysiłkowego po maratonie zaowocowało drastycznym załamaniem objętości w ściąganiu drążka na wyciągu (spadek z planowanych 10 powtórzeń do zaledwie 4 w ostatniej serii), co dowodzi ostrego wyczerpania lokalnego i uszczuplenia zasobów układu nerwowego. Komponent ekscentryczny na dolne partie został wyeliminowany zgodnie z zaleceniami, dzięki czemu oszczędzono aparat ruchu nóg.
-* **Wpływ na aparat biegowy (Running Transfer)**: Nierozsądne, samowolne zwiększenie obciążenia w Pallof Press (18 kg zamiast planowanych 12 kg) wywołało nadmierne, kompensacyjne napięcie w obrębie miednicy i zginaczy bioder. W obliczu zgłoszonego problemu z pachwiną jest to poważny błąd, niszczący fundamenty stabilizacji miednicy. Korzystny transfer siły posturalnej góry ciała został przyćmiony brakiem dyscypliny w doborze obciążeń.
-* **Zgłoszone anomalie, asymetrie i przeciążenia**: Krytyczne podrażnienie struktur w okolicy pachwiny po środowym biegu, utrudniające płynny ruch. Wskazuje to na przeciążenie przywodzicieli lub mięśnia biodrowo-lędźwiowego na skutek ociężałej biomechaniki i długiego czasu kontaktu z podłożem (281.5 ms). Dodatkową anomalią jest nagły ubytek siły w ściąganiu drążka, będący dowodem na brak pełnej regeneracji tkanek.
+* **Koszt nerwowo-mięśniowy (CNS) i komponent ekscentryczny**: Kontrolowane obciążenie z zachowaniem bezpiecznego zapasu powtórzeń w rezerwie, co nie wywołało nadmiernego zmęczenia ośrodkowego ani mikrourazów zagrażających regeneracji powysiłkowej.
+* **Wpływ na aparat biegowy (Running Transfer)**: Izolacja górnej połowy ciała oraz zaangażowanie mięśni głębokich tułowia wspierają utrzymanie prawidłowej sylwetki i stabilizację miednicy podczas biegu, nie generując przy tym obciążeń osiowych na kończyny dolne.
+* **Zgłoszone anomalie, asymetrie i przeciążenia**: Brak. Zauważalny spadek liczby powtórzeń w trzeciej serii ściągania drążka wyciągu (Lat Pulldown) wskazuje na lokalne zmęczenie mięśni najszerszych grzbietu, co mieści się w granicach normy treningowej.
 
 ## KOSZT METABOLICZNY I STAN ZASOBÓW
 
-* **Bodziec fizjologiczny i szlaki energetyczne**: Beztlenowy fosfagenowy oraz glikolityczny w obrębie góry ciała. Całkowite odciążenie metaboliczne i tlenowe dolnych kończyn (brak biegu).
-* **Koszt dzienny i stan zasobów (stres / Body Battery / aktywność pozatreningowa)**: Wybitnie niski koszt pozatreningowy (jedynie 3106 kroków, aktywne spalone 158 kcal). Układ nerwowy pracował na niskich obrotach stresu (26/100), co pozwoliło utrzymać zadowalające zasoby energii na koniec dnia (Body Battery 60/100, spadek o 40 jednostek).
-* **Subiektywny koszt i percepcja zmęczenia (uwzględnij faktyczne dane i notatkę jeśli występuje)**: Lokalne zmęczenie mięśni obręczy barkowej wysokie, poparte skróceniem serii roboczych. Kluczowym czynnikiem limitującym jest jednak dyskomfort w pachwinie zgłoszony rano, który bezpośrednio zagraża ciągłości treningowej.
-* **Wpływ bazy wyjściowej (sen/HRV):**: Doskonała regeneracja nocna (Sleep Score 86/100) z długim czasem snu głębokiego (1h 47m). Pomimo tego, status HRV pozostaje niezrównoważony (55 ms przy średniej 7-dniowej 44 ms). Ten nagły skok ponad normę to klasyczna reakcja kompensacyjna (parasympathetic rebound) po maratonie – układ nerwowy desperacko próbuje wyhamować stres i wejść w głęboką regenerację, co zbiega się ze stabilnym, niskim tętnem spoczynkowym (55 bpm).
-* **Wpływ tła dnia poprzedniego (Środa, 2026-09-30)**: Środowy bieg regeneracyjny, pomimo powolnego tempa (6:35 min/km), stał się bezpośrednim zapalnikiem przeciążenia pachwiny z powodu niskiej dynamiki, niskiej kadencji (167 spm) i siłowego lądowania związanego z pomaratońskim osłabieniem stabilizacji miednicy.
+* **Bodziec fizjologiczny i szlaki energetyczne**: Anaerobowo-glikolityczny lokalny wysiłek siłowy o niskim koszcie tlenowym, ukierunkowany na adaptację nerwowo-mięśniową bez obciążania układu krążenia.
+* **Koszt dzienny i stan zasobów (stres / Body Battery / aktywność pozatreningowa)**: Minimalne obciążenie metaboliczne i niemal całkowity brak aktywności krokomierzowej (134 kroki) pozwoliły na doskonałą oszczędność energii, odzwierciedloną w bardzo wysokim poziomie zasobów energetycznych pod koniec dnia (85/100) przy zerowym stresie (15/100).
+* **Subiektywny koszt i percepcja zmęczenia (uwzględnij faktyczne dane i notatkę jeśli występuje)**: Brak subiektywnych oznak zmęczenia obwodowego; wykonany trening nie naruszył integralności tkanek zmęczonych po niedzielnym maratonie.
+* **Wpływ bazy wyjściowej (sen/HRV):**: Wysoka jakość nocnego wypoczynku (84/100) z optymalnym udziałem snu głębokiego i REM skutecznie wspierała procesy odbudowy strukturalnej, mimo utrzymującego się stanu niższego wskaźnika HRV (47 ms) i lekko obniżonego tętna spoczynkowego (53 bpm).
+* **Wpływ tła dnia poprzedniego (Czwartek, 2026-10-01)**: Wczorajszy dzień wolny od biegania z umiarkowaną, niskointensywną aktywnością fizyczną zapewnił idealne warunki do superkompensacji i przygotował organizm do dzisiejszego bodźca siłowego.
 
 ## ZALECENIA REGENERACYJNE PO TRENINGU (WIECZÓR I NOC)
 
-* **Protokół rolowania i mobilności**: Bezwzględny zakaz rozciągania i bezpośredniego rolowania bolącej pachwiny (ryzyko pogłębienia ewentualnego naderwania). Zastosuj delikatną mobilizację bioder w bezbólowych zakresach (pozycja 90/90) oraz rolowanie pasma biodrowo-piszczelowego i pośladków w celu rozluźnienia taśmy bocznej.
-* **Sen i regeneracja układu nerwowego**: Utrzymanie reżimu snu głębokiego (cel: Sleep Score >85). Całkowite wyciszenie bodźców świetlnych na 60 minut przed snem, uzupełnienie magnezu w celu tonizacji napięcia po wieczornej sesji siłowej.
-* **Nawodnienie i protokół żywieniowy**: Podaż białka na wysokim poziomie (minimum 2.0 g/kg) w celu wsparcia syntezy uszkodzonych włókien mięśniowych góry ciała oraz regeneracji mikrourazów w pachwinie. Precyzyjne nawodnienie izotoniczne bogate w sód.
+* **Protokół rolowania i mobilności**: Delikatne rozciąganie statyczne obręczy barkowej i mięśni grzbietu; bezwzględny zakaz rolowania dolnych partii kończyn dolnych w celu ochrony tkanek przed jutrzejszym biegiem progowym.
+* **Sen i regeneracja układu nerwowego**: Standardowy, wczesny wypoczynek nocny ukierunkowany na domknięcie pełnego cyklu snu celem stabilizacji układu autonomicznego.
+* **Nawodnienie i protokół żywieniowy**: Utrzymanie odpowiedniej podaży płynów i elektrolitów oraz spożycie pełnowartościowego posiłku bogatego w białko dla wsparcia syntezy włókien mięśniowych góry ciała.
 
-### 4. OCENA GOTOWOŚCI I ADAPTACJA NA DZIEŃ KOLEJNY: Piątek, 2026-10-02
+### 4. OCENA GOTOWOŚCI I ADAPTACJA NA DZIEŃ KOLEJNY: Sobota, 2026-10-03
 
-* **Pierwotny plan na dzień Piątek, 2026-10-02**: Założenia na dzień Piątek, 2026-10-02 według planu tygodniowego: 1.0 km spokojnego truchtu w strefie Z2 + 5.0 km biegu spokojnego w strefie Z2 (tempo 6:00–6:15 min/km, tętno 123–148 bpm) + 5 x 100 m dynamicznych przebieżek narastająco do tempa ~4:05–4:15 min/km (przerwa: 100 m w marszu, tętno pod koniec przebieżki w strefie Z4) + 1.0 km truchtu w strefie Z1 (<123 bpm).
-* **DECYZJA ADAPTACYJNA / STOPIEŃ GOTOWOŚCI**: ZMNIEJSZAMY INTENSYWNOŚĆ / MODYFIKACJA ZAŁOŻEŃ
-* **Uzasadnienie fizjologiczne**: Zgłoszony ból pachwiny przy próbach biegu oraz przeciążeniowy skok HRV wykluczają wykonanie jakichkolwiek dynamicznych przebieżek. Kontynuowanie planu z elementami szybkościowymi doprowadzi do ostrego urazu przywodzicieli lub zginacza biodra, co zrujnuje przygotowania do startu na 5 km. Konieczne jest drastyczne uproszczenie jednostki do skrajnie spokojnej tlenowej próby diagnostycznej. Jeśli ból pojawi się podczas truchtu, jednostka musi zostać natychmiast przerwana.
-* **ROZPISKA NA DZIEŃ Piątek, 2026-10-02**:
-  * Rozgrzewka: 1.0 km marszu dynamicznego przechodzącego w bardzo swobodny trucht w strefie Z1 (wyłącznie w przypadku całkowitego braku bólu w pachwinie).
-  * Część Główna: 4.0 do 5.0 km skrajnie wolnego biegu regeneracyjnego w strefie Z1/Z2 (tempo >6:30 min/km, tętno <135 bpm). Kategoryczny zakaz wykonywania planowanych 5 x 100 m przebieżek – zostają one anulowane. W przypadku pojawienia się najmniejszego dyskomfortu w rejonie pachwiny, natychmiast przerwij bieg i przejdź do marszu.
-  * Schłodzenie: 1.0 km marszu regeneracyjnego w strefie Z1.
+* **Pierwotny plan na dzień Sobota, 2026-10-03**: Rozgrzewka: 2.0 km truchtu w strefie Z2; Część główna: 4 x 1000 m w tempie progowym 4:20–4:25 min/km (strefa Z4), przerwa: 2:00 minuty w truchcie lub marszu; Schłodzenie: 1.5 km spokojnego truchtu w strefie Z1/Z2.
+* **DECYZJA ADAPTACYJNA / STOPIEŃ GOTOWOŚCI**: 
+  ZWIĘKSZAMY INTENSYWNOŚĆ: trening wykonany ze sporym zapasem, stabilne tętno, dobre HRV/sen – bez wahania zażądaj szybszego tempa lub wyższych obciążeń.
+* **Uzasadnienie fizjologiczne**: Pełna gotowość psychofizyczna, wzorowa odbudowa zasobów energetycznych oraz brak jakichkolwiek obciążeń osiowych i mikrourazów kończyn dolnych po wczorajszym treningu siłowym pozwalają na bezwzględną egzekucję zaplanowanego akcentu progowego bez taryfy ulgowej.
+* **ROZPISKA NA DZIEŃ Sobota, 2026-10-03**
+  
+  * Rozgrzewka: 2.0 km truchtu w strefie Z2 (tempo ~6:00 min/km, tętno <148 bpm) + dynamiczna mobilizacja stawów przed akcentem.
+  * Część Główna: 4 x 1000 m w tempie progowym 4:15–4:20 min/km (strefa Z4, tętno docelowe 162–178 bpm) – podkręcamy założenia bazowe w dół o 5 sekund ze względu na idealną świeżość i wysokie zasoby energetyczne. Przerwa: 2:00 minuty w spokojnym truchcie lub marszu. Strategia paliwowa: 30 g węglowodanów i 300 ml elektrolitów na 15 minut przed startem części głównej.
+  * Schłodzenie: 1.5 km spokojnego truchtu w strefie Z1/Z2 (tempo >6:15 min/km) połączonego z lekkim rozciąganiem dynamicznym.

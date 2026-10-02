@@ -513,7 +513,7 @@ def run_daily_mode(client, todays_date, weekly_plan_file, user_profile, user_not
         
 
         build_and_save_daily_archive(
-            workout_date=audit_date_str,
+            workout_date=audit_date.isoformat(),
             date_str=audit_date_str,
             next_date_str=target_date_str,
             all_stats=activity_stats,
