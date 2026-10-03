@@ -382,22 +382,31 @@ def load_strength_routines(strength_routines_file=None):
     return None
 
 
-def load_prompt_template(filename, **kwargs):
+def load_prompt_template(filenames, **kwargs):
     """
     Wczytuje szablon prompta z folderu prompts/ i podstawia przekazane zmienne {nazwa_zmiennej}.
+    Jeśli filenames jest listą, ładuje po kolei i łączy znakiem nowej linii.
 
     Args:
-        filename (str): Nazwa pliku z szablonem.
+        filenames (str | list): Nazwa pliku z szablonem lub lista plików.
         **kwargs: Zmienne do podstawienia w szablonie.
 
     Returns:
         str: Szablon z uzupełnionymi wartościami.
     """
-    prompt_path = os.path.join(PROMPTS_DIR, filename)
-    template = _read_file_safe(prompt_path)
-    if not template:
-        raise FileNotFoundError(f"Nie znaleziono pliku szablonu prompta: {prompt_path}")
+    if isinstance(filenames, str):
+        filenames = [filenames]
+        
+    template_parts = []
+    for filename in filenames:
+        prompt_path = os.path.join(PROMPTS_DIR, filename)
+        part = _read_file_safe(prompt_path)
+        if not part:
+            raise FileNotFoundError(f"Nie znaleziono pliku szablonu prompta: {prompt_path}")
+        template_parts.append(part)
 
+    template = "\n".join(template_parts)
+    
     for key, val in kwargs.items():
         template = template.replace(f"{{{key}}}", str(val) if val is not None else "")
     return template
@@ -962,8 +971,27 @@ AKTUALNY PLAN TYGODNIOWY (I KOLEJNE ZAPLANOWANE TRENINGI):
 
     profile_dict = user_profile if isinstance(user_profile, dict) else {}
 
+    # Determine the correct prompt template
+    has_run = False
+    if activity_stats:
+        for act in activity_stats:
+            if act.get('is_run', True):
+                has_run = True
+                break
+                
+    has_gym = bool(strength_workout)
+    
+    if has_run and has_gym:
+        specific_template = "daily_run_gym_s3_s4.md"
+    elif has_run:
+        specific_template = "daily_run_s3_s4.md"
+    elif has_gym:
+        specific_template = "daily_gym_s3_s4.md"
+    else:
+        specific_template = "daily_rest_s3_s4.md"
+
     return load_prompt_template(
-        "daily_verification.md",
+        ["daily_base.md", specific_template],
         **profile_dict,
         day_of_week=day_of_week or "Brak",
         today_date_str=audit_str,
