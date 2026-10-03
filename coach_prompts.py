@@ -207,18 +207,22 @@ def format_personal_records(records):
         str: Sformatowany tekst z rekordami życiowymi.
     """
     if not records or not isinstance(records, dict):
-        return "* Brak zarejestrowanych rekordów życiowych."
+        return "	* Brak zarejestrowanych rekordów życiowych."
 
     formatted_lines = []
     for distance, data in records.items():
         if isinstance(data, dict):
-            time = data.get("time", NO_DATA)
-            date = data.get("date", NO_DATA)
-            formatted_lines.append(f"* {distance}: {time} (data: {date})")
+            time = data.get("time", "Brak danych")
+            date = data.get("date", "Brak danych")
+            if time == "Brak danych" or not time:
+                formatted_lines.append(f"	* {distance}: Brak danych")
+            else:
+                formatted_lines.append(f"	* {distance}: {time} (data: {date})")
         elif isinstance(data, str):
-            formatted_lines.append(f"* {distance}: {data}")
-        else:
-            raise ValueError(f"Nieprawidłowe dane dla rekordu {distance}: {data}")
+            if data == "Brak danych" or not data:
+                formatted_lines.append(f"	* {distance}: Brak danych")
+            else:
+                formatted_lines.append(f"	* {distance}: {data}")
 
     return "\n".join(formatted_lines)
 
@@ -322,6 +326,11 @@ def build_user_profile(personal_data, ref_date=None):
     s_share = raw_secondary.get("stimulus_share", 25) if isinstance(raw_secondary, dict) else 25
 
     profile["stimulus_distribution"] = f"{p_share}% cel główny ({p_target}) / {s_share}% cel poboczny ({s_target})"
+
+    # Dodatkowe notatki
+    notes = profile.get("additional_notes", [])
+    if isinstance(notes, list):
+        profile["additional_notes"] = "\n".join(f"\t* {n}" for n in notes) if notes else "\t* Brak stałych nawyków"
 
     # Informacje o ostatnim starcie
     last_event_date = profile.get("last_event_date")
@@ -1013,13 +1022,6 @@ AKTUALNY PLAN TYGODNIOWY (I KOLEJNE ZAPLANOWANE TRENINGI):
         deep_sleep=garmin_stats.get('deep_sleep', NO_DATA),
         rem_sleep=garmin_stats.get('rem_sleep', NO_DATA),
         sleep_stress=garmin_stats.get('sleep_stress', NO_DATA),
-        sleep_respiration=garmin_stats.get('sleep_respiration', NO_DATA),
-        sleep_respiration_baseline="Brak danych API",
-        z1=profile_dict.get('zones', {}).get('Z1', 'Brak'),
-        z2=profile_dict.get('zones', {}).get('Z2', 'Brak'),
-        z3=profile_dict.get('zones', {}).get('Z3', 'Brak'),
-        z4=profile_dict.get('zones', {}).get('Z4', 'Brak'),
-        z5=profile_dict.get('zones', {}).get('Z5', 'Brak')
     )
 
 
@@ -1381,8 +1383,7 @@ def build_daily_archive_content(workout_date, date_str, next_date_str, all_stats
 - HRV (miniona noc przed treningiem): {garmin_stats.get('hrv_status')}
 - RHR (miniona noc przed treningiem): {garmin_stats.get('rhr')}
 - Sen (miniona noc przed treningiem): {garmin_stats.get('sleep_score')} (Głęboki: {garmin_stats.get('deep_sleep')}, REM: {garmin_stats.get('rem_sleep')})
-- Średni stres snu: {garmin_stats.get('sleep_stress')} pkt
-- Średnia nocna częstotliwość oddechów: {garmin_stats.get('sleep_respiration')} brpm
+- Średni stres snu: {garmin_stats.get('sleep_stress')}
 - Poranne Body Battery (bufor startowy): {garmin_stats.get('morning_body_battery')}
 - Body Battery pod koniec dnia: {garmin_stats.get('body_battery')}
 - Całodzienny stres: {garmin_stats.get('today_stress')}

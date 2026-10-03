@@ -257,7 +257,6 @@ def _parse_hrv_summary(hrv_raw):
     if not hrv_raw:
         return NO_DATA
     hrv_summary = hrv_raw.get('hrvSummary', {})
-    status = _get_or_nodata(hrv_summary, 'status')
     baseline_info = hrv_summary.get('baseline', {})
     b_low = baseline_info.get('balancedLow')
     b_high = baseline_info.get('balancedUpper')
@@ -266,7 +265,7 @@ def _parse_hrv_summary(hrv_raw):
     weekly_avg_str = _get_or_nodata(hrv_summary, 'weeklyAvg', lambda x: f"{x} ms")
     baseline_str = f"{b_low}–{b_high} ms" if b_low and b_high else NO_DATA
 
-    return f"{status} {last_night_str} (Średnia 7-dniowa: {weekly_avg_str}, Norma bazowa: {baseline_str})"
+    return f"{last_night_str} (Średnia 7-dniowa: {weekly_avg_str}, Norma bazowa: {baseline_str})"
 
 
 def _parse_rhr_and_sleep(stats_raw, sleep_raw):
@@ -279,7 +278,6 @@ def _parse_rhr_and_sleep(stats_raw, sleep_raw):
         "deep_sleep": NO_DATA,
         "rem_sleep": NO_DATA,
         "sleep_stress": NO_DATA,
-        "sleep_respiration": NO_DATA
     }
 
     rhr_str = NO_DATA
@@ -297,14 +295,15 @@ def _parse_rhr_and_sleep(stats_raw, sleep_raw):
         avg_night_hr = _get_or_nodata(sleep_dto, 'avgHeartRate', lambda x: f"{int(x)} bpm")
         avg_night_hr = avg_night_hr if avg_night_hr != NO_DATA else None
 
-        result['sleep_score'] = _get_or_nodata(sleep_dto.get('sleepScores', {}).get('overall', {}), 'value', lambda x: f"{x}/100")
+        result['sleep_score'] = _get_or_nodata(sleep_dto.get('sleepScores', {}).get('overall', {}), 'value', lambda x: f"{x}")
         result['deep_sleep'] = _get_or_nodata(sleep_dto, 'deepSleepSeconds', lambda x: f"{x // 3600}h {(x % 3600) // 60}m")
         result['rem_sleep'] = _get_or_nodata(sleep_dto, 'remSleepSeconds', lambda x: f"{x // 3600}h {(x % 3600) // 60}m")
+        result['sleep_stress'] = _get_or_nodata(sleep_dto, 'avgSleepStress', lambda x: str(x))
 
 
 
     if avg_night_hr:
-        result['rhr'] = f"{rhr_str} (Średnie tętno z całej nocy: {avg_night_hr})"
+        result['rhr'] = f"{rhr_str} (Średnie tętno z ostatniej nocy: {avg_night_hr})"
     else:
         result['rhr'] = rhr_str
 
@@ -359,7 +358,7 @@ def _parse_stress_info(stress_raw):
     """
     if not stress_raw:
         return NO_DATA
-    return _get_or_nodata(stress_raw, 'avgStressLevel', lambda x: f"Średni poziom stresu: {x}/100" if x != -1 else NO_DATA)
+    return _get_or_nodata(stress_raw, 'avgStressLevel', lambda x: f"{x}/100" if x != -1 else NO_DATA)
 
 
 def _extract_exercise_tables(text):
@@ -506,7 +505,6 @@ def parse_garmin_data(data, target_date=None):
         "deep_sleep": NO_DATA,
         "rem_sleep": NO_DATA,
         "sleep_stress": NO_DATA,
-        "sleep_respiration": NO_DATA,
         "body_battery": NO_DATA,
         "morning_body_battery": NO_DATA,
         "today_steps": NO_DATA,

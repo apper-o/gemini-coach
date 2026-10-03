@@ -18,12 +18,12 @@
     "lthr": "Brak danych",
     "z1": "<123 bpm",
     "z2": "123–148 bpm (tempo >6:00 min/km)",
-    "z3": "148–162 bpm (tempo ok. 4:50-5:40 min/km)",
-    "z4": "162–181 bpm (tempo ok. 4:10–4:40 min/km)",
+    "z3": "149–162 bpm (tempo ok. 4:50-5:40 min/km)",
+    "z4": "163–181 bpm (tempo ok. 4:10–4:40 min/km)",
     "z5": ">181 bpm",
     "personal_records": {
         "400m": {
-            "time": "0:59s",
+            "time": "0:59",
             "date": "2026-05-24"
         },
         "800m": {

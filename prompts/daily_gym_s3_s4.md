@@ -1,4 +1,11 @@
 ================================================================================
+DODATKOWE WYTYCZNE SIŁOWE
+================================================================================
+TRENING SIŁOWY I ZARZĄDZANIE INTERFERENCJĄ:
+- Cel: Transfer motoryczny, rekrutacja jednostek wysokoprogowych i sztywność ścięgien — kategorycznie NIE hipertrofia ani zmęczenie metaboliczne („pompa”).
+- Ochrona biegu: Zakaz upadku mięśniowego na dolne partie (rezerwa RIR >= 2–3). Minimalizuj fazę ekscentryczną i ryzyko DOMS przed kluczowymi akcentami biegowymi.
+
+================================================================================
 SEKCJA 3: ZASADY FORMATOWANIA I KONTROLI WYJŚCIA
 ================================================================================
 
