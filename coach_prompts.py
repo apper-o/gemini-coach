@@ -898,11 +898,11 @@ def generate_weekly_plan_prompt(days_structure, personal_data, trainings_history
     )
 
 
-def generate_verification_prompt(planned_workout, activity_stats, garmin_stats, weekly_plan_context,
+def generate_daily_prompt(planned_workout, activity_stats, garmin_stats, weekly_plan_context,
                                  user_profile, user_note, today_date_str=None, yesterday_date_str=None,
                                  tomorrow_date_str=None, trening_z_planu=None, strength_workout=None,
                                  strength_routines=None, audit_date_str=None, target_date_str=None,
-                                 history_date_str=None, target_plan_desc=None, day=None):
+                                 history_date_str=None, target_plan_desc=None, day_of_week=None):
     """
     Tworzy prompt dla Gemini do weryfikacji wykonanego treningu oraz całodziennej/nocnej regeneracji
     oraz adaptacji planu na kolejny dzień.
@@ -957,14 +957,6 @@ AKTUALNY PLAN TYGODNIOWY (I KOLEJNE ZAPLANOWANE TRENINGI):
 {weekly_plan_context}
 """
 
-    if strength_routines is None:
-        try:
-            strength_routines = load_strength_routines()
-        except Exception:
-            strength_routines = None
-
-    routines_section = strength_routines if strength_routines else "Brak zdefiniowanych zestawów siłowych w pliku input/strength_routines.md."
-
     note_content = user_note if user_note else f"Brak dodatkowych uwag od biegacza na dzień {audit_str}."
     activity_section = _format_activity_section(activity_stats, audit_str, strength_workout=strength_workout)
 
@@ -973,6 +965,7 @@ AKTUALNY PLAN TYGODNIOWY (I KOLEJNE ZAPLANOWANE TRENINGI):
     return load_prompt_template(
         "daily_verification.md",
         **profile_dict,
+        day_of_week=day_of_week or "Brak",
         today_date_str=audit_str,
         yesterday_date_str=history_str,
         tomorrow_date_str=target_str,
@@ -980,18 +973,25 @@ AKTUALNY PLAN TYGODNIOWY (I KOLEJNE ZAPLANOWANE TRENINGI):
         activity_section=activity_section,
         yesterday_section=yesterday_section,
         weekly_plan_section=weekly_plan_section,
-        strength_routines=routines_section,
         user_note=note_content,
         trening_z_planu=plan_desc or f"Odszukaj w planie tygodniowym jednostkę na dzień {target_str}",
         today_steps=garmin_stats.get('today_steps', NO_DATA),
         today_stress=garmin_stats.get('today_stress', NO_DATA),
         body_battery=garmin_stats.get('body_battery', NO_DATA),
+        morning_body_battery=garmin_stats.get('morning_body_battery', NO_DATA),
         hrv_status=garmin_stats.get('hrv_status', NO_DATA),
         rhr=garmin_stats.get('rhr', NO_DATA),
         sleep_score=garmin_stats.get('sleep_score', NO_DATA),
         deep_sleep=garmin_stats.get('deep_sleep', NO_DATA),
         rem_sleep=garmin_stats.get('rem_sleep', NO_DATA),
-        sleep_insights=garmin_stats.get('sleep_insights', NO_DATA)
+        sleep_stress=garmin_stats.get('sleep_stress', NO_DATA),
+        sleep_respiration=garmin_stats.get('sleep_respiration', NO_DATA),
+        sleep_respiration_baseline="Brak danych API",
+        z1=profile_dict.get('zones', {}).get('Z1', 'Brak'),
+        z2=profile_dict.get('zones', {}).get('Z2', 'Brak'),
+        z3=profile_dict.get('zones', {}).get('Z3', 'Brak'),
+        z4=profile_dict.get('zones', {}).get('Z4', 'Brak'),
+        z5=profile_dict.get('zones', {}).get('Z5', 'Brak')
     )
 
 
@@ -1353,7 +1353,9 @@ def build_daily_archive_content(workout_date, date_str, next_date_str, all_stats
 - HRV (miniona noc przed treningiem): {garmin_stats.get('hrv_status')}
 - RHR (miniona noc przed treningiem): {garmin_stats.get('rhr')}
 - Sen (miniona noc przed treningiem): {garmin_stats.get('sleep_score')} (Głęboki: {garmin_stats.get('deep_sleep')}, REM: {garmin_stats.get('rem_sleep')})
-- Wnioski o śnie: {garmin_stats.get('sleep_insights')}
+- Średni stres snu: {garmin_stats.get('sleep_stress')} pkt
+- Średnia nocna częstotliwość oddechów: {garmin_stats.get('sleep_respiration')} brpm
+- Poranne Body Battery (bufor startowy): {garmin_stats.get('morning_body_battery')}
 - Body Battery pod koniec dnia: {garmin_stats.get('body_battery')}
 - Całodzienny stres: {garmin_stats.get('today_stress')}
 - Kroki (cały dzień): {garmin_stats.get('today_steps')}"""

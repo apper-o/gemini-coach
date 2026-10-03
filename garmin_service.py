@@ -271,21 +271,15 @@ def _parse_hrv_summary(hrv_raw):
 
 def _parse_rhr_and_sleep(stats_raw, sleep_raw):
     """
-    Parsuje tętno spoczynkowe RHR oraz dane snu (score, fazy głęboka/REM, wnioski).
-    
-    Args:
-        stats_raw (dict): Słownik zawierający dzienne statystyki (zawiera RHR).
-        sleep_raw (dict): Dane dotyczące snu.
-        
-    Returns:
-        dict: Słownik zawierający informacje o rhr, sleep_score, deep_sleep, rem_sleep, sleep_insights.
+    Parsuje tętno spoczynkowe RHR oraz dane snu (score, fazy, oddechy, stres snu).
     """
     result = {
         "rhr": NO_DATA,
         "sleep_score": NO_DATA,
         "deep_sleep": NO_DATA,
         "rem_sleep": NO_DATA,
-        "sleep_insights": NO_DATA
+        "sleep_stress": NO_DATA,
+        "sleep_respiration": NO_DATA
     }
 
     rhr_str = NO_DATA
@@ -307,11 +301,7 @@ def _parse_rhr_and_sleep(stats_raw, sleep_raw):
         result['deep_sleep'] = _get_or_nodata(sleep_dto, 'deepSleepSeconds', lambda x: f"{x // 3600}h {(x % 3600) // 60}m")
         result['rem_sleep'] = _get_or_nodata(sleep_dto, 'remSleepSeconds', lambda x: f"{x // 3600}h {(x % 3600) // 60}m")
 
-        feedback = sleep_dto.get('sleepScoreFeedback')
-        insight = sleep_dto.get('sleepScoreInsight')
-        insights_list = [i for i in [feedback, insight] if i]
-        if insights_list:
-            result['sleep_insights'] = ", ".join(insights_list)
+
 
     if avg_night_hr:
         result['rhr'] = f"{rhr_str} (Średnie tętno z całej nocy: {avg_night_hr})"
@@ -515,8 +505,10 @@ def parse_garmin_data(data, target_date=None):
         "sleep_score": NO_DATA,
         "deep_sleep": NO_DATA,
         "rem_sleep": NO_DATA,
-        "sleep_insights": NO_DATA,
+        "sleep_stress": NO_DATA,
+        "sleep_respiration": NO_DATA,
         "body_battery": NO_DATA,
+        "morning_body_battery": NO_DATA,
         "today_steps": NO_DATA,
         "today_stress": NO_DATA,
         "yesterday_training": "Brak aktywności (dzień wolny)",
@@ -539,9 +531,8 @@ def parse_garmin_data(data, target_date=None):
     if bb_vals:
         current_bb = bb_vals[-1]
         max_bb = max(bb_vals)
-        drain = max_bb - current_bb
-        drain_str = f", spadek w ciągu dnia: -{drain}" if drain > 0 else ""
-        parsed['body_battery'] = f"Aktualnie wieczorem: {current_bb}/100 (Maksymalnie po nocy: {max_bb}/100{drain_str})"
+        parsed['morning_body_battery'] = str(max_bb)
+        parsed['body_battery'] = str(current_bb)
 
     # Koszt dzisiejszego dnia
     parsed['today_steps'] = _parse_steps_info(today_data.get('stats'))

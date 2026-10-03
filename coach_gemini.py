@@ -34,7 +34,7 @@ from coach_prompts import (
     load_training_history,
     generate_weekly_suggestions_prompt,
     generate_weekly_plan_prompt,
-    generate_verification_prompt,
+    generate_daily_prompt,
     build_and_save_daily_archive,
     separate_strength_and_user_notes,
 )
@@ -433,6 +433,7 @@ def run_daily_mode(client, todays_date, weekly_plan_file, user_profile, user_not
     audit_date_str = f"{DAYS_PL[audit_date.weekday()]}, {audit_date.isoformat()}"
     target_date_str = f"{DAYS_PL[target_date.weekday()]}, {target_date.isoformat()}"
     history_date_str = f"{DAYS_PL[history_date.weekday()]}, {history_date.isoformat()}"
+    audit_day_name = DAYS_PL[audit_date.weekday()]
 
     print("\n" + "="*60)
     print("🏃 TRYB WIECZORNEGO AUDYTU DZIENNEGO I ADAPTACJI NA JUTRO 🏃")
@@ -451,15 +452,6 @@ def run_daily_mode(client, todays_date, weekly_plan_file, user_profile, user_not
         if not weekly_plan_content:
             print(f"⚠️  Brak aktywnego planu tygodniowego ({active_weekly_plan_file}).")
             print("📄 Model przeprowadzi analizę treningu i regeneracji bez odniesienia do założeń tygodnia.")
-
-        # 2. Wczytujemy bazę własnych zestawów siłowych biegacza
-        strength_routines_content = None
-        if strength_routines_file:
-            try:
-                strength_routines_content = load_strength_routines(strength_routines_file)
-            except Exception as se:
-                logger.warning(f"Nie udało się załadować zestawów siłowych ({strength_routines_file}): {se}")
-
 
 
         # 4. Parsujemy i wyświetlamy aktywności podlegające audytowi
@@ -493,7 +485,7 @@ def run_daily_mode(client, todays_date, weekly_plan_file, user_profile, user_not
             weekly_plan_content=weekly_plan_content
         )
 
-        verification_prompt = generate_verification_prompt(
+        verification_prompt = generate_daily_prompt(
             planned_workout=planned_workout_desc,
             activity_stats=activity_stats,
             garmin_stats=garmin_stats,
@@ -505,7 +497,7 @@ def run_daily_mode(client, todays_date, weekly_plan_file, user_profile, user_not
             history_date_str=history_date_str,
             target_plan_desc=target_plan_desc,
             strength_workout=strength_workout,
-            strength_routines=strength_routines_content
+            day_of_week=audit_day_name
         )
 
         response = send_gemini_prompt_with_fallback(client, verification_prompt, models=models, debug=debug)
