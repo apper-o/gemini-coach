@@ -133,10 +133,12 @@ def parse_activity_biomechanics(activity):
 
     type_key = activity.get('activityType', {}).get('typeKey', '')
     is_run = 'run' in type_key.lower() if type_key else True
+    is_swim = 'swim' in type_key.lower() if type_key else False
 
     res = {
         "name": activity.get('activityName', 'Aktywność'),
         "is_run": is_run,
+        "is_swim": is_swim,
         "start_time": start_time_str,
         "distance": dist_str,
         "duration": duration_str,
@@ -194,13 +196,11 @@ def parse_activity_biomechanics(activity):
             parsed_splits.append("| Km | Dystans | Czas | Tempo | GAP | Tętno (śr/max) | Kadencja | Krok | GCT | Odchylenie | Moc | Wznios/Spadek |")
             parsed_splits.append("|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|")
 
-            cumulative_time_sec = 0.0
 
             for idx, lap in enumerate(lap_list):
                 lap_num = idx + 1
                 lap_dist = lap.get('distance', 0) / 1000
                 lap_dur = lap.get('duration', 0)
-                cumulative_time_sec += lap_dur
 
                 dur_m, dur_s = int(lap_dur // 60), int(lap_dur % 60)
                 dur_str = f"{dur_m}:{dur_s:02d}"

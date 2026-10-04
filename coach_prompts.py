@@ -805,6 +805,7 @@ def _format_activity_section(activity_stats, strength_workout=None):
 
         for idx, act in enumerate(stats_list):
             is_run = act.get('is_run', True)
+            is_swim = act.get('is_swim', False)
             time_info = f" [Start: {act.get('start_time')}]" if act.get('start_time') and act.get('start_time') != NO_DATA else ""
             prefix = f"[JEDNOSTKA {idx + 1} z {len(stats_list)}{time_info}]: " if len(stats_list) > 1 else (f"[JEDNOSTKA 1{time_info}]: " if time_info else "")
             
@@ -828,11 +829,17 @@ def _format_activity_section(activity_stats, strength_workout=None):
 - Splity kilometrowe / odcinki:
 {splits_text}"""
                 run_blocks.append(block)
+            elif is_swim:
+                block = f"""{prefix}TRENING PŁYWACKI: {act.get('name')} | Dystans: {act.get('distance')} | Czas: {act.get('duration')}
+- Tętno: Średnie {act.get('avg_hr')} | Maksymalne {act.get('max_hr')}
+- Efekt treningowy: Aerobic TE: {act.get('aerobic_te')} | Anaerobic TE: {act.get('anaerobic_te')}
+Oceń wpływ tej jednostki pływackiej na ogólną sprawność tlenową i obciążenie mięśniowe organizmu. Pływanie stanowi aktywną regenerację lub budowę bazy tlenowej przy odciążeniu aparatu ruchu, uwzględnij to w planie na kolejne dni."""
+                other_blocks.append(block)
             else:
                 block = f"""{prefix}TRENING UZUPEŁNIAJĄCY: {act.get('name')} | {act.get('distance')} w czasie {act.get('duration')}
 - Tętno: Średnie {act.get('avg_hr')} | Maksymalne {act.get('max_hr')}
 - Efekt treningowy: Aerobic TE: {act.get('aerobic_te')} | Anaerobic TE: {act.get('anaerobic_te')}
-(UWAGA: To nie jest trening biegowy, pomiń go w analizie techniki i splitów. Skup się wyłącznie na jego wpływie na zmęczenie i regenerację organizmu.)"""
+Oceń obciążenie tej jednostki (kardio lub siłowe) i jej wpływ na gotowość do kolejnych biegów z planu."""
                 other_blocks.append(block)
 
         if run_blocks:
@@ -1013,27 +1020,37 @@ AKTUALNY PLAN TYGODNIOWY (I KOLEJNE ZAPLANOWANE TRENINGI):
 
     profile_dict = user_profile if isinstance(user_profile, dict) else {}
 
-    # Determine the correct prompt template
+    # Determine the correct prompt templates
     has_run = False
+    has_swim = False
+    has_other_activity = False
     if activity_stats:
         for act in activity_stats:
             if act.get('is_run', True):
                 has_run = True
-                break
+            elif act.get('is_swim', False):
+                has_swim = True
+            else:
+                has_other_activity = True
                 
     has_gym = bool(strength_workout)
     
-    if has_run and has_gym:
-        specific_template = "daily_run_gym_s3_s4.md"
-    elif has_run:
-        specific_template = "daily_run_s3_s4.md"
-    elif has_gym:
-        specific_template = "daily_gym_s3_s4.md"
-    else:
-        specific_template = "daily_rest_s3_s4.md"
+    templates_to_load = ["daily_base.md"]
+    
+    if has_run:
+        templates_to_load.append("daily_run_s3_s4.md")
+    if has_swim:
+        templates_to_load.append("daily_swim_s3_s4.md")
+    if has_gym:
+        templates_to_load.append("daily_gym_s3_s4.md")
+    if has_other_activity:
+        templates_to_load.append("daily_other_s3_s4.md")
+        
+    if not (has_run or has_swim or has_gym or has_other_activity):
+        templates_to_load.append("daily_rest_s3_s4.md")
 
     return load_prompt_template(
-        ["daily_base.md", specific_template],
+        templates_to_load,
         **profile_dict,
         day_of_week=day_of_week or "Brak",
         today_date_str=audit_str,

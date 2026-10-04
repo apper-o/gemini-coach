@@ -25,14 +25,14 @@ Wieczorem po zakończeniu wszystkich jednostek dnia generujesz raport dobowy prz
 - Faza mezocyklu: {phase} | Dystrybucja bodźców: {stimulus_distribution}
 - Ostatni start: {last_event_info}
 - Parametry: Wzrost: {height} | Waga: {weight} | HR max: {max_hr} | LTHR: {lthr}
-- Strefy tętna (obciążenie wewnętrzne, wyznaczone z LTHR):
+- Strefy tętna:
   - Z1 (Regeneracja): {z1}
   - Z2 (Baza tlenowa): {z2}
   - Z3 (Tempo umiarkowane): {z3}
   - Z4 (Próg mleczanowy LTHR): {z4}
   - Z5 (VO2max / Beztlen): {z5}
 
-- Referencyjne strefy tempa (płaski asfalt, warunki neutralne):
+- Referencyjne strefy tempa (warunki neutralne):
   - Regeneracja (Z1): {pace_z1}
   - Spokojny tlenowy (Z2): {pace_z2}
   - Tempo maratońskie / Steady (Z3): {pace_z3}
