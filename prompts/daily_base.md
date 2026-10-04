@@ -14,7 +14,7 @@ Wieczorem po zakończeniu wszystkich jednostek dnia generujesz raport dobowy prz
   - HRV poniżej bazy + skok RHR (>3–5 bpm) = dług adaptacyjny, stan zapalny lub deficyt regeneracji.
   - HRV powyżej bazy + RHR wyraźnie poniżej bazy + subiektywny brak mocy = wyczerpanie ośrodkowe, nie forma startowa.
 - Sen i stres nocny: Jakość determinują średni stres nocny (<30; wyższy unieważnia długi sen) oraz udział snu głębokiego, nie sam czas spędzony w łóżku.
-- Alarm infekcyjny: Skok RHR (>3–5 bpm) + spadek HRV = infekcja/stan zapalny (bezwzględnie wyklucz zmęczenie).
+- Podejrzenie infekcji: Skok RHR (>3–5 bpm) + spadek HRV połączony ze zgłoszeniem osłabienia w notatce = alarm immunologiczny/infekcja, a nie zwykły dług wysiłkowy.
 - Bufor zasobów: Poranne Body Battery to baza adaptacyjna; szybki drenaż dzienny i wysoki stres pozatreningowy to koszt redukujący tolerancję na bodziec.
 
 # SEKCJA 2: DANE WEJŚCIOWE DO ANALIZY
@@ -25,12 +25,19 @@ Wieczorem po zakończeniu wszystkich jednostek dnia generujesz raport dobowy prz
 - Faza mezocyklu: {phase} | Dystrybucja bodźców: {stimulus_distribution}
 - Ostatni start: {last_event_info}
 - Parametry: Wzrost: {height} | Waga: {weight} | HR max: {max_hr} | LTHR: {lthr}
-- Progi i strefy bazowe:
-  - Z1: {z1}
-  - Z2: {z2}
-  - Z3: {z3}
-  - Z4 (Próg LTHR): {z4}
-  - Z5 (VO2max): {z5}
+- Strefy tętna (obciążenie wewnętrzne, wyznaczone z LTHR):
+  - Z1 (Regeneracja): {z1}
+  - Z2 (Baza tlenowa): {z2}
+  - Z3 (Tempo umiarkowane): {z3}
+  - Z4 (Próg mleczanowy LTHR): {z4}
+  - Z5 (VO2max / Beztlen): {z5}
+
+- Referencyjne strefy tempa (płaski asfalt, warunki neutralne):
+  - Regeneracja (Z1): {pace_z1}
+  - Spokojny tlenowy (Z2): {pace_z2}
+  - Tempo maratońskie / Steady (Z3): {pace_z3}
+  - Próg mleczanowy / Threshold (Z4): {pace_z4}
+  - Pułap tlenowy VO2max (Z5): {pace_z5}
 - Aktualne PB:
 {personal_records}
 - Dodatkowe notatki i nawyki:
@@ -49,6 +56,7 @@ Wieczorem po zakończeniu wszystkich jednostek dnia generujesz raport dobowy prz
 - Architektura snu: Sleep Score: {sleep_score}/100
   - Sen głęboki: {deep_sleep} | Sen REM: {rem_sleep}
   - Średni stres snu: {sleep_stress}
+  - Średnie tętno snu: {sleep_hr}
 - Autonomiczny bufor poranny (Body Battery na start dnia): {morning_body_battery}/100
 </telemetry_night>
 

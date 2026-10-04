@@ -30,7 +30,6 @@ PERSONAL_DATA_KEYS = (
 )
 UNKNOWN_VALUE_KEYWORDS = frozenset({"nieznany", "brak", "none", "null"})
 
-# Globalny zbiór rozpoznawanych nazw treningów siłowych / uzupełniających (zgodny z input/strength_routines.md)
 STRENGTH_WORKOUT_NAMES = frozenset({
     "fbw",
     "upper",
@@ -45,7 +44,6 @@ NOTE_KEYWORD = "note"
 # Prekompilowane wyrażenia regularne dla parsowania historii i metadanych
 RE_RUN_META = re.compile(r'^-\s*Bieg:\s*TAK\s*\(([0-9.,]+)\s*km,\s*sesje:\s*([0-9]+)\)', re.MULTILINE)
 RE_STR_TAK = re.compile(r'^-\s*Siłownia:\s*TAK', re.MULTILINE)
-RE_DAY_TYPE = re.compile(r'^-\s*Typ dnia:\s*([^\n]+)', re.MULTILINE)
 RE_RUN_W5 = re.compile(r'^-\s*Bieg:\s*(TAK|NIE)(?:\s*\(([0-9.,]+)\s*km,\s*sesje:\s*([0-9]+)\))?', re.MULTILINE)
 RE_RUN_TYPE = re.compile(r'^-\s*Typ treningu biegowego:\s*([^\n]+)', re.MULTILINE)
 RE_RUN_STRUCT = re.compile(r'^-\s*Struktura biegu:\s*([^\n]+)', re.MULTILINE)
@@ -366,7 +364,6 @@ def load_weekly_plan(weekly_plan_file):
     return _read_file_safe(weekly_plan_file, default_return=None)
 
 
-def load_strength_routines(strength_routines_file=None):
     """
     Wczytuje bazę własnych zestawów siłowych biegacza (FBW, UPPER, LOWER) z pliku Markdown.
 
@@ -374,13 +371,10 @@ def load_strength_routines(strength_routines_file=None):
     W przypadku błędu otwarcia lub odczytu istniejącego pliku zgłasza RuntimeError.
 
     Args:
-        strength_routines_file (str, optional): Ścieżka do pliku z zestawami siłowymi.
-            Domyślnie: input/strength_routines.md.
 
     Returns:
         str | None: Zawartość bazy ćwiczeń siłowych lub None, gdy plik nie istnieje lub jest pusty.
     """
-    filepath = strength_routines_file or os.path.join(INPUT_DIR, "strength_routines.md")
 
     content = _read_file_safe(filepath, default_return=None)
     if content:
@@ -675,7 +669,6 @@ def _summarize_history_week_5(history_data, start_date):
             c = history_data[date_str]
             day_name = DAYS_PL[cur_d.weekday()]
 
-            m_day_type = RE_DAY_TYPE.search(c)
             m_run = RE_RUN_W5.search(c)
             m_run_type = RE_RUN_TYPE.search(c)
             m_run_struct = RE_RUN_STRUCT.search(c)
@@ -792,14 +785,13 @@ def load_training_history(ref_date, history_dir=HISTORY_DIR):
 # 2. GENEROWANIE PROMPTÓW DLA GEMINI
 # ==============================================================================
 
-def _format_activity_section(activity_stats, date_str, strength_workout=None):
+def _format_activity_section(activity_stats, strength_workout=None):
     """
     Formatuje blok Markdown z listą jednostek treningowych i biomechaniką dla promptu.
     Uwzględnia aktywności biegowe oraz opcjonalny trening siłowy (np. zgłoszony przez Telegram).
 
     Args:
         activity_stats (dict | list): Statystyki aktywności.
-        date_str (str): Data treningu.
         strength_workout (str, optional): Opis treningu siłowego.
 
     Returns:
@@ -848,7 +840,7 @@ def _format_activity_section(activity_stats, date_str, strength_workout=None):
         if other_blocks:
             parts.append("-" * 35 + "\n\n" + "\n\n".join(other_blocks))
     elif not strength_workout:
-        parts.append(f"W dniu {date_str} nie odnotowano treningu biegowego (Dzień wolny / Regeneracja).")
+        parts.append("Brak zarejestrowanej aktywności w Garmin Connect ani na Telegramie (jeśli zaplanowano jednostkę, to nie została ona wykonana).")
 
     if strength_workout:
         strength_block = (
@@ -885,8 +877,7 @@ def generate_weekly_suggestions_prompt(personal_data, trainings_history=None, us
         note_section=note_section
     )
 
-
-def generate_weekly_plan_prompt(days_structure, personal_data, trainings_history=None, user_note=None, strength_routines=None, ref_date=None):
+def generate_weekly_plan_prompt(days_structure, personal_data, trainings_history=None, user_note=None, ref_date=None):
     """
     Tworzy prompt dla Gemini do ułożenia kompletnego planu treningowego na cały tydzień.
 
@@ -895,7 +886,6 @@ def generate_weekly_plan_prompt(days_structure, personal_data, trainings_history
         personal_data (dict): Dane zawodnika (HR Zones, PB, ...).
         trainings_history (str, optional): Historia treningów.
         user_note (str): Opcjonalna notatka zawodnika.
-        strength_routines (str, optional): Rutyny siłowe.
         ref_date (datetime.date, optional): Data odniesienia.
 
     Returns:
@@ -903,24 +893,69 @@ def generate_weekly_plan_prompt(days_structure, personal_data, trainings_history
     """
     hist_section = trainings_history if trainings_history else "Brak zarejestrowanej historii treningów z ostatnich 42 dni."
     note_section = user_note if user_note else "Brak dodatkowych uwag od biegacza."
-    routines_section = strength_routines if strength_routines else "Brak zdefiniowanych zestawów siłowych w pliku input/strength_routines.md."
     profile = build_user_profile(personal_data, ref_date=ref_date)
 
     return load_prompt_template(
         "weekly_plan.md",
         **profile,
         hist_section=hist_section,
-        strength_routines=routines_section,
         days_structure=days_structure,
         note_section=note_section
     )
 
 
-def generate_daily_prompt(planned_workout, activity_stats, garmin_stats, weekly_plan_context,
-                                 user_profile, user_note, today_date_str=None, yesterday_date_str=None,
-                                 tomorrow_date_str=None, trening_z_planu=None, strength_workout=None,
-                                 strength_routines=None, audit_date_str=None, target_date_str=None,
-                                 history_date_str=None, target_plan_desc=None, day_of_week=None):
+
+def _compress_weekly_plan(content, audit_day):
+    """
+    Kompresuje treść planu tygodniowego, aby zredukować zużycie tokenów.
+
+    Zachowuje pełną szczegółowość (wszystkie linijki) tylko dla dnia bieżącego (audit_day)
+    oraz dnia jutrzejszego (target_day). Dla pozostałych dni filtruje tekst, pozostawiając
+    jedynie szkieletowe nagłówki (zaczynające się od "#", "*" lub "-"), co skutecznie usuwa
+    szczegóły treningów, takie jak serie, obciążenia czy RIR z minionych dni.
+
+    Args:
+        content (str): Surowy tekst planu tygodniowego (Markdown).
+        audit_day (str): Nazwa bieżącego dnia tygodnia (np. "Środa").
+
+    Returns:
+        str: Skompresowany tekst planu tygodniowego.
+    """
+    if not content:
+        return content
+        
+    days = ["Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota", "Niedziela"]
+    try:
+        idx = days.index(audit_day)
+        target_day = days[(idx + 1) % 7]
+    except ValueError:
+        return content
+
+    lines = content.split('\n')
+    output = []
+    current_day = None
+    
+    for line in lines:
+        if line.startswith('### '):
+            for d in days:
+                if d in line:
+                    current_day = d
+                    break
+        
+        if current_day in [audit_day, target_day]:
+            output.append(line)
+        else:
+            stripped = line.strip()
+            if not stripped or stripped.startswith('#') or stripped.startswith('*') or stripped.startswith('-'):
+                output.append(line)
+                
+    return "\n".join(output)
+
+def generate_daily_prompt(
+    planned_workout, activity_stats, garmin_stats, weekly_plan_context,
+    user_profile, user_note, strength_workout=None,
+    audit_date_str=None, target_date_str=None, history_date_str=None,
+    target_plan_desc=None, day_of_week=None):
     """
     Tworzy prompt dla Gemini do weryfikacji wykonanego treningu oraz całodziennej/nocnej regeneracji
     oraz adaptacji planu na kolejny dzień.
@@ -932,12 +967,7 @@ def generate_daily_prompt(planned_workout, activity_stats, garmin_stats, weekly_
         weekly_plan_context (str): Kontekst planu tygodniowego.
         user_profile (dict): Profil użytkownika.
         user_note (str): Opcjonalna notatka zawodnika.
-        today_date_str (str, optional): Dzisiejsza data.
-        yesterday_date_str (str, optional): Wczorajsza data.
-        tomorrow_date_str (str, optional): Jutrzejsza data.
-        trening_z_planu (str, optional): Trening z planu.
         strength_workout (str, optional): Trening siłowy.
-        strength_routines (str, optional): Rutyny siłowe.
         audit_date_str (str, optional): Data audytu.
         target_date_str (str, optional): Data celu.
         history_date_str (str, optional): Data historii.
@@ -947,10 +977,10 @@ def generate_daily_prompt(planned_workout, activity_stats, garmin_stats, weekly_
     Returns:
         str: Prompt weryfikacyjny.
     """
-    audit_str = today_date_str or audit_date_str
-    history_str = yesterday_date_str or history_date_str
-    target_str = tomorrow_date_str or target_date_str
-    plan_desc = trening_z_planu or target_plan_desc
+    audit_str = audit_date_str
+    history_str = history_date_str
+    target_str = target_date_str
+    plan_desc = target_plan_desc
 
     y_training = garmin_stats.get('yesterday_training', 'Brak aktywności (dzień wolny)')
     y_steps = garmin_stats.get('yesterday_steps', 'Brak danych')
@@ -967,6 +997,9 @@ KONTEKST DNIA POPRZEDNIEGO ({history_str}):
 * Średni poziom stresu: {y_stress}
 """
 
+    if day_of_week and weekly_plan_context:
+        weekly_plan_context = _compress_weekly_plan(weekly_plan_context, day_of_week)
+
     weekly_plan_section = "Brak planu tygodniowego w pliku output/weekly_plan.md"
     if weekly_plan_context:
         weekly_plan_section = f"""
@@ -976,7 +1009,7 @@ AKTUALNY PLAN TYGODNIOWY (I KOLEJNE ZAPLANOWANE TRENINGI):
 """
 
     note_content = user_note if user_note else f"Brak dodatkowych uwag od biegacza na dzień {audit_str}."
-    activity_section = _format_activity_section(activity_stats, audit_str, strength_workout=strength_workout)
+    activity_section = _format_activity_section(activity_stats, strength_workout=strength_workout)
 
     profile_dict = user_profile if isinstance(user_profile, dict) else {}
 
@@ -1006,12 +1039,12 @@ AKTUALNY PLAN TYGODNIOWY (I KOLEJNE ZAPLANOWANE TRENINGI):
         today_date_str=audit_str,
         yesterday_date_str=history_str,
         tomorrow_date_str=target_str,
+        trening_z_planu=plan_desc or f"Odszukaj w planie tygodniowym jednostkę na dzień {target_str}",
         planned_workout=planned_workout or f'Brak sztywnego planu na dzień {audit_str}',
         activity_section=activity_section,
         yesterday_section=yesterday_section,
         weekly_plan_section=weekly_plan_section,
         user_note=note_content,
-        trening_z_planu=plan_desc or f"Odszukaj w planie tygodniowym jednostkę na dzień {target_str}",
         today_steps=garmin_stats.get('today_steps', NO_DATA),
         today_stress=garmin_stats.get('today_stress', NO_DATA),
         body_battery=garmin_stats.get('body_battery', NO_DATA),
@@ -1022,6 +1055,7 @@ AKTUALNY PLAN TYGODNIOWY (I KOLEJNE ZAPLANOWANE TRENINGI):
         deep_sleep=garmin_stats.get('deep_sleep', NO_DATA),
         rem_sleep=garmin_stats.get('rem_sleep', NO_DATA),
         sleep_stress=garmin_stats.get('sleep_stress', NO_DATA),
+        sleep_hr=garmin_stats.get('sleep_hr', NO_DATA),
     )
 
 

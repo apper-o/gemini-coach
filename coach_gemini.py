@@ -29,7 +29,6 @@ from coach_prompts import (
     load_personal_data,
     build_user_profile,
     load_weekly_plan,
-    load_strength_routines,
     prepare_user_note,
     load_training_history,
     generate_weekly_suggestions_prompt,
@@ -280,7 +279,7 @@ def _read_and_validate_preferences(weekly_workout_structure, debug=False):
     return days_structure, active_weekly_workout_structure
 
 
-def run_plan_mode(client, personal_data, trainings_history, user_note, weekly_workout_structure, weekly_plan_file, strength_routines_file, debug=False, models=None, ref_date=None, send_tg=False):
+def run_plan_mode(client, personal_data, trainings_history, user_note, weekly_workout_structure, weekly_plan_file, debug=False, models=None, ref_date=None, send_tg=False):
     """
     Tryb planowania: Generuje kompletny plan na tydzień treningowy.
 
@@ -291,7 +290,6 @@ def run_plan_mode(client, personal_data, trainings_history, user_note, weekly_wo
         user_note (str): Opcjonalna notatka zawodnika.
         weekly_workout_structure (str): Ścieżka pliku weekly_workout_structure.md.
         weekly_plan_file (str): Ścieżka zapisu dla planu (weekly_plan.md).
-        strength_routines_file (str): Ścieżka pliku siłowego (strength_routines.md).
         debug (bool): Flaga trybu debug.
         models (list): Lista dostępnych modeli Gemini.
         ref_date (date): Data referencyjna bieżącego układania planu.
@@ -307,14 +305,12 @@ def run_plan_mode(client, personal_data, trainings_history, user_note, weekly_wo
     print(days_structure)
     print("\n" + "="*60)
 
-    strength_routines = load_strength_routines(strength_routines_file)
 
     plan_prompt = generate_weekly_plan_prompt(
         days_structure=days_structure,
         personal_data=personal_data,
         trainings_history=trainings_history,
         user_note=user_note,
-        strength_routines=strength_routines,
         ref_date=ref_date
     )
 
@@ -375,28 +371,24 @@ def _build_daily_evaluation_context(audit_date, target_date, run_stats, other_st
         other_names = ", ".join([s['name'] for s in other_stats])
         workout_summary_parts.append(f"wykonano trening uzupełniający: {other_names}")
     if strength_workout:
-        workout_summary_parts.append("zrealizowano trening siłowy (notatka z Telegrama)")
+        workout_summary_parts.append("zrealizowano trening siłowy")
 
     if workout_summary_parts:
-        workout_summary = " oraz ".join(workout_summary_parts)
+        workout_summary = "W tym dniu zarejestrowano: " + " oraz ".join(workout_summary_parts) + "."
     else:
-        workout_summary = "nie było treningu biegowego ani siłowego (Dzień wolny / Rest Day)"
+        workout_summary = "W tym dniu brak wpisów o aktywnościach."
 
     if weekly_plan_content:
-        if is_sunday:
-            plan_action = f"Odszukaj sekcję ({audit_day_name}) w planie tygodniowym i sprawdź zgodność wykonania treningu kończącego mikrocykl."
-        elif run_stats:
-            plan_action = f"Odszukaj sekcję ({audit_day_name}) w planie tygodniowym i sprawdź zgodność wykonania biegu."
-        elif other_stats or strength_workout:
-            plan_action = f"Sprawdź w planie tygodniowym, czy siłownia/trening uzupełniający były zaplanowane na {audit_day_name}. Przeprowadź audyt wykonanych ćwiczeń, oceń regenerację i zaadaptuj trening na dzień {target_date_str}."
+        if workout_summary_parts:
+            plan_action = f"Odszukaj sekcję ({audit_day_name}) w planie tygodniowym, by sprawdzić założenia na ten dzień i porównaj je z zarejestrowaną aktywnością. Zwróć uwagę na regenerację przy projektowaniu treningu na dzień {target_date_str}."
         else:
-            plan_action = f"Sprawdź w planie tygodniowym, czy dzień wolny był zaplanowany na {audit_day_name}. Skup się na ocenie regeneracji oraz adaptacji do treningu na dzień {target_date_str}."
+            plan_action = f"Nie spłynęły w tym dniu żadne logi treningowe. Sprawdź w planie tygodniowym, jakie były założenia na dzień ({audit_day_name}) – jeśli przewidywał on trening, potraktuj go jako pominięty/niewykonany i uwzględnij to w adaptacji na dzień {target_date_str}."
 
-        planned_workout_desc = f"Założenia na dzień {audit_date_str} według planu tygodniowego. W tym dniu {workout_summary}. {plan_action}"
+        planned_workout_desc = f"Założenia na dzień {audit_date_str} według planu tygodniowego.\n{workout_summary}\n{plan_action}"
     else:
         planned_workout_desc = (
-            f"Brak aktywnego planu tygodniowego. W dniu {audit_date_str} {workout_summary}. "
-            f"Dokonaj autonomicznej oceny treningu i wskaźników regeneracji oraz zaproponuj plan działania na dzień {target_date_str}."
+            f"Brak aktywnego planu tygodniowego. {workout_summary} "
+            f"Dokonaj autonomicznej oceny regeneracji oraz zaproponuj plan działania na dzień {target_date_str}."
         )
 
     if is_sunday:
@@ -409,7 +401,7 @@ def _build_daily_evaluation_context(audit_date, target_date, run_stats, other_st
     return planned_workout_desc, target_plan_desc
 
 
-def run_daily_mode(client, todays_date, weekly_plan_file, user_profile, user_note, strength_workout, strength_routines_file=None, debug=False, models=None, day="daily", send_tg=False):
+def run_daily_mode(client, todays_date, weekly_plan_file, user_profile, user_note, strength_workout, debug=False, models=None, send_tg=False):
     """
     Wieczorny audyt treningu i biometrii z dnia dzisiejszego oraz adaptacja planu na jutro.
 
@@ -642,7 +634,6 @@ def dispatch_mode(mode, client, gemini_models, today, personal_data, user_note, 
             user_profile=user_profile,
             user_note=final_user_note,
             strength_workout=strength_workout,
-            strength_routines_file=paths["strength"],
             debug=debug,
             models=gemini_models,
             send_tg=send_tg
@@ -656,7 +647,7 @@ def dispatch_mode(mode, client, gemini_models, today, personal_data, user_note, 
     if mode == "suggest":
         run_suggest_mode(client, personal_data, trainings_history, combined_note, paths["weekly_workout_structure"], debug=debug, models=gemini_models, ref_date=today)
     elif mode == "plan":
-        run_plan_mode(client, personal_data, trainings_history, combined_note, paths["weekly_workout_structure"], paths["plan"], paths["strength"], debug=debug, models=gemini_models, ref_date=today, send_tg=send_tg)
+        run_plan_mode(client, personal_data, trainings_history, combined_note, paths["weekly_workout_structure"], paths["plan"], debug=debug, models=gemini_models, ref_date=today, send_tg=send_tg)
 
 
 def main():

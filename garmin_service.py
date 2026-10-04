@@ -274,6 +274,7 @@ def _parse_rhr_and_sleep(stats_raw, sleep_raw):
     """
     result = {
         "rhr": NO_DATA,
+        "sleep_hr": NO_DATA,
         "sleep_score": NO_DATA,
         "deep_sleep": NO_DATA,
         "rem_sleep": NO_DATA,
@@ -300,12 +301,8 @@ def _parse_rhr_and_sleep(stats_raw, sleep_raw):
         result['rem_sleep'] = _get_or_nodata(sleep_dto, 'remSleepSeconds', lambda x: f"{x // 3600}h {(x % 3600) // 60}m")
         result['sleep_stress'] = _get_or_nodata(sleep_dto, 'avgSleepStress', lambda x: str(x))
 
-
-
-    if avg_night_hr:
-        result['rhr'] = f"{rhr_str} (Średnie tętno z ostatniej nocy: {avg_night_hr})"
-    else:
-        result['rhr'] = rhr_str
+    result['rhr'] = rhr_str
+    result['sleep_hr'] = avg_night_hr if avg_night_hr else NO_DATA
 
     return result
 
@@ -425,22 +422,14 @@ def _fetch_historical_strength_training(date_str, history_dir=HISTORY_DIR):
 
         if not bool(RE_STRENGTH_KW.search(h_content)):
             return ""
-            
-        tables = _extract_exercise_tables(h_content)
-        strength_tables = []
-        for tbl in tables:
-            header = tbl.split("\n")[0].lower()
-            if any(k in header for k in ["ćwiczen", "obciążen", "rpe", "łańcuch", "partia", "ruch", "exercise", "weight"]):
-                strength_tables.append(tbl)
 
         profile_m = RE_PROFILE_HEADER.search(h_content)
         variant_m = RE_VARIANT_B_HEADER.search(h_content)
         profile_str = f" ({profile_m.group(1).strip()})" if profile_m else (f" ({variant_m.group(1).strip()})" if variant_m else "")
 
-        table_text = ("\n    * Zestawienie ćwiczeń:\n" + "\n\n".join(strength_tables)) if strength_tables else ""
         return (
             f"  [Trening siłowy{profile_str} - raport z {date_str}]:\n"
-            f"    * Zarejestrowano jednostkę siłową (raport z historii treningowej){table_text}"
+            f"    * Zarejestrowano jednostkę siłową (raport z historii treningowej)"
         )
     except Exception as e:
         logger.warning(f"Błąd odczytu historii treningu siłowego z {date_str}: {e}")
@@ -501,6 +490,7 @@ def parse_garmin_data(data, target_date=None):
     parsed = {
         "hrv_status": NO_DATA,
         "rhr": NO_DATA,
+        "sleep_hr": NO_DATA,
         "sleep_score": NO_DATA,
         "deep_sleep": NO_DATA,
         "rem_sleep": NO_DATA,
