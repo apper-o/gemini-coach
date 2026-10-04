@@ -364,6 +364,22 @@ def load_weekly_plan(weekly_plan_file):
     return _read_file_safe(weekly_plan_file, default_return=None)
 
 
+def _substitute_template_variables(template, **kwargs):
+    """
+    Podstawia wartości zmiennych {nazwa_zmiennej} w szablonie tekstowym.
+
+    Args:
+        template (str): Szablon tekstowy ze znacznikami {klucz}.
+        **kwargs: Zmienne do podstawienia w szablonie.
+
+    Returns:
+        str: Tekst z podstawionymi wartościami.
+    """
+    for key, val in kwargs.items():
+        template = template.replace(f"{{{key}}}", str(val) if val is not None else "")
+    return template
+
+
 def load_prompt_template(filenames, **kwargs):
     """
     Wczytuje szablon prompta z folderu prompts/ i podstawia przekazane zmienne {nazwa_zmiennej}.
@@ -388,10 +404,7 @@ def load_prompt_template(filenames, **kwargs):
         template_parts.append(part)
 
     template = "\n".join(template_parts)
-    
-    for key, val in kwargs.items():
-        template = template.replace(f"{{{key}}}", str(val) if val is not None else "")
-    return template
+    return _substitute_template_variables(template, **kwargs)
 
 
 def _classify_telegram_message(body: str):
@@ -1000,36 +1013,76 @@ def generate_daily_prompt(
                 
     has_gym = bool(strength_workout)
     
-    templates_to_load = ["daily_base.md"]
-    
+    audit_templates = []
     if has_run:
-        templates_to_load.append("audit_run.md")
+        audit_templates.append("audit_run.md")
     if has_swim:
-        templates_to_load.append("audit_swim.md")
+        audit_templates.append("audit_swim.md")
     if has_gym:
-        templates_to_load.append("audit_gym.md")
+        audit_templates.append("audit_gym.md")
     if has_other_activity:
-        templates_to_load.append("audit_other.md")
+        audit_templates.append("audit_other.md")
         
-    if not (has_run or has_swim or has_gym or has_other_activity):
-        templates_to_load.append("audit_rest.md")
+    if not audit_templates:
+        audit_templates.append("audit_rest.md")
 
-    templates_to_load.append("daily_closing.md")
+    # Wczytanie bazy i rozdzielenie na sekcję roli oraz sekcję danych telemetrycznych
+    base_text = _read_file_safe(os.path.join(PROMPTS_DIR, "daily_base.md"))
+    if not base_text:
+        raise FileNotFoundError(f"Nie znaleziono pliku szablonu: {os.path.join(PROMPTS_DIR, 'daily_base.md')}")
 
-    # If multiple specific templates are loaded, we inject a merging instruction
-    # to prevent Gemini from generating duplicate sections.
-    merging_instruction = ""
-    if len(templates_to_load) > 3:
-        merging_instruction = "\n\n[ZAREJESTROWANO WIELE TYPÓW TRENINGÓW (NP. BIEG + SIŁOWNIA). ZINTEGRUJ WYTYCZNE Z POSZCZEGÓLNYCH SZABLONÓW PUNKTU 5 W JEDEN WSPÓLNY, SPÓJNY RAPORT. POŁĄCZ AUDYTY DO JEDNEJ SEKCJI NR 1 I NIE DUBLUJ SEKCJI 2, 3 ANI 4!]\n\n"
+    if "# 2. DANE WEJŚCIOWE DO ANALIZY" in base_text:
+        base_role, base_data = base_text.split("# 2. DANE WEJŚCIOWE DO ANALIZY", 1)
+    else:
+        base_role, base_data = base_text, ""
 
-    base_prompt = load_prompt_template(
-        templates_to_load,
+    audit_parts = []
+    for t_name in audit_templates:
+        content = _read_file_safe(os.path.join(PROMPTS_DIR, t_name))
+        if not content:
+            raise FileNotFoundError(f"Nie znaleziono pliku szablonu: {os.path.join(PROMPTS_DIR, t_name)}")
+        audit_parts.append(content)
+
+    closing_text = _read_file_safe(os.path.join(PROMPTS_DIR, "daily_closing.md"))
+    if not closing_text:
+        raise FileNotFoundError(f"Nie znaleziono pliku szablonu: {os.path.join(PROMPTS_DIR, 'daily_closing.md')}")
+
+    # Protokół niedzielny w sekcji 4 (zamknięcie mikrocyklu)
+    if day_of_week == "Niedziela":
+        sunday_section_4 = f"""## 4. OCENA GOTOWOŚCI I ADAPTACJA (ZAMKNIĘCIE MIKROCYKLU): {audit_str}
+
+- **DECYZJA ADAPTACYJNA / STOPIEŃ GOTOWOŚCI**: [PEŁNA GOTOWOŚĆ / UMIARKOWANE ZMĘCZENIE / GŁĘBOKIE ZMĘCZENIE / WYMAGANA REGENERACJA]
+- **Uzasadnienie fizjologiczne**: [Syntetyczna ocena adaptacji i wytyczne regeneracyjne przed nowym mikrocyklem; liczby wyłącznie w nawiasach]"""
+        closing_text = re.sub(
+            r"## 4\. OCENA GOTOWOŚCI.*",
+            sunday_section_4,
+            closing_text,
+            flags=re.DOTALL
+        )
+
+    # Łączenie elementów zgodnie z wektorem uwagi LLM:
+    # Rola i Wiedza Domenowa -> Audyty (Pkt 1) -> Closing (Pkt 2, 3, 4) -> Dane Wejściowe (XML)
+    prompt_parts = [base_role.strip()]
+    prompt_parts.extend([p.strip() for p in audit_parts])
+
+    if len(audit_templates) > 1:
+        merging_instruction = "[ZAREJESTROWANO WIELE TYPÓW TRENINGÓW (NP. BIEG + SIŁOWNIA). ZINTEGRUJ WYTYCZNE Z POSZCZEGÓLNYCH SZABLONÓW PUNKTU 5 W JEDEN WSPÓLNY, SPÓJNY RAPORT. POŁĄCZ AUDYTY DO JEDNEJ SEKCJI NR 1 I NIE DUBLUJ SEKCJI 2, 3 ANI 4!]"
+        prompt_parts.append(merging_instruction)
+
+    prompt_parts.append(closing_text.strip())
+
+    if base_data.strip():
+        prompt_parts.append(f"# DANE WEJŚCIOWE DO ANALIZY\n\n{base_data.strip()}")
+
+    raw_template = "\n\n".join(prompt_parts)
+
+    return _substitute_template_variables(
+        raw_template,
         **profile_dict,
         day_of_week=day_of_week or "Brak",
         today_date_str=audit_str,
         yesterday_date_str=history_str,
         tomorrow_date_str=target_str,
-        trening_z_planu=plan_desc or f"Odszukaj w planie tygodniowym jednostkę na dzień {target_str}",
         planned_workout=planned_workout or f'Brak sztywnego planu na dzień {audit_str}',
         activity_section=activity_section,
         yesterday_section=yesterday_section,
@@ -1047,20 +1100,6 @@ def generate_daily_prompt(
         sleep_stress=garmin_stats.get('sleep_stress', NO_DATA),
         sleep_hr=garmin_stats.get('sleep_hr', NO_DATA),
     )
-
-    if day_of_week == "Niedziela":
-        sunday_section_4 = f"""## 4. OCENA GOTOWOŚCI I ADAPTACJA (ZAMKNIĘCIE MIKROCYKLU): {audit_str}
-
-- **DECYZJA ADAPTACYJNA / STOPIEŃ GOTOWOŚCI**: [PEŁNA GOTOWOŚĆ / UMIARKOWANE ZMĘCZENIE / GŁĘBOKIE ZMĘCZENIE / WYMAGANA REGENERACJA]
-- **Uzasadnienie fizjologiczne**: [Syntetyczna ocena adaptacji i wytyczne regeneracyjne przed nowym mikrocyklem; liczby wyłącznie w nawiasach]"""
-        base_prompt = re.sub(
-            r"## 4\. OCENA GOTOWOŚCI.*",
-            sunday_section_4,
-            base_prompt,
-            flags=re.DOTALL
-        )
-
-    return base_prompt + merging_instruction
 
 
 

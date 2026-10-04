@@ -14,7 +14,7 @@
 
 (WARUNEK NIEDZIELNY: w niedzielę wygeneruj WYŁĄCZNIE status gotowości oraz uzasadnienie; bezwzględnie POMIŃ „Pierwotny plan...” oraz „ROZPISKA NA DZIEŃ...”).
 
-- **Pierwotny plan na dzień {tomorrow_date_str}** [W dniach PON–SOB wypisz założenia z planu tygodniowego; w niedzielę POMIŃ]: {trening_z_planu}
+- **Pierwotny plan na dzień {tomorrow_date_str}** [W dniach PON–SOB wypisz założenia z planu tygodniowego; w niedzielę POMIŃ]: 
 - **DECYZJA ADAPTACYJNA / STOPIEŃ GOTOWOŚCI**: 
   [W dniach PON–SOB wybierz dokładnie jedną opcję:
    - ZWIĘKSZAMY INTENSYWNOŚĆ: trening wykonany ze sporym zapasem adaptacyjnym, brak dryfu krążeniowego, wysoka gotowość ANS – podkręć tempo lub objętość.
@@ -22,7 +22,7 @@
    - ZMNIEJSZAMY INTENSYWNOŚĆ / MODYFIKACJA ZAŁOŻEŃ: twarde dowody przeciążenia CNS, zjazd HRV/skok RHR lub sygnały przeciążeniowe aparatu ruchu.
   W NIEDZIELĘ wybierz wyłącznie: [PEŁNA GOTOWOŚĆ / UMIARKOWANE ZMĘCZENIE / GŁĘBOKIE ZMĘCZENIE / WYMAGANA REGENERACJA]]
 - **Uzasadnienie fizjologiczne**: [Krótka diagnoza stanu adaptacyjnego; liczby wyłącznie w nawiasach]
-- **ROZPISKA NA DZIEŃ {tomorrow_date_str}**:
+- **ROZPISKA NA DZIEŃ {tomorrow_date_str}** [W dniach PON–SOB wybierz DOKŁADNIE JEDEN poniższy format na podstawie jutrzejszego planu i usuń pozostałe dwa; w niedzielę POMIŃ]:
 
   [Zastosuj ten format, jeśli jutro jest BIEG]:
   * Rozgrzewka: 
@@ -36,4 +36,4 @@
   * Wytyczne aktywacji: 
 
   [Zastosuj ten format, jeśli jutro jest REST DAY / BASEN RECOVERY]:
-  * Wytyczne:
+  * Wytyczne: 

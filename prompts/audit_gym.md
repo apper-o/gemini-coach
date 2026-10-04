@@ -18,7 +18,7 @@
 - Tabela ćwiczeń siłowych: Wypełnij na podstawie zrealizowanych ćwiczeń. Zakaz dodawania wiersza podsumowania/sumy na dole tabeli.
 
 4. PROTOKÓŁ NIEDZIELNY (DOMKNIĘCIE MIKROCYKLU):
-- W niedzielę w punkcie 4 wygeneruj WYŁĄCZNIE status gotowości oraz uzasadnienie; bezwzględnie pomiń pierwotny plan oraz rozpiskę na kolejny dzień.
+- W niedzielę w sekcji ## 4. wygeneruj WYŁĄCZNIE status gotowości oraz uzasadnienie; bezwzględnie pomiń pierwotny plan oraz rozpiskę na kolejny dzień.
 
 # 5. BEZWZGLĘDNY SZABLON RAPORTU (DO WYPEŁNIENIA 1:1)
 

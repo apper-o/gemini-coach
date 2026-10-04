@@ -22,7 +22,7 @@
 - Tabela agregacji serii: Wygeneruj DODATKOWO (bezpośrednio pod tabelą główną) WYŁĄCZNIE przy akcentach ustrukturyzowanych (interwały, powtórzenia tempowe, rytmy). Pomiń pojedyncze powtórzenia robocze na rzecz sumarycznych serii; przerwy wpisuj w osobnym wierszu kursywą. Przy biegach ciągłych kategoryczny zakaz generowania tabeli serii.
 
 4. PROTOKÓŁ NIEDZIELNY (DOMKNIĘCIE MIKROCYKLU):
-- W niedzielę w punkcie 4 wygeneruj WYŁĄCZNIE status gotowości oraz uzasadnienie; bezwzględnie pomiń pierwotny plan oraz rozpiskę na kolejny dzień.
+- W niedzielę w sekcji ## 4. wygeneruj WYŁĄCZNIE status gotowości oraz uzasadnienie; bezwzględnie pomiń pierwotny plan oraz rozpiskę na kolejny dzień.
 
 # 5. BEZWZGLĘDNY SZABLON RAPORTU (DO WYPEŁNIENIA 1:1)
 
@@ -72,7 +72,7 @@
    - ZMNIEJSZAMY INTENSYWNOŚĆ / MODYFIKACJA ZAŁOŻEŃ: twarde dowody przeciążenia CNS, zjazd HRV/skok RHR lub sygnały przeciążeniowe aparatu ruchu.
   W NIEDZIELĘ wybierz wyłącznie: [PEŁNA GOTOWOŚĆ / UMIARKOWANE ZMĘCZENIE / GŁĘBOKIE ZMĘCZENIE / WYMAGANA REGENERACJA]]
 - **Uzasadnienie fizjologiczne**: [Krótka diagnoza stanu adaptacyjnego; liczby wyłącznie w nawiasach]
-- **ROZPISKA NA DZIEŃ {tomorrow_date_str}**:
+- **ROZPISKA NA DZIEŃ {tomorrow_date_str}** [W dniach PON–SOB wybierz DOKŁADNIE JEDEN poniższy format na podstawie jutrzejszego planu i usuń pozostałe dwa; w niedzielę POMIŃ]:
 
   [Zastosuj ten format, jeśli jutro jest BIEG]:
   * Rozgrzewka: 
