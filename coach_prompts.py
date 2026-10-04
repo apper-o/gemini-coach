@@ -335,8 +335,8 @@ def build_user_profile(personal_data, ref_date=None):
     last_event_type = profile.get("last_event_type")
     if last_event_date and last_event_date != NO_DATA:
         time_rel = format_relative_time(last_event_date, ref_date=ref_date)
-        prefix = f"{last_event_type} - " if last_event_type and last_event_type != NO_DATA else ""
-        ev_info = f"{prefix}{last_event_date} ({time_rel})"
+        prefix = f"{last_event_type} " if last_event_type and last_event_type != NO_DATA else ""
+        ev_info = f"{prefix}(data: {last_event_date}, {time_rel})"
         profile["last_event_info"] = ev_info
     else:
         profile["last_event_info"] = NO_DATA
@@ -362,27 +362,6 @@ def load_weekly_plan(weekly_plan_file):
         str | None: Zawartość planu tygodniowego lub None, gdy plik nie istnieje.
     """
     return _read_file_safe(weekly_plan_file, default_return=None)
-
-
-    """
-    Wczytuje bazę własnych zestawów siłowych biegacza (FBW, UPPER, LOWER) z pliku Markdown.
-
-    Jeśli plik nie istnieje, zwraca None (baza ćwiczeń jest opcjonalna).
-    W przypadku błędu otwarcia lub odczytu istniejącego pliku zgłasza RuntimeError.
-
-    Args:
-
-    Returns:
-        str | None: Zawartość bazy ćwiczeń siłowych lub None, gdy plik nie istnieje lub jest pusty.
-    """
-
-    content = _read_file_safe(filepath, default_return=None)
-    if content:
-        content = content.strip()
-        if content:
-            logger.info(f"Wczytano bazę zestawów siłowych z pliku: {filepath}")
-            return content
-    return None
 
 
 def load_prompt_template(filenames, **kwargs):
@@ -832,14 +811,12 @@ def _format_activity_section(activity_stats, strength_workout=None):
             elif is_swim:
                 block = f"""{prefix}TRENING PŁYWACKI: {act.get('name')} | Dystans: {act.get('distance')} | Czas: {act.get('duration')}
 - Tętno: Średnie {act.get('avg_hr')} | Maksymalne {act.get('max_hr')}
-- Efekt treningowy: Aerobic TE: {act.get('aerobic_te')} | Anaerobic TE: {act.get('anaerobic_te')}
-Oceń wpływ tej jednostki pływackiej na ogólną sprawność tlenową i obciążenie mięśniowe organizmu. Pływanie stanowi aktywną regenerację lub budowę bazy tlenowej przy odciążeniu aparatu ruchu, uwzględnij to w planie na kolejne dni."""
+- Efekt treningowy: Aerobic TE: {act.get('aerobic_te')} | Anaerobic TE: {act.get('anaerobic_te')}"""
                 other_blocks.append(block)
             else:
                 block = f"""{prefix}TRENING UZUPEŁNIAJĄCY: {act.get('name')} | {act.get('distance')} w czasie {act.get('duration')}
 - Tętno: Średnie {act.get('avg_hr')} | Maksymalne {act.get('max_hr')}
-- Efekt treningowy: Aerobic TE: {act.get('aerobic_te')} | Anaerobic TE: {act.get('anaerobic_te')}
-Oceń obciążenie tej jednostki (kardio lub siłowe) i jej wpływ na gotowość do kolejnych biegów z planu."""
+- Efekt treningowy: Aerobic TE: {act.get('aerobic_te')} | Anaerobic TE: {act.get('anaerobic_te')}"""
                 other_blocks.append(block)
 
         if run_blocks:
@@ -912,51 +889,41 @@ def generate_weekly_plan_prompt(days_structure, personal_data, trainings_history
 
 
 
-def _compress_weekly_plan(content, audit_day):
+def _compress_weekly_plan(content):
     """
     Kompresuje treść planu tygodniowego, aby zredukować zużycie tokenów.
-
-    Zachowuje pełną szczegółowość (wszystkie linijki) tylko dla dnia bieżącego (audit_day)
-    oraz dnia jutrzejszego (target_day). Dla pozostałych dni filtruje tekst, pozostawiając
-    jedynie szkieletowe nagłówki (zaczynające się od "#", "*" lub "-"), co skutecznie usuwa
-    szczegóły treningów, takie jak serie, obciążenia czy RIR z minionych dni.
-
-    Args:
-        content (str): Surowy tekst planu tygodniowego (Markdown).
-        audit_day (str): Nazwa bieżącego dnia tygodnia (np. "Środa").
-
-    Returns:
-        str: Skompresowany tekst planu tygodniowego.
+    Usuwa puste linie oraz odfiltrowuje detale (serie, ćwiczenia).
+    Zostawia tylko nagłówki i punkty zaczynające się od "#", "*" lub "-".
     """
     if not content:
         return content
-        
-    days = ["Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota", "Niedziela"]
-    try:
-        idx = days.index(audit_day)
-        target_day = days[(idx + 1) % 7]
-    except ValueError:
-        return content
 
     lines = content.split('\n')
-    output = []
-    current_day = None
+    raw_output = []
     
     for line in lines:
-        if line.startswith('### '):
-            for d in days:
-                if d in line:
-                    current_day = d
-                    break
+        stripped = line.strip()
+        if stripped.startswith('#') or stripped.startswith('*') or stripped.startswith('-'):
+            raw_output.append(line)
+            
+    # Usuwanie nagłówków-widm (np. "- **Ćwiczenia**:" bez zawartości lub "### Uzasadnienie" bez treści)
+    final_output = []
+    for i, line in enumerate(raw_output):
+        stripped = line.strip()
+        # Jeśli to etykieta z dwukropkiem (np. - Ćwiczenia:)
+        if stripped.endswith(':'):
+            # Sprawdź, czy kolejna linia istnieje i czy NIE JEST kolejnym nagłówkiem/etykietą
+            if i + 1 >= len(raw_output) or raw_output[i+1].strip().startswith('#') or raw_output[i+1].strip().endswith(':'):
+                continue # Odrzuć tę etykietę, bo pod spodem nie ma wartości
         
-        if current_day in [audit_day, target_day]:
-            output.append(line)
-        else:
-            stripped = line.strip()
-            if not stripped or stripped.startswith('#') or stripped.startswith('*') or stripped.startswith('-'):
-                output.append(line)
+        # Odrzuć puste "Uzasadnienie" jeśli nie ma pod nim wartości
+        if stripped.startswith('###') and "uzasadnienie" in stripped.lower():
+            if i + 1 >= len(raw_output) or raw_output[i+1].strip().startswith('#'):
+                continue
                 
-    return "\n".join(output)
+        final_output.append(line)
+                
+    return "\n".join(final_output)
 
 def generate_daily_prompt(
     planned_workout, activity_stats, garmin_stats, weekly_plan_context,
@@ -988,6 +955,8 @@ def generate_daily_prompt(
     history_str = history_date_str
     target_str = target_date_str
     plan_desc = target_plan_desc
+    if not plan_desc and day_of_week == "Niedziela":
+        plan_desc = "Brak (koniec mikrocyklu tygodniowego; w niedzielę następuje zamknięcie mikrocyklu i nowy plan na kolejny tydzień generuje wyłącznie tryb 'plan')"
 
     y_training = garmin_stats.get('yesterday_training', 'Brak aktywności (dzień wolny)')
     y_steps = garmin_stats.get('yesterday_steps', 'Brak danych')
@@ -996,24 +965,20 @@ def generate_daily_prompt(
     if y_training == "Brak aktywności (dzień wolny)" and "Brak danych" in y_steps and "Brak danych" in y_stress:
         yesterday_section = f"Brak danych z dnia {history_str} (dzień wolny)"
     else:
-        yesterday_section = f"""
-====================
-KONTEKST DNIA POPRZEDNIEGO ({history_str}):
-* Trening: {y_training}
+        if "\n" in y_training:
+            training_str = f"\n{y_training}"
+        else:
+            training_str = f" {y_training}"
+        yesterday_section = f"""* Trening:{training_str}
 * Kroki z całego dnia: {y_steps}
-* Średni poziom stresu: {y_stress}
-"""
+* Średni poziom stresu: {y_stress}"""
 
     if day_of_week and weekly_plan_context:
-        weekly_plan_context = _compress_weekly_plan(weekly_plan_context, day_of_week)
+        weekly_plan_context = _compress_weekly_plan(weekly_plan_context)
 
     weekly_plan_section = "Brak planu tygodniowego w pliku output/weekly_plan.md"
     if weekly_plan_context:
-        weekly_plan_section = f"""
-====================
-AKTUALNY PLAN TYGODNIOWY (I KOLEJNE ZAPLANOWANE TRENINGI):
-{weekly_plan_context}
-"""
+        weekly_plan_section = weekly_plan_context
 
     note_content = user_note if user_note else f"Brak dodatkowych uwag od biegacza na dzień {audit_str}."
     activity_section = _format_activity_section(activity_stats, strength_workout=strength_workout)
@@ -1038,18 +1003,26 @@ AKTUALNY PLAN TYGODNIOWY (I KOLEJNE ZAPLANOWANE TRENINGI):
     templates_to_load = ["daily_base.md"]
     
     if has_run:
-        templates_to_load.append("daily_run_s3_s4.md")
+        templates_to_load.append("audit_run.md")
     if has_swim:
-        templates_to_load.append("daily_swim_s3_s4.md")
+        templates_to_load.append("audit_swim.md")
     if has_gym:
-        templates_to_load.append("daily_gym_s3_s4.md")
+        templates_to_load.append("audit_gym.md")
     if has_other_activity:
-        templates_to_load.append("daily_other_s3_s4.md")
+        templates_to_load.append("audit_other.md")
         
     if not (has_run or has_swim or has_gym or has_other_activity):
-        templates_to_load.append("daily_rest_s3_s4.md")
+        templates_to_load.append("audit_rest.md")
 
-    return load_prompt_template(
+    templates_to_load.append("daily_closing.md")
+
+    # If multiple specific templates are loaded, we inject a merging instruction
+    # to prevent Gemini from generating duplicate sections.
+    merging_instruction = ""
+    if len(templates_to_load) > 3:
+        merging_instruction = "\n\n[ZAREJESTROWANO WIELE TYPÓW TRENINGÓW (NP. BIEG + SIŁOWNIA). ZINTEGRUJ WYTYCZNE Z POSZCZEGÓLNYCH SZABLONÓW PUNKTU 5 W JEDEN WSPÓLNY, SPÓJNY RAPORT. POŁĄCZ AUDYTY DO JEDNEJ SEKCJI NR 1 I NIE DUBLUJ SEKCJI 2, 3 ANI 4!]\n\n"
+
+    base_prompt = load_prompt_template(
         templates_to_load,
         **profile_dict,
         day_of_week=day_of_week or "Brak",
@@ -1074,6 +1047,20 @@ AKTUALNY PLAN TYGODNIOWY (I KOLEJNE ZAPLANOWANE TRENINGI):
         sleep_stress=garmin_stats.get('sleep_stress', NO_DATA),
         sleep_hr=garmin_stats.get('sleep_hr', NO_DATA),
     )
+
+    if day_of_week == "Niedziela":
+        sunday_section_4 = f"""## 4. OCENA GOTOWOŚCI I ADAPTACJA (ZAMKNIĘCIE MIKROCYKLU): {audit_str}
+
+- **DECYZJA ADAPTACYJNA / STOPIEŃ GOTOWOŚCI**: [PEŁNA GOTOWOŚĆ / UMIARKOWANE ZMĘCZENIE / GŁĘBOKIE ZMĘCZENIE / WYMAGANA REGENERACJA]
+- **Uzasadnienie fizjologiczne**: [Syntetyczna ocena adaptacji i wytyczne regeneracyjne przed nowym mikrocyklem; liczby wyłącznie w nawiasach]"""
+        base_prompt = re.sub(
+            r"## 4\. OCENA GOTOWOŚCI.*",
+            sunday_section_4,
+            base_prompt,
+            flags=re.DOTALL
+        )
+
+    return base_prompt + merging_instruction
 
 
 

@@ -15,11 +15,12 @@ logger = logging.getLogger(__name__)
 # Stałe globalne
 NO_DATA = "Brak danych"
 HISTORY_DIR = "trainings_history"
+DEBUG_DIR = "debug"
+GARMIN_CACHE_DIR = "garmin_data"
 
 # Prekompilowane wyrażenia regularne dla parsowania historii
 RE_STRENGTH_KW = re.compile(r'(siłowni|siłowa|hevy|fbw|upper|lower|strength)', re.IGNORECASE)
 RE_PROFILE_HEADER = re.compile(r'\*\s*Profil jednostki:\s*([^\n]+)')
-RE_VARIANT_B_HEADER = re.compile(r'(WARIANT B:[^\n]+)')
 
 def _get_or_nodata(d, keys, formatter=None):
     """
@@ -406,31 +407,73 @@ def _fetch_historical_strength_training(date_str, history_dir=HISTORY_DIR):
         history_dir (str, optional): Katalog z historią. Defaults to HISTORY_DIR.
         
     Returns:
-        str: Sformatowany wpis o treningu siłowym lub pusty ciąg, jeśli brak.
+        str: Sformatowany wpis z pełnym raportem treningu siłowego lub pusty ciąg, jeśli brak.
     """
-    if not date_str or not os.path.exists(history_dir):
+    if not date_str:
         return ""
         
     try:
-        year, month = date_str.split('-')[:2]
-        hist_file = os.path.join(history_dir, year, month, f"{date_str}.md")
-        if not os.path.exists(hist_file):
+        hist_file = None
+        debug_file = os.path.join(DEBUG_DIR, f"{date_str}.md")
+        if os.path.exists(debug_file):
+            hist_file = debug_file
+        else:
+            year, month = date_str.split('-')[:2]
+            target_file = os.path.join(history_dir, year, month, f"{date_str}.md")
+            if os.path.exists(target_file):
+                hist_file = target_file
+
+        if not hist_file or not os.path.exists(hist_file):
             return ""
             
         with open(hist_file, "r", encoding="utf-8") as hf:
             h_content = hf.read()
 
-        if not bool(RE_STRENGTH_KW.search(h_content)):
+        # 1. Bezwzględna weryfikacja czy w tym dniu odbył się trening siłowy
+        m_strength = re.search(r'^-\s*Siłownia:\s*(.+)$', h_content, re.MULTILINE)
+        if m_strength:
+            val = m_strength.group(1).strip()
+            if val.upper().startswith("NIE") or val.upper().startswith("BRAK"):
+                return ""
+        elif re.search(r'-\s*Siłownia:\s*NIE\b', h_content, re.IGNORECASE):
+            return ""
+        elif not bool(RE_STRENGTH_KW.search(h_content)):
             return ""
 
         profile_m = RE_PROFILE_HEADER.search(h_content)
-        variant_m = RE_VARIANT_B_HEADER.search(h_content)
-        profile_str = f" ({profile_m.group(1).strip()})" if profile_m else (f" ({variant_m.group(1).strip()})" if variant_m else "")
+        profile_str = f" ({profile_m.group(1).strip()})" if profile_m else ""
 
-        return (
-            f"  [Trening siłowy{profile_str} - raport z {date_str}]:\n"
-            f"    * Zarejestrowano jednostkę siłową (raport z historii treningowej)"
-        )
+        # 2. Wyciąganie pełnego raportu treningu siłowego
+        strength_details = None
+
+        # A. Sekcja audytu siłowego (CZĘŚĆ SIŁOWA)
+        m_audit = re.search(r'## CZĘŚĆ SIŁOWA(.*?)(?=\n## |\n### 2|\Z)', h_content, re.DOTALL)
+        if m_audit:
+            strength_details = m_audit.group(0).strip()
+        else:
+            # B. Surowy raport z Telegrama
+            m_tg = re.search(r'### Trening siłowy[^\n]*\n(.*?)(?=\n## |\n### |\Z)', h_content, re.DOTALL)
+            if m_tg:
+                strength_details = m_tg.group(0).strip()
+            else:
+                # C. Tabele ćwiczeń
+                tables = _extract_exercise_tables(h_content)
+                if tables:
+                    strength_details = "\n\n".join(tables)
+
+        if strength_details:
+            indented_details = "\n".join(f"    {line}" for line in strength_details.splitlines())
+            return (
+                f"  [Trening siłowy{profile_str} - raport z {date_str}]:\n"
+                f"{indented_details}"
+            )
+        elif m_strength:
+            return (
+                f"  [Trening siłowy{profile_str} - raport z {date_str}]:\n"
+                f"    * Zarejestrowano jednostkę siłową: {m_strength.group(1).strip()}"
+            )
+
+        return ""
     except Exception as e:
         logger.warning(f"Błąd odczytu historii treningu siłowego z {date_str}: {e}")
         return ""
@@ -763,17 +806,34 @@ def _fetch_day_activities_and_load(client, date_str, include_body_battery=False)
     return day_data
 
 
-def fetch_garmin_data(target_date):
+def fetch_garmin_data(target_date, force_refresh=False):
     """
     Loguje się do Garmin Connect i pobiera komplet danych dla analizy dziennej.
     Obejmuje pełne wskaźniki dzisiejsze (sen, hrv, body battery, treningi) oraz wczorajsze jako tło porównawcze.
+    Zapisuje pobrane dane w lokalnej pamięci podręcznej (garmin_data/), aby nie wysyłać wielokrotnie zapytań do API.
     
     Args:
         target_date (datetime.date): Główna data analizy.
+        force_refresh (bool, optional): Jeśli True, pomija pamięć podręczną i pobiera świeże dane z Garmin API.
         
     Returns:
         dict: Słownik grupujący dane na klucze 'today' oraz 'yesterday'.
     """
+    today_str = target_date.isoformat()
+    yesterday_date = target_date - datetime.timedelta(days=1)
+    yesterday_str = yesterday_date.isoformat()
+
+    cache_file = os.path.join(GARMIN_CACHE_DIR, f"{today_str}.json")
+    if not force_refresh and os.path.exists(cache_file):
+        try:
+            with open(cache_file, "r", encoding="utf-8") as cf:
+                cached_data = json.load(cf)
+            if cached_data and "today" in cached_data and "yesterday" in cached_data:
+                logger.info(f"💾 Wczytano dane telemetryczne Garmina z lokalnej pamięci podręcznej ({cache_file}).")
+                return cached_data
+        except Exception as e:
+            logger.warning(f"Błąd odczytu pamięci podręcznej Garmina ({cache_file}): {e}. Pobieranie z API...")
+
     garmin_email = os.getenv("GARMIN_EMAIL")
     garmin_password = os.getenv("GARMIN_PASSWORD")
     if not garmin_email or not garmin_password:
@@ -781,10 +841,6 @@ def fetch_garmin_data(target_date):
         sys.exit(1)
 
     client = get_garmin_client(garmin_email, garmin_password)
-    
-    today_str = target_date.isoformat()
-    yesterday_date = target_date - datetime.timedelta(days=1)
-    yesterday_str = yesterday_date.isoformat()
 
     logger.info(f"🚀 Pobieranie danych z Garmina dla analizy dziennej (Wczoraj: {yesterday_str}, Dzisiaj: {today_str})...")
 
@@ -795,7 +851,17 @@ def fetch_garmin_data(target_date):
     yesterday_data = _fetch_day_activities_and_load(client, yesterday_str, include_body_battery=False)
     yesterday_data['date'] = yesterday_str
 
-    return {
+    result = {
         'today': today_data,
         'yesterday': yesterday_data
     }
+
+    try:
+        os.makedirs(GARMIN_CACHE_DIR, exist_ok=True)
+        with open(cache_file, "w", encoding="utf-8") as cf:
+            json.dump(result, cf, ensure_ascii=False, indent=2)
+        logger.info(f"💾 Zapisano pobrane dane telemetryczne Garmina do pamięci podręcznej: {cache_file}")
+    except Exception as e:
+        logger.warning(f"Nie udało się zapisać danych Garmina do pamięci podręcznej ({cache_file}): {e}")
+
+    return result

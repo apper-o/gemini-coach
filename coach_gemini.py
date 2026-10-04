@@ -1,13 +1,14 @@
 """
 coach_gemini.py - Asystent Treningowy Gemini.
 Odpowiada za inicjalizację klienta Gemini API, kaskadę modeli oraz orkiestrację trybów treningowych:
-- daily: wieczorny tryb audytu bieżącego dnia (20:57), zaleceń regeneracyjnych i adaptacji na jutro (alias: today)
+- daily: wieczorny tryb audytu bieżącego dnia (20:57), zaleceń regeneracyjnych i adaptacji na jutro
 - plan: ułożenie kompletnego planu tygodniowego
 - suggest: generowanie propozycji podziału jednostek treningowych
 """
 
 import os
 import sys
+import re
 import datetime
 import logging
 import argparse
@@ -343,20 +344,171 @@ def run_plan_mode(client, personal_data, trainings_history, user_note, weekly_wo
 
 
 
-def _build_daily_evaluation_context(audit_date, target_date, run_stats, other_stats, strength_workout, weekly_plan_content):
+# ==============================================================================
+# TRYB AUDYTU DZIENNEGO I ADAPTACJI (DAILY / TODAY)
+# ==============================================================================
+
+def _extract_day_plan(content, day_name):
+    """
+    Wyciąga czyste, skondensowane założenia treningowe dla konkretnego dnia z planu tygodniowego.
+    Usuwa metatekst planistyczny (np. 'Wyjaśnienie decyzji:', 'Decyzja: Usunięcie...')
+    oraz kompresuje serie ćwiczeń siłowych do zwięzłego formatu (np. 3x10 (10 kg/ręka, RIR 3)).
+
+    Args:
+        content (str): Surowa treść planu tygodniowego w Markdown.
+        day_name (str): Nazwa dnia tygodnia po polsku (np. 'Niedziela').
+
+    Returns:
+        str: Sformatowany, przejrzysty opis założeń lub informacja o braku wpisu.
+    """
+    if not content:
+        return "Brak planu"
+
+    lines = content.split('\n')
+    extracted = []
+    capture = False
+
+    for line in lines:
+        if line.startswith('### ') or line.startswith('## '):
+            if day_name in line and line.startswith('### '):
+                capture = True
+                extracted.append(line.replace('### ', '').strip())
+                continue
+            elif capture:
+                capture = False
+                break
+        elif capture:
+            if line.strip():
+                extracted.append(line.strip())
+
+    if not extracted:
+        return "Dzień wolny (lub brak wpisu)"
+
+    # Tytuł dnia (np. "Niedziela - Siłownia: FBW" -> "Siłownia FBW")
+    raw_title = extracted[0]
+    clean_title = re.sub(rf'^{day_name}\s*[-–:]\s*', '', raw_title, flags=re.IGNORECASE).strip()
+    if clean_title.startswith('Siłownia:'):
+        clean_title = clean_title.replace('Siłownia:', 'Siłownia').strip()
+
+    body_lines = extracted[1:]
+    output_lines = []
+    i = 0
+    in_exercises = False
+
+    while i < len(body_lines):
+        line = body_lines[i]
+
+        # 1. Bezwzględne odrzucanie metatekstu planistycznego i uzasadnień
+        if any(line.startswith(prefix) for prefix in ['Wyjaśnienie decyzji:', 'Decyzja:', '* **Cel', '- **Cel']):
+            i += 1
+            continue
+
+        # 2. Pomijanie ćwiczeń usuniętych z planu
+        if 'USUNIĘTO' in line:
+            i += 1
+            while i < len(body_lines) and (body_lines[i].startswith('Seria') or body_lines[i].startswith('Decyzja') or body_lines[i].startswith('Wyjaśnienie')):
+                i += 1
+            continue
+
+        # 3. Status dolnych partii
+        if 'Status dolnych partii' in line:
+            clean_s = re.sub(r'^\*\s*\*\*Status dolnych partii\*\*:\s*', '- Status dolnych partii: ', line)
+            output_lines.append(clean_s)
+            i += 1
+            continue
+
+        # 4. Sekcja ćwiczeń
+        if 'Ćwiczenia' in line and (line.startswith('* **') or line.startswith('-')):
+            output_lines.append('- Ćwiczenia:')
+            in_exercises = True
+            i += 1
+            continue
+
+        # 5. Cardio
+        if 'Cardio' in line and (line.startswith('* **') or line.startswith('-')):
+            in_exercises = False
+            clean_c = re.sub(r'^\*\s*\*\*Cardio[^:]*\*\*:\s*', '- Cardio: ', line)
+            clean_c = re.sub(r'^-\s*\*\*Cardio[^:]*\*\*:\s*', '- Cardio: ', clean_c)
+            clean_c = re.sub(r'^-\s*Cardio[^:]*:\s*', '- Cardio: ', clean_c)
+            output_lines.append(clean_c)
+            i += 1
+            continue
+
+        # 6. Standardowe punkty (np. rozgrzewka, część główna, schłodzenie, zalecenia regeneracyjne)
+        if line.startswith('* **') or line.startswith('- '):
+            in_exercises = False
+            clean_bullet = re.sub(r'^\*\s*\*\*([^*]+)\*\*:\s*', r'- \1: ', line)
+            output_lines.append(clean_bullet)
+            i += 1
+            continue
+
+        # 7. Parsowanie ćwiczeń wewnątrz sekcji ćwiczeń
+        if in_exercises:
+            ex_name = line
+            clean_ex_name = re.sub(r'\s*\((Dumbbell|Barbell|Cable)\)', '', ex_name)
+
+            series = []
+            i += 1
+            while i < len(body_lines):
+                s_line = body_lines[i]
+                if s_line.startswith('Seria'):
+                    series.append(s_line)
+                    i += 1
+                elif s_line.startswith('Wyjaśnienie decyzji:') or s_line.startswith('Decyzja:'):
+                    i += 1
+                else:
+                    break
+
+            if series:
+                num_sets = len(series)
+                first_s = series[0]
+                m_s = re.search(r'Seria\s*\d+:\s*(\d+)\s*(?:x\s*([^(]+))?(?:\(([^)]+)\))?', first_s)
+                if m_s:
+                    reps = m_s.group(1)
+                    weight = (m_s.group(2) or '').strip()
+                    rir = (m_s.group(3) or '').strip()
+
+                    all_rirs = [re.search(r'\(([^)]+)\)', s).group(1) for s in series if re.search(r'\(([^)]+)\)', s)]
+                    rir_str = all_rirs[-1] if all_rirs else rir
+                    if len(set(all_rirs)) > 1:
+                        rir_str = 'RIR 2-3'
+
+                    weight_clean = weight.replace('na rękę', '/ręka').strip()
+                    weight_clean = weight_clean.replace(' /', '/')
+                    details_parts = []
+                    if weight_clean and weight_clean != 'masa ciała':
+                        details_parts.append(weight_clean)
+                    elif weight_clean == 'masa ciała':
+                        details_parts.append('masa ciała')
+                    if rir_str:
+                        details_parts.append(rir_str)
+
+                    det_str = f" ({', '.join(details_parts)})" if details_parts else ""
+                    output_lines.append(f"  * {clean_ex_name}: {num_sets}x{reps}{det_str}")
+                else:
+                    output_lines.append(f"  * {clean_ex_name}: {num_sets} serie")
+            else:
+                output_lines.append(f"  * {clean_ex_name}")
+        else:
+            output_lines.append(line)
+            i += 1
+
+    if output_lines:
+        return f"{clean_title}\n" + "\n".join(output_lines)
+    return clean_title
+
+
+def _build_daily_evaluation_context(audit_date, target_date, weekly_plan_content):
     """
     Buduje opisy kontekstowe dla audytu (założenia dzisiejsze i cele na jutro).
 
     Args:
-        audit_date (date): Data audytowanego treningu (dziś).
-        target_date (date): Data adaptowanego treningu (jutro).
-        run_stats (list): Zestawienie aktywności biegowych.
-        other_stats (list): Zestawienie pozostałych aktywności (rower, basen).
-        strength_workout (str): Zgłoszony trening siłowy.
-        weekly_plan_content (str): Zawartość planu tygodniowego.
+        audit_date (datetime.date): Data audytowanego treningu (dziś).
+        target_date (datetime.date): Data adaptowanego treningu (jutro).
+        weekly_plan_content (str | None): Zawartość planu tygodniowego.
 
     Returns:
-        tuple: Krotka (planned_workout_desc, target_plan_desc).
+        tuple[str, str]: Krotka zawierająca (planned_workout_desc, target_plan_desc).
     """
     audit_date_str = f"{DAYS_PL[audit_date.weekday()]}, {audit_date.isoformat()}"
     target_date_str = f"{DAYS_PL[target_date.weekday()]}, {target_date.isoformat()}"
@@ -364,37 +516,17 @@ def _build_daily_evaluation_context(audit_date, target_date, run_stats, other_st
     target_day_name = DAYS_PL[target_date.weekday()]
     is_sunday = (audit_date.weekday() == 6)
 
-    workout_summary_parts = []
-    if run_stats:
-        workout_summary_parts.append(f"zarejestrowano {len(run_stats)} jednostek biegowych")
-    if other_stats:
-        other_names = ", ".join([s['name'] for s in other_stats])
-        workout_summary_parts.append(f"wykonano trening uzupełniający: {other_names}")
-    if strength_workout:
-        workout_summary_parts.append("zrealizowano trening siłowy")
-
-    if workout_summary_parts:
-        workout_summary = "W tym dniu zarejestrowano: " + " oraz ".join(workout_summary_parts) + "."
-    else:
-        workout_summary = "W tym dniu brak wpisów o aktywnościach."
-
     if weekly_plan_content:
-        if workout_summary_parts:
-            plan_action = f"Odszukaj sekcję ({audit_day_name}) w planie tygodniowym, by sprawdzić założenia na ten dzień i porównaj je z zarejestrowaną aktywnością. Zwróć uwagę na regenerację przy projektowaniu treningu na dzień {target_date_str}."
-        else:
-            plan_action = f"Nie spłynęły w tym dniu żadne logi treningowe. Sprawdź w planie tygodniowym, jakie były założenia na dzień ({audit_day_name}) – jeśli przewidywał on trening, potraktuj go jako pominięty/niewykonany i uwzględnij to w adaptacji na dzień {target_date_str}."
-
-        planned_workout_desc = f"Założenia na dzień {audit_date_str} według planu tygodniowego.\n{workout_summary}\n{plan_action}"
+        extracted_audit = _extract_day_plan(weekly_plan_content, audit_day_name)
+        planned_workout_desc = f"{audit_date_str}: {extracted_audit}"
     else:
-        planned_workout_desc = (
-            f"Brak aktywnego planu tygodniowego. {workout_summary} "
-            f"Dokonaj autonomicznej oceny regeneracji oraz zaproponuj plan działania na dzień {target_date_str}."
-        )
+        planned_workout_desc = f"Brak aktywnego planu tygodniowego na dzień {audit_date_str}."
 
     if is_sunday:
-        target_plan_desc = "Brak (koniec mikrocyklu tygodniowego; nowy plan generuje tryb 'plan')"
+        target_plan_desc = "Brak (koniec mikrocyklu tygodniowego; w niedzielę następuje zamknięcie mikrocyklu i nowy plan na kolejny tydzień generuje wyłącznie tryb 'plan')"
     elif weekly_plan_content:
-        target_plan_desc = f"Założenia na dzień {target_date_str} według planu tygodniowego (sekcja: {target_day_name})"
+        extracted_target = _extract_day_plan(weekly_plan_content, target_day_name)
+        target_plan_desc = f"{target_date_str}: {extracted_target}"
     else:
         target_plan_desc = f"Zaproponuj rekomendację treningową na dzień {target_date_str}"
 
@@ -409,13 +541,11 @@ def run_daily_mode(client, todays_date, weekly_plan_file, user_profile, user_not
         client: Zainicjowany klient Gemini.
         todays_date (date): Data audytowanego treningu.
         weekly_plan_file (str): Ścieżka pliku weekly_plan.md.
-        user_profile (str): Informacje o profilu i sprzęcie.
-        user_note (str): Opcjonalna notatka zawodnika.
-        strength_workout (str): Odseparowany tekst treningu siłowego (jeśli występuje).
-        strength_routines_file (str, optional): Ścieżka pliku siłowego (strength_routines.md).
+        user_profile (dict): Informacje o profilu i sprzęcie.
+        user_note (str | None): Opcjonalna notatka zawodnika.
+        strength_workout (str | None): Odseparowany tekst treningu siłowego (jeśli występuje).
         debug (bool): Flaga trybu debug.
         models (list): Lista dostępnych modeli Gemini.
-        day (str): Rodzaj dnia, domyślnie "daily".
         send_tg (bool): Flaga wymuszająca wysyłkę w trybie debug.
     """
     audit_date = todays_date
@@ -452,8 +582,6 @@ def run_daily_mode(client, todays_date, weekly_plan_file, user_profile, user_not
             audit_date_str
         )
 
-        run_stats = [act for act in activity_stats if act.get("is_run", True)]
-        other_stats = [act for act in activity_stats if not act.get("is_run", True)]
 
         # Wyświetlenie informacji o siłowni lub dniu wolnym w konsoli
         if strength_workout:
@@ -471,9 +599,6 @@ def run_daily_mode(client, todays_date, weekly_plan_file, user_profile, user_not
         planned_workout_desc, target_plan_desc = _build_daily_evaluation_context(
             audit_date=audit_date,
             target_date=target_date,
-            run_stats=run_stats,
-            other_stats=other_stats,
-            strength_workout=strength_workout,
             weekly_plan_content=weekly_plan_content
         )
 
@@ -539,21 +664,9 @@ def resolve_mode(raw_mode):
         raw_mode (str): Tryb przekazany z wiersza poleceń.
         
     Returns:
-        str: Sformatowana, poprawna nazwa trybu ('daily', 'plan' lub 'suggest').
+        str: Poprawna nazwa trybu ('daily', 'plan' lub 'suggest').
     """
     mode = (raw_mode or "daily").lower()
-    if mode == "week":
-        mode = "plan"
-    elif mode == "today":
-        mode = "daily"
-
-    if mode == "yesterday":
-        exit_with_error(
-            "Tryb 'yesterday' został wycofany. "
-            "Coach Gemini działa w trybie wieczornym 'daily' (uruchamianym o 20:57), "
-            "który audytuje bieżący dzień i adaptuje jutrzejszy trening."
-        )
-
     if mode not in ["daily", "plan", "suggest"]:
         exit_with_error(
             f"Nieprawidłowy tryb działania: '{raw_mode}'. "
@@ -679,7 +792,6 @@ def main():
     paths = {
         "weekly_workout_structure": os.path.join(INPUT_DIR, "weekly_workout_structure.md"),
         "plan": os.path.join(OUTPUT_DIR, "weekly_plan.md"),
-        "strength": os.path.join(INPUT_DIR, "strength_routines.md"),
     }
 
     dispatch_mode(mode, client, gemini_models, today, personal_data, user_note, paths, debug=args.debug, send_tg=args.send_debug)

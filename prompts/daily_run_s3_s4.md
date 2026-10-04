@@ -1,57 +1,33 @@
-================================================================================
-DODATKOWE WYTYCZNE BIEGOWE
-================================================================================
-PROTOKÓŁ BIOMECHANICZNY I FIZJOLOGICZNY:
-- Dźwignie i antropometria: Wzrost determinuje długość kroku. W strefach Z1/Z2 dopuszczalny jest niższy rytm; nie wymuszaj sztucznego dogmatu 180 spm przy zachowanej płynności. Wraz z tempem kadencja musi rosnąć.
-- Overstriding: Diagnozuj relacyjnie. Niska kadencja przy tempie progowym/VO2max to dowód lądowania przed środkiem masy (COM), generowania siły hamującej i przeciążania aparatu ruchu.
-- Dynamika SSC i Czas Kontaktu (GCT): Analizuj dryf wyłącznie przy dostępności splitów. Równoczesny wzrost GCT i spadek kadencji przy stałym tempie oznacza utratę sztywności sprężystej (tendon stiffness) i zmęczenie nerwowo-mięśniowe.
-- Decoupling sercowo-naczyniowy: Dryf tętno/tempo >3–5% w biegach ciągłych diagnozuj jako dług tlenowy, odwodnienie, koszt termoregulacyjny lub braki bazy tlenowej.
-- Ograniczenia i artefakty pomiarowe: 
-  - Zrywy i rytmy <100 m: Uwzględniaj zwłokę akcelerometru i opóźnienie optycznego czujnika tętna (OHR).
-  - Cadence Lock: Skokowy wzrost tętna zrównany z wartością kadencji w spokojnym biegu traktuj jako błąd optyki, nie zawał metaboliczny.
+# 3. PROTOKÓŁ BIOMECHANICZNY I ANALITYCZNY (BIEG)
+- Dźwignie i kadencja: Wzrost determinuje długość kroku. W Z1/Z2 niższy rytm jest dopuszczalny przy zachowanej płynności (brak dogmatu 180 spm). Wraz ze wzrostem prędkości kadencja musi rosnąć.
+- Overstriding: Niska kadencja przy tempie progowym/VO2max = lądowanie przed środkiem masy (COM), generowanie sił hamujących i przeciążanie aparatu ruchu.
+- Dynamika SSC i GCT (analizuj dryf przy splitach): Wzrost GCT + spadek kadencji przy stałym tempie = utrata sztywności sprężystej i zmęczenie nerwowo-mięśniowe.
+- Decoupling krążeniowy: Dryf tętno/tempo >3–5% w biegach ciągłych = dług tlenowy, odwodnienie, koszt termiczny lub deficyt bazy tlenowej.
+- Artefakty pomiarowe: Zrywy <100 m obarczone są zwłoką OHR i akcelerometru. Skok tętna zrównany z kadencją w spokojnym biegu to cadence lock (błąd optyki, nie wysiłek).
 
-================================================================================
-SEKCJA 3: ZASADY FORMATOWANIA I KONTROLI WYJŚCIA (BIEG)
-================================================================================
+# 4. ZASADY FORMATOWANIA I KONTROLI WYJŚCIA
 
-1. INTEGRALNOŚĆ STRUKTURALNA:
-- Wygenerowany raport musi w skali 1:1 odzwierciedlać strukturę z SEKCJI 4.
-- Kategoryczny zakaz wstępów, powitań, podsumowań, komentarzy metatekstowych i dopisków po raporcie.
-- Kategoryczny zakaz otaczania całego raportu blokiem kodu Markdown (zakaz potrójnych grawisów ``` na początku i końcu odpowiedzi).
-- Zastąp wszystkie instrukcje w nawiasach kwadratowych [...] merytoryczną treścią. Jeśli anomalia nie wystąpiła, wpisz dokładnie słowo: „Brak”.
+1. SKŁADNIA I CZYSTOŚĆ WYJŚCIA:
+- Raport generuj ściśle według struktury z punktu 5 (od pierwszego nagłówka `## 1.`, bez żadnego tekstu przed ani po raporcie).
+- Kategoryczny zakaz otaczania odpowiedzi potrójnymi grawisami ``` (czysty Markdown).
+- Pola w nawiasach [...] wypełnij konkretną diagnozą lub wpisz dokładnie „Brak”, jeśli dane zjawisko nie wystąpiło.
+- Twarda reguła liczb: Wartości telemetryczne w tekście podawaj WYŁĄCZNIE w nawiasach jako poparcie wniosku (zakaz zdań będących suchym raportowaniem pomiarów z zegarka).
 
-2. SKŁADNIA TABEL MARKDOWN:
-- Każdy wiersz w nowej linii, pojedynczy separator pionowy '|' (zakaz '||').
-- Tabela musi stanowić niezależny blok: pusta linia bezpośrednio przed tabelą i po tabeli.
-- Kategoryczny zakaz zagnieżdżania tabel wewnątrz list punktowanych (bullet points).
-- Bezwzględny zakaz dodawania wierszy sumarycznych / podsumowań na dole tabel.
+2. SKŁADNIA TABEL:
+- Formatuj tabele w standardzie Markdown (pojedynczy znak '|', pusta linia przed i po tabeli).
+- Kategoryczny zakaz zagnieżdżania tabel wewnątrz list punktowanych oraz dodawania wiersza sumarycznego na dole.
 
-3. REGUŁA DOBORU TABELI BIEGOWEJ W PUNKCIE 1:
-- W zależności od charakteru treningu wybierz i wygeneruj DOKŁADNIE JEDNĄ tabelę:
-  * Bieg ciągły (Z1, Z2, tempo ciągłe bez przerw, zawody): Wygeneruj WYŁĄCZNIE tabelę „Zestawienie: Plan vs Realizacja”. Kategoryczny zakaz generowania tabeli serii.
-  * Akcent ustrukturyzowany (interwały, powtórzenia tempowe, rytmy): Wygeneruj WYŁĄCZNIE „Tabelę agregacji serii” (pomiń tabelę pojedynczych powtórzeń roboczych; przerwy między seriami wpisuj w osobnym wierszu tabeli kursywą).
+3. REGUŁA TABEL BIEGOWYCH W PUNKCIE 1 SZABLONU:
+- Tabela „Plan vs Realizacja”: Obowiązkowa dla KAŻDEJ jednostki biegowej (zestawia całościowe parametry treningu z założeniami).
+- Tabela agregacji serii: Wygeneruj DODATKOWO (bezpośrednio pod tabelą główną) WYŁĄCZNIE przy akcentach ustrukturyzowanych (interwały, powtórzenia tempowe, rytmy). Pomiń pojedyncze powtórzenia robocze na rzecz sumarycznych serii; przerwy wpisuj w osobnym wierszu kursywą. Przy biegach ciągłych kategoryczny zakaz generowania tabeli serii.
 
-4. DYSCYPLINA NUMERYCZNA (LICZBY WYŁĄCZNIE W NAWIASACH):
-- Kategoryczny zakaz zdań będących suchym raportem liczbowym (zakaz form: „Tętno wyniosło 155 bpm”, „Kadencja to 166 spm”).
-- Wartości liczbowe z jednostkami (bpm, ms, spm, % itp.) mogą pojawiać się w tekście opisowym WYŁĄCZNIE w nawiasach, jako zwięzłe poparcie jakościowej diagnozy biomechanicznej lub fizjologicznej (np. „Zachowany stabilny zwrot energii (kadencja 178 spm, GCT 210 ms)”, „Wyraźny dryf sercowo-naczyniowy w drugiej połowie (+14 bpm)”).
-- Diagnoza stoi zawsze na pierwszym miejscu; liczba w nawiasie to wyłącznie twarda kotwica dowodowa.
+4. PROTOKÓŁ NIEDZIELNY (DOMKNIĘCIE MIKROCYKLU):
+- W niedzielę w punkcie 4 wygeneruj WYŁĄCZNIE status gotowości oraz uzasadnienie; bezwzględnie pomiń pierwotny plan oraz rozpiskę na kolejny dzień.
 
-5. PROTOKÓŁ NIEDZIELNY (DOMKNIĘCIE MIKROCYKLU):
-- W niedzielnym raporcie KATEGORYCZNIE POMIŃ punkt „Pierwotny plan na dzień...” oraz punkt „ROZPISKA NA DZIEŃ...” (planowanie nowego tygodnia realizuje wyłącznie zewnętrzny tryb 'plan').
-- W punkcie 4 raportu w niedzielę wygeneruj WYŁĄCZNIE dwa elementy:
-  * „DECYZJA ADAPTACYJNA / STOPIEŃ GOTOWOŚCI”: [Wybierz dokładnie jeden: PEŁNA GOTOWOŚĆ / UMIARKOWANE ZMĘCZENIE / GŁĘBOKIE ZMĘCZENIE / WYMAGANA REGENERACJA]
-  * „Uzasadnienie fizjologiczne”: synteza stanu adaptacyjnego i priorytety regeneracyjne przed nowym mikrocyklem (wniosek jakościowy, bez drobiazgowego rozliczania pojedynczych metryk).
-
-================================================================================
-SEKCJA 4: BEZWZGLĘDNY SZABLON RAPORTU (DO WYPEŁNIENIA 1:1), KOMENATRZE W NAWIASACH
-================================================================================
-================================================================================
-SEKCJA 4: BEZWZGLĘDNY SZABLON RAPORTU (DO WYPEŁNIENIA 1:1)
-================================================================================
+# 5. BEZWZGLĘDNY SZABLON RAPORTU (DO WYPEŁNIENIA 1:1)
 
 ## 1. AUDYT JEDNOSTKI BIEGOWEJ: {today_date_str}
 
-[JEŚLI BIEG CIĄGŁY (Z1, Z2, TEMPO CIĄGŁE, ZAWODY) – WSTAW PONIŻSZĄ TABELĘ]:
 | Parametr | Plan | Realizacja | Odchylenie |
 |:---|:---:|:---:|:---:|
 | Dystans | | | |
@@ -59,41 +35,36 @@ SEKCJA 4: BEZWZGLĘDNY SZABLON RAPORTU (DO WYPEŁNIENIA 1:1)
 | Średnie HR | | | |
 | Średnia kadencja | | | |
 
-[JEŚLI AKCENT Z SERIAMI (INTERWAŁY, POWTÓRZENIA TEMPOWE) – WSTAW PONIŻSZĄ TABELĘ]:
+[JEŚLI AKCENT Z SERIAMI (INTERWAŁY, POWTÓRZENIA TEMPOWE) – WSTAW DODATKOWO PONIŻSZĄ TABELĘ]:
 | Seria | Łączny Dystans | Łączny Czas | Średnie Tempo | Średnie HR | Maks HR | Średnia kadencja | Śr. dł. kroku | GCT |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 
-- **Profil jednostki**: [Wybierz: Bieg spokojny (Z2) / Bieg regeneracyjny (Z1) / Długie wybieganie (Long Run) / Bieg progowy (Tempo/LTHR) / Interwały (VO2max) / Zawody]
-- **Ocena egzekucji planu**: [X/10]
-- **Dedykowana analiza biomechaniczna i techniki biegu**:
-  - Kadencja i długość kroku w relacji do prędkości: 
-  - Zwrot energii i sztywność sprężysta SSC (analiza GCT): 
-  - Wektory siły i błędy techniczne (w tym overstriding / hamowanie): 
-  - Inne anomalie biomechaniczne: [Wpisz diagnozę lub Brak]
+- **Profil jednostki**: [Bieg spokojny (Z2) / Bieg regeneracyjny (Z1) / Długie wybieganie (Long Run) / Bieg progowy (Tempo/LTHR) / Interwały (VO2max) / Zawody]
+- **Ocena egzekucji planu**: [X/10 – wierność założeniom tempa i stref, nie subiektywne zadowolenie]
+- **Analiza biomechaniki i techniki**:
+  - Dynamika kroku i sztywność sprężysta (kadencja, krok, GCT vs prędkość): 
+  - Identyfikacja hamowania i overstridingu (pozycja lądowania względem COM): [Diagnoza lub Brak]
 - **Czynniki fizjologiczne i środowiskowe**:
-  - Wpływ oporu środowiska (wiatr / temperatura / profil trasy): [Wpisz wpływ lub Brak]
   - Dryf sercowo-naczyniowy (decoupling tempo/HR): 
-  - Anomalie metaboliczne i aparaturowe (w tym weryfikacja OHR / cadence lock): [Wpisz diagnozę lub Brak]
+  - Wpływ warunków i anomalie pomiaru (pogoda, profil trasy, błędy OHR / cadence lock): [Diagnoza lub Brak]
 
 ## 2. KOSZT METABOLICZNY I STAN ZASOBÓW
 
-- **Bodziec adaptacyjny i dominujące szlaki energetyczne**: 
-- **Koszt dobowy i drenaż zasobów (stres dzienny / dynamika Body Battery)**: 
-- **Percepcja zmęczenia (notatka zawodnika vs koszt telemetryczny)**: 
-- **Wpływ bazy wyjściowej (status ANS: HRV, RHR, stres snu / wykluczenie infekcji)**: 
-- **Wpływ obciążenia skumulowanego (kontekst dnia {yesterday_date_str})**: 
+- **Bodziec adaptacyjny i koszt metaboliczny**: 
+- **Bilans autonomiczny i drenaż zasobów (baza ANS ze snu vs drenaż dobowy Body Battery/stres)**: 
+- **Zmęczenie skumulowane i percepcja (kontekst dnia {yesterday_date_str} vs notatka zawodnika)**: [Diagnoza obciążenia i dysonansu RPE/telemetria lub wpisz: Brak dysonansu]
 
 ## 3. ZALECENIA REGENERACYJNE (WIECZÓR I NOC)
 
-- **Protokół mobilności i rozluźniania mięśniowo-powięziowego**: 
-- **Wyciszenie układu autonomicznego i higiena snu**: 
-- **Nawodnienie i wsparcie substratowe**: 
+- **Ukierunkowana praca tkankowa i przeciwwskazania**: [Wskaż 1–2 przeciążone struktury + celowany zabieg mobilizacji/tkanek miękkich; bezwzględnie wskaż zabiegi SZKODLIWE przy bieżącym stanie mikrourazów (np. zakaz stretchingu statycznego i głębokiego rolowania po maratonie lub ostrym akcencie ekscentrycznym)]
+- **Modulacja autonomiczna (tonizacja przywspółczulna)**: [Doraźna interwencja parasympatyczna dobrana pod wieczorny drenaż zasobów i stres dobowy; zakaz ogólnych rad o higienie snu]
+- **Strategia substratowa i resynteza**: [Ukierunkowane makro/elektrolity/suplementy uzupełniające dzisiejszy koszt pod kątem jutrzejszego bodźca ({tomorrow_date_str})]
 
 ## 4. OCENA GOTOWOŚCI I ADAPTACJA NA KOLEJNY DZIEŃ: {tomorrow_date_str}
 
-(W NIEDZIELĘ: koniec mikrocyklu – wygeneruj WYŁĄCZNIE „DECYZJA ADAPTACYJNA / STOPIEŃ GOTOWOŚCI” oraz „Uzasadnienie fizjologiczne”. Całkowicie POMIŃ „Pierwotny plan na dzień...” oraz „ROZPISKA NA DZIEŃ...”).
+(WARUNEK NIEDZIELNY: w niedzielę wygeneruj WYŁĄCZNIE status gotowości oraz uzasadnienie; bezwzględnie POMIŃ „Pierwotny plan...” oraz „ROZPISKA NA DZIEŃ...”).
 
-- **Pierwotny plan na dzień {tomorrow_date_str}** [Wypisz założenia z planu tygodniowego; w niedzielę POMIŃ CAŁKOWICIE]: 
+- **Pierwotny plan na dzień {tomorrow_date_str}** [W dniach PON–SOB wypisz założenia z planu tygodniowego; w niedzielę POMIŃ]: 
 - **DECYZJA ADAPTACYJNA / STOPIEŃ GOTOWOŚCI**: 
   [W dniach PON–SOB wybierz dokładnie jedną opcję:
    - ZWIĘKSZAMY INTENSYWNOŚĆ: trening wykonany ze sporym zapasem adaptacyjnym, brak dryfu krążeniowego, wysoka gotowość ANS – podkręć tempo lub objętość.
@@ -101,7 +72,7 @@ SEKCJA 4: BEZWZGLĘDNY SZABLON RAPORTU (DO WYPEŁNIENIA 1:1)
    - ZMNIEJSZAMY INTENSYWNOŚĆ / MODYFIKACJA ZAŁOŻEŃ: twarde dowody przeciążenia CNS, zjazd HRV/skok RHR lub sygnały przeciążeniowe aparatu ruchu.
   W NIEDZIELĘ wybierz wyłącznie: [PEŁNA GOTOWOŚĆ / UMIARKOWANE ZMĘCZENIE / GŁĘBOKIE ZMĘCZENIE / WYMAGANA REGENERACJA]]
 - **Uzasadnienie fizjologiczne**: [Krótka diagnoza stanu adaptacyjnego; liczby wyłącznie w nawiasach]
-- **ROZPISKA NA DZIEŃ {tomorrow_date_str}** [W dniach PON–SOB wybierz DOKŁADNIE JEDEN poniższy format na podstawie planu i usuń pozostałe dwa; w niedzielę POMIŃ CAŁKOWICIE]:
+- **ROZPISKA NA DZIEŃ {tomorrow_date_str}**:
 
   [Zastosuj ten format, jeśli jutro jest BIEG]:
   * Rozgrzewka: 
@@ -114,5 +85,5 @@ SEKCJA 4: BEZWZGLĘDNY SZABLON RAPORTU (DO WYPEŁNIENIA 1:1)
   * Kluczowe akcenty ćwiczeń: 
   * Wytyczne aktywacji: 
 
-  [Zastosuj ten format, jeśli jutro jest REST DAY / INNA AKTYWNOŚĆ]:
+  [Zastosuj ten format, jeśli jutro jest REST DAY / BASEN RECOVERY]:
   * Wytyczne:
