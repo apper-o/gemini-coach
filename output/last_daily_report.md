@@ -1,54 +1,57 @@
-# AUDYT DZIENNY: 2026-10-03 (Sobota, 2026-10-03)
-- Typ dnia: REGENERACJA
+# AUDYT DZIENNY: 2026-10-04 (Niedziela, 2026-10-04)
+- Typ dnia: PŁYWANIE
 - Bieg: NIE (0.00 km, sesje: 0)
 - Typ treningu biegowego: Brak biegu
 - Struktura biegu: Brak
 - Siłownia: NIE
 - Partie mięśniowe (siłownia): BRAK
 
-## Biometria regeneracyjna i bilans dnia (Sobota, 2026-10-03):
-- HRV (miniona noc przed treningiem): 51 ms (Średnia 7-dniowa: 44 ms, Norma bazowa: 46–58 ms)
-- RHR (miniona noc przed treningiem): 54 bpm (Średnia 7-dniowa: 56 bpm, odchylenie: -2 bpm) (Średnie tętno z ostatniej nocy: 60 bpm)
-- Sen (miniona noc przed treningiem): 81 (Głęboki: 1h 28m, REM: 0h 53m)
-- Średni stres snu: 17.0
-- Poranne Body Battery (bufor startowy): 77
-- Body Battery pod koniec dnia: 25
-- Całodzienny stres: 32/100
-- Kroki (cały dzień): 4434 kroków (aktywne kalorie: 259.0 kcal)
+## Biometria regeneracyjna i bilans dnia (Niedziela, 2026-10-04):
+- HRV (miniona noc przed treningiem): 52 ms (Średnia 7-dniowa: 46 ms, Norma bazowa: 46–58 ms)
+- RHR (miniona noc przed treningiem): 53 bpm (Średnia 7-dniowa: 55 bpm, odchylenie: -2 bpm)
+- Sen (miniona noc przed treningiem): 86 (Głęboki: 2h 4m, REM: 1h 9m)
+- Średni stres snu: 13.0
+- Poranne Body Battery (bufor startowy): 97
+- Body Battery pod koniec dnia: 26
+- Całodzienny stres: 35/100
+- Kroki (cały dzień): 8136 kroków (aktywne kalorie: 775.0 kcal)
 
-## Ocena trenera i adaptacja na dzień Niedziela, 2026-10-04:
-# 1. AUDYT DNIA: Sobota, 2026-10-03
+## Zarejestrowane aktywności:
+### Trening pływania 1 [Start: 14:55]: Pool Swim
+- Dystans: 1.18 km | Czas: 35.2 min
+- Tętno: Średnie 132 bpm | Max 162 bpm
+- Training Effect: Aerobowy 2.4/5.0 (RECOVERY) | Beztlenowy 0.5/5.0
 
-## KOSZT METABOLICZNY I STAN ZASOBÓW
+## Ocena trenera i adaptacja na dzień Poniedziałek, 2026-10-05:
+## 1. AUDYT JEDNOSTKI PŁYWACKIEJ: Niedziela, 2026-10-04
 
-* **Bodziec fizjologiczny i szlaki energetyczne**: Brak obciążenia treningowego. Dzień pełnej restytucji powysiłkowej ukierunkowany na odbudowę glikogenu mięśniowego oraz strukturalną regenerację włókien mięśniowych po maratonie. Wspomagany wyłącznie minimalną aktywnością ruchową zapobiegającą stagnacji krążenia obwodowego.
-* **Koszt dzienny i stan zasobów (stres / Body Battery / aktywność pozatreningowa)**: Obciążenie pozatreningowe na poziomie minimalnym. Niska aktywność ruchowa wyrażona zredukowaną liczbą kroków (4434 kroki) wygenerowała znikomy dobowy wydatek energetyczny (aktywne kalorie 259.0 kcal). Umiarkowane napięcie emocjonalno-poznawcze przełożyło się na średni stres dobowy (32/100). Zasoby energetyczne uległy jednak głębokiemu drenażowi pod koniec dnia (wieczorne Body Battery 25/100), co wskazuje na intensywnie przebiegające procesy komórkowej naprawy powysiłkowej.
-* **Subiektywny koszt i percepcja zmęczenia (uwzględnij faktyczne dane i notatkę jeśli występuje)**: Brak notatek od zawodnika. Ograniczona liczba kroków i brak podejmowania jakichkolwiek prób wysiłkowych świadczą o pełnej, rygorystycznej realizacji założeń dnia wolnego.
-* **Wpływ bazy wyjściowej (sen/HRV):**: Wysoka gotowość adaptacyjna na starcie dnia dzięki optymalnemu naładowaniu zasobów (poranne Body Battery 77/100). Stabilizacja autonomicznego układu nerwowego z dominacją tonusu przywspółczulnego objawiła się wyraźnym wzrostem HRV powyżej średniej siedmiodniowej (51 ms wobec bazy 44 ms) oraz jednoczesnym obniżeniem tętna spoczynkowego (RHR 54 bpm przy średniej siedmiodniowej 56 bpm). Jakość snu była wysoka (Sleep Score 81/100), z prawidłowym udziałem regeneracyjnej fazy głębokiej (1h 28m) oraz niskim poziomem stresu nocnego (17.0), co zneutralizowało podwyższone średnie tętno nocne (60 bpm).
-* **Wpływ tła dnia poprzedniego (Piątek, 2026-10-02)**: Skumulowane obciążenie z piątku, obejmujące objętościowy trening pływacki (1.70 km) oraz sesję siłową góry ciała przy pełnym dobowym limicie kroków (10038 kroków), wywołało głębokie zapotrzebowanie na restytucję bezobjętościową, co uzasadnia całkowite powstrzymanie się od wysiłku fizycznego w dniu dzisiejszym.
+| Parametr | Plan | Realizacja | Odchylenie |
+|:---|:---:|:---:|:---:|
+| Dystans | Brak | 1.18 km | +1.18 km |
+| Czas trwania | Brak | 35.2 min | +35.2 min |
+| Średnie tempo | Brak | 2:59 min/100m | Nie dotyczy |
+| Średnie HR | Brak | 132 bpm | Nie dotyczy |
 
-## ZALECENIA REGENERACYJNE PO TRENINGU (WIECZÓR I NOC)
+- **Profil jednostki**: Baza tlenowa (Z2)
+- **Ocena egzekucji planu**: 1/10 – Całkowite zaniechanie zaplanowanego treningu siłowego FBW. Samowolna zamiana jednostki na trening pływacki bez autoryzacji trenera.
+- **Dedykowana analiza fizjologiczna pływania**:
+  - Wpływ na tętno i układ krążenia w środowisku wodnym: Średnie tętno (132 bpm) przy uwzględnieniu fizjologicznego obniżenia tętna w wodzie (o 10–15 bpm względem lądu) odpowiada intensywności w strefie bazy tlenowej (Z2). Maksymalne tętno (162 bpm) wskazuje na wejście w strefę tempa (Z3) w końcowej fazie wysiłku.
+  - Obciążenie aparatu ruchu (obręcz barkowa vs odciążenie nóg): Brak obciążenia osiowego kończyn dolnych wspomaga regenerację tkanek po maratonie. Jednocześnie intensywna praca ramion wygenerowała wysokie obciążenie lokalne obręczy barkowej oraz mięśnia najszerszego grzbietu.
+  - Anomalie metaboliczne i aparaturowe (w tym weryfikacja OHR w wodzie): Pik tętna maksymalnego (162 bpm) sugeruje potencjalne zakłócenie odczytu przez nadgarstkowy czujnik optyczny (OHR) w wodzie lub niekontrolowany zryw intensywności.
 
-* **Protokół rolowania i mobilności**: Wykonać drenaż ułożeniowy kończyn dolnych (uniesienie nóg pod kątem 45 stopni przez 15 minut) w celu usprawnienia powrotu żylnego. Zastosować delikatne rolowanie wałkiem o niskiej gęstości (foam roller) pasma biodrowo-piszczelowego oraz mięśni czworogłowych (czas: 10 minut na każdą kończynę) bez wywierania głębokiego, bolesnego nacisku punktowego.
-* **Sen i regeneracja układu nerwowego**: Wdrożyć wyciszenie sensoryczne na 90 minut przed snem poprzez całkowite wyłączenie źródeł światła niebieskiego. Obniżyć temperaturę w sypialni (maksymalnie 18-19°C) w celu ułatwienia obniżenia nocnego tętna spoczynkowego i wydłużenia fazy snu głębokiego.
-* **Nawodnienie i protokół żywieniowy**: Spożyć lekkostrawny posiłek przed snem zawierający pełnowartościowe białko (30 g kazeiny micelarnej) w celu optymalizacji nocnej resyntezy włókien mięśniowych. Zapewnić podaż płynów na poziomie 500 ml wody o średniej mineralizacji z dodatkiem elektrolitów przed spoczynkiem.
+## 2. KOSZT METABOLICZNY I STAN ZASOBÓW
 
-### 4. OCENA GOTOWOŚCI I ADAPTACJA NA DZIEŃ KOLEJNY: Niedziela, 2026-10-04
+- **Bodziec adaptacyjny i koszt metaboliczny**: Niska objętość jednostki pływackiej (1.18 km) przy umiarkowanej intensywności wygenerowała niski koszt metaboliczny (Aerobic TE: 2.4). Całkowite zaniechanie treningu siłowego FBW pozbawiło organizm planowanego bodźca neuromuskularnego oraz aktywacji tonusu mięśniowego dolnych partii przed nowym mikrocyklem.
+- **Bilans autonomiczny i drenaż zasobów (baza ANS ze snu vs drenaż dobowy Body Battery/stres)**: Wybitna regeneracja nocna (Sleep Score: 86/100) przy wysokim udziale snu głębokiego (2h 4m) i niskim stresie nocnym (13.0) odbudowała poranny bufor adaptacyjny do poziomu maksymalnego (Body Battery: 97/100). Średni stres dobowy (35/100) oraz niska aktywność pozatreningowa (8136 kroków) zlimitowały wieczorny drenaż zasobów (Body Battery: 26/100). Status układu ANS wykazuje pełną superkompensację i brak długu po maratonie – odnotowano wzrost HRV (52 ms) przy jednoczesnym spadku tętna spoczynkowego (53 bpm, odchylenie -2 bpm od średniej).
+- **Zmęczenie skumulowane i percepcja (kontekst dnia Sobota, 2026-10-03 vs notatka zawodnika)**: Brak dysonansu. Wysokie zasoby energetyczne skorelowane z obiektywną telemetrią. Zamiana treningu siłowego na pływanie wynika z decyzji behawioralnej, a nie z ograniczeń fizjologicznych.
 
-* **Pierwotny plan na dzień Niedziela, 2026-10-04**: Założenia na dzień Niedziela, 2026-10-04 według planu tygodniowego (sekcja: Niedziela) - Trening siłowy FBW z rygorystycznym oszczędzaniem dolnych partii (wysoki RIR) oraz 10 minut tlenowej rozgrzewki na rowerze eliptycznym w strefie Z1.
-* **DECYZJA ADAPTACYJNA / STOPIEŃ GOTOWOŚCI**: POZOSTAJE TAKA SAMA
-* **Uzasadnienie fizjologiczne**: Wskaźniki autonomiczne (dodatnie odchylenie HRV, spadek RHR) potwierdzają powrót homeostazy i gotowość ośrodkowego układu nerwowego do przyjęcia obciążenia siłowego. Należy bezwzględnie utrzymać wysoki zapas powtórzeń (RIR 3) przy ćwiczeniach angażujących dół ciała, aby nie zaburzyć trwającej przebudowy tkanek miękkich po maratonie.
-* **ROZPISKA NA DZIEŃ Niedziela, 2026-10-04**:
-  * Zestaw / Trening: Trening siłowy FBW (Full Body Workout)
-  * Status dolnych partii: Oszczędzać nogi – rygor RIR >= 3, unikać pracy ekscentrycznej i obciążeń osiowych.
-  * Potwierdzenie i modyfikacje ćwiczeń:
-    - Bulgarian Split Squat (Dumbbell): 3 serie po 10 powtórzeń z obciążeniem (10 kg) na rękę przy zachowaniu pełnego zapasu (RIR 3).
-    - [SUPERSET] Incline Bench Press (Barbell): 3 serie po 8 powtórzeń pod kontrolą obciążenia (50 kg) z zachowaniem zapasu (RIR 2-3).
-    - [SUPERSET] Pull Up: 3 serie po 8 powtórzeń z masą ciała (RIR 2).
-    - Bent Over Row (Barbell): 3 serie po 10 powtórzeń z obciążeniem (40 kg) i zapasem (RIR 2-3).
-    - Single Leg Romanian Deadlift (Dumbbell): 2 serie po 6 powtórzeń na stronę (12 kg, RIR 3).
-    - Single Leg Hip Thrust (Dumbbell): 2 serie po 10 powtórzeń (12 kg, RIR 3).
-    - Single Leg Standing Calf Raise (Barbell): USUNIĘTO (ochrona podudzi i ścięgien przed nadchodzącym mikrocyklem).
-    - Dead Bug: 3 serie po 15 powtórzeń z masą ciała (RIR 3).
-    - Side plank with leg raise: 3 serie po 12 powtórzeń z masą ciała (RIR 2-3).
-  * Wytyczne cardio / rozgrzewki: 10 minut na rowerze eliptycznym w strefie Z1 przy tętnie regeneracyjnym (<123 bpm) jako tlenowa rozgrzewka mobilizująca stawy.
+## 3. ZALECENIA REGENERACYJNE (WIECZÓR I NOC)
+
+- **Ukierunkowana praca tkankowa i przeciwwskazania**: Zastosować mobilizację rotacji w stawie ramiennym (2 serie po 90 sekund na stronę) w celu rozluźnienia obręczy barkowej. Kategoryczny zakaz głębokiego rolowania i rozciągania statycznego tylnej taśmy udowej i łydek – struktury te po maratonie wciąż przechodzą przebudowę i nie tolerują agresywnego rozciągania.
+- **Modulacja autonomiczna (tonizacja przywspółczulna)**: Wdrożyć trening oddechowy Box Breathing (10 minut) bezpośrednio przed snem w celu stymulacji nerwu błędnego i utrwalenia korzystnego stanu przywspółczulnego (HRV: 52 ms).
+- **Strategia substratowa i resynteza**: Podaż magnezu (400 mg) oraz kreatyny (3 g) przed snem w celu wsparcia resyntezy ATP. Uzupełnić płyny (1.5 l) z dodatkiem elektrolitów w celu przywrócenia homeostazy osmotycznej przed rozpoczęciem nowego mikrocyklu (Poniedziałek, 2026-10-05).
+
+## 4. OCENA GOTOWOŚCI I ADAPTACJA (ZAMKNIĘCIE MIKROCYKLU): Niedziela, 2026-10-04
+
+- **DECYZJA ADAPTACYJNA / STOPIEŃ GOTOWOŚCI**: PEŁNA GOTOWOŚĆ
+- **Uzasadnienie fizjologiczne**: Wskaźniki autonomiczne potwierdzają pełną adaptację i domknięcie regeneracji po maratonie. Wzrost HRV (52 ms) połączony ze spadkiem RHR (53 bpm) oraz wysoka jakość snu (głęboki sen: 2h 4m) dają zielone światło do podjęcia obciążeń. Zamiana treningu siłowego na pływanie wyeliminowała stres mechaniczny dolnych partii ciała przy minimalnym długu tlenowym (TE: 2.4), co sprzyja świeżości aparatu ruchu na starcie nowego mikrocyklu.

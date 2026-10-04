@@ -685,6 +685,16 @@ def _summarize_history_week_5(history_data, start_date):
                 muscle_val = m_muscle.group(1).strip() if m_muscle else "GÓRA / DÓŁ"
                 parts_desc.append(f"Siłownia: partie {muscle_val}")
 
+            # Wykrywanie pływania w metadanych lub sekcji aktywności
+            c_lower = c.lower()
+            if "typ dnia: pływanie" in c_lower or "typ dnia: plywanie" in c_lower or "trening pływania" in c_lower or "trening pływacki" in c_lower or "pool swim" in c_lower:
+                m_swim = re.search(r'(?:Trening pływania|Trening Uzupełniający|Pool Swim)[^\n]*\n-\s*Dystans:\s*([0-9.,]+\s*(?:km|m))', c, re.IGNORECASE)
+                dist_info = f" ({m_swim.group(1)})" if m_swim else ""
+                parts_desc.append(f"Pływanie{dist_info}")
+            elif "typ dnia: trening uzupełniający" in c_lower or "trening uzupełniający" in c_lower:
+                if not parts_desc:
+                    parts_desc.append("Trening uzupełniający")
+
             if not parts_desc:
                 workout_desc = "Dzień wolny / Regeneracja"
             else:
@@ -822,7 +832,7 @@ def _format_activity_section(activity_stats, strength_workout=None):
 {splits_text}"""
                 run_blocks.append(block)
             elif is_swim:
-                block = f"""{prefix}TRENING PŁYWACKI: {act.get('name')} | Dystans: {act.get('distance')} | Czas: {act.get('duration')}
+                block = f"""{prefix}TRENING PŁYWANIA: {act.get('name')} | Dystans: {act.get('distance')} | Czas: {act.get('duration')}
 - Tętno: Średnie {act.get('avg_hr')} | Maksymalne {act.get('max_hr')}
 - Efekt treningowy: Aerobic TE: {act.get('aerobic_te')} | Anaerobic TE: {act.get('anaerobic_te')}"""
                 other_blocks.append(block)
@@ -919,14 +929,20 @@ def _compress_weekly_plan(content):
         if stripped.startswith('#') or stripped.startswith('*') or stripped.startswith('-'):
             raw_output.append(line)
             
-    # Usuwanie nagłówków-widm (np. "- **Ćwiczenia**:" bez zawartości lub "### Uzasadnienie" bez treści)
+    # Usuwanie nagłówków-widm (np. "* **Ćwiczenia**:" bez zawartości lub "### Uzasadnienie" bez treści)
     final_output = []
     for i, line in enumerate(raw_output):
         stripped = line.strip()
-        # Jeśli to etykieta z dwukropkiem (np. - Ćwiczenia:)
+        clean_label = stripped.strip("* -").strip().lower()
+
+        # Bezwzględne usunięcie wiszącej etykiety ćwiczeń (detale ćwiczeń są odfiltrowane)
+        if clean_label in ("**ćwiczenia**:", "ćwiczenia:", "**cwiczenia**:", "cwiczenia:"):
+            continue
+
+        # Jeśli to etykieta z dwukropkiem (np. - Ćwiczenia:, * Kategoria:) bez treści w tej samej linii
         if stripped.endswith(':'):
-            # Sprawdź, czy kolejna linia istnieje i czy NIE JEST kolejnym nagłówkiem/etykietą
-            if i + 1 >= len(raw_output) or raw_output[i+1].strip().startswith('#') or raw_output[i+1].strip().endswith(':'):
+            # Sprawdź, czy kolejna linia istnieje i czy NIE JEST kolejnym nagłówkiem lub kolejnym punktem listy
+            if i + 1 >= len(raw_output) or raw_output[i+1].strip().startswith(('#', '*', '-')) or raw_output[i+1].strip().endswith(':'):
                 continue # Odrzuć tę etykietę, bo pod spodem nie ma wartości
         
         # Odrzuć puste "Uzasadnienie" jeśli nie ma pod nim wartości
@@ -1026,15 +1042,10 @@ def generate_daily_prompt(
     if not audit_templates:
         audit_templates.append("audit_rest.md")
 
-    # Wczytanie bazy i rozdzielenie na sekcję roli oraz sekcję danych telemetrycznych
+    # Wczytanie bazy promptu (Sekcja 1: Rola, Sekcja 2: Dane wejściowe)
     base_text = _read_file_safe(os.path.join(PROMPTS_DIR, "daily_base.md"))
     if not base_text:
         raise FileNotFoundError(f"Nie znaleziono pliku szablonu: {os.path.join(PROMPTS_DIR, 'daily_base.md')}")
-
-    if "# 2. DANE WEJŚCIOWE DO ANALIZY" in base_text:
-        base_role, base_data = base_text.split("# 2. DANE WEJŚCIOWE DO ANALIZY", 1)
-    else:
-        base_role, base_data = base_text, ""
 
     audit_parts = []
     for t_name in audit_templates:
@@ -1060,9 +1071,11 @@ def generate_daily_prompt(
             flags=re.DOTALL
         )
 
-    # Łączenie elementów zgodnie z wektorem uwagi LLM:
-    # Rola i Wiedza Domenowa -> Audyty (Pkt 1) -> Closing (Pkt 2, 3, 4) -> Dane Wejściowe (XML)
-    prompt_parts = [base_role.strip()]
+    # Łączenie elementów:
+    # 1. Baza (# 1. Rola i wytyczne, # 2. Dane wejściowe)
+    # 2. Audyty (# 3. Protokół, # 4. Zasady formatowania, # 5. Szablon: ## 1.)
+    # 3. Zwieńczenie szablonu (# 5: ## 2., ## 3., ## 4.)
+    prompt_parts = [base_text.strip()]
     prompt_parts.extend([p.strip() for p in audit_parts])
 
     if len(audit_templates) > 1:
@@ -1070,9 +1083,6 @@ def generate_daily_prompt(
         prompt_parts.append(merging_instruction)
 
     prompt_parts.append(closing_text.strip())
-
-    if base_data.strip():
-        prompt_parts.append(f"# DANE WEJŚCIOWE DO ANALIZY\n\n{base_data.strip()}")
 
     raw_template = "\n\n".join(prompt_parts)
 
@@ -1120,6 +1130,7 @@ def _format_acts_archive_blocks(all_stats):
     acts_archive_blocks = []
     for idx, act_s in enumerate(all_stats):
         is_run = act_s.get('is_run', True)
+        is_swim = act_s.get('is_swim', False)
         time_info = f" [Start: {act_s.get('start_time')}]" if act_s.get('start_time') and act_s.get('start_time') != NO_DATA else ""
         
         if is_run:
@@ -1135,6 +1146,11 @@ def _format_acts_archive_blocks(all_stats):
 
 #### Splity:
 {splits_formatted}"""
+        elif is_swim:
+            single_block = f"""### Trening pływania {idx + 1}{time_info}: {act_s['name']}
+- Dystans: {act_s['distance']} | Czas: {act_s['duration']}
+- Tętno: Średnie {act_s['avg_hr']} | Max {act_s['max_hr']}
+- Training Effect: Aerobowy {act_s['aerobic_te']} | Beztlenowy {act_s['anaerobic_te']}"""
         else:
             single_block = f"""### Trening Uzupełniający {idx + 1}{time_info}: {act_s['name']}
 - Dystans: {act_s['distance']} | Czas: {act_s['duration']}
@@ -1268,7 +1284,8 @@ def _extract_run_metadata(all_stats, response_text=None, strength_workout=None):
     stats_list = all_stats if isinstance(all_stats, list) else ([all_stats] if all_stats else [])
     
     run_stats_list = [act for act in stats_list if act.get("is_run", True)]
-    other_stats_list = [act for act in stats_list if not act.get("is_run", True)]
+    swim_stats_list = [act for act in stats_list if act.get("is_swim", False)]
+    other_stats_list = [act for act in stats_list if not act.get("is_run", True) and not act.get("is_swim", False)]
 
     run_count = len(run_stats_list)
     run_km = 0.0
@@ -1285,27 +1302,29 @@ def _extract_run_metadata(all_stats, response_text=None, strength_workout=None):
         run_type = "Brak biegu"
         run_structure = "Brak"
         
-        if strength_workout and other_stats_list:
-            day_type = "SIŁOWNIA + TRENING UZUPEŁNIAJĄCY"
-        elif strength_workout:
-            day_type = "SIŁOWNIA"
-        elif other_stats_list:
-            day_type = "TRENING UZUPEŁNIAJĄCY"
-        else:
-            day_type = "REGENERACJA"
+        activity_parts = []
+        if strength_workout:
+            activity_parts.append("SIŁOWNIA")
+        if swim_stats_list:
+            activity_parts.append("PŁYWANIE")
+        if other_stats_list:
+            activity_parts.append("TRENING UZUPEŁNIAJĄCY")
+        
+        day_type = " + ".join(activity_parts) if activity_parts else "REGENERACJA"
             
         return (run_line, run_type, run_structure, day_type)
 
     run_line = f"TAK ({run_km:.2f} km, sesje: {run_count})"
     
-    if strength_workout and other_stats_list:
-        day_type = "BIEG + SIŁOWNIA + TRENING UZUPEŁNIAJĄCY"
-    elif strength_workout:
-        day_type = "BIEG + SIŁOWNIA"
-    elif other_stats_list:
-        day_type = "BIEG + TRENING UZUPEŁNIAJĄCY"
-    else:
-        day_type = "BIEG"
+    activity_parts = ["BIEG"]
+    if strength_workout:
+        activity_parts.append("SIŁOWNIA")
+    if swim_stats_list:
+        activity_parts.append("PŁYWANIE")
+    if other_stats_list:
+        activity_parts.append("TRENING UZUPEŁNIAJĄCY")
+
+    day_type = " + ".join(activity_parts)
 
     # Wykrywanie typu treningu biegowego na podstawie raportu trenera oraz danych aktywności
     run_type = None

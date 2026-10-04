@@ -15,7 +15,7 @@
 
 ### Czwartek - Siłownia: UPPER
 
-* **Status dolnych partii**: Bezwzględnie oszczędzać nogi – aparat ruchu kończyn dolnych wciąż regeneruje się po maratonie, a w sobotę zaplanowano akcent progowy.
+* **Status dolnych partii**: Bezwzględnie oszczędzać nogi – aparat ruchu kończyn dolnych wciąż regeneruje się po maratonie.
 * **Ćwiczenia**:
 Bench Press (Barbell)
 Seria 1: 8 x 60 kg (RIR 2–3)
@@ -42,7 +42,7 @@ Seria 3: 10 x 50 kg (RIR 2)
 Decyzja: Wdrożenie wiosłowania na wyciągu z planu bazowego celem poprawy równowagi strukturalnej taśmy tylnej.
 
 Seated Calf Raise - USUNIĘTO
-Decyzja: Usunięcie ćwiczenia ze względu na ochronę podudzi w fazie pomaratońskiej i oszczędzanie łydki przed sobotnim akcentem progowym.
+Decyzja: Usunięcie ćwiczenia ze względu na ochronę podudzi w fazie pomaratońskiej i oszczędzanie aparatu ruchu.
 
 Triceps Pushdown
 Seria 1: 10 x 50 kg (RIR 2–3)
@@ -71,7 +71,7 @@ Wyjaśnienie decyzji: Utrzymanie objętości z ostatniej sesji w celu bezpieczne
 
 ### Niedziela - Siłownia: FBW
 
-* **Status dolnych partii**: Kontrolowana intensywność – zachować wysoki zapas RIR (bez pracy do załamania mięśniowego) ze względu na wczorajszy akcent progowy oraz trwającą regenerację tkanek po maratonie.
+* **Status dolnych partii**: Kontrolowana intensywność – zachować wysoki zapas RIR (bez pracy do załamania mięśniowego) ze względu na trwającą regenerację tkanek po maratonie.
 * **Ćwiczenia**:
 Bulgarian Split Squat (Dumbbell)
 Seria 1: 10 x 10 kg na rękę (RIR 3)
@@ -108,7 +108,7 @@ Seria 2: 10 x 12 kg (RIR 3)
 Wyjaśnienie decyzji: Wzmocnienie mięśni pośladkowych w płaszczyźnie strzałkowej do wsparcia siły napędowej kroków biegowych.
 
 Single Leg Standing Calf Raise (Barbell) - USUNIĘTO
-Decyzja: Usunięcie ćwiczenia z uwagi na wysokie zmęczenie podudzi po sobotnich interwałach Z4 i uniknięcie przeciążenia ścięgna Achillesa.
+Decyzja: Usunięcie ćwiczenia z uwagi na ochronę podudzi w fazie pomaratońskiej i uniknięcie przeciążenia ścięgna Achillesa.
 
 Dead Bug
 Seria 1: 15 x masa ciała (RIR 3)
@@ -146,4 +146,4 @@ Statystyki z poprzedniego tygodnia:
 
 ### Uzasadnienie i oczekiwane efekty
 
-Gwałtowna redukcja kilometrażu do 20.5 km jest bezpośrednią konsekwencją ukończonego maratonu i priorytetu fazy Post-Marathon Recovery. Plan opiera się na odbudowie strukturalnej tkanek przy jednoczesnym wprowadzeniu krótkiego bodźca progowego (4 x 1 km w Z4), aby nie stracić adaptacji szybkościowo-wytrzymałościowych przed startem docelowym na 5 km (za 26 dni). Dobór obciążeń na siłowni oszczędza dolne partie mięśniowe i wyklucza pracę do załamania, co zapobiega powstawaniu mikrourazów i wywoływaniu DOMS. Taki układ wspiera superkompensację i umożliwi bezpieczne wejście w bezpośrednią cyzelację formy pod złamanie 20 minut na 5 km w kolejnych tygodniach.
+Gwałtowna redukcja kilometrażu do 20.5 km jest bezpośrednią konsekwencją ukończonego maratonu i priorytetu fazy Post-Marathon Recovery. Plan opiera się na odbudowie strukturalnej tkanek i adaptacji tlenowej, aby nie stracić dyspozycji przed startem docelowym na 5 km (za 26 dni). Dobór obciążeń na siłowni oszczędza dolne partie mięśniowe i wyklucza pracę do załamania, co zapobiega powstawaniu mikrourazów i wywoływaniu DOMS. Taki układ wspiera superkompensację i umożliwi bezpieczne wejście w bezpośrednią cyzelację formy pod złamanie 20 minut na 5 km w kolejnych tygodniach.
