@@ -27,31 +27,31 @@
 
 | Parametr | Plan | Realizacja | Odchylenie |
 |:---|:---:|:---:|:---:|
-| Dystans | Brak | 1.18 km | +1.18 km |
-| Czas trwania | Brak | 35.2 min | +35.2 min |
-| Średnie tempo | Brak | 2:59 min/100m | Nie dotyczy |
+| Dystans | 0.00 km | 1.18 km | +1.18 km |
+| Czas trwania | 0.0 min | 35.2 min | +35.2 min |
+| Średnie tempo | Brak | 2:59/100m | Nie dotyczy |
 | Średnie HR | Brak | 132 bpm | Nie dotyczy |
 
 - **Profil jednostki**: Baza tlenowa (Z2)
-- **Ocena egzekucji planu**: 1/10 – Całkowite zaniechanie zaplanowanego treningu siłowego FBW. Samowolna zamiana jednostki na trening pływacki bez autoryzacji trenera.
+- **Ocena egzekucji planu**: 1/10 – Całkowite porzucenie zaplanowanej jednostki siłowej FBW na rzecz nieplanowanego treningu pływackiego.
 - **Dedykowana analiza fizjologiczna pływania**:
-  - Wpływ na tętno i układ krążenia w środowisku wodnym: Średnie tętno (132 bpm) przy uwzględnieniu fizjologicznego obniżenia tętna w wodzie (o 10–15 bpm względem lądu) odpowiada intensywności w strefie bazy tlenowej (Z2). Maksymalne tętno (162 bpm) wskazuje na wejście w strefę tempa (Z3) w końcowej fazie wysiłku.
-  - Obciążenie aparatu ruchu (obręcz barkowa vs odciążenie nóg): Brak obciążenia osiowego kończyn dolnych wspomaga regenerację tkanek po maratonie. Jednocześnie intensywna praca ramion wygenerowała wysokie obciążenie lokalne obręczy barkowej oraz mięśnia najszerszego grzbietu.
-  - Anomalie metaboliczne i aparaturowe (w tym weryfikacja OHR w wodzie): Pik tętna maksymalnego (162 bpm) sugeruje potencjalne zakłócenie odczytu przez nadgarstkowy czujnik optyczny (OHR) w wodzie lub niekontrolowany zryw intensywności.
+  - Wpływ na tętno i układ krążenia w środowisku wodnym: Średnie tętno wysiłkowe (132 bpm) w pozycji horyzontalnej i środowisku wodnym odpowiada obciążeniu krążeniowemu rzędu (142–147 bpm) na lądzie (wysoka strefa Z2). Maksymalne tętno (162 bpm) stanowi ekwiwalent strefy (Z4/Z5) w biegu. Jednostka nie miała charakteru regeneracyjnego, lecz stanowiła tlenowy bodziec średniej intensywności.
+  - Obciążenie aparatu ruchu (obręcz barkowa vs odciążenie nóg): Nastąpiło całkowite odciążenie układu kostno-stawowego kończyn dolnych, co sprzyja dalszej regeneracji po maratonie. Wygenerowano natomiast wysokie napięcie w obręczy barkowej oraz mięśniu najszerszym grzbietu, co przy braku stymulacji siłowej mięśni głębokich i stabilizatorów biodra (FBW) zaburza zaplanowaną adaptację posturalną.
+  - Anomalie metaboliczne i aparaturowe (w tym weryfikacja OHR w wodzie): Prawdopodobne wystąpienie błędu odczytu optycznego czujnika tętna (OHR) w wodzie. Maksymalny odczyt (162 bpm) przy tempie (2:59/100m) sugeruje zakłócenia hydrostatyczne lub tzw. cadence lock (nałożenie częstotliwości ruchów ramion na odczyt tętna). 
 
 ## 2. KOSZT METABOLICZNY I STAN ZASOBÓW
 
-- **Bodziec adaptacyjny i koszt metaboliczny**: Niska objętość jednostki pływackiej (1.18 km) przy umiarkowanej intensywności wygenerowała niski koszt metaboliczny (Aerobic TE: 2.4). Całkowite zaniechanie treningu siłowego FBW pozbawiło organizm planowanego bodźca neuromuskularnego oraz aktywacji tonusu mięśniowego dolnych partii przed nowym mikrocyklem.
-- **Bilans autonomiczny i drenaż zasobów (baza ANS ze snu vs drenaż dobowy Body Battery/stres)**: Wybitna regeneracja nocna (Sleep Score: 86/100) przy wysokim udziale snu głębokiego (2h 4m) i niskim stresie nocnym (13.0) odbudowała poranny bufor adaptacyjny do poziomu maksymalnego (Body Battery: 97/100). Średni stres dobowy (35/100) oraz niska aktywność pozatreningowa (8136 kroków) zlimitowały wieczorny drenaż zasobów (Body Battery: 26/100). Status układu ANS wykazuje pełną superkompensację i brak długu po maratonie – odnotowano wzrost HRV (52 ms) przy jednoczesnym spadku tętna spoczynkowego (53 bpm, odchylenie -2 bpm od średniej).
-- **Zmęczenie skumulowane i percepcja (kontekst dnia Sobota, 2026-10-03 vs notatka zawodnika)**: Brak dysonansu. Wysokie zasoby energetyczne skorelowane z obiektywną telemetrią. Zamiana treningu siłowego na pływanie wynika z decyzji behawioralnej, a nie z ograniczeń fizjologicznych.
+- **Bodziec adaptacyjny i koszt metaboliczny**: Koszt metaboliczny umiarkowany (Aerobic TE 2.4; Anaerobic TE 0.5). Trening pływacki nie wywołał pożądanego bodźca siłowego i neuromięśniowego. Brak stymulacji włókien szybkokurczliwych oraz stabilizacji posturalnej (RIR 2-3) zaplanowanej w FBW opóźnia odbudowę tonusu mięśniowego po maratonie.
+- **Bilans autonomiczny i drenaż zasobów (baza ANS ze snu vs drenaż dobowy Body Battery/stres)**: Układ autonomiczny wykazuje wysoki poziom regeneracji. Sen (Sleep Score 86/100) z niskim poziomem stresu nocnego (13.0) oraz wysokim udziałem snu głębokiego (2h 4m) zapewnił wysoki bufor poranny (Body Battery 97/100). Wzrost HRV (52 ms) przy spadku tętna spoczynkowego (53 bpm) potwierdza gotowość do wysiłku. Dobowy drenaż zasobów (z 97/100 do 26/100) przy średnim stresie dziennym (35/100) i niskiej aktywności krokowej (8136 kroków) wskazuje, że głównym źródłem drenażu był koszt nieplanowanego treningu i powysiłkowa aktywacja układu współczulnego.
+- **Zmęczenie skumulowane i percepcja (kontekst dnia Sobota, 2026-10-03 vs notatka zawodnika)**: Brak dysonansu. Zawodnik zrezygnował z obciążeń siłowych na rzecz pływania bez zgłoszenia uwag bólowych. Unikanie pracy siłowej przy optymalnych wskaźnikach gotowości autonomicznej (HRV powyżej bazy) stanowi nadmierną i nieuzasadnioną fizjologicznie asekurację.
 
 ## 3. ZALECENIA REGENERACYJNE (WIECZÓR I NOC)
 
-- **Ukierunkowana praca tkankowa i przeciwwskazania**: Zastosować mobilizację rotacji w stawie ramiennym (2 serie po 90 sekund na stronę) w celu rozluźnienia obręczy barkowej. Kategoryczny zakaz głębokiego rolowania i rozciągania statycznego tylnej taśmy udowej i łydek – struktury te po maratonie wciąż przechodzą przebudowę i nie tolerują agresywnego rozciągania.
-- **Modulacja autonomiczna (tonizacja przywspółczulna)**: Wdrożyć trening oddechowy Box Breathing (10 minut) bezpośrednio przed snem w celu stymulacji nerwu błędnego i utrwalenia korzystnego stanu przywspółczulnego (HRV: 52 ms).
-- **Strategia substratowa i resynteza**: Podaż magnezu (400 mg) oraz kreatyny (3 g) przed snem w celu wsparcia resyntezy ATP. Uzupełnić płyny (1.5 l) z dodatkiem elektrolitów w celu przywrócenia homeostazy osmotycznej przed rozpoczęciem nowego mikrocyklu (Poniedziałek, 2026-10-05).
+- **Ukierunkowana praca tkankowa i przeciwwskazania**: Wykonać rolowanie rozluźniające (roller o niskiej lub średniej gęstości) wyłącznie dla mięśnia najszerszego grzbietu, piersiowego większego oraz rotatorów barku (po 2-3 minuty na stronę). Bezwzględny zakaz rozciągania statycznego oraz głębokiego, mocnego rolowania powięziowego mięśni czworogłowych i dwugłowych uda. Tkanki dolnych partii są w fazie przebudowy (7 dni po maratonie) – agresywna presja mechaniczna pogłębi mikrourazy strukturalne.
+- **Modulacja autonomiczna (tonizacja przywspółczulna)**: Zastosować protokół oddechowy Box Breathing w schemacie 4-4-4-4 (wdech, zatrzymanie, wydech, zatrzymanie) przez (10 minut) bezpośrednio przed snem w celu wyciszenia powysiłkowego (średni stres dobowy 35/100) i stymulacji nerwu błędnego.
+- **Strategia substratowa i resynteza**: Dostarczyć (35-40 g) białka wolnowchłanialnego (kazeina lub odżywka białkowa z dodatkiem tłuszczów) przed snem w celu zabezpieczenia nocnej syntezy białek. Przyjąć (400 mg) magnezu w formie cytrynianu lub diglicynianu oraz zabezpieczyć podaż płynów na poziomie (500 ml) wody wysokozmineralizowanej przed snem.
 
 ## 4. OCENA GOTOWOŚCI I ADAPTACJA (ZAMKNIĘCIE MIKROCYKLU): Niedziela, 2026-10-04
 
 - **DECYZJA ADAPTACYJNA / STOPIEŃ GOTOWOŚCI**: PEŁNA GOTOWOŚĆ
-- **Uzasadnienie fizjologiczne**: Wskaźniki autonomiczne potwierdzają pełną adaptację i domknięcie regeneracji po maratonie. Wzrost HRV (52 ms) połączony ze spadkiem RHR (53 bpm) oraz wysoka jakość snu (głęboki sen: 2h 4m) dają zielone światło do podjęcia obciążeń. Zamiana treningu siłowego na pływanie wyeliminowała stres mechaniczny dolnych partii ciała przy minimalnym długu tlenowym (TE: 2.4), co sprzyja świeżości aparatu ruchu na starcie nowego mikrocyklu.
+- **Uzasadnienie fizjologiczne**: Wskaźniki autonomiczne jednoznacznie potwierdzają pełną adaptację i zakończenie ostrej fazy odbudowy powypoczynkowej po maratonie z dnia (2026-09-27). Dodatnie odchylenie HRV (52 ms) przy obniżonym tętnie spoczynkowym (53 bpm) sygnalizuje brak długu adaptacyjnego oraz wysoką tolerancję na bodźce. Samowolna zamiana jednostki FBW na pływanie skutkuje jednak brakiem wymaganej aktywacji neuromięśniowej (brak stymulacji siłowej nóg). Organizm posiada pełne zasoby energetyczne i neurologiczne do rozpoczęcia kolejnego mikrocyklu ze zwiększonym obciążeniem biegowym.

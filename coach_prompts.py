@@ -42,7 +42,7 @@ STRENGTH_WORKOUT_NAMES = frozenset({
 NOTE_KEYWORD = "note"
 
 # Prekompilowane wyrażenia regularne dla parsowania historii i metadanych
-RE_RUN_META = re.compile(r'^-\s*Bieg:\s*TAK\s*\(([0-9.,]+)\s*km,\s*sesje:\s*([0-9]+)\)', re.MULTILINE)
+RE_RUN_META = re.compile(r'^-\s*Bieg:\s*TAK(?:\s*\(([0-9.,]+)\s*km(?:,\s*sesje:\s*([0-9]+))?\))?', re.MULTILINE)
 RE_STR_TAK = re.compile(r'^-\s*Siłownia:\s*TAK', re.MULTILINE)
 RE_RUN_W5 = re.compile(r'^-\s*Bieg:\s*(TAK|NIE)(?:\s*\(([0-9.,]+)\s*km,\s*sesje:\s*([0-9]+)\))?', re.MULTILINE)
 RE_RUN_TYPE = re.compile(r'^-\s*Typ treningu biegowego:\s*([^\n]+)', re.MULTILINE)
@@ -407,7 +407,7 @@ def load_prompt_template(filenames, **kwargs):
     return _substitute_template_variables(template, **kwargs)
 
 
-def _classify_telegram_message(body: str):
+def _classify_telegram_message(body):
     """
     Klasyfikuje treść pojedynczego bloku wiadomości z Telegrama na podstawie pierwszej linii tekstu.
 
@@ -464,7 +464,7 @@ def _classify_telegram_message(body: str):
 
 
 
-def _parse_message_blocks(note: str):
+def _parse_message_blocks(note):
     """
     Dzieli notatkę na listę bloków (nagłówek, treść_wiadomości).
     Rozpoznaje nagłówki pojedynczych wiadomości z Telegrama oraz znaczniki systemowe.
@@ -590,6 +590,44 @@ def _find_history_anchor_date(history_dir, ref_date):
     return ref_date
 
 
+def _get_day_run_sessions(content, m_run):
+    """
+    Wyciąga liczbę jednostek biegowych z treści raportu dziennego, zabezpieczając przed rozbijaniem
+    części składowych jednego treningu (rozgrzewki, schłodzenia, przebieżek) na osobne jednostki w historii.
+
+    Args:
+        content (str): Zawartość pliku raportu dziennego.
+        m_run (re.Match): Dopasowanie wyrażenia RE_RUN_META.
+
+    Returns:
+        int: Liczba jednostek biegowych dla danego dnia.
+    """
+    if not m_run:
+        return 0
+    sessions = int(m_run.group(2)) if m_run.group(2) else 1
+    if sessions <= 1:
+        return sessions
+
+    # Jeśli w nagłówku zapisano sesje > 1, sprawdzamy czy to nie były fragmenty jednej jednostki
+    c_lower = content.lower()
+    has_aux = any(k in c_lower for k in [
+        "rozgrzewka:", "rozgrzewka", "warmup", "schłodzenie:", "schłodzenie",
+        "cooldown", "przebieżki", "przebiezki", "strides"
+    ])
+
+    start_times = re.findall(r'###\s*Jednostka\s*\d+\s*\[Start:\s*(\d{1,2}):(\d{2})\]', content)
+    if start_times:
+        mins = [int(h) * 60 + int(m) for h, m in start_times]
+        mins.sort()
+        # Jeśli wszystkie aktywności zmieściły się w oknie < 3h (180 min)
+        if (mins[-1] - mins[0]) < 180:
+            return 1
+    elif has_aux:
+        return 1
+
+    return sessions
+
+
 def _summarize_history_weeks_1_4(history_data, start_date):
     """
     Generuje podsumowanie tygodni 1–4 (Dni 1–28) historii: kilometry, biegi, siłownia.
@@ -621,8 +659,9 @@ def _summarize_history_weeks_1_4(history_data, start_date):
                 m_str = RE_STR_TAK.search(c)
 
                 if m_run:
-                    w_km += float(m_run.group(1).replace(',', '.'))
-                    w_runs += int(m_run.group(2))
+                    if m_run.group(1):
+                        w_km += float(m_run.group(1).replace(',', '.'))
+                    w_runs += _get_day_run_sessions(c, m_run)
                 if m_str:
                     w_strength += 1
 
@@ -714,27 +753,290 @@ def _summarize_history_week_5(history_data, start_date):
     return "\n".join(week_5_lines)
 
 
+def _extract_gym_exercises_summary(content):
+    """
+    Wyciąga zwięzłą listę zrealizowanych ćwiczeń siłowych (serie x powtórzenia, obciążenie)
+    z tabeli ćwiczeń lub podsumowania w raporcie dziennym.
+
+    Args:
+        content (str): Zawartość raportu dziennego.
+
+    Returns:
+        str: Sformatowana linia z listą ćwiczeń lub pusty ciąg.
+    """
+    m = re.search(r'\|\s*Nr\s*\|\s*Ćwiczenie[^\n]*\|\n\|(?:\s*:?-+:?\s*\|)+\n((?:\|[^\n]+\|\n?)+)', content, re.I)
+    if not m:
+        m_list = re.search(r'(?:Potwierdzenie i modyfikacje ćwiczeń|Wykonane ćwiczenia|ZESTAWIENIE ĆWICZEŃ):\s*([^\n]+)', content, re.I)
+        if m_list:
+            return m_list.group(1).strip()
+        return ""
+
+    table_rows = m.group(1).strip().splitlines()
+    ex_list = []
+    for row in table_rows:
+        cols = [col.strip() for col in row.split('|')[1:-1]]
+        if len(cols) >= 3 and cols[1] and 'Brak szczegółowego' not in cols[1]:
+            name = re.sub(r'\s*\((Barbell|Dumbbell|Cable)\)', '', cols[1]).strip()
+            reps = cols[2] if len(cols) > 2 else ''
+            weight = cols[3] if len(cols) > 3 else ''
+            ex_str = name
+            if reps and reps != '-':
+                ex_str += f" {reps}"
+            if weight and weight != '-':
+                ex_str += f" ({weight})"
+            ex_list.append(ex_str)
+    return ", ".join(ex_list)
+
+
+def _extract_interval_tables(content):
+    """
+    Wyciąga zwięzłą tabelę serii roboczych (splitów) dla treningów biegowych z akcentami
+    (interwały, tempo progowe, powtórzenia) wygenerowaną pierwotnie w trybie daily (audit_run.md).
+
+    Args:
+        content (str): Zawartość raportu dziennego.
+
+    Returns:
+        str | None: Wyciągnięta tabela Markdown ze splitami serii lub None.
+    """
+    pattern = r'(\|[^\n]*(?:Seria|Nr powtórzenia)[^\n]*\|\n\|(?:\s*:?-+:?\s*\|)+\n(?:\|[^\n]+\|\n?)+)'
+    tables = re.findall(pattern, content)
+    matched = []
+    for t in tables:
+        first_line = t.splitlines()[0]
+        if 'Km' in first_line and 'GAP' in first_line:
+            continue
+        if 'Parametr' in first_line or 'Plan' in first_line:
+            continue
+        if any(k in first_line for k in ['Dystans', 'Tempo', 'Czas', 'HR', 'GCT']):
+            matched.append(t.strip())
+
+    agg_table = next((t for t in matched if 'Łączny Dystans' in t), None)
+    if agg_table:
+        return agg_table
+    elif matched:
+        return matched[0]
+    return None
+
+
+def _summarize_history_day_for_planning(content, date_str, day_name):
+    """
+    Tworzy zwięzłą i wysoce informatywną syntezę zrealizowanego dnia dla promptu planowania tygodniowego.
+    Dostarcza modelowi wyłącznie kluczowe metryki:
+    - Status ANS i regeneracji (HRV, RHR, jakość snu, Body Battery, stres, kroki),
+    - Podsumowanie zrealizowanych jednostek (typ, dystans, czas, tempo, tętno, kadencja, TE),
+    - Strukturę serii i splity akcentu (tabela z audit_run.md przy interwałach/tempie),
+    - Zgłoszone uwagi biegacza i ostrzeżenia o przeciążeniach/bólach (oznaczone ⚠️),
+    - Ocenę egzekucji oraz syntetyczny wniosek adaptacyjny trenera.
+
+    Args:
+        content (str): Zawartość pliku raportu dziennego.
+        date_str (str): Data w formacie ISO (YYYY-MM-DD).
+        day_name (str): Nazwa dnia tygodnia (np. Poniedziałek).
+
+    Returns:
+        str: Zwięzły blok informacyjny dla danego dnia.
+    """
+    if not content or content.strip() == NO_DATA:
+        return f"#### {date_str} ({day_name}) – {NO_DATA}\n* Brak zarejestrowanych danych treningowych ani biometrycznych."
+
+    # 1. Nagłówek i identyfikacja aktywności
+    m_day_type = re.search(r'-\s*Typ dnia:\s*([^\n]+)', content)
+    day_type = m_day_type.group(1).strip() if m_day_type else 'Brak danych'
+
+    m_run = re.search(r'-\s*Bieg:\s*(TAK|NIE)(?:\s*\(([^)]+)\))?', content, re.I)
+    is_run = bool(m_run and m_run.group(1).upper() == 'TAK')
+    run_meta = m_run.group(2) if m_run and m_run.group(2) else ''
+
+    m_run_type = re.search(r'-\s*Typ treningu biegowego:\s*([^\n]+)', content)
+    run_type = m_run_type.group(1).strip() if m_run_type else ''
+
+    m_run_struct = re.search(r'-\s*Struktura biegu:\s*([^\n]+)', content)
+    run_struct = m_run_struct.group(1).strip() if m_run_struct else ''
+
+    m_gym = re.search(r'-\s*Siłownia:\s*(TAK|NIE)(?:\s*\(([^)]+)\))?', content, re.I)
+    is_gym = bool(m_gym and m_gym.group(1).upper() == 'TAK')
+
+    m_muscles = re.search(r'-\s*Partie mięśniowe[^:]*:\s*([^\n]+)', content)
+    muscles = m_muscles.group(1).strip() if m_muscles else ''
+
+    c_lower = content.lower()
+    is_swim = 'typ dnia: pływanie' in c_lower or 'typ dnia: plywanie' in c_lower or 'pool swim' in c_lower or 'trening pływania' in c_lower
+
+    if is_run and run_type and run_type != 'Brak biegu':
+        headline_workout = f"Bieg: {run_type}"
+    elif is_swim:
+        headline_workout = "Pływanie"
+    elif is_gym:
+        headline_workout = f"Siłownia: partie {muscles}" if muscles and muscles != 'BRAK' else "Siłownia"
+    elif 'regeneracja' in day_type.lower() or 'brak' in day_type.lower():
+        headline_workout = "Dzień wolny / Regeneracja"
+    else:
+        headline_workout = day_type
+
+    # 2. Status autonomiczny ANS i biometria regeneracyjna
+    m_hrv = re.search(r'-\s*HRV[^:]*:\s*([^\n]+)', content)
+    hrv_str = m_hrv.group(1).strip() if m_hrv else 'Brak danych'
+
+    m_rhr = re.search(r'-\s*RHR[^:]*:\s*([^\n]+)', content)
+    rhr_str = m_rhr.group(1).strip() if m_rhr else 'Brak danych'
+
+    m_sleep = re.search(r'-\s*Sen[^:]*:\s*([^\n]+)', content)
+    sleep_str = m_sleep.group(1).strip() if m_sleep else 'Brak danych'
+
+    m_bb_eve = re.search(r'Body Battery pod koniec dnia:\s*([^\n]+)', content)
+    if not m_bb_eve:
+        m_bb_eve = re.search(r'Body Battery:\s*([^\n]+)', content)
+    bb_str = m_bb_eve.group(1).strip() if m_bb_eve else ''
+    m_bb_morn = re.search(r'Poranne Body Battery[^:]*:\s*([^\n]+)', content)
+    bb_morn_str = m_bb_morn.group(1).strip() if m_bb_morn else ''
+
+    m_stress = re.search(r'(?:Całodzienny|Średni|Dzisiejszy całodzienny)\s*stres[^:]*:\s*([^\n]+)', content)
+    stress_str = m_stress.group(1).strip() if m_stress else ''
+    m_steps = re.search(r'(?:Kroki|Dzisiejsze kroki|Wczorajsze kroki)[^:]*:\s*([^\n]+)', content)
+    steps_str = m_steps.group(1).strip() if m_steps else ''
+
+    ans_parts = [f"HRV: {hrv_str}", f"RHR: {rhr_str}"]
+    if sleep_str and sleep_str != 'Brak danych':
+        ans_parts.append(f"Sen: {sleep_str}")
+    if bb_str:
+        ans_parts.append(f"Body Battery: {bb_str}")
+    elif bb_morn_str:
+        ans_parts.append(f"Body Battery (start): {bb_morn_str}")
+    if stress_str:
+        ans_parts.append(f"Stres: {stress_str}")
+    if steps_str:
+        ans_parts.append(f"Kroki: {steps_str}")
+    ans_line = " | ".join(ans_parts)
+
+    # 3. Zrealizowane jednostki treningowe
+    workout_lines = []
+    act_match = re.search(r'##\s*Zarejestrowane aktywności[^\n]*\n(.*?)(?=\n##\s+[^\#]|\Z)', content, re.DOTALL)
+    if act_match and act_match.group(1).strip():
+        act_text = act_match.group(1).strip()
+        units = re.split(r'\n(?=###\s+(?:Jednostka|Trening|[0-9]))', act_text)
+        for u in units:
+            u_clean = u.strip()
+            if not u_clean:
+                continue
+            u_clean_base = re.split(r'\n####\s*Splity', u_clean, flags=re.I)[0].strip()
+            u_lines = u_clean_base.splitlines()
+            u_title = u_lines[0].replace('###', '').strip()
+            if 'pool swim' in u_clean.lower() or 'pływanie' in u_clean.lower():
+                u_title = re.sub(r'Trening Uzupełniający', 'Trening pływania', u_title, flags=re.I)
+
+            dist_m = re.search(r'Dystans:\s*([0-9.,]+\s*(?:km|m))', u_clean_base)
+            time_m = re.search(r'Czas:\s*([0-9.,]+\s*(?:min|h))', u_clean_base)
+            pace_m = re.search(r'Średnie tempo:\s*([^\n|]+)', u_clean_base)
+            hr_m = re.search(r'Tętno:\s*([^\n|]+(?:\s*\|\s*Max[^\n|]+)?)', u_clean_base)
+            te_m = re.search(r'Training Effect:\s*([^\n|]+(?:\s*\|\s*Beztlenowy[^\n|]+)?)', u_clean_base)
+            cad_m = re.search(r'kadencja\s*([0-9]+)\s*spm', u_clean_base, re.I)
+
+            u_parts = [u_title]
+            if dist_m:
+                u_parts.append(f"Dystans: {dist_m.group(1)}")
+            if time_m:
+                u_parts.append(f"Czas: {time_m.group(1)}")
+            if pace_m and pace_m.group(1).strip() not in ('Brak', 'None'):
+                u_parts.append(f"Śr. tempo: {pace_m.group(1).strip()}")
+            if hr_m:
+                u_parts.append(f"HR: {hr_m.group(1).strip()}")
+            if cad_m:
+                u_parts.append(f"Kadencja: {cad_m.group(1)} spm")
+            if te_m:
+                u_parts.append(f"TE: {te_m.group(1).strip()}")
+            workout_lines.append(" | ".join(u_parts))
+    elif is_run:
+        workout_lines.append(f"Bieg ({run_meta}) - {run_type}")
+
+    if is_gym:
+        gym_desc = f"Siłownia: partie {muscles}" if muscles and muscles != "BRAK" else "Siłownia"
+        ex_summary = _extract_gym_exercises_summary(content)
+        if ex_summary:
+            gym_desc += f" (Ćwiczenia: {ex_summary})"
+        workout_lines.append(gym_desc)
+
+    if not workout_lines:
+        workout_lines.append("Brak aktywności treningowej (Rest Day)")
+
+    # Wyciąganie tabeli splitów akcentu (serie robocze z audit_run.md)
+    interval_table = _extract_interval_tables(content)
+
+    # 4. Uwagi biegacza i raporty przeciążeniowe / urazowe
+    m_note = re.search(r'##\s*Uwagi biegacza[^\n]*\n(.*?)(?=\n##|\Z)', content, re.DOTALL)
+    user_note_clean = ''
+    if m_note:
+        raw_note = m_note.group(1).strip()
+        raw_note = re.sub(r'---\s*Treść wiadomości z Telegrama[^\n]*---\s*', '', raw_note, flags=re.I).strip()
+        user_note_clean = raw_note.replace('\\n', ' ').strip()
+
+    injury_warning = ''
+    if user_note_clean and any(k in user_note_clean.lower() for k in ['ból', 'bol', 'uraz', 'kontuzj', 'pachwin', 'ściegn', 'kolan', 'stop', 'problem', 'przeciąż']):
+        injury_warning = f"⚠️ {user_note_clean}"
+    elif user_note_clean:
+        injury_warning = user_note_clean
+
+    # 5. Ocena trenera, decyzja adaptacyjna i kluczowe wnioski
+    eval_parts = []
+    m_eval = re.search(r'(?:Ocena|Ocena egzekucji planu|Ocena treningu):\s*([0-9]+/[0-9]+[^\n]*)', content)
+    if m_eval:
+        eval_parts.append(f"Ocena: {m_eval.group(1).strip()}")
+
+    m_dec = re.search(r'(?:DECYZJA ADAPTACYJNA|DECYZJA O KOREKCIE|Decyzja trenera|Zgodność z planem):\s*([^\n|]+)', content)
+    if m_dec:
+        eval_parts.append(f"Decyzja: {m_dec.group(1).strip()}")
+
+    m_phys = re.search(r'(?:Uzasadnienie fizjologiczne|Bodziec fizjologiczny i szlaki energetyczne|Koszt nerwowo-mięśniowy|Dedykowana analiza fizjologiczna pływania)[^:]*:\s*([^\n]+)', content)
+    if m_phys:
+        phys_text = m_phys.group(1).strip()
+        s_end = phys_text.find('.')
+        if s_end != -1 and s_end > 10:
+            phys_text = phys_text[:s_end+1]
+        eval_parts.append(phys_text)
+
+    workout_desc = " + ".join(workout_lines)
+    eval_desc = " | ".join(eval_parts)
+
+    res = [f"#### {date_str} ({day_name}) – {headline_workout}"]
+    res.append(f"* **Status ANS i regeneracja**: {ans_line}")
+    res.append(f"* **Zrealizowany trening**: {workout_desc}")
+    if run_struct and run_struct != 'Brak' and is_run:
+        res.append(f"* **Struktura biegu**: {run_struct}")
+    if interval_table:
+        res.append(f"* **Splity akcentu (serie robocze z audytu)**:\n\n{interval_table}\n")
+    if injury_warning:
+        res.append(f"* **Uwagi biegacza / urazy**: {injury_warning}")
+    if eval_parts:
+        res.append(f"* **Ocena trenera i adaptacja**: {eval_desc}")
+
+    return "\n".join(res)
+
+
 def _load_history_week_6(history_data, start_date):
-    """Wczytuje pełne raporty dzienne z tygodnia 6 (Dni 36–42 / ostatnie 7 dni).
+    """
+    Wczytuje i syntetyzuje raporty dzienne z tygodnia 6 (Dni 36–42 / ostatnie 7 dni)
+    do zwartej postaci: zrealizowane jednostki, splity akcentów oraz status ANS.
 
     Args:
         history_data (dict): Słownik z historią.
         start_date (datetime.date): Data początkowa.
 
     Returns:
-        str: Raporty z ostatnich 7 dni.
+        str: Raporty z ostatnich 7 dni w zwięzłej formie.
     """
     week_6_entries = []
     w6_start = start_date + datetime.timedelta(days=35)
     for d_offset in range(7):
         cur_d = w6_start + datetime.timedelta(days=d_offset)
         date_str = cur_d.isoformat()
+        day_name = DAYS_PL[cur_d.weekday()]
         if date_str in history_data:
-            week_6_entries.append(history_data[date_str])
+            entry = _summarize_history_day_for_planning(history_data[date_str], date_str, day_name)
+            week_6_entries.append(entry)
         else:
-            week_6_entries.append(f"### Dzień {date_str} ({DAYS_PL[cur_d.weekday()]}):\n{NO_DATA}")
+            week_6_entries.append(f"#### {date_str} ({day_name}) – {NO_DATA}\n* Brak zarejestrowanych danych treningowych ani biometrycznych.")
 
-    return ("\n\n" + "-" * 40 + "\n\n").join(week_6_entries)
+    return "\n\n".join(week_6_entries)
 
 
 def load_training_history(ref_date, history_dir=HISTORY_DIR):
@@ -743,7 +1045,7 @@ def load_training_history(ref_date, history_dir=HISTORY_DIR):
     z wielopoziomową szczegółowością:
     - Tygodnie 1–4: podsumowanie makrocyklu (kilometry, treningi biegowe i siłowe).
     - Tydzień 5: zwarty przegląd mezocyklu z pełnymi tabelami ćwiczeń.
-    - Tydzień 6: pełne szczegółowe raporty z ostatnich 7 dni.
+    - Tydzień 6: zwięzły przegląd zrealizowanych jednostek i statusu ANS.
 
     Args:
         ref_date (datetime.date): Data odniesienia.
@@ -778,7 +1080,7 @@ def load_training_history(ref_date, history_dir=HISTORY_DIR):
     sections = [
         f"### 1. Podsumowanie makrocyklu (Tygodnie 1–4 / Dni 1–28):\n{weeks_1_4}",
         f"\n### 2. Zwarty przegląd mezocyklu (Tydzień 5 / Dni 29–35):\n{week_5}",
-        f"\n### 3. Pełne szczegółowe raporty z ostatniego tygodnia (Tydzień 6 / Dni 36–42):\n{week_6}"
+        f"\n### 3. Zwięzły przegląd ostatniego tygodnia (Tydzień 6 / Dni 36–42):\n{week_6}"
     ]
     return "\n\n".join(sections)
 
@@ -884,15 +1186,16 @@ def generate_weekly_suggestions_prompt(personal_data, trainings_history=None, us
         note_section=note_section
     )
 
-def generate_weekly_plan_prompt(days_structure, personal_data, trainings_history=None, user_note=None, ref_date=None):
+def generate_weekly_plan_prompt(days_structure, personal_data, trainings_history=None, user_note=None, strength_routines=None, ref_date=None):
     """
     Tworzy prompt dla Gemini do ułożenia kompletnego planu treningowego na cały tydzień.
 
     Args:
-        days_structure (str): Struktura dni tygodnia.
+        days_structure (str): Struktura dni tygodnia (z pliku weekly_workout_structure.md).
         personal_data (dict): Dane zawodnika (HR Zones, PB, ...).
         trainings_history (str, optional): Historia treningów.
         user_note (str): Opcjonalna notatka zawodnika.
+        strength_routines (str, optional): Baza ćwiczeń siłowych.
         ref_date (datetime.date, optional): Data odniesienia.
 
     Returns:
@@ -902,12 +1205,17 @@ def generate_weekly_plan_prompt(days_structure, personal_data, trainings_history
     note_section = user_note if user_note else "Brak dodatkowych uwag od biegacza."
     profile = build_user_profile(personal_data, ref_date=ref_date)
 
+    if strength_routines is None:
+        strength_routines = _read_file_safe(os.path.join(INPUT_DIR, "strength_routines.md"))
+    routines_section = strength_routines if strength_routines else "Brak zdefiniowanych zestawów siłowych w pliku input/strength_routines.md."
+
     return load_prompt_template(
         "weekly_plan.md",
         **profile,
         hist_section=hist_section,
-        days_structure=days_structure,
-        note_section=note_section
+        weekly_preferences=days_structure,
+        strength_routines=routines_section,
+        user_note=note_section
     )
 
 
@@ -1222,7 +1530,7 @@ def save_daily_report(workout_date, archive_content, history_dir=HISTORY_DIR, ou
         logger.warning(f"Nie udało się wygenerować podglądu HTML: {he}")
 
 
-def _extract_strength_muscle_groups(strength_workout: str | None):
+def _extract_strength_muscle_groups(strength_workout):
     """
     Wyznacza nazwę treningu siłowego oraz wskaźnik zaangażowanych partii mięśniowych (góra / dół / góra + dół / brak).
 
@@ -1268,6 +1576,62 @@ def _extract_strength_muscle_groups(strength_workout: str | None):
     return (strength_line, muscle_groups)
 
 
+def _count_running_sessions(run_stats_list):
+    """
+    Zlicza liczbę odrębnych jednostek (sesji) biegowych w ciągu dnia.
+    Części składowe tego samego treningu (rozgrzewka, bieg główny, schłodzenie,
+    przebieżki) wykonywane w ramach jednej sesji są traktowane jako 1 trening.
+    Odrębne sesje są zliczane tylko w przypadku wyraźnego odstępu czasowego
+    (np. trening poranny i wieczorny, odstęp >= 3 godziny).
+
+    Args:
+        run_stats_list (list): Lista słowników ze statystykami aktywności biegowych.
+
+    Returns:
+        int: Liczba jednostek/sesji biegowych.
+    """
+    if not run_stats_list:
+        return 0
+    if len(run_stats_list) == 1:
+        return 1
+
+    def _parse_start_minutes(act):
+        st = act.get('start_time')
+        if not st or not isinstance(st, str):
+            return None
+        m = re.search(r'(\d{1,2}):(\d{2})', st)
+        if m:
+            return int(m.group(1)) * 60 + int(m.group(2))
+        return None
+
+    def _is_auxiliary(act):
+        name = str(act.get('name', '')).lower()
+        return any(k in name for k in [
+            'rozgrzewk', 'warmup', 'warm up', 'warm-up',
+            'schłodzen', 'cooldown', 'cool down', 'cool-down',
+            'przebieżk', 'strides', 'stride', 'rytm', 'rytmy', 'drill'
+        ])
+
+    parsed_times = [_parse_start_minutes(act) for act in run_stats_list]
+
+    if all(t is not None for t in parsed_times):
+        sorted_acts = sorted(zip(parsed_times, run_stats_list), key=lambda x: x[0])
+        sessions = 1
+        last_time = sorted_acts[0][0]
+        for t, act in sorted_acts[1:]:
+            # Jeśli odstęp >= 180 min (3h) i kolejna aktywność nie jest elementem składowym
+            if (t - last_time) >= 180 and not _is_auxiliary(act):
+                sessions += 1
+                last_time = t
+            else:
+                last_time = max(last_time, t)
+        return sessions
+
+    # Jeśli brak dokładnych czasów startu:
+    main_runs = [act for act in run_stats_list if not _is_auxiliary(act)]
+    return max(1, len(main_runs)) if main_runs else 1
+
+
 def _extract_run_metadata(all_stats, response_text=None, strength_workout=None):
     """
     Wyciąga ustrukturyzowane metadane biegu: linię biegu, typ treningu, strukturę (rozgrzewka, główna seria, schłodzenie)
@@ -1287,7 +1651,7 @@ def _extract_run_metadata(all_stats, response_text=None, strength_workout=None):
     swim_stats_list = [act for act in stats_list if act.get("is_swim", False)]
     other_stats_list = [act for act in stats_list if not act.get("is_run", True) and not act.get("is_swim", False)]
 
-    run_count = len(run_stats_list)
+    run_count = _count_running_sessions(run_stats_list)
     run_km = 0.0
     for act in run_stats_list:
         d_raw = str(act.get("distance", "0"))
@@ -1408,7 +1772,7 @@ def _extract_run_metadata(all_stats, response_text=None, strength_workout=None):
                 main_part = p
         run_structure = f"Rozgrzewka: {warmup_part} | Główna seria: {main_part} | Schłodzenie: {cool_part}"
 
-    if not run_structure and run_count > 1:
+    if not run_structure and len(run_stats_list) > 1:
         unit_descs = []
         for idx, a in enumerate(run_stats_list):
             a_name = str(a.get("name", f"Jednostka {idx + 1}"))
