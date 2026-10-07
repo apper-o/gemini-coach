@@ -1,7 +1,7 @@
 Poniedziałek: Trening biegowy na AZS (technika biegowa)
 Wtorek: Rest day
-Środa: Bieganie stadion
+Środa: Easy Run
 Czwartek: Siłownia UPPER
-Piątek: Bieganie stadion
+Piątek: Lekki Threshold
 Sobota: Siłownia FBW
 Niedziela: Long Run
