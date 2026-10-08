@@ -39,23 +39,8 @@ RE_DAY_HEADERS = {
     for day in ["Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota", "Niedziela"]
 }
 
-RE_CAPTION_DATE = re.compile(
-    r'(?:ADAPTACJA TRENINGU NA (?:DZIEŃ DZISIEJSZY|KOLEJNY DZIEŃ|DZIEŃ)|'
-    r'OCENA GOTOWOŚCI I ADAPTACJA NA DZIEŃ KOLEJNY|'
-    r'## Ocena trenera i adaptacja na dzień|'
-    r'# TRENING (?:Z DNIA|SIŁOWY|BIEGOWY \+ SIŁOWNIA)|'
-    r'# DZIEŃ WOLNY[^:]*):\s*([^\n\r]+)',
-    re.IGNORECASE
-)
 RE_CLEAN_BRACKETS = re.compile(r'\[.*?\]')
-RE_DECISION_SECTION = re.compile(
-    r'\*\s*(?:DECYZJA ADAPTACYJNA(?:\s*/\s*STOPIEŃ GOTOWOŚCI)?|DECYZJA O KOREKCIE).*?:(.*?)(?=\*\s*Uzasadnienie|\*\s*ROZPISKA|###|\Z)',
-    re.DOTALL | re.IGNORECASE
-)
-RE_SCHEDULE_SECTION = re.compile(
-    r'\*\s*ROZPISKA NA (?:KOLEJNY )?DZIEŃ.*?:(.*?)(?=\*\s*Wytyczne|\*\s*Zalecenia|###|\Z)',
-    re.DOTALL | re.IGNORECASE
-)
+RE_SCORE_VALUE = re.compile(r'(\d+(?:[.,]\d+)?\s*/\s*10)')
 
 
 def _make_telegram_request(url, data=None, headers=None, timeout=10):
@@ -154,39 +139,163 @@ def extract_weekly_plan_caption(md_text):
 
 def extract_daily_report_caption(md_text):
     """
-    Pobiera z raportu zwięzłą informację (dymek czatu) o dzisiejszym treningu i parametrach.
+    Pobiera z raportu dobowego zwięzłą informację (dymek czatu) o zrealizowanym treningu,
+    ocenie egzekucji, stanie zasobów oraz decyzji adaptacyjnej na kolejny dzień.
+
+    Args:
+        md_text (str): Zawartość pliku Markdown raportu dobowego.
+
+    Returns:
+        str: Sformatowany podpis HTML dla Telegrama przycięty do bezpiecznego limitu.
     """
+    # 1. Wyznaczenie daty audytowanego dnia
     target_date = "Dzisiaj"
-    date_match = RE_CAPTION_DATE.search(md_text)
-    if date_match:
-        target_date = date_match.group(1).strip()
-        target_date = RE_CLEAN_BRACKETS.sub('', target_date).strip()
-
-    re_profile = re.search(r'\*\s*\*\*Profil jednostki\*\*:\s*([^\n\r]+)', md_text, re.IGNORECASE)
-    re_score = re.search(r'\*\s*\*\*Ocena treningu\*\*:\s*([^\n\r]+)', md_text, re.IGNORECASE)
-    re_cost = re.search(r'\*\s*\*\*Koszt dzienny i stan zasobów[^\*]*\*\*:\s*([^\n\r]+)', md_text, re.IGNORECASE)
-    re_decision = re.search(r'\*\s*\*\*DECYZJA ADAPTACYJNA[^\*]*\*\*:\s*([^\n\r]+)', md_text, re.IGNORECASE)
-    
-    if not re_decision:
-        re_decision = re.search(r'\*\s*\*\*STOPIEŃ GOTOWOŚCI[^\*]*\*\*:\s*([^\n\r]+)', md_text, re.IGNORECASE)
-
-    workout_lines = []
-    
-    if re_profile:
-        workout_lines.append(f"🏃 <b>Trening:</b> {html.escape(re_profile.group(1).strip())}")
+    m_top = re.search(r"#\s*AUDYT DZIENNY:\s*([^\n\r]+)", md_text, re.I)
+    raw_date_str = None
+    if m_top:
+        raw_date_str = m_top.group(1).strip()
     else:
-        workout_lines.append("🛋 <b>Trening:</b> Dzień wolny (Rest Day)")
+        m_sec = re.search(r"##\s*1\.\s*AUDYT[^:]*:\s*([^\n\r]+)", md_text, re.I)
+        if m_sec:
+            raw_date_str = m_sec.group(1).strip()
 
+    if raw_date_str:
+        m_day = re.search(r"(Poniedziałek|Wtorek|Środa|Czwartek|Piątek|Sobota|Niedziela)", raw_date_str, re.I)
+        m_iso = re.search(r"\d{4}-\d{2}-\d{2}", raw_date_str)
+        if m_day and m_iso:
+            target_date = f"{m_day.group(1).capitalize()}, {m_iso.group(0)}"
+        elif m_iso:
+            target_date = m_iso.group(0)
+        else:
+            target_date = RE_CLEAN_BRACKETS.sub('', raw_date_str).strip()
+    else:
+        m_iso = re.search(r"\d{4}-\d{2}-\d{2}", md_text)
+        if m_iso:
+            target_date = m_iso.group(0)
+
+    # 2. Identyfikacja zrealizowanych jednostek treningowych
+    m_day_type = re.search(r"^-\s*Typ dnia:\s*([^\n\r]+)", md_text, re.MULTILINE | re.I)
+    day_type = m_day_type.group(1).strip() if m_day_type else ""
+
+    m_run = re.search(r"^-\s*Bieg:\s*(TAK|NIE)(?:\s*\(([0-9.,]+)\s*km(?:,\s*sesje:\s*([0-9]+))?\))?", md_text, re.MULTILINE | re.I)
+    is_run_meta = bool(m_run and m_run.group(1).upper() == "TAK")
+    run_km = m_run.group(2) if m_run and m_run.group(2) else ""
+
+    m_run_type = re.search(r"^-\s*Typ treningu biegowego:\s*([^\n\r]+)", md_text, re.MULTILINE | re.I)
+    run_type_meta = m_run_type.group(1).strip() if m_run_type else ""
+
+    m_gym = re.search(r"^-\s*Siłownia:\s*(TAK|NIE)(?:\s*\(([^)]+)\))?", md_text, re.MULTILINE | re.I)
+    is_gym_meta = bool(m_gym and m_gym.group(1).upper() == "TAK")
+    gym_meta = m_gym.group(2).strip() if m_gym and m_gym.group(2) else ""
+
+    profiles = [p.strip() for p in re.findall(r"^[*-]?\s*\*?\*?Profil jednostki\*?\*?:\s*([^\n\r]+)", md_text, re.MULTILINE | re.I)]
+    m_char = re.search(r"^[*-]?\s*\*?\*?Charakter dnia\*?\*?:\s*([^\n\r]+)", md_text, re.MULTILINE | re.I)
+
+    c_lower = md_text.lower()
+    is_swim = ("typ dnia: pływanie" in c_lower or "typ dnia: plywanie" in c_lower or 
+               "pool swim" in c_lower or "trening pływania" in c_lower)
+    m_swim_dist = re.search(r"(?:Pool Swim|Trening pływania)[^\n]*\n-\s*Dystans:\s*([0-9.,]+\s*(?:km|m))", md_text, re.I)
+
+    is_cycling = (
+        ("rower" in c_lower or "cycling" in c_lower or "trenażer" in c_lower or "cross-training" in c_lower or "trening uzupełniający" in day_type.lower())
+        and not is_run_meta and not is_gym_meta and not is_swim
+    )
+
+    is_rest = (
+        not is_run_meta and not is_gym_meta and not is_swim and not is_cycling and 
+        any(k in day_type.lower() for k in ["regeneracja", "wolny", "rest", "brak"])
+    )
+    if not is_rest and not is_run_meta and not is_gym_meta and not is_swim and not is_cycling and not profiles:
+        is_rest = bool(m_char and any(k in m_char.group(1).lower() for k in ["regeneracja", "brak jednostki", "wolny"]))
+
+    workout_entries = []
+
+    if is_run_meta:
+        desc = profiles[0] if profiles else (run_type_meta if run_type_meta and run_type_meta != "Brak biegu" else "Bieg")
+        km_str = f" ({run_km} km)" if run_km and run_km != "0.00" else ""
+        workout_entries.append(f"🏃 <b>Trening biegowy:</b> {html.escape(desc)}{km_str}")
+    
+    if is_gym_meta:
+        if len(profiles) > 1 and is_run_meta:
+            desc = profiles[1]
+        elif profiles and not is_run_meta:
+            desc = profiles[0]
+        elif gym_meta:
+            desc = f"Siłownia {gym_meta}"
+        else:
+            desc = "Siłownia"
+        workout_entries.append(f"🏋️ <b>Siłownia:</b> {html.escape(desc)}")
+
+    if is_swim:
+        desc = profiles[0] if profiles and not is_run_meta and not is_gym_meta else "Pływanie"
+        dist_str = f" ({m_swim_dist.group(1)})" if m_swim_dist else ""
+        workout_entries.append(f"🏊 <b>Pływanie:</b> {html.escape(desc)}{dist_str}")
+
+    if is_cycling:
+        desc = profiles[0] if profiles else "Cross-training"
+        workout_entries.append(f"🚴 <b>Cross-training:</b> {html.escape(desc)}")
+
+    if not workout_entries:
+        if is_rest:
+            rest_desc = f" – {m_char.group(1).strip()}" if m_char else ""
+            if len(rest_desc) > 60:
+                rest_desc = rest_desc[:57] + "..."
+            workout_entries.append(f"🛋 <b>Trening:</b> Dzień wolny (Rest Day){html.escape(rest_desc)}")
+        elif profiles:
+            workout_entries.append(f"🏃 <b>Trening:</b> {html.escape(profiles[0])}")
+        else:
+            workout_entries.append("🛋 <b>Trening:</b> Dzień wolny (Rest Day)")
+
+    # 3. Ocena treningu / egzekucji planu
+    re_score = re.search(r"^[*-]?\s*\*?\*?Ocena(?:\s+egzekucji(?:\s+planu)?|\s+treningu)?\*?\*?:\s*([^\n\r]+)", md_text, re.MULTILINE | re.I)
+    score_line = None
     if re_score:
-        score_val = re_score.group(1).strip().strip("[]")
-        workout_lines.append(f"⭐ <b>Ocena:</b> {html.escape(score_val)}")
-        
+        raw_score = re_score.group(1).strip().strip("[]")
+        m_score_num = RE_SCORE_VALUE.search(raw_score)
+        if m_score_num:
+            score_num = m_score_num.group(1).replace(" ", "")
+            after_dash = re.split(r"[-–—]", raw_score, maxsplit=1)
+            if len(after_dash) > 1 and after_dash[1].strip():
+                note = after_dash[1].strip()
+                if "." in note and note.find(".") < 60:
+                    note = note[:note.find(".")]
+                if len(note) > 60:
+                    note = note[:57] + "..."
+                score_val = f"{score_num} – {note}"
+            else:
+                score_val = score_num
+        else:
+            score_val = raw_score[:60]
+        score_line = f"⭐ <b>Ocena:</b> {html.escape(score_val)}"
+
+    # 4. Stan zasobów i bilans autonomiczny
+    re_cost = re.search(r"^[*-]?\s*\*?\*?(?:Bilans autonomiczny i drenaż zasobów|Koszt dzienny i stan zasobów|Koszt dzienny)[^\*:]*\*?\*?:\s*([^\n\r]+)", md_text, re.MULTILINE | re.I)
+    cost_line = None
     if re_cost:
-        workout_lines.append(f"🔋 <b>Stan zasobów:</b> {html.escape(re_cost.group(1).strip())}")
-        
-    if re_decision:
-        decision_val = re_decision.group(1).strip()
-        workout_lines.append(f"🧠 <b>Adaptacja na jutro:</b> {html.escape(decision_val)}")
+        raw_cost = re_cost.group(1).strip()
+        end_sent = raw_cost.find(".")
+        if end_sent != -1 and end_sent > 15:
+            cost_val = raw_cost[:end_sent + 1]
+        else:
+            cost_val = raw_cost
+        if len(cost_val) > 120:
+            cost_val = cost_val[:117] + "..."
+        cost_line = f"🔋 <b>Stan zasobów:</b> {html.escape(cost_val)}"
+
+    # 5. Decyzja adaptacyjna trenera
+    re_dec = re.search(r"^[*-]?\s*\*?\*?(?:DECYZJA ADAPTACYJNA(?:\s*/\s*STOPIEŃ GOTOWOŚCI)?|DECYZJA O KOREKCIE|STOPIEŃ GOTOWOŚCI)\*?\*?:\s*(?:[\n\r]+\s*)?([^\n\r]+)", md_text, re.MULTILINE | re.I)
+    dec_line = None
+    if re_dec:
+        dec_val = re_dec.group(1).strip()
+        dec_line = f"🧠 <b>Adaptacja na jutro:</b> {html.escape(dec_val)}"
+
+    workout_lines = list(workout_entries)
+    if score_line:
+        workout_lines.append(score_line)
+    if cost_line:
+        workout_lines.append(cost_line)
+    if dec_line:
+        workout_lines.append(dec_line)
 
     caption_workout = "\n".join(workout_lines)
 

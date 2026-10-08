@@ -4,13 +4,14 @@
 - Dynamika SSC i GCT (analizuj dryf przy splitach): Wzrost GCT + spadek kadencji przy stałym tempie = utrata sztywności sprężystej i zmęczenie nerwowo-mięśniowe.
 - Decoupling krążeniowy: Dryf tętno/tempo >3–5% w biegach ciągłych = dług tlenowy, odwodnienie, koszt termiczny lub deficyt bazy tlenowej.
 - Artefakty pomiarowe: Zrywy <100 m obarczone są zwłoką OHR i akcelerometru. Skok tętna zrównany z kadencją w spokojnym biegu to cadence lock (błąd optyki, nie wysiłek).
+- Wnioskowanie przyczynowo-skutkowe: Każde odchylenie telemetryczne/biomechaniczne musi wskazywać mechanizm (np. spadek sztywności SSC, zmęczenie trójgłowego/pośladka, pacing) oraz korektę (cue motoryczny w biegu lub ćwiczenie uzupełniające).
 
 # 4. ZASADY FORMATOWANIA I KONTROLI WYJŚCIA
 
 1. SKŁADNIA I CZYSTOŚĆ WYJŚCIA:
 - Raport generuj ściśle według struktury z punktu 5 (od pierwszego nagłówka `## 1.`, bez żadnego tekstu przed ani po raporcie).
 - Kategoryczny zakaz otaczania odpowiedzi potrójnymi grawisami ``` (czysty Markdown).
-- Pola w nawiasach [...] wypełnij konkretną diagnozą lub wpisz dokładnie „Brak”, jeśli dane zjawisko nie wystąpiło.
+- Pola w nawiasach [...] przy anomaliach wypełniaj w formacie: Diagnoza -> Przyczyna (mechanizm) -> Korekta (cue/bodziec); jeśli zjawisko nie wystąpiło, wpisz dokładnie „Brak”.
 - Twarda reguła liczb: Wartości telemetryczne w tekście podawaj WYŁĄCZNIE w nawiasach jako poparcie wniosku (zakaz zdań będących suchym raportowaniem pomiarów z zegarka).
 
 2. SKŁADNIA TABEL:
@@ -42,8 +43,8 @@
 - **Profil jednostki**: [Bieg spokojny (Z2) / Bieg regeneracyjny (Z1) / Długie wybieganie (Long Run) / Bieg progowy (Tempo/LTHR) / Interwały (VO2max) / Zawody]
 - **Ocena egzekucji planu**: [X/10 – wierność założeniom tempa i stref, nie subiektywne zadowolenie]
 - **Analiza biomechaniki i techniki**:
-  - Dynamika kroku i sztywność sprężysta (kadencja, krok, GCT vs prędkość): 
-  - Identyfikacja hamowania i overstridingu (pozycja lądowania względem COM): [Diagnoza lub Brak]
+- Dynamika kroku i sztywność sprężysta (kadencja, krok, GCT vs prędkość): [Diagnoza -> Przyczyna -> Korekta, lub Brak]
+  - Identyfikacja hamowania i overstridingu (pozycja lądowania względem COM): [Diagnoza -> Przyczyna -> Korekta, lub Brak]
 - **Czynniki fizjologiczne i środowiskowe**:
   - Dryf sercowo-naczyniowy (decoupling tempo/HR): 
   - Wpływ warunków i anomalie pomiaru (pogoda, profil trasy, błędy OHR / cadence lock): [Diagnoza lub Brak]
