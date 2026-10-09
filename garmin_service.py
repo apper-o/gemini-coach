@@ -22,6 +22,21 @@ GARMIN_CACHE_DIR = "garmin_data"
 RE_STRENGTH_KW = re.compile(r'(siłowni|siłowa|hevy|fbw|upper|lower|strength)', re.IGNORECASE)
 RE_PROFILE_HEADER = re.compile(r'\*\s*Profil jednostki:\s*([^\n]+)')
 
+WEATHER_DESC_PL = {
+    "Clear": "Bezchmurnie",
+    "Fair": "Pogodnie",
+    "Cloudy": "Pochmurno",
+    "Mostly Cloudy": "Duże zachmurzenie",
+    "Partly Cloudy": "Umiarkowane zachmurzenie",
+    "Overcast": "Całkowite zachmurzenie",
+    "Rain": "Deszcz",
+    "Light Rain": "Lekki deszcz",
+    "Heavy Rain": "Mocny deszcz",
+    "Snow": "Śnieg",
+    "Fog": "Mgła",
+    "Windy": "Wietrznie",
+}
+
 def _get_or_nodata(d, keys, formatter=None):
     """
     Pobiera wartość ze słownika, sprawdzając podane klucze. Jeśli żadnego nie ma, zwraca NO_DATA.
@@ -163,30 +178,54 @@ def parse_activity_biomechanics(activity):
 
     # --- Pogoda i warunki atmosferyczne ---
     weather_info = activity.get('weather_data')
+    parts = []
+    temp_c = None
+
     if weather_info and isinstance(weather_info, dict):
-        temp_c = weather_info.get('temperature')
-        feels_c = weather_info.get('apparentTemperature')
-        wind_kmh = weather_info.get('windSpeed')
+        raw_temp = weather_info.get('temp') if weather_info.get('temp') is not None else weather_info.get('temperature')
+        raw_feels = weather_info.get('apparentTemp') if weather_info.get('apparentTemp') is not None else weather_info.get('apparentTemperature')
+
+        # Garmin Connect API weather endpoint zwraca temperaturę w stopniach Fahrenheita
+        if raw_temp is not None:
+            temp_c = (float(raw_temp) - 32.0) * 5.0 / 9.0
+        feels_c = (float(raw_feels) - 32.0) * 5.0 / 9.0 if raw_feels is not None else None
+
+        wind_speed = weather_info.get('windSpeed')
         wind_dir = weather_info.get('windDirectionCompassPoint', '')
         humidity = weather_info.get('relativeHumidity')
-        weather_desc = weather_info.get('weatherType', {}).get('weatherTypeKey', '') if isinstance(weather_info.get('weatherType'), dict) else ''
 
-        parts = []
+        weather_desc = ''
+        w_dto = weather_info.get('weatherTypeDTO')
+        if isinstance(w_dto, dict):
+            weather_desc = w_dto.get('desc', '')
+        elif isinstance(weather_info.get('weatherType'), dict):
+            weather_desc = weather_info['weatherType'].get('weatherTypeKey', '')
+
+        if weather_desc in WEATHER_DESC_PL:
+            weather_desc = WEATHER_DESC_PL[weather_desc]
+
         if temp_c is not None:
-            parts.append(f"Temperatura: {temp_c:.1f}°C" + (f" (odczuwalna: {feels_c:.1f}°C)" if feels_c is not None else ""))
-        if wind_kmh is not None:
-            parts.append(f"Wiatr: {wind_kmh:.1f} km/h {wind_dir}".strip())
+            temp_str = f"Temperatura: {temp_c:.1f}°C"
+            if feels_c is not None and abs(feels_c - temp_c) >= 1.0:
+                temp_str += f" (odczuwalna: {feels_c:.1f}°C)"
+            parts.append(temp_str)
+        if wind_speed is not None:
+            parts.append(f"Wiatr: {wind_speed:.1f} km/h {wind_dir}".strip())
         if humidity is not None:
             parts.append(f"Wilgotność: {humidity}%")
         if weather_desc:
             parts.append(f"Warunki: {weather_desc}")
-        if parts:
-            res["weather"] = " | ".join(parts)
-    elif activity.get('minTemperature') is not None or activity.get('maxTemperature') is not None:
+
+    # Fallback na czujnik temperatury zegarka, gdy stacja pogodowa nie zwróciła temperatury
+    if temp_c is None:
         min_t = activity.get('minTemperature')
         max_t = activity.get('maxTemperature')
-        avg_t = round((min_t + max_t) / 2) if min_t is not None and max_t is not None else (min_t or max_t)
-        res["weather"] = f"Temperatura z czujnika zegarka: śr. ok. {avg_t}°C (min: {min_t}°C, max: {max_t}°C)"
+        if min_t is not None or max_t is not None:
+            avg_t = round((min_t + max_t) / 2, 1) if min_t is not None and max_t is not None else (min_t or max_t)
+            parts.append(f"Temperatura (czujnik zegarka): {avg_t:.1f}°C (min: {min_t:.1f}°C, max: {max_t:.1f}°C)")
+
+    if parts:
+        res["weather"] = " | ".join(parts)
 
     # --- Splity kilometrowe ---
     splits_raw = activity.get('splits_data')
