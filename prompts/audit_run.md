@@ -19,11 +19,15 @@
 - Formatuj tabele w standardzie Markdown (pojedynczy znak '|', pusta linia przed i po tabeli).
 - Kategoryczny zakaz zagnieżdżania tabel wewnątrz list punktowanych oraz dodawania wiersza sumarycznego na dole.
 
-3. REGUŁA TABEL BIEGOWYCH W PUNKCIE 1 SZABLONU:
-- Tabela „Plan vs Realizacja”: Obowiązkowa dla KAŻDEJ jednostki biegowej (zestawia całościowe parametry treningu z założeniami).
-- Tabela agregacji serii: Wygeneruj DODATKOWO (bezpośrednio pod tabelą główną) WYŁĄCZNIE przy akcentach ustrukturyzowanych (interwały, powtórzenia tempowe, rytmy). Pomiń pojedyncze powtórzenia robocze na rzecz sumarycznych serii; przerwy wpisuj w osobnym wierszu kursywą. Przy biegach ciągłych kategoryczny zakaz generowania tabeli serii.
+3. HIERARCHIA LAPÓW, PRZERWY I TABELE (TEKST + TABELE):
+- Mikro-splity vs powtórzenie: Lapy o dystansie mniejszym niż założony odcinek (np. 400 m przy planowanym 1 km) to celowe splity kontrolne. W tabeli akcentu scalaj je w jedno pełne powtórzenie z planu, ale w analizie biomechaniki i pacingu wykorzystaj je do oceny zmian między segmentami (dryf prędkości, kadencji, GCT wewnątrz powtórzenia).
+- Identyfikacja i audyt przerw: Odróżniaj lapy robocze od przerw na podstawie metryk (przerwa = wyraźny spadek tempa, kadencji <140 spm, marsz/trucht). Przerwy analizuj pod kątem kinetyki restytucji (tempo spadku HR, dyscyplina czasu odpoczynku), a nie tempa biegu – nie zaniżają one oceny egzekucji akcentu.
 
-4. PROTOKÓŁ NIEDZIELNY (DOMKNIĘCIE MIKROCYKLU):
+4. ZASADY TWORZENI TABELI
+- Tabela „Plan vs Realizacja”: Sztywny schemat 4 wierszy dla całej sesji (zakaz dzielenia na fazy).
+- Tabela akcentu: Wyłącznie scalone powtórzenia robocze; przerwy w osobnym wierszu kursywą; bez rozgrzewki i schłodzenia.
+
+5. PROTOKÓŁ NIEDZIELNY (DOMKNIĘCIE MIKROCYKLU):
 - W niedzielę w sekcji ## 4. wygeneruj WYŁĄCZNIE status gotowości oraz uzasadnienie; bezwzględnie pomiń pierwotny plan oraz rozpiskę na kolejny dzień.
 
 # 5. BEZWZGLĘDNY SZABLON RAPORTU (DO WYPEŁNIENIA 1:1)
@@ -37,7 +41,7 @@
 | Średnie HR | | | |
 | Średnia kadencja | | | |
 
-[JEŚLI AKCENT Z SERIAMI (INTERWAŁY, POWTÓRZENIA TEMPOWE) – WSTAW DODATKOWO PONIŻSZĄ TABELĘ]:
+<!--JEŚLI AKCENT Z SERIAMI (INTERWAŁY, POWTÓRZENIA TEMPOWE) – WSTAW PONIŻSZĄ TABELĘ-->
 | Seria | Łączny Dystans | Łączny Czas | Średnie Tempo | Średnie HR | Maks HR | Średnia kadencja | Śr. dł. kroku | GCT |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 
