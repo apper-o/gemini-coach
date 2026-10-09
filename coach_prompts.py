@@ -1224,42 +1224,66 @@ def _compress_weekly_plan(content):
     """
     Kompresuje treść planu tygodniowego, aby zredukować zużycie tokenów.
     Usuwa puste linie oraz odfiltrowuje detale (serie, ćwiczenia).
-    Zostawia tylko nagłówki i punkty zaczynające się od "#", "*" lub "-".
+    Dla sekcji '### Podsumowanie tygodnia' przepuszcza wyłącznie kluczowe wskaźniki
+    dotyczące planowanych obciążeń (kilometraż, dystans pływacki, intensywność),
+    odcinając retrospektywne dane, statystyki poprzedniego tygodnia i uzasadnienia.
     """
     if not content:
         return content
 
     lines = content.split('\n')
-    raw_output = []
-    
+    output_lines = []
+    in_weekly_summary = False
+
     for line in lines:
-        stripped = line.strip()
-        if stripped.startswith('#') or stripped.startswith('*') or stripped.startswith('-'):
-            raw_output.append(line)
-            
-    # Usuwanie nagłówków-widm (np. "* **Ćwiczenia**:" bez zawartości lub "### Uzasadnienie" bez treści)
-    final_output = []
-    for i, line in enumerate(raw_output):
         stripped = line.strip()
         clean_label = stripped.strip("* -").strip().lower()
 
-        # Bezwzględne usunięcie wiszącej etykiety ćwiczeń (detale ćwiczeń są odfiltrowane)
-        if clean_label in ("**ćwiczenia**:", "ćwiczenia:", "**cwiczenia**:", "cwiczenia:"):
+        # 1. Wykrycie sekcji '### Podsumowanie tygodnia'
+        if stripped.startswith('###') and 'podsumowanie tygodnia' in clean_label:
+            in_weekly_summary = True
+            output_lines.append(line)
             continue
+
+        # 2. Przetwarzanie wewnątrz sekcji '### Podsumowanie tygodnia'
+        if in_weekly_summary:
+            # Ucinamy dalsze przetwarzanie, gdy natrafimy na kolejny nagłówek (np. '### Uzasadnienie...')
+            if stripped.startswith('###') and 'podsumowanie' not in clean_label:
+                break
+
+            # W podsumowaniu tygodnia przepuszczamy wyłącznie punkty z planowanymi obciążeniami
+            if stripped.startswith(('*', '-')):
+                if any(kw in clean_label for kw in ['planowan', 'rozkład intensywnośc']):
+                    if not any(neg in clean_label for neg in ['hrv', 'rhr', 'poprzedni', 'tętno']):
+                        output_lines.append(line)
+            continue
+
+        # 3. Przetwarzanie sekcji dni tygodnia:
+        if stripped.startswith('#') or stripped.startswith('*') or stripped.startswith('-'):
+            # Bezwzględne usunięcie wiszącej etykiety ćwiczeń (detale ćwiczeń są odfiltrowane)
+            if clean_label in ("**ćwiczenia**:", "ćwiczenia:", "**cwiczenia**:", "cwiczenia:"):
+                continue
+            output_lines.append(line)
+
+    # 4. Usuwanie nagłówków-widm i wiszących etykiet dwukropkowych bez zawartości
+    final_output = []
+    for i, line in enumerate(output_lines):
+        stripped = line.strip()
+        clean_label = stripped.strip("* -").strip().lower()
+
+        # Odrzuć puste "Uzasadnienie" jeśli nie ma pod nim wartości
+        if stripped.startswith('###') and "uzasadnienie" in clean_label:
+            if i + 1 >= len(output_lines) or output_lines[i+1].strip().startswith('#'):
+                continue
 
         # Jeśli to etykieta z dwukropkiem (np. - Ćwiczenia:, * Kategoria:) bez treści w tej samej linii
         if stripped.endswith(':'):
             # Sprawdź, czy kolejna linia istnieje i czy NIE JEST kolejnym nagłówkiem lub kolejnym punktem listy
-            if i + 1 >= len(raw_output) or raw_output[i+1].strip().startswith(('#', '*', '-')) or raw_output[i+1].strip().endswith(':'):
-                continue # Odrzuć tę etykietę, bo pod spodem nie ma wartości
-        
-        # Odrzuć puste "Uzasadnienie" jeśli nie ma pod nim wartości
-        if stripped.startswith('###') and "uzasadnienie" in stripped.lower():
-            if i + 1 >= len(raw_output) or raw_output[i+1].strip().startswith('#'):
+            if i + 1 >= len(output_lines) or output_lines[i+1].strip().startswith(('#', '*', '-')) or output_lines[i+1].strip().endswith(':'):
                 continue
-                
+
         final_output.append(line)
-                
+
     return "\n".join(final_output)
 
 def generate_daily_prompt(
