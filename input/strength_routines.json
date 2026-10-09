@@ -1,0 +1,413 @@
+{
+  "fbw": {
+    "name": "FBW (Full Body Workout)",
+    "description": "Trening ogólnorozwojowy całego ciała ukierunkowany na transfer motoryczny i siłę biegową.",
+    "exercises": {
+      "Bulgarian Split Squat (Dumbbell)": {
+        "target_sets": 3,
+        "target_reps": "10-12",
+        "tempo": "3-0-1-0",
+        "last_sets": [
+          {
+            "set": 1,
+            "weight": "10 kg",
+            "reps": 12
+          },
+          {
+            "set": 2,
+            "weight": "10 kg",
+            "reps": 12
+          },
+          {
+            "set": 3,
+            "weight": "12 kg",
+            "reps": 10
+          }
+        ]
+      },
+      "Incline Bench Press (Barbell)": {
+        "target_sets": 3,
+        "target_reps": "8-10",
+        "tempo": "2-0-1-0",
+        "superset_group": "Góra ciała (Push & Pull)",
+        "superset_role": "A1",
+        "last_sets": [
+          {
+            "set": 1,
+            "weight": "50 kg",
+            "reps": 8
+          },
+          {
+            "set": 2,
+            "weight": "50 kg",
+            "reps": 8
+          },
+          {
+            "set": 3,
+            "weight": "50 kg",
+            "reps": 8
+          }
+        ]
+      },
+      "Pull Up": {
+        "target_sets": 3,
+        "target_reps": "8-10",
+        "tempo": "2-0-1-1",
+        "superset_group": "Góra ciała (Push & Pull)",
+        "superset_role": "A2",
+        "last_sets": [
+          {
+            "set": 1,
+            "weight": "mc",
+            "reps": 10
+          },
+          {
+            "set": 2,
+            "weight": "mc",
+            "reps": 8
+          },
+          {
+            "set": 3,
+            "weight": "mc",
+            "reps": 6
+          }
+        ]
+      },
+      "Bent Over Row (Barbell)": {
+        "target_sets": 3,
+        "target_reps": "8-10",
+        "tempo": "2-0-1-1",
+        "last_sets": [
+          {
+            "set": 1,
+            "weight": "40 kg",
+            "reps": 10
+          },
+          {
+            "set": 2,
+            "weight": "40 kg",
+            "reps": 10
+          },
+          {
+            "set": 3,
+            "weight": "45 kg",
+            "reps": 8
+          }
+        ]
+      },
+      "Single Leg Romanian Deadlift (Dumbbell)": {
+        "target_sets": 2,
+        "target_reps": "10-12",
+        "tempo": "3-0-1-0",
+        "last_sets": [
+          {
+            "set": 1,
+            "weight": "12 kg",
+            "reps": 12
+          },
+          {
+            "set": 2,
+            "weight": "14 kg",
+            "reps": 10
+          }
+        ]
+      },
+      "Single Leg Hip Thrust (Dumbbell)": {
+        "target_sets": 2,
+        "target_reps": "10-12",
+        "tempo": "2-0-1-1",
+        "last_sets": [
+          {
+            "set": 1,
+            "weight": "15 kg",
+            "reps": 12
+          },
+          {
+            "set": 2,
+            "weight": "15 kg",
+            "reps": 12
+          }
+        ]
+      },
+      "Single Leg Standing Calf Raise (Barbell)": {
+        "target_sets": 3,
+        "target_reps": "10-12",
+        "tempo": "3-2-1-0",
+        "last_sets": [
+          {
+            "set": 1,
+            "weight": "15 kg",
+            "reps": 12
+          },
+          {
+            "set": 2,
+            "weight": "15 kg",
+            "reps": 12
+          },
+          {
+            "set": 3,
+            "weight": "20 kg",
+            "reps": 10
+          }
+        ]
+      },
+      "Dead Bug": {
+        "target_sets": 3,
+        "target_reps": "12-15",
+        "tempo": "2-0-1-0",
+        "last_sets": [
+          {
+            "set": 1,
+            "weight": "mc",
+            "reps": 15
+          },
+          {
+            "set": 2,
+            "weight": "mc",
+            "reps": 15
+          },
+          {
+            "set": 3,
+            "weight": "mc",
+            "reps": 12
+          }
+        ]
+      },
+      "Side plank with leg raise": {
+        "target_sets": 3,
+        "target_reps": "10-12",
+        "tempo": "1-0-1-0",
+        "last_sets": [
+          {
+            "set": 1,
+            "weight": "mc",
+            "reps": 12
+          },
+          {
+            "set": 2,
+            "weight": "mc",
+            "reps": 12
+          },
+          {
+            "set": 3,
+            "weight": "mc",
+            "reps": 10
+          }
+        ]
+      }
+    }
+  },
+  "upper": {
+    "name": "UPPER",
+    "description": "Trening górnych partii ciała z całkowitym odciążeniem aparatu ruchu nóg.",
+    "exercises": {
+      "Bench Press (Barbell)": {
+        "target_sets": 3,
+        "target_reps": "8-10",
+        "tempo": "3-0-1-0",
+        "last_sets": [
+          {
+            "set": 1,
+            "weight": "60 kg",
+            "reps": 8
+          },
+          {
+            "set": 2,
+            "weight": "60 kg",
+            "reps": 8
+          },
+          {
+            "set": 3,
+            "weight": "62.5 kg",
+            "reps": 8
+          }
+        ]
+      },
+      "Lat Pulldown (Cable)": {
+        "target_sets": 3,
+        "target_reps": "8-10",
+        "tempo": "1-1-2-0",
+        "last_sets": [
+          {
+            "set": 1,
+            "weight": "45 kg",
+            "reps": 10
+          },
+          {
+            "set": 2,
+            "weight": "45 kg",
+            "reps": 10
+          },
+          {
+            "set": 3,
+            "weight": "50 kg",
+            "reps": 8
+          }
+        ]
+      },
+      "Overhead Press (Barbell)": {
+        "target_sets": 3,
+        "target_reps": "8-10",
+        "tempo": "2-0-1-1",
+        "last_sets": [
+          {
+            "set": 1,
+            "weight": "35 kg",
+            "reps": 10
+          },
+          {
+            "set": 2,
+            "weight": "35 kg",
+            "reps": 9
+          },
+          {
+            "set": 3,
+            "weight": "35 kg",
+            "reps": 8
+          }
+        ]
+      },
+      "Seated Cable Row - Bar Grip": {
+        "target_sets": 3,
+        "target_reps": "8-10",
+        "tempo": "2-1-1-1",
+        "last_sets": [
+          {
+            "set": 1,
+            "weight": "50 kg",
+            "reps": 10
+          },
+          {
+            "set": 2,
+            "weight": "50 kg",
+            "reps": 10
+          },
+          {
+            "set": 3,
+            "weight": "50 kg",
+            "reps": 10
+          }
+        ]
+      },
+      "Seated Calf Raise": {
+        "target_sets": 3,
+        "target_reps": "10-12",
+        "tempo": "3-2-1-0",
+        "last_sets": [
+          {
+            "set": 1,
+            "weight": "30 kg",
+            "reps": 12
+          },
+          {
+            "set": 2,
+            "weight": "30 kg",
+            "reps": 12
+          },
+          {
+            "set": 3,
+            "weight": "35 kg",
+            "reps": 10
+          }
+        ]
+      },
+      "Bicep Curl (Barbell)": {
+        "target_sets": 3,
+        "target_reps": "10-12",
+        "tempo": "2-0-1-1",
+        "superset_group": "Ramiona",
+        "superset_role": "A1",
+        "last_sets": [
+          {
+            "set": 1,
+            "weight": "20 kg",
+            "reps": 12
+          },
+          {
+            "set": 2,
+            "weight": "20 kg",
+            "reps": 12
+          },
+          {
+            "set": 3,
+            "weight": "22.5 kg",
+            "reps": 10
+          }
+        ]
+      },
+      "Triceps Pushdown": {
+        "target_sets": 3,
+        "target_reps": "10-12",
+        "tempo": "2-0-1-1",
+        "superset_group": "Ramiona",
+        "superset_role": "A2",
+        "last_sets": [
+          {
+            "set": 1,
+            "weight": "25 kg",
+            "reps": 12
+          },
+          {
+            "set": 2,
+            "weight": "25 kg",
+            "reps": 12
+          },
+          {
+            "set": 3,
+            "weight": "25 kg",
+            "reps": 12
+          }
+        ]
+      },
+      "Cable Core Pallof Press": {
+        "target_sets": 3,
+        "target_reps": "10-12",
+        "tempo": "2-1-1-1",
+        "last_sets": [
+          {
+            "set": 1,
+            "weight": "15 kg",
+            "reps": 12
+          },
+          {
+            "set": 2,
+            "weight": "15 kg",
+            "reps": 12
+          },
+          {
+            "set": 3,
+            "weight": "15 kg",
+            "reps": 12
+          }
+        ]
+      },
+      "Ab Wheel": {
+        "target_sets": 3,
+        "target_reps": "10-12",
+        "tempo": "2-0-1-0",
+        "last_sets": [
+          {
+            "set": 1,
+            "weight": "mc",
+            "reps": 12
+          },
+          {
+            "set": 2,
+            "weight": "mc",
+            "reps": 12
+          },
+          {
+            "set": 3,
+            "weight": "mc",
+            "reps": 10
+          }
+        ]
+      }
+    }
+  },
+  "lower": {
+    "name": "LOWER (Dół ciała)",
+    "description": "Dedykowany trening dołu ciała ukierunkowany na wzmocnienie siły i elastyczności ścięgien.",
+    "exercises": {}
+  }
+}

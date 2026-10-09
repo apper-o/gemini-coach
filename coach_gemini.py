@@ -37,6 +37,7 @@ from coach_prompts import (
     generate_daily_prompt,
     build_and_save_daily_archive,
     separate_strength_and_user_notes,
+    update_strength_routines_from_workout,
 )
 
 # Parsuje .env i zapisuje klucze do pamięci procesu (os.environ).
@@ -589,6 +590,11 @@ def run_daily_mode(client, todays_date, weekly_plan_file, user_profile, user_not
             print(f"📲 ZAREJESTROWANO TRENING SIŁOWY (Z TELEGRAMA): {audit_date_str}")
             print("="*60)
             print(strength_workout)
+            # Automatyczna aktualizacja wag roboczych w input/strength_routines.json
+            updated_info = update_strength_routines_from_workout(strength_workout)
+            if updated_info:
+                routine_name, updated_exs = updated_info
+                print(f"💾 Zaktualizowano wagi robocze w bazie ({routine_name.upper()}): {', '.join(updated_exs)}")
         elif not activity_stats:
             print("\n" + "="*60)
             print(f"📄 DZIEŃ BEZ BIEGU / REST DAY: {audit_date_str}")

@@ -55,6 +55,19 @@ RE_DECISION_ACC = re.compile(r'\*\s*\*\*STOPIEŃ GOTOWOŚCI[^\n:]*:\s*([^\n]+)',
 RE_DIST_FLOAT = re.compile(r'([0-9]+(?:[.,][0-9]+)?)')
 RE_PLAN_STRUCT = re.compile(r'Dystans:\s*Plan:[^\n\(]*\(([^)]*(?:rozgrzewk|schłodzen|główn|mp|tempo)[^)]*)\)', re.IGNORECASE)
 
+# Wyrażenia regularne do parsowania notatek z aplikacji Hevy (trening siłowy)
+RE_SET_BODYWEIGHT = re.compile(r'^[*-]?\s*Set\s+(\d+):\s*(\d+)\s*reps\b', re.IGNORECASE)
+RE_SET_PLUS_WEIGHT = re.compile(r'^[*-]?\s*Set\s+(\d+):\s*\+([0-9.,]+\s*kg)\s*x\s*(\d+)', re.IGNORECASE)
+RE_SET_WEIGHT = re.compile(r'^[*-]?\s*Set\s+(\d+):\s*([0-9.,]+(?:\s*(?:kg(?:/[a-ząćęłńóśźż]+)?))?)\s*x\s*(\d+)', re.IGNORECASE)
+RE_DATE_HEURISTIC = re.compile(
+    r'(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|'
+    r'Poniedziałek|Wtorek|Środa|Czwartek|Piątek|Sobota|Niedziela|'
+    r'\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b|'
+    r'\d{4}-\d{2}-\d{2}|at\s+\d{1,2}:\d{2})',
+    re.IGNORECASE
+)
+ROUTINES_JSON_PATH = os.path.join(INPUT_DIR, "strength_routines.json")
+
 
 # ==============================================================================
 # PLIKI WEJŚCIOWE, NOTATKA BIEGACZA I HISTORIA 42 DNI
@@ -1186,6 +1199,263 @@ def generate_weekly_suggestions_prompt(personal_data, trainings_history=None, us
         note_section=note_section
     )
 
+
+def load_strength_routines(filepath=ROUTINES_JSON_PATH):
+    """
+    Wczytuje zdefiniowane bazy treningów siłowych z pliku JSON.
+    """
+    if not filepath or not os.path.exists(filepath):
+        return {}
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        logger.error(f"Błąd odczytu pliku {filepath}: {e}")
+        return {}
+
+
+def save_strength_routines(data, filepath=ROUTINES_JSON_PATH):
+    """
+    Zapisuje zaktualizowane bazy treningów siłowych do pliku JSON.
+    """
+    try:
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        with open(filepath, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        logger.info(f"💾 Pomyślnie zapisano bazy treningów siłowych do: {filepath}")
+        return True
+    except Exception as e:
+        logger.error(f"Błąd zapisu pliku {filepath}: {e}")
+        return False
+
+
+def parse_hevy_strength_workout(workout_text):
+    """
+    Parsuje raport z treningu siłowego z aplikacji Hevy (przesłany przez Telegram).
+
+    Wyciąga klucz rutyny (np. 'fbw', 'upper') oraz listę wykonanych ćwiczeń
+    wraz z przypisanymi seriami, wagami roboczymi (lub 'mc' dla ćwiczeń z masą ciała)
+    i liczbą powtórzeń.
+
+    Returns:
+        tuple[str | None, dict[str, list[dict]]]: (routine_key, exercises_dict)
+    """
+    if not workout_text or not workout_text.strip():
+        return None, {}
+
+    lines = [l.strip() for l in workout_text.splitlines() if l.strip()]
+    if not lines:
+        return None, {}
+
+    first_clean = lines[0].strip(":.,!- #*[]()\"'").lower()
+    routine_candidate = first_clean.split()[0] if first_clean else ""
+    if routine_candidate not in STRENGTH_WORKOUT_NAMES:
+        return None, {}
+
+    routine_key = routine_candidate
+    parsed_exercises = {}
+    current_exercise = None
+    current_sets = []
+
+    for line in lines[1:]:
+        if RE_DATE_HEURISTIC.search(line):
+            continue
+
+        m_bw = RE_SET_BODYWEIGHT.search(line)
+        if m_bw:
+            current_sets.append({
+                "set": int(m_bw.group(1)),
+                "weight": "mc",
+                "reps": int(m_bw.group(2))
+            })
+            continue
+
+        m_plus = RE_SET_PLUS_WEIGHT.search(line)
+        if m_plus:
+            current_sets.append({
+                "set": int(m_plus.group(1)),
+                "weight": f"+{m_plus.group(2).strip()}",
+                "reps": int(m_plus.group(3))
+            })
+            continue
+
+        m_w = RE_SET_WEIGHT.search(line)
+        if m_w:
+            raw_w = m_w.group(2).strip()
+            if "kg" not in raw_w.lower():
+                raw_w += " kg"
+            current_sets.append({
+                "set": int(m_w.group(1)),
+                "weight": raw_w,
+                "reps": int(m_w.group(3))
+            })
+            continue
+
+        clean_name = re.sub(r"^[0-9]+[.)]\s*", "", line).strip("* -_")
+        if clean_name.lower().startswith("set "):
+            continue
+
+        if current_exercise and current_sets:
+            parsed_exercises[current_exercise] = current_sets
+            current_sets = []
+
+        current_exercise = clean_name
+        current_sets = []
+
+    if current_exercise and current_sets:
+        parsed_exercises[current_exercise] = current_sets
+
+    return routine_key, parsed_exercises
+
+
+def _find_canonical_exercise_key(exercise_candidate, canonical_exercises):
+    """
+    Dopasowuje nazwę ćwiczenia z notatki do kanonicznego klucza w rutynie.
+    Obsługuje dopasowanie dokładne oraz dopasowanie bez uwzględniania wielkości liter
+    i opcjonalnych dopisków sprzętu (np. '(Barbell)').
+    """
+    if exercise_candidate in canonical_exercises:
+        return exercise_candidate
+
+    c_norm = exercise_candidate.strip().lower()
+    for canon_name in canonical_exercises:
+        if canon_name.strip().lower() == c_norm:
+            return canon_name
+
+    c_stripped = re.sub(r'\s*\([^)]*\)', '', c_norm).strip()
+    for canon_name in canonical_exercises:
+        canon_stripped = re.sub(r'\s*\([^)]*\)', '', canon_name.strip().lower()).strip()
+        if c_stripped == canon_stripped and c_stripped:
+            return canon_name
+
+    return None
+
+
+def update_strength_routines_from_workout(workout_text, filepath=ROUTINES_JSON_PATH):
+    """
+    Aktualizuje wagi i powtórzenia w bazie rutyn siłowych po zrealizowanym treningu.
+
+    Rygor kanoniczności (ochrona bazy przed zanieczyszczeniem):
+    Zapisuje wyłącznie ćwiczenia należące do oficjalnej definicji danej rutyny w JSON.
+    Wszelkie modyfikacje, zamienniki i ćwiczenia doraźne są celowo pomijane i NIE trafiają do JSON.
+
+    Returns:
+        tuple[str, list[str]] | None: (nazwa_rutyny, lista_zaktualizowanych_ćwiczeń) lub None.
+    """
+    routine_key, parsed_exercises = parse_hevy_strength_workout(workout_text)
+    if not routine_key or not parsed_exercises:
+        return None
+
+    routines_data = load_strength_routines(filepath)
+    if routine_key not in routines_data:
+        logger.warning(f"Rutyna '{routine_key}' nie istnieje w pliku {filepath}.")
+        return None
+
+    canonical_dict = routines_data[routine_key].get("exercises", {})
+    updated_exercises = []
+
+    for ex_name, sets in parsed_exercises.items():
+        matched_canon = _find_canonical_exercise_key(ex_name, canonical_dict)
+        if matched_canon:
+            canonical_dict[matched_canon]["last_sets"] = sets
+            updated_exercises.append(matched_canon)
+        else:
+            logger.info(
+                f"Pominięto ćwiczenie zmodyfikowane/doraźne: '{ex_name}' "
+                f"(brak w bazowej definicji rutyny '{routine_key}')."
+            )
+
+    if updated_exercises:
+        save_strength_routines(routines_data, filepath)
+        return routine_key, updated_exercises
+
+    return None
+
+
+def _format_last_sets_str(last_sets):
+    """Pomocnicze formatowanie listy serii i wag do postaci czytelnej dla modelu."""
+    if not last_sets:
+        return "Brak danych w historii (ustal bezpieczną wagę startową)"
+    return " | ".join(
+        f"Seria {s.get('set', idx + 1)}: {s.get('weight', 'mc')} x {s.get('reps', '')}"
+        for idx, s in enumerate(last_sets)
+    )
+
+
+def format_strength_routines_for_prompt(routines_data=None, filepath=ROUTINES_JSON_PATH):
+    """
+    Formatuje bazę rutyn siłowych z pliku JSON do postaci Markdown dla promptu modelu.
+    Wstrzykuje do każdego ćwiczenia jego docelowe parametry, tempo oraz ostatnie
+    serie i wagi robocze (lub informację o braku danych).
+    """
+    if routines_data is None:
+        routines_data = load_strength_routines(filepath)
+
+    if not routines_data:
+        return "Brak zdefiniowanych zestawów siłowych w pliku input/strength_routines.json."
+
+    output = [
+        "# BAZA TRENINGÓW SIŁOWYCH (ROUTINES) I AKTUALNE OBCIĄŻENIA ROBOCZE",
+        "* **Zapis tempa**: Cztery cyfry oznaczają kolejno: faza ekscentryczna (opuszczanie) - pauza w rozciągnięciu - faza koncentryczna (unoszenie/skurcz) - pauza w skurczu.",
+        "* **Zasada doboru wag**: Do każdej serii planowanego treningu przypisz konkretną wagę i liczbę powtórzeń na podstawie 'Ostatnie serie i wagi' (lub zaplanuj bezpieczną progresję o max 1 parametr). Dla ćwiczeń 'mc' planuj ćwiczenie z masą ciała.",
+        ""
+    ]
+
+    routine_idx = 1
+    for r_key, r_info in routines_data.items():
+        r_name = r_info.get("name", r_key.upper())
+        r_desc = r_info.get("description", "")
+        exercises = r_info.get("exercises", {})
+
+        output.append(f"## {routine_idx}. ROUTINE: {r_name}")
+        if r_desc:
+            output.append(f"*{r_desc}*\n")
+
+        if not exercises:
+            output.append("*Zestaw jeszcze nie uzupełniony, pomiń go*\n")
+            routine_idx += 1
+            continue
+
+        handled_supersets = set()
+        item_counter = 1
+
+        for ex_name, ex_data in exercises.items():
+            sg = ex_data.get("superset_group")
+            if sg:
+                if sg in handled_supersets:
+                    continue
+                handled_supersets.add(sg)
+                output.append(f"{item_counter}. **[SUPERSET] {sg}**:")
+                sg_items = [item for item in exercises.items() if item[1].get("superset_group") == sg]
+                for s_name, s_data in sg_items:
+                    role = s_data.get("superset_role", "")
+                    role_prefix = f"{role}: " if role else ""
+                    t_sets = s_data.get("target_sets", 3)
+                    t_reps = s_data.get("target_reps", "8-10")
+                    tempo_val = s_data.get("tempo")
+                    tempo_str = f", tempo {tempo_val}" if tempo_val else ""
+                    sets_str = _format_last_sets_str(s_data.get("last_sets", []))
+
+                    output.append(f"   * **{role_prefix}{s_name} ({r_key})**: {t_sets} serie, {t_reps} powtórzeń{tempo_str}")
+                    output.append(f"     - Ostatnie serie i wagi: {sets_str}")
+                item_counter += 1
+            else:
+                t_sets = ex_data.get("target_sets", 3)
+                t_reps = ex_data.get("target_reps", "8-10")
+                tempo_val = ex_data.get("tempo")
+                tempo_str = f", tempo {tempo_val}" if tempo_val else ""
+                sets_str = _format_last_sets_str(ex_data.get("last_sets", []))
+
+                output.append(f"{item_counter}. **{ex_name} ({r_key})**: {t_sets} serie, {t_reps} powtórzeń{tempo_str}")
+                output.append(f"   * Ostatnie serie i wagi: {sets_str}")
+                item_counter += 1
+
+        output.append("")
+        routine_idx += 1
+
+    return "\n".join(output)
+
+
 def generate_weekly_plan_prompt(days_structure, personal_data, trainings_history=None, user_note=None, strength_routines=None, ref_date=None):
     """
     Tworzy prompt dla Gemini do ułożenia kompletnego planu treningowego na cały tydzień.
@@ -1206,8 +1476,8 @@ def generate_weekly_plan_prompt(days_structure, personal_data, trainings_history
     profile = build_user_profile(personal_data, ref_date=ref_date)
 
     if strength_routines is None:
-        strength_routines = _read_file_safe(os.path.join(INPUT_DIR, "strength_routines.md"))
-    routines_section = strength_routines if strength_routines else "Brak zdefiniowanych zestawów siłowych w pliku input/strength_routines.md."
+        strength_routines = format_strength_routines_for_prompt()
+    routines_section = strength_routines if strength_routines else "Brak zdefiniowanych zestawów siłowych w pliku input/strength_routines.json."
 
     return load_prompt_template(
         "weekly_plan.md",
