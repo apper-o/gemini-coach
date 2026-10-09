@@ -10,17 +10,17 @@
         "last_sets": [
           {
             "set": 1,
-            "weight": "10 kg",
-            "reps": 12
+            "weight": "20 kg",
+            "reps": 10
           },
           {
             "set": 2,
-            "weight": "10 kg",
-            "reps": 12
+            "weight": "20 kg",
+            "reps": 10
           },
           {
             "set": 3,
-            "weight": "12 kg",
+            "weight": "20 kg",
             "reps": 10
           }
         ]
@@ -29,8 +29,6 @@
         "target_sets": 3,
         "target_reps": "8-10",
         "tempo": "2-0-1-0",
-        "superset_group": "Góra ciała (Push & Pull)",
-        "superset_role": "A1",
         "last_sets": [
           {
             "set": 1,
@@ -47,14 +45,13 @@
             "weight": "50 kg",
             "reps": 8
           }
-        ]
+        ],
+        "superset": "A1"
       },
       "Pull Up": {
         "target_sets": 3,
         "target_reps": "8-10",
         "tempo": "2-0-1-1",
-        "superset_group": "Góra ciała (Push & Pull)",
-        "superset_role": "A2",
         "last_sets": [
           {
             "set": 1,
@@ -71,7 +68,8 @@
             "weight": "mc",
             "reps": 6
           }
-        ]
+        ],
+        "superset": "A2"
       },
       "Bent Over Row (Barbell)": {
         "target_sets": 3,
@@ -80,18 +78,18 @@
         "last_sets": [
           {
             "set": 1,
-            "weight": "40 kg",
+            "weight": "50 kg",
             "reps": 10
           },
           {
             "set": 2,
-            "weight": "40 kg",
+            "weight": "50 kg",
             "reps": 10
           },
           {
             "set": 3,
-            "weight": "45 kg",
-            "reps": 8
+            "weight": "50 kg",
+            "reps": 10
           }
         ]
       },
@@ -102,13 +100,13 @@
         "last_sets": [
           {
             "set": 1,
-            "weight": "12 kg",
-            "reps": 12
+            "weight": "mc",
+            "reps": 6
           },
           {
             "set": 2,
-            "weight": "14 kg",
-            "reps": 10
+            "weight": "mc",
+            "reps": 6
           }
         ]
       },
@@ -119,13 +117,13 @@
         "last_sets": [
           {
             "set": 1,
-            "weight": "15 kg",
-            "reps": 12
+            "weight": "10 kg",
+            "reps": 10
           },
           {
             "set": 2,
-            "weight": "15 kg",
-            "reps": 12
+            "weight": "10 kg",
+            "reps": 10
           }
         ]
       },
@@ -136,18 +134,18 @@
         "last_sets": [
           {
             "set": 1,
-            "weight": "15 kg",
+            "weight": "50 kg",
             "reps": 12
           },
           {
             "set": 2,
-            "weight": "15 kg",
+            "weight": "50 kg",
             "reps": 12
           },
           {
             "set": 3,
-            "weight": "20 kg",
-            "reps": 10
+            "weight": "50 kg",
+            "reps": 12
           }
         ]
       },
@@ -169,7 +167,7 @@
           {
             "set": 3,
             "weight": "mc",
-            "reps": 12
+            "reps": 15
           }
         ]
       },
@@ -191,7 +189,7 @@
           {
             "set": 3,
             "weight": "mc",
-            "reps": 10
+            "reps": 12
           }
         ]
       }
@@ -218,7 +216,7 @@
           },
           {
             "set": 3,
-            "weight": "62.5 kg",
+            "weight": "60 kg",
             "reps": 8
           }
         ]
@@ -230,18 +228,18 @@
         "last_sets": [
           {
             "set": 1,
-            "weight": "45 kg",
-            "reps": 10
+            "weight": "55 kg",
+            "reps": 8
           },
           {
             "set": 2,
-            "weight": "45 kg",
-            "reps": 10
+            "weight": "55 kg",
+            "reps": 6
           },
           {
             "set": 3,
             "weight": "50 kg",
-            "reps": 8
+            "reps": 4
           }
         ]
       },
@@ -252,18 +250,18 @@
         "last_sets": [
           {
             "set": 1,
-            "weight": "35 kg",
-            "reps": 10
+            "weight": "40 kg",
+            "reps": 5
           },
           {
             "set": 2,
             "weight": "35 kg",
-            "reps": 9
+            "reps": 6
           },
           {
             "set": 3,
             "weight": "35 kg",
-            "reps": 8
+            "reps": 6
           }
         ]
       },
@@ -315,23 +313,22 @@
         "target_sets": 3,
         "target_reps": "10-12",
         "tempo": "2-0-1-1",
-        "superset_group": "Ramiona",
-        "superset_role": "A1",
+        "superset": "A1",
         "last_sets": [
           {
             "set": 1,
-            "weight": "20 kg",
-            "reps": 12
+            "weight": "30 kg",
+            "reps": 10
           },
           {
             "set": 2,
-            "weight": "20 kg",
-            "reps": 12
+            "weight": "30 kg",
+            "reps": 10
           },
           {
             "set": 3,
-            "weight": "22.5 kg",
-            "reps": 10
+            "weight": "30 kg",
+            "reps": 8
           }
         ]
       },
@@ -339,23 +336,22 @@
         "target_sets": 3,
         "target_reps": "10-12",
         "tempo": "2-0-1-1",
-        "superset_group": "Ramiona",
-        "superset_role": "A2",
+        "superset": "A2",
         "last_sets": [
           {
             "set": 1,
-            "weight": "25 kg",
-            "reps": 12
+            "weight": "50 kg",
+            "reps": 10
           },
           {
             "set": 2,
-            "weight": "25 kg",
-            "reps": 12
+            "weight": "50 kg",
+            "reps": 10
           },
           {
             "set": 3,
-            "weight": "25 kg",
-            "reps": 12
+            "weight": "50 kg",
+            "reps": 10
           }
         ]
       },
@@ -363,21 +359,22 @@
         "target_sets": 3,
         "target_reps": "10-12",
         "tempo": "2-1-1-1",
+        "superset": "B1",
         "last_sets": [
           {
             "set": 1,
-            "weight": "15 kg",
-            "reps": 12
+            "weight": "18 kg",
+            "reps": 10
           },
           {
             "set": 2,
-            "weight": "15 kg",
-            "reps": 12
+            "weight": "18 kg",
+            "reps": 10
           },
           {
             "set": 3,
-            "weight": "15 kg",
-            "reps": 12
+            "weight": "18 kg",
+            "reps": 10
           }
         ]
       },
@@ -385,16 +382,17 @@
         "target_sets": 3,
         "target_reps": "10-12",
         "tempo": "2-0-1-0",
+        "superset": "B2",
         "last_sets": [
           {
             "set": 1,
             "weight": "mc",
-            "reps": 12
+            "reps": 10
           },
           {
             "set": 2,
             "weight": "mc",
-            "reps": 12
+            "reps": 10
           },
           {
             "set": 3,

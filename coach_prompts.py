@@ -1390,6 +1390,9 @@ def format_strength_routines_for_prompt(routines_data=None, filepath=ROUTINES_JS
     """
     if routines_data is None:
         routines_data = load_strength_routines(filepath)
+    elif isinstance(routines_data, (list, set, tuple)):
+        all_routines = load_strength_routines(filepath)
+        routines_data = {k: all_routines[k] for k in routines_data if k in all_routines}
 
     if not routines_data:
         return "Brak zdefiniowanych zestawów siłowych w pliku input/strength_routines.json."
@@ -1420,23 +1423,43 @@ def format_strength_routines_for_prompt(routines_data=None, filepath=ROUTINES_JS
         item_counter = 1
 
         for ex_name, ex_data in exercises.items():
-            sg = ex_data.get("superset_group")
-            if sg:
-                if sg in handled_supersets:
+            superset_val = ex_data.get("superset") or ex_data.get("superset_role")
+            legacy_group = ex_data.get("superset_group")
+
+            if superset_val or legacy_group:
+                if superset_val:
+                    match = re.match(r"^([A-Za-z]+)", str(superset_val).strip())
+                    group_key = match.group(1).upper() if match else str(superset_val).upper()
+                    group_header = f"[SUPERSET {group_key}]"
+                else:
+                    group_key = legacy_group
+                    group_header = f"[SUPERSET] {legacy_group}"
+
+                if group_key in handled_supersets:
                     continue
-                handled_supersets.add(sg)
-                output.append(f"{item_counter}. **[SUPERSET] {sg}**:")
-                sg_items = [item for item in exercises.items() if item[1].get("superset_group") == sg]
-                for s_name, s_data in sg_items:
-                    role = s_data.get("superset_role", "")
-                    role_prefix = f"{role}: " if role else ""
+                handled_supersets.add(group_key)
+                output.append(f"{item_counter}. **{group_header}**:")
+
+                sg_items = []
+                for s_name, s_data in exercises.items():
+                    s_sup = s_data.get("superset") or s_data.get("superset_role")
+                    s_grp = s_data.get("superset_group")
+                    if s_sup:
+                        m = re.match(r"^([A-Za-z]+)", str(s_sup).strip())
+                        if m and m.group(1).upper() == group_key:
+                            sg_items.append((s_name, s_data, str(s_sup).strip()))
+                    elif s_grp == group_key:
+                        sg_items.append((s_name, s_data, s_data.get("superset_role", "")))
+
+                for s_name, s_data, role_or_tag in sg_items:
+                    tag_prefix = f"{role_or_tag}: " if role_or_tag else ""
                     t_sets = s_data.get("target_sets", 3)
                     t_reps = s_data.get("target_reps", "8-10")
                     tempo_val = s_data.get("tempo")
                     tempo_str = f", tempo {tempo_val}" if tempo_val else ""
                     sets_str = _format_last_sets_str(s_data.get("last_sets", []))
 
-                    output.append(f"   * **{role_prefix}{s_name} ({r_key})**: {t_sets} serie, {t_reps} powtórzeń{tempo_str}")
+                    output.append(f"   * **{tag_prefix}{s_name} ({r_key})**: {t_sets} serie, {t_reps} powtórzeń{tempo_str}")
                     output.append(f"     - Ostatnie serie i wagi: {sets_str}")
                 item_counter += 1
             else:
