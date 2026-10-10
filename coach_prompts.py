@@ -56,7 +56,7 @@ RE_DIST_FLOAT = re.compile(r'([0-9]+(?:[.,][0-9]+)?)')
 RE_PLAN_STRUCT = re.compile(r'Dystans:\s*Plan:[^\n\(]*\(([^)]*(?:rozgrzewk|schłodzen|główn|mp|tempo)[^)]*)\)', re.IGNORECASE)
 
 # Wyrażenia regularne do parsowania notatek z aplikacji Hevy (trening siłowy)
-RE_SET_BODYWEIGHT = re.compile(r'^[*-]?\s*Set\s+(\d+):\s*(\d+)\s*reps\b', re.IGNORECASE)
+RE_SET_BODYWEIGHT = re.compile(r'^[*-]?\s*Set\s+(\d+):\s*(?:(\d+)\s*reps\b|(?:mc|bodyweight)\s*x\s*(\d+))', re.IGNORECASE)
 RE_SET_PLUS_WEIGHT = re.compile(r'^[*-]?\s*Set\s+(\d+):\s*\+([0-9.,]+\s*kg)\s*x\s*(\d+)', re.IGNORECASE)
 RE_SET_WEIGHT = re.compile(r'^[*-]?\s*Set\s+(\d+):\s*([0-9.,]+(?:\s*(?:kg(?:/[a-ząćęłńóśźż]+)?))?)\s*x\s*(\d+)', re.IGNORECASE)
 RE_DATE_HEURISTIC = re.compile(
@@ -1263,10 +1263,11 @@ def parse_hevy_strength_workout(workout_text):
 
         m_bw = RE_SET_BODYWEIGHT.search(line)
         if m_bw:
+            reps_val = int(m_bw.group(2) or m_bw.group(3))
             current_sets.append({
                 "set": int(m_bw.group(1)),
                 "weight": "mc",
-                "reps": int(m_bw.group(2))
+                "reps": reps_val
             })
             continue
 
@@ -1310,9 +1311,12 @@ def parse_hevy_strength_workout(workout_text):
 
 def _find_canonical_exercise_key(exercise_candidate, canonical_exercises):
     """
-    Dopasowuje nazwę ćwiczenia z notatki do kanonicznego klucza w rutynie.
-    Obsługuje dopasowanie dokładne oraz dopasowanie bez uwzględniania wielkości liter
-    i opcjonalnych dopisków sprzętu (np. '(Barbell)').
+    Dopasowuje nazwę ćwiczenia z notatki Hevy do klucza w rutynie.
+    Zgodnie ze standardem ćwiczenia w bazie mają dokładną nazwę z Hevy.
+    Obsługuje:
+    1. Dopasowanie dokładne (1:1).
+    2. Dopasowanie bez uwzględniania wielkości liter i zbędnych spacji.
+    3. Opcjonalne dopasowanie po usunięciu dopisków sprzętu w nawiasach (np. '(Barbell)', '(Dumbbell)', '(Cable)').
     """
     if exercise_candidate in canonical_exercises:
         return exercise_candidate

@@ -590,11 +590,6 @@ def run_daily_mode(client, todays_date, weekly_plan_file, user_profile, user_not
             print(f"📲 ZAREJESTROWANO TRENING SIŁOWY (Z TELEGRAMA): {audit_date_str}")
             print("="*60)
             print(strength_workout)
-            # Automatyczna aktualizacja wag roboczych w input/strength_routines.json
-            updated_info = update_strength_routines_from_workout(strength_workout)
-            if updated_info:
-                routine_name, updated_exs = updated_info
-                print(f"💾 Zaktualizowano wagi robocze w bazie ({routine_name.upper()}): {', '.join(updated_exs)}")
         elif not activity_stats:
             print("\n" + "="*60)
             print(f"📄 DZIEŃ BEZ BIEGU / REST DAY: {audit_date_str}")
@@ -743,6 +738,23 @@ def dispatch_mode(mode, client, gemini_models, today, personal_data, user_note, 
     
     parts = [p for p in (final_user_note, strength_workout) if p]
     combined_note = "\n\n".join(parts) if parts else None
+
+    # Automatyczna aktualizacja wag w bazie rutyn siłowych po wykryciu raportu treningu
+    if strength_workout:
+        if not debug:
+            updated_info = update_strength_routines_from_workout(strength_workout)
+            if updated_info:
+                routine_name, updated_exs = updated_info
+                print(f"💾 Zaktualizowano wagi robocze w bazie ({routine_name.upper()}): {', '.join(updated_exs)}")
+        else:
+            debug_routines_path = os.path.join(DEBUG_DIR, "strength_routines.json")
+            if not os.path.exists(debug_routines_path):
+                import shutil
+                shutil.copy("input/strength_routines.json", debug_routines_path)
+            updated_info = update_strength_routines_from_workout(strength_workout, filepath=debug_routines_path)
+            if updated_info:
+                routine_name, updated_exs = updated_info
+                print(f"🔧 [DEBUG] Zaktualizowano wagi robocze w piaskownicy debug/strength_routines.json ({routine_name.upper()}): {', '.join(updated_exs)}")
 
     if mode == "daily":
         user_profile = build_user_profile(personal_data, ref_date=today)
