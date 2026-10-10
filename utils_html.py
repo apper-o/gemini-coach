@@ -5,6 +5,16 @@ import html
 RE_HR = re.compile(r'^(?:-{3,}|={3,})$')
 RE_TABLE_DIVIDER = re.compile(r'^:?-+:?$')
 RE_BOLD = re.compile(r'\*\*(.*?)\*\*')
+RE_ITALIC_STAR = re.compile(r'(?<!\*)\*([^*]+)\*(?!\*)')
+RE_ITALIC_UNDERSCORE = re.compile(r'(?<!_)_([^_]+)_(?!_)')
+
+
+def _format_inline_markdown(text):
+    """Konwertuje pogrubienie oraz kursywę Markdown na tagi HTML."""
+    text = RE_BOLD.sub(r'<strong>\1</strong>', text)
+    text = RE_ITALIC_STAR.sub(r'<em>\1</em>', text)
+    text = RE_ITALIC_UNDERSCORE.sub(r'<em>\1</em>', text)
+    return text
 
 
 def markdown_to_html_doc(md_text, title="Raport Coach Gemini"):
@@ -75,12 +85,22 @@ def markdown_to_html_doc(md_text, title="Raport Coach Gemini"):
                 html_lines.append("</tr></thead><tbody>")
                 table_has_header = True
             else:
-                html_lines.append("<tr>")
+                first_cell_raw = cells[0] if cells else ""
+                clean_first = re.sub(r'[*_`]', '', first_cell_raw).strip().lower()
+                is_pause_row = clean_first.startswith("przerw") or "przerwa" in clean_first
+
+                row_class = ' class="row-pause"' if is_pause_row else ''
+                html_lines.append(f"<tr{row_class}>")
                 for c in cells:
                     cell_html = html.escape(c)
-                    # Zamiana **tekst** na pogrubienie wewnątrz komórki
-                    cell_html = RE_BOLD.sub(r'<strong>\1</strong>', cell_html)
-                    html_lines.append(f"<td>{cell_html}</td>")
+                    if is_pause_row:
+                        # W wierszu przerwy usuwamy ewentualne ** (pogrubienia) oraz gwiazdki/podkreślenia
+                        cell_clean = re.sub(r'\*\*(.*?)\*\*', r'\1', cell_html)
+                        cell_clean = re.sub(r'[*_]', '', cell_clean).strip()
+                        html_lines.append(f"<td>{cell_clean}</td>")
+                    else:
+                        cell_html = _format_inline_markdown(cell_html)
+                        html_lines.append(f"<td>{cell_html}</td>")
                 html_lines.append("</tr>")
             continue
         else:
@@ -114,7 +134,7 @@ def markdown_to_html_doc(md_text, title="Raport Coach Gemini"):
                 in_list = True
                 html_lines.append("<ul>")
             item_text = html.escape(stripped[2:].strip())
-            item_text = RE_BOLD.sub(r'<strong>\1</strong>', item_text)
+            item_text = _format_inline_markdown(item_text)
             html_lines.append(f"<li>{item_text}</li>")
             continue
         else:
@@ -122,7 +142,7 @@ def markdown_to_html_doc(md_text, title="Raport Coach Gemini"):
 
         # Zwykły akapit
         p_text = html.escape(stripped)
-        p_text = RE_BOLD.sub(r'<strong>\1</strong>', p_text)
+        p_text = _format_inline_markdown(p_text)
         html_lines.append(f"<p>{p_text}</p>")
 
     close_list()
@@ -178,6 +198,17 @@ def markdown_to_html_doc(md_text, title="Raport Coach Gemini"):
     tr:nth-child(even) { background: var(--tr-even); }
     tr:nth-child(odd) { background: var(--tr-odd); }
     tr:hover { background: rgba(255, 255, 255, 0.05); }
+    tr.row-pause, tr.row-pause:nth-child(even), tr.row-pause:nth-child(odd) { background: rgba(0, 0, 0, 0.35) !important; }
+    tr.row-pause td {
+      color: #71717a !important;
+      font-style: normal;
+      border-bottom: 1px dashed var(--border-subtle);
+    }
+    tr.row-pause td em {
+      font-style: normal;
+      color: #71717a !important;
+    }
+    tr.row-pause:hover { background: rgba(255, 255, 255, 0.02) !important; }
     """
 
     return f"""<!DOCTYPE html>

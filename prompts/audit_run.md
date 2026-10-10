@@ -23,9 +23,9 @@
 - Mikro-splity vs powtórzenie: Lapy o dystansie mniejszym niż założony odcinek (np. 400 m przy planowanym 1 km) to celowe splity kontrolne. W tabeli akcentu scalaj je w jedno pełne powtórzenie z planu, ale w analizie biomechaniki i pacingu wykorzystaj je do oceny zmian między segmentami (dryf prędkości, kadencji, GCT wewnątrz powtórzenia).
 - Identyfikacja i audyt przerw: Odróżniaj lapy robocze od przerw na podstawie metryk (przerwa = wyraźny spadek tempa, kadencji <140 spm, marsz/trucht). Przerwy analizuj pod kątem kinetyki restytucji (tempo spadku HR, dyscyplina czasu odpoczynku), a nie tempa biegu – nie zaniżają one oceny egzekucji akcentu.
 
-4. ZASADY TWORZENI TABELI
+4. ZASADY TWORZENIA TABEL:
 - Tabela „Plan vs Realizacja”: Sztywny schemat 4 wierszy dla całej sesji (zakaz dzielenia na fazy).
-- Tabela akcentu: Wyłącznie scalone powtórzenia robocze; przerwy w osobnym wierszu kursywą; bez rozgrzewki i schłodzenia.
+- Tabela akcentu (serie): Wyłącznie scalone powtórzenia robocze (np. Powtórzenie 1); przerwy wpisuj w osobnym wierszu czystym tekstem (np. | Przerwa 1 | 0.15 km | ... |); kategoryczny zakaz formatowania przerw (zakaz kursywy *, _ oraz zakaz pogrubiania **); bez rozgrzewki i schłodzenia.
 
 5. PROTOKÓŁ NIEDZIELNY (DOMKNIĘCIE MIKROCYKLU):
 - W niedzielę w sekcji ## 4. wygeneruj WYŁĄCZNIE status gotowości oraz uzasadnienie; bezwzględnie pomiń pierwotny plan oraz rozpiskę na kolejny dzień.
@@ -44,6 +44,7 @@
 <!--JEŚLI AKCENT Z SERIAMI (INTERWAŁY, POWTÓRZENIA TEMPOWE) – WSTAW PONIŻSZĄ TABELĘ-->
 | Seria | Łączny Dystans | Łączny Czas | Średnie Tempo | Średnie HR | Maks HR | Średnia kadencja | Śr. dł. kroku | GCT |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+<!--Format wierszy: serie robocze normalną czcionką (| Powtórzenie 1 | ... |), przerwy czystym tekstem (| Przerwa 1 | 0.15 km | ... |), kategoryczny zakaz kursywy (*) i pogrubień (**)-->
 
 - **Profil jednostki**: [Bieg spokojny (Z2) / Bieg regeneracyjny (Z1) / Długie wybieganie (Long Run) / Bieg progowy (Tempo/LTHR) / Interwały (VO2max) / Zawody]
 - **Ocena egzekucji planu**: [X/10 – wierność założeniom tempa i stref, nie subiektywne zadowolenie]

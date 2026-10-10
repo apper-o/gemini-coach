@@ -25,7 +25,7 @@
 - Biomechanika: Średnia kadencja 170 spm, Krok 0.96 m, Kontakt z podłożem 271.1 ms, Odchylenie pionowe 8.23 cm
 
 #### Splity:
-| Km | Dystans | Czas | Tempo | GAP | Tętno (śr/max) | Kadencja | Krok | GCT | Odchylenie | Moc | Wznios/Spadek |
+| Km | Dystans | Czas | Tempo | GAP | Tętno (śr/max) | Kadencja | Krok | GCT | Odchylenie pionowe | Moc | Wznios/Spadek |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | 1 | 1.00 km | 6:01 | 6:02 min/km | 6:01 min/km | 139 / 147 bpm | 169 spm | 0.98 m | 269.4 ms | 8.26 cm | 320 W | +2m / -2m |
 | 2 | 1.00 km | 6:11 | 6:12 min/km | 6:13 min/km | 149 / 157 bpm | 172 spm | 0.94 m | 272.5 ms | 8.20 cm | 307 W | +4m / -5m |
@@ -38,7 +38,7 @@
 - Biomechanika: Średnia kadencja 161 spm, Krok 1.21 m, Kontakt z podłożem 225.9 ms, Odchylenie pionowe 7.96 cm
 
 #### Splity:
-| Km | Dystans | Czas | Tempo | GAP | Tętno (śr/max) | Kadencja | Krok | GCT | Odchylenie | Moc | Wznios/Spadek |
+| Km | Dystans | Czas | Tempo | GAP | Tętno (śr/max) | Kadencja | Krok | GCT | Odchylenie pionowe | Moc | Wznios/Spadek |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | 1 | 0.40 km | 1:44 | 4:20 min/km | Brak danych | 159 / 176 bpm | 176 spm | 1.22 m | 231.5 ms | 8.43 cm | 413 W | +3m / -0m |
 | 2 | 0.40 km | 1:40 | 4:12 min/km | Brak danych | 179 / 182 bpm | 187 spm | 1.25 m | 225.5 ms | 8.33 cm | 444 W | +0m / -0m |
@@ -60,7 +60,7 @@
 - Biomechanika: Średnia kadencja 169 spm, Krok 0.92 m, Kontakt z podłożem 274.0 ms, Odchylenie pionowe 8.10 cm
 
 #### Splity:
-| Km | Dystans | Czas | Tempo | GAP | Tętno (śr/max) | Kadencja | Krok | GCT | Odchylenie | Moc | Wznios/Spadek |
+| Km | Dystans | Czas | Tempo | GAP | Tętno (śr/max) | Kadencja | Krok | GCT | Odchylenie pionowe | Moc | Wznios/Spadek |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | 1 | 1.00 km | 6:23 | 6:24 min/km | 6:22 min/km | 150 / 157 bpm | 169 spm | 0.92 m | 273.9 ms | 8.10 cm | 298 W | +1m / -0m |
 | 2 | 0.00 km | 0:01 | 6:24 min/km | 6:42 min/km | 152 / 152 bpm | 161 spm | 0.94 m | 294.0 ms | 8.75 cm | 297 W | +0m / -0m |
@@ -70,50 +70,49 @@
 
 | Parametr | Plan | Realizacja | Odchylenie |
 |:---|:---:|:---:|:---:|
-| Dystans | 7.00 km | 6.30 km | -10.0% |
-| Średnie tempo | 5:17 min/km | 5:07 min/km | -3.2% |
-| Średnie HR | 165-175 bpm (Z4) | 161 bpm (całość) | Zaniżone obciążenie średnie |
-| Średnia kadencja | Brak założenia | 171 spm | Poziom akceptowalny |
+| Dystans | 7.00 km | 6.30 km | -0.70 km |
+| Średnie tempo | 5:10 min/km | 5:34 min/km | +0:24 min/km |
+| Średnie HR | 155 bpm | 160 bpm | +5 bpm |
+| Średnia kadencja | 175 spm | 165 spm | -10 spm |
 
 | Seria | Łączny Dystans | Łączny Czas | Średnie Tempo | Średnie HR | Maks HR | Średnia kadencja | Śr. dł. kroku | GCT |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Rozgrzewka | 2.00 km | 12:13 min | 6:07 min/km | 144 bpm | 157 bpm | 170 spm | 0.96 m | 271.1 ms |
-| Seria 1 (1.0 km Z4) | 1.00 km | 4:16 min | 4:16 min/km | 173 bpm | 182 bpm | 184 spm | 1.25 m | 225.8 ms |
-| _Przerwa_ | _0.28 km_ | _1:29 min_ | _5:17 min/km_ | _157 bpm_ | _180 bpm_ | _46 spm_ | _1.14 m_ | _230.0 ms_ |
-| Seria 2 (1.0 km Z4) | 1.00 km | 4:15 min | 4:15 min/km | 177 bpm | 186 bpm | 186 spm | 1.23 m | 224.2 ms |
-| _Przerwa_ | _0.36 km_ | _1:29 min_ | _4:07 min/km_ | _163 bpm_ | _186 bpm_ | _88 spm_ | _0.84 m_ | _238.0 ms_ |
-| Seria 3 (1.0 km Z4) | 1.00 km | 4:14 min | 4:14 min/km | 175 bpm | 189 bpm | 186 spm | 1.23 m | 223.7 ms |
-| Schłodzenie | 1.00 km | 6:24 min | 6:24 min/km | 150 bpm | 157 bpm | 169 spm | 0.92 m | 274.0 ms |
+| Powtórzenie 1 | 1.00 km | 4:15 | 4:15 min/km | 171 bpm | 182 bpm | 183 spm | 1.25 m | 226.8 ms |
+| Przerwa 1 | 0.08 km | 1:29 | 18:12 min/km | 157 bpm | 180 bpm | 46 spm | 1.14 m | 230.0 ms |
+| Powtórzenie 2 | 1.01 km | 4:15 | 4:12 min/km | 179 bpm | 188 bpm | 187 spm | 1.24 m | 225.0 ms |
+| Przerwa 2 | 0.15 km | 1:29 | 9:47 min/km | 163 bpm | 186 bpm | 88 spm | 0.84 m | 238.0 ms |
+| Powtórzenie 3 | 1.01 km | 4:14 | 4:11 min/km | 179 bpm | 189 bpm | 185 spm | 1.23 m | 225.5 ms |
+| Przerwa 3 | 0.05 km | 0:35 | 12:48 min/km | 182 bpm | 189 bpm | 116 spm | 1.05 m | 216.2 ms |
 
-- **Profil jednostki**: Bieg progowy (Tempo/LTHR)
-- **Ocena egzekucji planu**: 6/10 – Rażące naruszenie zaleceń strukturalnych. Zamiast ciągłych odcinków 1.0 km z kontrolowaną przerwą, zawodnik rozbił interwał progowy na mniejsze mikrosegmenty (0.4 km) z nieregularnymi, chaotycznymi przerwami marszowymi. Tempo odcinków roboczych (4:12-4:20 min/km) było nadmiernie agresywne względem planowanego progu (4:30 min/km), co wygenerowało nieplanowane wejście w strefę VO2max (Maks HR na poziomie (189 bpm)).
+- **Profil jednostki**: Interwały (VO2max)
+- **Ocena egzekucji planu**: 4/10 – Rażące przestrzelenie intensywności części głównej. Zamiast kontrolowanego bodźca progowego Z4 (tempo 4:30 min/km, tętno 165–175 bpm) zrealizowano niekontrolowany akcent VO2max/beztlenowy (tempo 4:11–4:15 min/km, tętno maksymalne 189 bpm), wchodząc głęboko w strefę Z5. Skrócono schłodzenie o połowę (1.00 km zamiast 2.00 km).
 - **Analiza biomechaniki i techniki**:
-- Dynamika kroku i sztywność sprężysta (kadencja, krok, GCT vs prędkość): Diagnoza. Przyczyna: Wzrost kadencji do (186-190 spm) przy jednoczesnym skróceniu GCT do (222.1-226.7 ms) na odcinkach szybszych wynika z nadmiernej intencji przyspieszenia, która zerwała założony profil biegowy. Korekta: Bezwzględnie kontrolować narastanie tempa na początku akcentu; trzymać się sztywno docelowego tempa progowego (4:30 min/km), zamiast rwać tempo do (4:09-4:12 min/km).
-  - Identyfikacja hamowania i overstridingu (pozycja lądowania względem COM): Brak
-  - Ekonomia wektora i oscylacja pionowa (VO / VR): Diagnoza. Przyczyna: Vertical Ratio na poziomie (6.76-8.20 %) podczas serii szybszych mieści się w normie, lecz zmienność długości kroku wskazuje na brak stabilności w osi poziomej. Korekta: Skupić się na horyzontalnym odepchnięciu z biodra, eliminując pionowe bujanie sylwetki.
+  - Dynamika kroku i sztywność sprężysta (kadencja, krok, GCT vs prędkość): Utrzymanie wysokiej sztywności w powtórzeniach tempowych kosztem nadmiernej rekrutacji beztlenowej. Wraz ze wzrostem zmęczenia w powtórzeniu 3 nastąpiło skrócenie kroku (1.23 m vs 1.25 m w serii 1) przy niemal identycznym czasie kontaktu z podłożem (~225 ms). W fazach rozbiegania i schłodzenia widoczna zapaść sztywności strukturalnej i spadek kadencji (<170 spm) połączony z długim kontaktem z podłożem (>271 ms). Przyczyna: Wyczerpanie glikolityczne wymuszone zbyt szybkim tempem. Korekta: Rygor trzymania zadanego tempa progowego; zakaz wchodzenia na prędkości startowe pod 5 km na tym etapie mezocyklu.
+  - Identyfikacja hamowania i overstridingu (pozycja lądowania względem COM): Brak.
+  - Ekonomia wektora i oscylacja pionowa (VO / VR): Wzrost kosztu pionowego w biegach regeneracyjnych/rozbieganiu. Vertical ratio w jednostkach wolnych wzrosło do 8.59–8.82% przy oscylacji >8.1 cm. Przyczyna: Opadanie miednicy i brak efektywnego wyprostu biodra w niskich prędkościach. Korekta: Wydłużenie fazy pchania z pośladka w biegu spokojnym zamiast pasywnego człapania w osi pionowej.
 - **Czynniki fizjologiczne i środowiskowe**:
-  - Dryf sercowo-naczyniowy (decoupling tempo/HR): Tętno maksymalne (189 bpm) osiągnięte w trzeciej serii świadczy o skumulowanym obciążeniu układu krążenia wskutek zbyt szybkiego wejścia w strefę beztlenową.
-  - Wpływ warunków i anomalie pomiaru (pogoda, profil trasy, błędy OHR / cadence lock): Diagnoza. Przyczyna: Wpisane w pliku treningowym mikro-odcinki z bardzo niską kadencją (46-116 spm) i wysokim tempem (12-18 min/km) to błędy rejestracji zegarka (brak zatrzymania pomiaru w przerwach, automatyczne łapanie sygnału marszowego jako bieg). Korekta: Zatrzymywać manualnie rejestrację każdej przerwy międzyinterwałowej.
+  - Dryf sercowo-naczyniowy (decoupling tempo/HR): W powtórzeniu 2 i 3 nastąpił natychmiastowy skok tętna do wartości submaksymalnych (odpowiednio 188 bpm i 189 bpm) bez plateau, co potwierdza pełne wejście w strefę akumulacji kwasu mlekowego i dług tlenowy uniemożliwiający realizację założeń progowych. Kinetyka restytucji w przerwach uległa załamaniu – tętno w przerwie 2 spadło jedynie do 163 bpm, a w uciętej przerwie 3 do 182 bpm.
+  - Wpływ warunków i anomalie pomiaru (pogoda, profil trasy, błędy OHR / cadence lock): Brak.
 
 ## 2. KOSZT METABOLICZNY I STAN ZASOBÓW
 
-- **Bodziec adaptacyjny i koszt metaboliczny**: Wysoki koszt glikolityczny. Przekroczenie progu mleczanowego i wejście w strefę VO2max podczas zmodyfikowanych, zbyt szybkich odcinków progowych wygenerowało obciążenie układu nerwowego i mięśniowego przewyższające założenia mezocyklu po maratonie.
-- **Bilans autonomiczny i drenaż zasobów (baza ANS ze snu vs drenaż dobowy Body Battery/stres)**: Poranny stan autonomiczny był już obniżony (HRV 44 ms poniżej normy bazowej 45–58 ms, RHR podniesione do (58 bpm)). Intensywny akcent dobił zasoby do wieczornego poziomu Body Battery wynoszącego zaledwie (20/100). Dość niski średni stres dzienny (35/100) uchronił zawodnika przed całkowitą zapaścią, ale rezerwa adaptacyjna została wyczerpana.
-- **Zmęczenie skumulowane i percepcja (kontekst dnia Czwartek, 2026-10-08 vs notatka zawodnika)**: Zmęczenie skumulowane rośnie. Wczorajszy objętościowy bieg (8.01 km) połączony z dzisiejszym forsownym i zniekształconym akcentem progowym na tle suboptymalnego HRV wymaga natychmiastowej interwencji regeneracyjnej przed jutrzejszą siłownią.
+- **Bodziec adaptacyjny i koszt metaboliczny**: Trening wygenerował drastycznie wyższy koszt niż zaplanowano. Zamierzony bodziec buforowania mleczanu (Z4) został przekształcony w wyczerpujący beztlenowo interwał pułapowy (Training Effect 3.1 w kierunku VO2max z tętnem sięgającym 93% HR max). Generuje to niepotrzebne mikrouszkodzenia aparatu ruchu zaledwie 12 dni po maratonie i drenuje zasoby glikogenu.
+- **Bilans autonomiczny i drenaż zasobów (baza ANS ze snu vs drenaż dobowy Body Battery/stres)**: Nocna telemetria wskazywała na postępującą niestabilność autonomiczną (HRV 44 ms poniżej dolnej granicy normy bazowej 45–58 ms; RHR 58 bpm wyższe o 2 bpm od średniej). Poranny bufor zasobów był obniżony (Body Battery 65/100). Nałożenie nieplanowanego wysiłku glikolitycznego doprowadziło do głębokiego drenażu dobowego (Body Battery wieczorem na poziomie 20/100 przy średnim stresie dziennym 35/100).
+- **Zmęczenie skumulowane i percepcja (kontekst dnia Czwartek, 2026-10-08 vs notatka zawodnika)**: Nałożenie wczorajszego wysokiego tętna w biegu spokojnym (154 bpm) na dzisiejszy niekontrolowany akcent prędkościowy pogłębia dług adaptacyjny. Brak notatki ze strony zawodnika traktowany jest jako brak świadomości przekroczenia stref metabolicznych. Brak dysonansu.
 
 ## 3. ZALECENIA REGENERACYJNE (WIECZÓR I NOC)
 
-- **Ukierunkowana praca tkankowa i przeciwwskazania**: Rozluźnienie mięśni czworogłowych ud oraz pasma biodrowo-piszczelowego za pomocą delikatnego rolowania powierzchownego. Bezwzględny zakaz głębokiego rolowania przyczepów ścięgnistych oraz zakaz rozciągania statycznego o dużej intensywności, które mogłoby pogłębić mikrourazowość włókien po mocnych powtórzeniach w strefie VO2max.
-- **Modulacja autonomiczna (tonizacja przywspółczulna)**: 15 minut techniki oddychania przeponowego o zwolnionym rytmie (wdech 4 s, wydech 6 s) bezpośrednio przed snem w celu obniżenia napięcia współczulnego i stymulacji nerwu błędnego.
-- **Strategia substratowa i resynteza**: Natychmiastowa podaż 1.2 g węglowodanów na kg masy ciała oraz 30 g białka serwatkowego w celu odbudowy zasobów glikogenowych. Suplementacja 400 mg magnezu oraz elektrolitów w celu wspomagania przewodnictwa nerwowo-mięśniowego.
+- **Ukierunkowana praca tkankowa i przeciwwskazania**: Wykonać automasaż powięziowy zginaczy biodra i pasma biodrowo-piszczelowego miękką piłką (bez agresywnego docisku). Zastosować drenaż nóg uniesionych pod kątem 90 stopni przez 15 minut. Kategoryczny zakaz głębokiego rolowania mięśni kulszowo-goleniowych oraz agresywnego rozciągania statycznego z uwagi na ryzyko zaostrzenia mikrourazów po nieplanowanym biegu w tempie VO2max.
+- **Modulacja autonomiczna (tonizacja przywspółczulna)**: Protokół oddechowy 4-7-8 przez 10 minut bezpośrednio przed snem w pozycji leżącej w celu wymuszenia aktywacji nerwu błędnego i stłumienia powysiłkowego tonusu współczulnego.
+- **Strategia substratowa i resynteza**: Natychmiastowe uzupełnienie 1.2 g węglowodanów na kg masy ciała w posiłku wieczornym w celu resyntezy glikogenu wyczerpanego pracą w Z5. Wdrożyć 400 mg cytrynianu magnezu oraz 500 ml wody wysokozmineralizowanej w celu wyrównania gospodarki elektrolitowej.
 
 ## 4. OCENA GOTOWOŚCI I ADAPTACJA NA KOLEJNY DZIEŃ: Sobota, 2026-10-10
 
-- **Pierwotny plan na dzień Sobota, 2026-10-10**: Siłownia: UPPER (Wzmocnienie górnej partii ciała i korpusu bez generowania zmęczenia mięśniowego nóg + 15 min rower eliptyczny w Z1).
+- **Pierwotny plan na dzień Sobota, 2026-10-10**: Siłownia: UPPER. Status dolnych partii: Oszczędzać pod bieg (brak obciążania nóg). Cardio: 15 min w Z1 tlen po UPPER.
 - **DECYZJA ADAPTACYJNA / STOPIEŃ GOTOWOŚCI**: ZMNIEJSZAMY INTENSYWNOŚĆ / MODYFIKACJA ZAŁOŻEŃ
-- **Uzasadnienie fizjologiczne**: Poranna niska bazowa HRV (44 ms), podwyższone RHR ((58 bpm)) oraz wieczorny drenaż Body Battery do poziomu (20/100) połączony z dzisiejszym przetrenowaniem zakłócającym plan progowy wskazują na wyraźny deficyt regeneracyjny ośrodkowego układu nerwowego. Wymagana redukcja obciążeń w siłowni i całkowite unikanie dodatkowego cardio.
+- **Uzasadnienie fizjologiczne**: Przestrzelenie dzisiejszego treningu do strefy beztlenowej (HR max 189 bpm) w połączeniu z autonomicznym długiem nocnym (HRV 44 ms, RHR +2 bpm) oraz wyczerpaniem zasobów (Body Battery 20/100) wymusza bezwzględną ochronę układu nerwowego i obwodowego przed niedzielnym biegiem ciągłym (12 km). Trening siłowy musi zostać ograniczony wyłącznie do aktywacji posturalnej, a cardio skasowane, by zatrzymać drenaż glikogenu.
 - **ROZPISKA NA DZIEŃ Sobota, 2026-10-10**:
-  * Zestaw / Jednostka: Siłownia: UPPER (Wersja okrojona)
+  * Zestaw / Jednostka: Siłownia: UPPER (Góra ciała + Core) – redukcja objętości o 30%, usunięcie cardio
   * Status dolnych partii: Ochrona nóg – rygor RIR >= 2-3, zakaz załamania i redukcja pracy ekscentrycznej
-  * Kluczowe akcenty ćwiczeń: Trening wyłącznie górnych partii ciała w oparciu o wyciskanie i przyciąganie siedząc, z pominięciem jakichkolwiek ćwiczeń angażujących korpus w sposób obciążający miednicę.
-  * Wytyczne aktywacji: Całkowicie skasować 15 minut roweru eliptycznego po treningu górnych partii, aby nie pogłębiać deficytu energetycznego i nie generować dodatkowego obciążenia metabolicznego.
+  * Kluczowe akcenty ćwiczeń: Podciąganie na drążku / ściąganie wyciągu (3 serie z zapasem RIR 3), wyciskanie hantli na ławce skośnej (3 serie, RIR 3), wiosłowanie jednorącz w oparciu o ławkę (3 serie, RIR 3), Dead Bug z pauzą izometryczną (3 x 8 powtórzeń na stronę). Całkowity zakaz wykonywania ćwiczeń angażujących prostowniki i zginacze stawu kolanowego.
+  * Wytyczne aktywacji: 10 minut mobilizacji obręczy barkowej i odcinka piersiowego kręgosłupa (cat-cow, thread the needle). Skasować 15 minut cardio po treningu – natychmiastowe przejście do procedury potreningowej.
