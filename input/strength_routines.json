@@ -234,12 +234,12 @@
           {
             "set": 2,
             "weight": "55 kg",
-            "reps": 6
+            "reps": 8
           },
           {
             "set": 3,
-            "weight": "50 kg",
-            "reps": 4
+            "weight": "55 kg",
+            "reps": 6
           }
         ]
       },
@@ -250,18 +250,18 @@
         "last_sets": [
           {
             "set": 1,
-            "weight": "40 kg",
-            "reps": 5
+            "weight": "35 kg",
+            "reps": 8
           },
           {
             "set": 2,
             "weight": "35 kg",
-            "reps": 6
+            "reps": 7
           },
           {
             "set": 3,
             "weight": "35 kg",
-            "reps": 6
+            "reps": 3
           }
         ]
       },
