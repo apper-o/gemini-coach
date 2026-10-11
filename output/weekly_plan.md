@@ -14,7 +14,67 @@
 - **Schłodzenie**: 1.5 km w strefie Z1 (tempo >6:15 min/km)
 - **Cel fizjologiczny**: Przesunięcie progu mleczanowego i adaptacja specyficzna do tempa startowego na 5 km bez kumulowania długu kwasowego.
 
-### Czwartek - Siłownia: UPPER
+### Czwartek - Siłownia: FBW
+
+* **Status dolnych partii**: Oszczędzać pod bieg
+* **Ćwiczenia**:
+Bulgarian Split Squat (Dumbbell) (fbw) - USUNIĘTO
+Decyzja: Eliminacja silnej ekscentryki czworogłowych dzień po akcencie VO2max oraz przed niedzielnym wybieganiem w fazie Peak.
+
+[SUPERSET A]:
+A1: Incline Bench Press (Barbell) (fbw)
+Seria 1: 8 x 50 kg (RIR 3)
+Seria 2: 8 x 50 kg (RIR 3)
+Seria 3: 8 x 50 kg (RIR 3)
+Wyjaśnienie decyzji: Zachowanie parametrów z bazy bez przeciążania układu nerwowego przed zawodami.
+
+A2: Pull Up (fbw)
+Seria 1: 7 x mc (RIR 3)
+Seria 2: 7 x mc (RIR 3)
+Seria 3: 7 x mc (RIR 2)
+Wyjaśnienie decyzji: Redukcja powtórzeń do 7 w celu uniknięcia załamania mięśniowego w ostatniej serii.
+
+Bent Over Row (Barbell) (fbw)
+Seria 1: 10 x 50 kg (RIR 2)
+Seria 2: 10 x 50 kg (RIR 2)
+Seria 3: 10 x 50 kg (RIR 2)
+Wyjaśnienie decyzji: Utrzymanie 50 kg x 10 jako stabilnego bodźca wzmacniającego retraktory łopatek.
+
+Single Leg Romanian Deadlift (Dumbbell) (fbw) - USUNIĘTO
+Decyzja: Usunięcie ćwiczenia w celu całkowitej ochrony taśmy tylnej i przywodzicieli przed mikrourazami.
+
+Single Leg Hip Thrust (Dumbbell) (fbw)
+Seria 1: 10 x 10 kg (RIR 3)
+Seria 2: 10 x 10 kg (RIR 3)
+Wyjaśnienie decyzji: Koncentryczna aktywacja pośladka bez niszczącego napięcia ekscentrycznego na aparat ruchu.
+
+Single Leg Standing Calf Raise (Barbell) (fbw) - USUNIĘTO
+Decyzja: Eliminacja obciążenia ścięgien Achillesa sztangą na 24h przed wybieganiem i tydzień przed startem docelowym.
+
+Dead Bug (fbw)
+Seria 1: 15 x mc (RIR 3)
+Seria 2: 15 x mc (RIR 3)
+Seria 3: 15 x mc (RIR 3)
+Wyjaśnienie decyzji: Kontynuacja stabilizacji antyprzeprostnej kręgosłupa bez osiowego obciążania układu szkieletowego.
+
+Side plank with leg raise (fbw)
+Seria 1: 10 x mc (RIR 3)
+Seria 2: 10 x mc (RIR 3)
+Seria 3: 10 x mc (RIR 3)
+Wyjaśnienie decyzji: Zmniejszenie powtórzeń do 10 dla bezpiecznej aktywacji pasma biodrowo-piszczelowego bez drażnienia przywodziciela.
+
+* **Cardio / Rower eliptyczny**: 10 min w Z1 przed siłą
+* **Cel i zalecenia adaptacyjne**: Pobudzenie nerwowo-mięśniowe z wyzerowanym obciążeniem ekscentrycznym nóg pod kątem jutrzejszego biegu.
+
+
+### Piątek - Bieg: VO2max
+
+- **Rozgrzewka**: 2.0 km truchtu w Z2 (5:45-6:05 min/km) + 3 x 60 m rytmy z pełnym wypoczynkiem
+- **Część główna**: 5 x 600 m, tempo 3:55-4:00 min/km, przerwa 2:00 min w marszu/truchcie, tętno >181 bpm, strefa Z5
+- **Schłodzenie**: 1.0 km w strefie Z1 (tempo >6:15 min/km)
+- **Cel fizjologiczny**: Maksymalna stymulacja poboru tlenu oraz pobudzenie nerwowo-mięśniowe do prędkości startowej poniżej PB.
+
+### Sobota - Siłownia: UPPER
 
 * **Status dolnych partii**: Oszczędzać pod bieg
 * **Ćwiczenia**:
@@ -77,73 +137,14 @@ Wyjaśnienie decyzji: Zmniejszenie liczby powtórzeń do 8 zapobiega pracy do up
 * **Cardio / Rower eliptyczny**: 10 min w Z1 po UPPER
 * **Cel i zalecenia adaptacyjne**: Wzmocnienie siły górnej połowy ciała i stabilizacji centralnej bez obciążenia aparatu ruchu nóg.
 
-### Piątek - Bieg: VO2max
-
-- **Rozgrzewka**: 2.0 km truchtu w Z2 (5:45-6:05 min/km) + 3 x 60 m rytmy z pełnym wypoczynkiem
-- **Część główna**: 5 x 600 m, tempo 3:55-4:00 min/km, przerwa 2:00 min w marszu/truchcie, tętno >181 bpm, strefa Z5
-- **Schłodzenie**: 1.0 km w strefie Z1 (tempo >6:15 min/km)
-- **Cel fizjologiczny**: Maksymalna stymulacja poboru tlenu oraz pobudzenie nerwowo-mięśniowe do prędkości startowej poniżej PB.
-
-### Sobota - Siłownia: FBW
-
-* **Status dolnych partii**: Oszczędzać pod bieg
-* **Ćwiczenia**:
-Bulgarian Split Squat (Dumbbell) (fbw) - USUNIĘTO
-Decyzja: Eliminacja silnej ekscentryki czworogłowych dzień po akcencie VO2max oraz przed niedzielnym wybieganiem w fazie Peak.
-
-[SUPERSET A]:
-A1: Incline Bench Press (Barbell) (fbw)
-Seria 1: 8 x 50 kg (RIR 3)
-Seria 2: 8 x 50 kg (RIR 3)
-Seria 3: 8 x 50 kg (RIR 3)
-Wyjaśnienie decyzji: Zachowanie parametrów z bazy bez przeciążania układu nerwowego przed zawodami.
-
-A2: Pull Up (fbw)
-Seria 1: 7 x mc (RIR 3)
-Seria 2: 7 x mc (RIR 3)
-Seria 3: 7 x mc (RIR 2)
-Wyjaśnienie decyzji: Redukcja powtórzeń do 7 w celu uniknięcia załamania mięśniowego w ostatniej serii.
-
-Bent Over Row (Barbell) (fbw)
-Seria 1: 10 x 50 kg (RIR 2)
-Seria 2: 10 x 50 kg (RIR 2)
-Seria 3: 10 x 50 kg (RIR 2)
-Wyjaśnienie decyzji: Utrzymanie 50 kg x 10 jako stabilnego bodźca wzmacniającego retraktory łopatek.
-
-Single Leg Romanian Deadlift (Dumbbell) (fbw) - USUNIĘTO
-Decyzja: Usunięcie ćwiczenia w celu całkowitej ochrony taśmy tylnej i przywodzicieli przed mikrourazami.
-
-Single Leg Hip Thrust (Dumbbell) (fbw)
-Seria 1: 10 x 10 kg (RIR 3)
-Seria 2: 10 x 10 kg (RIR 3)
-Wyjaśnienie decyzji: Koncentryczna aktywacja pośladka bez niszczącego napięcia ekscentrycznego na aparat ruchu.
-
-Single Leg Standing Calf Raise (Barbell) (fbw) - USUNIĘTO
-Decyzja: Eliminacja obciążenia ścięgien Achillesa sztangą na 24h przed wybieganiem i tydzień przed startem docelowym.
-
-Dead Bug (fbw)
-Seria 1: 15 x mc (RIR 3)
-Seria 2: 15 x mc (RIR 3)
-Seria 3: 15 x mc (RIR 3)
-Wyjaśnienie decyzji: Kontynuacja stabilizacji antyprzeprostnej kręgosłupa bez osiowego obciążania układu szkieletowego.
-
-Side plank with leg raise (fbw)
-Seria 1: 10 x mc (RIR 3)
-Seria 2: 10 x mc (RIR 3)
-Seria 3: 10 x mc (RIR 3)
-Wyjaśnienie decyzji: Zmniejszenie powtórzeń do 10 dla bezpiecznej aktywacji pasma biodrowo-piszczelowego bez drażnienia przywodziciela.
-
-* **Cardio / Rower eliptyczny**: 10 min w Z1 przed siłą
-* **Cel i zalecenia adaptacyjne**: Pobudzenie nerwowo-mięśniowe z wyzerowanym obciążeniem ekscentrycznym nóg pod kątem jutrzejszego biegu.
-
 ### Niedziela - Bieg: Long Run ciągły
 
-- **Część główna**: 10.0 km, tempo 5:35-5:55 min/km, tętno 135-148 bpm, strefa Z2
+- **Część główna**: 12.0 km, tempo 5:35-5:55 min/km, tętno 135-148 bpm, strefa Z2
 - **Cel fizjologiczny**: Podtrzymanie enzymów oksydacyjnych przy kontrolowanym skróceniu dystansu w ramach planowanego taperingu przedstartowego.
 
 ### Podsumowanie tygodnia
 
-* Łączny planowany kilometraż biegowy: 28.5 km
+* Łączny planowany kilometraż biegowy: 30.5 km
 * Łączny planowany dystans pływacki: 0 m
 * Rozkład intensywności biegowej (wg dystansu): 75% strefy tlenowe (Z1-Z2) vs 25% jakościowe (Z3-Z5)
 
