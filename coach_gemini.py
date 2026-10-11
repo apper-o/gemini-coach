@@ -78,26 +78,19 @@ def exit_with_error(message=None, error=None, code=1):
 
 def get_gemini_models():
     """
-    Wczytuje i sprawdza dostępność modeli Gemini w konfiguracji.
+    Wczytuje i sprawdza konfigurację modelu Gemini (domyślnie 'gemini-3.8-flash').
+    Zgodnie z konfiguracją używany jest jeden model roboczy z pętlą ponawiania prób.
 
     Returns:
-        list: Uporządkowana lista nazw modeli gotowych do kaskady.
+        list: Jednoelementowa lista zawierająca wybrany model (np. ['gemini-3.8-flash']).
     """
-    env_models = os.getenv("GEMINI_MODELS")
+    env_models = os.getenv("GEMINI_MODEL") or os.getenv("GEMINI_MODELS")
     if not env_models or not env_models.strip():
-        exit_with_error(
-            "Brak zdefiniowanych modeli Gemini. "
-            "W pliku .env zdefiniuj zmienną GEMINI_MODELS (np. GEMINI_MODELS=\"gemini-3.5-flash,gemini-3.5-flash-lite,gemini-3.0-flash-lite\")."
-        )
+        return ["gemini-3.8-flash"]
 
     models = [m.strip() for m in env_models.split(",") if m.strip()]
-    if not models:
-        exit_with_error(
-            "Zmienna GEMINI_MODELS w pliku .env nie zawiera nazw modeli! "
-            "Zapisz nazwy w formacie: GEMINI_MODELS=\"gemini-3.5-flash,gemini-3.5-flash-lite,gemini-3.0-flash-lite\"."
-        )
-
-    return models
+    target_model = models[0] if models else "gemini-3.8-flash"
+    return [target_model]
 
 
 def save_debug_prompt(prompt, debug=False):
@@ -115,47 +108,54 @@ def save_debug_prompt(prompt, debug=False):
         logger.info(f"[DEBUG] Zapisano wysłany prompt do: {debug_log_path}")
 
 
-def send_gemini_prompt_with_fallback(client, prompt, models=None, debug=False):
+def send_gemini_prompt_with_fallback(client, prompt, models=None, debug=False, max_retries=10, retry_delay=10):
     """
-    Wysyła prompt do Gemini z automatycznym mechanizmem fallbacku.
-    Jeśli dany model jest przeciążony lub zawiedzie, próbuje kolejnego z listy modeli.
-    
+    Wysyła prompt do wybranego modelu Gemini z automatyczną pętlą ponawiania prób (retry loop).
+    W przypadku nieudanej próby (np. błąd połączenia, przeciążenie, rate limit) odczekuje 10 sekund
+    i ponawia próbę wysłania zapytania do tego samego modelu.
+
     Args:
         client: Zainicjowany klient Gemini.
         prompt (str): Treść zapytania dla asystenta.
-        models (list): Lista modeli w kaskadzie.
+        models (list | str | None): Wybrany model (lub lista z modelem na pozycji 0).
         debug (bool): Flaga trybu debug.
+        max_retries (int): Maksymalna liczba prób (domyślnie 10).
+        retry_delay (int): Czas oczekiwania w sekundach pomiędzy kolejnymi próbami (domyślnie 10s).
 
     Returns:
-        Odpowiedzi wygenerowana przez model.
+        Odpowiedź wygenerowana przez model.
     """
     save_debug_prompt(prompt, debug=debug)
 
+    target_model = (
+        models[0] if isinstance(models, (list, tuple)) and models
+        else (models if isinstance(models, str) else "gemini-3.8-flash")
+    )
+
     print("\n" + "="*60)
     print("🚀 WYSYŁANIE PROMPTU DO GEMINI")
-    print(f"📄 Wskazane modele: {', '.join(models)}")
+    print(f"📄 Model: {target_model}")
     print("="*60)
 
     last_error = None
-    for idx, model_name in enumerate(models, 1):
+    for attempt in range(1, max_retries + 1):
         try:
-            logger.info(f"Wysyłanie zapytania do Gemini (Model [{idx}/{len(models)}]: {model_name})...")
-            chat = client.chats.create(model=model_name)
+            logger.info(f"Wysyłanie zapytania do Gemini (Model: {target_model}, próba [{attempt}/{max_retries}])...")
+            chat = client.chats.create(model=target_model)
             response = chat.send_message(prompt)
-            logger.info(f"✅ Odpowiedź pomyślnie wygenerowana przez model: {model_name}")
+            logger.info(f"✅ Odpowiedź pomyślnie wygenerowana przez model: {target_model}")
             return response
         except Exception as e:
             err_msg = str(e)
             last_error = e
-            logger.warning(f"⚠️ Model {model_name} zwrócił błąd ({err_msg}).")
+            logger.warning(f"⚠️ Błąd podczas próby [{attempt}/{max_retries}] dla modelu {target_model}: {err_msg}")
 
-        if idx < len(models):
-            time.sleep(5)
-            continue
+        if attempt < max_retries:
+            logger.info(f"⏳ Oczekiwanie {retry_delay} sekund przed kolejną próbą połączenia...")
+            time.sleep(retry_delay)
 
-    models_list_str = ', '.join(models) if models else 'Brak'
     exit_with_error(
-        f"❌ Wszystkie modele Gemini w kaskadzie zawiodły ({models_list_str}).",
+        f"❌ Nie udało się uzyskać odpowiedzi od modelu {target_model} po {max_retries} próbach (odstęp: {retry_delay}s).",
         error=last_error,
         code=1
     )

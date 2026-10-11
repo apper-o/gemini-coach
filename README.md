@@ -27,7 +27,7 @@ Utwórz plik `.env` w katalogu głównym na podstawie wzorca `.env.example`:
 ```env
 # Modele Google Gemini (kaskada modeli oddzielona przecinkami: główny -> zapasowe)
 GEMINI_API_KEY="twój_klucz_api"
-GEMINI_MODELS="gemini-3.5-flash,gemini-3.5-flash-lite,gemini-2.5-flash,gemini-2.5-flash-lite"
+GEMINI_MODELS="gemini-3.8-flash"
 
 # Dane logowania Garmin Connect (wymagane w trybie online)
 GARMIN_EMAIL="twoj_email@example.com"

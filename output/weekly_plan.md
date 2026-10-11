@@ -1,177 +1,168 @@
-### Poniedziałek - Bieg: Technika biegowa i przebieżki
+### Poniedziałek - Bieg: Easy
 
-* **Rozgrzewka**: 2.00 km truchtu (tempo 6:00 min/km)
-* **Część główna**: 6 x 100 m przebieżki dynamiczne (przerwa: 100 m w marszu powrotnym), tempo Z5 (ok. 3:50-4:00 min/km), HR 170-185 bpm, strefa Z5. Dodatkowo 2.00 km biegu ciągłego w Z2 (tempo 5:45 min/km).
-* **Schłodzenie**: 1.00 km marszu/truchtu
-* **Cel fizjologiczny**: Wprowadzenie krótkich odcinków szybkiej pracy beztlenowej bez dużego obciążenia mechanicznego, pobudzających dynamikę po okresie regeneracji po maratonie. Uwzględniamy zgłoszony ból pachwiny z ubiegłego tygodnia – w razie dyskomfortu przebieżki natychmiast przerywamy.
+- **Część główna**: 5.0 km, tempo 5:45-6:05 min/km, tętno 130-145 bpm, strefa Z2
+- **Cel fizjologiczny**: Podtrzymanie bazy tlenowej i drenaż tkanek przy całkowitym wyeliminowaniu dynamicznych ćwiczeń plyometrycznych w celu ochrony podrażnionego przywodziciela.
 
 ### Wtorek - Dzień wolny / Regeneracja
 
-* **Zalecenia regeneracyjne**: Pełna pasywna regeneracja, zadbaj o odpowiednią podaż płynów i lekki spacer (zgodnie z nawykiem >10 tys. kroków), unikaj rozciągania pasywnego w okolicy pachwiny.
+* **Zalecenia regeneracyjne**: Pełny odpoczynek bierny, minimum 8 godzin snu oraz krótki spacer regeneracyjny wspierający odbudowę zasobów autonomicznych (HRV).
 
-### Środa - Siłownia: FBW
+### Środa - Bieg: Threshold
 
-* **Status dolnych partii**: Oszczędzać pod bieg (zredukowana objętość i unikanie ciężkich ekscentryków przed niedzielnym długim biegiem)
+- **Rozgrzewka**: 2.0 km truchtu w Z2 (5:45-6:00 min/km) + 3 x 60 m rytmy
+- **Część główna**: 4 x 1.0 km, tempo 4:10-4:15 min/km, przerwa 90 s marsz/trucht, tętno 165-178 bpm, strefa Z4
+- **Schłodzenie**: 1.5 km w strefie Z1 (tempo >6:15 min/km)
+- **Cel fizjologiczny**: Przesunięcie progu mleczanowego i adaptacja specyficzna do tempa startowego na 5 km bez kumulowania długu kwasowego.
+
+### Czwartek - Siłownia: UPPER
+
+* **Status dolnych partii**: Oszczędzać pod bieg
 * **Ćwiczenia**:
-Bulgarian Split Squat (Dumbbell) - ZAMIANA
-Bulgarian Split Squat (Dumbbell) - USUNIĘTO
-Leg Press (Machine) (ZAMIANA ZA: Bulgarian Split Squat (Dumbbell))
-Seria 1: 10 powt. x 60.0 kg (RIR 2)
-Seria 2: 10 powt. x 70.0 kg (RIR 2)
-Seria 3: 10 powt. x 70.0 kg (RIR 2)
-Decyzja: Zamieniono ze względu na zgłoszony ból pachwiny w ubiegłym tygodniu, aby odciążyć mięśnie przywodziciele w pracy jednostronnej.
+Bench Press (Barbell) (upper)
+Seria 1: 8 x 60 kg (RIR 3)
+Seria 2: 8 x 60 kg (RIR 3)
+Seria 3: 8 x 60 kg (RIR 3)
+Wyjaśnienie decyzji: Utrzymanie ciężaru roboczego 60 kg z bezpiecznym zapasem RIR chroniącym układ nerwowy przed piątkowym akcentem.
 
-Incline Bench Press (Barbell)
-Seria 1: 8 powt. x 45.0 kg (RIR 2)
-Seria 2: 8 powt. x 45.0 kg (RIR 2)
-Seria 3: 8 powt. x 45.0 kg (RIR 1)
-Wyjaśnienie decyzji: Brak danych w historii.
+Lat Pulldown (Cable) (upper)
+Seria 1: 7 x 55 kg (RIR 2)
+Seria 2: 7 x 55 kg (RIR 2)
+Seria 3: 7 x 55 kg (RIR 2)
+Wyjaśnienie decyzji: Redukcja do 7 powtórzeń w celu wyeliminowania załamania mięśniowego odnotowanego w poprzednim mikrocyklu.
 
-Pull Up
-Seria 1: 8 powt. x Masa ciała (RIR 2)
-Seria 2: 8 powt. x Masa ciała (RIR 2)
-Seria 3: 8 powt. x Masa ciała (RIR 1)
-Wyjaśnienie decyzji: Brak danych w historii.
+Overhead Press (Barbell) (upper)
+Seria 1: 8 x 30 kg (RIR 3)
+Seria 2: 8 x 30 kg (RIR 3)
+Seria 3: 8 x 30 kg (RIR 2)
+Wyjaśnienie decyzji: Obniżenie ciężaru do 30 kg zapobiega krytycznemu spadkowi siły i chroni obręcz barkową przed przeciążeniem.
 
-Bent Over Row (Barbell)
-Seria 1: 8 powt. x 40.0 kg (RIR 2)
-Seria 2: 8 powt. x 40.0 kg (RIR 2)
-Seria 3: 8 powt. x 40.0 kg (RIR 1)
-Wyjaśnienie decyzji: Brak danych w historii.
+Seated Cable Row - Bar Grip (upper)
+Seria 1: 10 x 50 kg (RIR 2)
+Seria 2: 10 x 50 kg (RIR 2)
+Seria 3: 10 x 50 kg (RIR 2)
+Wyjaśnienie decyzji: Utrzymanie stabilnego obciążenia 50 kg w pełnym zakresie ruchu dla równowagi strukturalnej grzbietu.
 
-Single Leg Romanian Deadlift (Dumbbell) - USUNIĘTO
-Decyzja: Usunięto z uwagi na ochronę pachwiny przed jutrzejszym długim biegiem.
+Seated Calf Raise (upper)
+Seria 1: 10 x 30 kg (RIR 3)
+Seria 2: 10 x 30 kg (RIR 3)
+Seria 3: 10 x 30 kg (RIR 3)
+Wyjaśnienie decyzji: Wyrównanie serii do 30 kg z wysokim buforem RIR w celu ochrony mięśnia płaszkowatego przed jutrzejszą prędkością Z5.
 
-Single Leg Hip Thrust (Dumbbell)
-Seria 1: 10 powt. x 15.0 kg (RIR 2)
-Seria 2: 10 powt. x 15.0 kg (RIR 2)
-Wyjaśnienie decyzji: Brak danych w historii.
+[SUPERSET A]:
+A1: Seated Incline Curl (Dumbbell) (upper)
+Seria 1: 8 x 10 kg (RIR 3)
+Seria 2: 8 x 10 kg (RIR 3)
+Seria 3: 8 x 10 kg (RIR 2)
+Wyjaśnienie decyzji: Zmniejszenie ciężaru do 10 kg eliminuje załamanie w ostatniej serii przy zachowaniu docelowej liczby powtórzeń.
 
-Single Leg Standing Calf Raise (Barbell)
-Seria 1: 10 powt. x 20.0 kg (RIR 2)
-Seria 2: 10 powt. x 20.0 kg (RIR 2)
-Seria 3: 10 powt. x 20.0 kg (RIR 2)
-Wyjaśnienie decyzji: Brak danych w historii.
+A2: Triceps Pushdown (upper)
+Seria 1: 10 x 50 kg (RIR 3)
+Seria 2: 10 x 50 kg (RIR 3)
+Seria 3: 10 x 50 kg (RIR 2)
+Wyjaśnienie decyzji: Kontynuacja pracy na sprawdzonym obciążeniu 50 kg z zachowaniem rezerwy wysiłkowej.
 
-Dead Bug
-Seria 1: 12 powt. x Masa ciała (RIR 2)
-Seria 2: 12 powt. x Masa ciała (RIR 2)
-Seria 3: 12 powt. x Masa ciała (RIR 2)
-Wyjaśnienie decyzji: Brak danych w historii.
+[SUPERSET B]:
+B1: Cable Core Pallof Press (upper)
+Seria 1: 10 x 18 kg (RIR 3)
+Seria 2: 10 x 18 kg (RIR 3)
+Seria 3: 10 x 18 kg (RIR 3)
+Wyjaśnienie decyzji: Utrzymanie pracy antyrotacyjnej tułowia dla stabilizacji miednicy w trakcie biegu.
 
-Side plank with leg raise
-Seria 1: 10 powt. x Masa ciała (RIR 2)
-Seria 2: 10 powt. x Masa ciała (RIR 2)
-Seria 3: 10 powt. x Masa ciała (RIR 2)
-Wyjaśnienie decyzji: Brak danych w historii.
+B2: Ab Wheel (upper)
+Seria 1: 8 x mc (RIR 3)
+Seria 2: 8 x mc (RIR 2)
+Seria 3: 8 x mc (RIR 2)
+Wyjaśnienie decyzji: Zmniejszenie liczby powtórzeń do 8 zapobiega pracy do upadku (poprzednio 0 RIR) i oszczędza tłocznię brzuszną.
 
-* **Cardio / Rower eliptyczny**: Brak
-* **Cel i zalecenia adaptacyjne**: Kompleksowe wzmocnienie całego ciała z modyfikacjami chroniącymi pachwinę przed długim biegiem.
+* **Cardio / Rower eliptyczny**: 10 min w Z1 po UPPER
+* **Cel i zalecenia adaptacyjne**: Wzmocnienie siły górnej połowy ciała i stabilizacji centralnej bez obciążenia aparatu ruchu nóg.
 
-### Czwartek - Bieg: Easy Run
+### Piątek - Bieg: VO2max
 
-* **Rozgrzewka**: 1.00 km truchtu (tempo 6:15 min/km)
-* **Część główna**: 6.00 km biegu ciągłego w Z2 (tempo 5:45-6:00 min/km), HR 130-145 bpm, strefa Z2.
-* **Schłodzenie**: 1.00 km truchtu (tempo 6:15 min/km)
-* **Cel fizjologiczny**: Budowanie bazy tlenowej i stymulacja krążenia przy minimalnym obciążeniu struktur mięśniowych.
+- **Rozgrzewka**: 2.0 km truchtu w Z2 (5:45-6:05 min/km) + 3 x 60 m rytmy z pełnym wypoczynkiem
+- **Część główna**: 5 x 600 m, tempo 3:55-4:00 min/km, przerwa 2:00 min w marszu/truchcie, tętno >181 bpm, strefa Z5
+- **Schłodzenie**: 1.0 km w strefie Z1 (tempo >6:15 min/km)
+- **Cel fizjologiczny**: Maksymalna stymulacja poboru tlenu oraz pobudzenie nerwowo-mięśniowe do prędkości startowej poniżej PB.
 
-### Piątek - Bieg: Lekki Threshold
+### Sobota - Siłownia: FBW
 
-* **Rozgrzewka**: 2.00 km truchtu (tempo 6:00 min/km)
-* **Część główna**: 3 x 1.0 km w tempie progowym Z4 (tempo 4:30 min/km), przerwa: 90 sekund w marszu/truchcie, HR 165-175 bpm, strefa Z4.
-* **Schłodzenie**: 2.00 km truchtu/marszu (tempo 6:15 min/km)
-* **Cel fizjologiczny**: Podtrzymanie adaptacji progowych pod kątem zbliżającego się startu na 5 km przy zachowaniu kontrolowanej objętości.
-
-### Sobota - Siłownia: UPPER
-
-* **Status dolnych partii**: Oszczędzać pod bieg (brak obciążania nóg)
+* **Status dolnych partii**: Oszczędzać pod bieg
 * **Ćwiczenia**:
-Bench Press (Barbell)
-Seria 1: 8 powt. x 50.0 kg (RIR 2)
-Seria 2: 8 powt. x 50.0 kg (RIR 2)
-Seria 3: 8 powt. x 50.0 kg (RIR 1)
-Wyjaśnienie decyzji: Brak danych w historii. Ustalono bezpieczny ciężar bazowy do pracy w umiarkowanej intensywności.
+Bulgarian Split Squat (Dumbbell) (fbw) - USUNIĘTO
+Decyzja: Eliminacja silnej ekscentryki czworogłowych dzień po akcencie VO2max oraz przed niedzielnym wybieganiem w fazie Peak.
 
-Lat Pulldown (Cable)
-Seria 1: 10 powt. x 45.0 kg (RIR 2)
-Seria 2: 10 powt. x 45.0 kg (RIR 2)
-Seria 3: 10 powt. x 45.0 kg (RIR 1)
-Wyjaśnienie decyzji: Brak danych w historii.
+[SUPERSET A]:
+A1: Incline Bench Press (Barbell) (fbw)
+Seria 1: 8 x 50 kg (RIR 3)
+Seria 2: 8 x 50 kg (RIR 3)
+Seria 3: 8 x 50 kg (RIR 3)
+Wyjaśnienie decyzji: Zachowanie parametrów z bazy bez przeciążania układu nerwowego przed zawodami.
 
-Overhead Press (Barbell)
-Seria 1: 8 powt. x 30.0 kg (RIR 2)
-Seria 2: 8 powt. x 30.0 kg (RIR 2)
-Seria 3: 8 powt. x 30.0 kg (RIR 1)
-Wyjaśnienie decyzji: Brak danych w historii.
+A2: Pull Up (fbw)
+Seria 1: 7 x mc (RIR 3)
+Seria 2: 7 x mc (RIR 3)
+Seria 3: 7 x mc (RIR 2)
+Wyjaśnienie decyzji: Redukcja powtórzeń do 7 w celu uniknięcia załamania mięśniowego w ostatniej serii.
 
-Seated Cable Row - Bar Grip
-Seria 1: 8 powt. x 50.0 kg (RIR 2)
-Seria 2: 8 powt. x 50.0 kg (RIR 2)
-Seria 3: 8 powt. x 50.0 kg (RIR 1)
-Wyjaśnienie decyzji: Brak danych w historii.
+Bent Over Row (Barbell) (fbw)
+Seria 1: 10 x 50 kg (RIR 2)
+Seria 2: 10 x 50 kg (RIR 2)
+Seria 3: 10 x 50 kg (RIR 2)
+Wyjaśnienie decyzji: Utrzymanie 50 kg x 10 jako stabilnego bodźca wzmacniającego retraktory łopatek.
 
-Seated Calf Raise
-Seria 1: 10 powt. x 30.0 kg (RIR 2)
-Seria 2: 10 powt. x 30.0 kg (RIR 2)
-Seria 3: 10 powt. x 30.0 kg (RIR 1)
-Wyjaśnienie decyzji: Brak danych w historii.
+Single Leg Romanian Deadlift (Dumbbell) (fbw) - USUNIĘTO
+Decyzja: Usunięcie ćwiczenia w celu całkowitej ochrony taśmy tylnej i przywodzicieli przed mikrourazami.
 
-Bicep Curl (Barbell)
-Seria 1: 10 powt. x 20.0 kg (RIR 2)
-Seria 2: 10 powt. x 20.0 kg (RIR 2)
-Seria 3: 10 powt. x 20.0 kg (RIR 1)
-Wyjaśnienie decyzji: Brak danych w historii.
+Single Leg Hip Thrust (Dumbbell) (fbw)
+Seria 1: 10 x 10 kg (RIR 3)
+Seria 2: 10 x 10 kg (RIR 3)
+Wyjaśnienie decyzji: Koncentryczna aktywacja pośladka bez niszczącego napięcia ekscentrycznego na aparat ruchu.
 
-Triceps Pushdown
-Seria 1: 10 powt. x 25.0 kg (RIR 2)
-Seria 2: 10 powt. x 25.0 kg (RIR 2)
-Seria 3: 10 powt. x 25.0 kg (RIR 1)
-Wyjaśnienie decyzji: Brak danych w historii.
+Single Leg Standing Calf Raise (Barbell) (fbw) - USUNIĘTO
+Decyzja: Eliminacja obciążenia ścięgien Achillesa sztangą na 24h przed wybieganiem i tydzień przed startem docelowym.
 
-Cable Core Pallof Press
-Seria 1: 10 powt. x 15.0 kg (RIR 2)
-Seria 2: 10 powt. x 15.0 kg (RIR 2)
-Seria 3: 10 powt. x 15.0 kg (RIR 1)
-Wyjaśnienie decyzji: Brak danych w historii.
+Dead Bug (fbw)
+Seria 1: 15 x mc (RIR 3)
+Seria 2: 15 x mc (RIR 3)
+Seria 3: 15 x mc (RIR 3)
+Wyjaśnienie decyzji: Kontynuacja stabilizacji antyprzeprostnej kręgosłupa bez osiowego obciążania układu szkieletowego.
 
-Ab Wheel
-Seria 1: 10 powt. x Masa ciała (RIR 2)
-Seria 2: 10 powt. x Masa ciała (RIR 2)
-Seria 3: 10 powt. x Masa ciała (RIR 1)
-Wyjaśnienie decyzji: Brak danych w historii.
+Side plank with leg raise (fbw)
+Seria 1: 10 x mc (RIR 3)
+Seria 2: 10 x mc (RIR 3)
+Seria 3: 10 x mc (RIR 3)
+Wyjaśnienie decyzji: Zmniejszenie powtórzeń do 10 dla bezpiecznej aktywacji pasma biodrowo-piszczelowego bez drażnienia przywodziciela.
 
-* **Cardio / Rower eliptyczny**: 15 min w Z1 tlen po UPPER
-* **Cel i zalecenia adaptacyjne**: Wzmocnienie górnej partii ciała i korpusu bez generowania zmęczenia mięśniowego nóg.
+* **Cardio / Rower eliptyczny**: 10 min w Z1 przed siłą
+* **Cel i zalecenia adaptacyjne**: Pobudzenie nerwowo-mięśniowe z wyzerowanym obciążeniem ekscentrycznym nóg pod kątem jutrzejszego biegu.
 
-### Niedziela - Bieg: Long Run
+### Niedziela - Bieg: Long Run ciągły
 
-* **Rozgrzewka**: 1.00 km truchtu (tempo 6:15 min/km)
-* **Część główna**: 12.00 km biegu ciągłego w Z2 (niskie Z3) (tempo 5:25-5:45 min/km), HR 135-155 bpm, strefa Z2/Z3.
-* **Schłodzenie**: 1.00 km truchtu/marszu (tempo 6:15 min/km)
-* **Cel fizjologiczny**: Utrzymanie wytrzymałości tlenowej po maratonie bez przesadzania z długością dystansu w fazie przebudowy pod 5 km.
+- **Część główna**: 10.0 km, tempo 5:35-5:55 min/km, tętno 135-148 bpm, strefa Z2
+- **Cel fizjologiczny**: Podtrzymanie enzymów oksydacyjnych przy kontrolowanym skróceniu dystansu w ramach planowanego taperingu przedstartowego.
 
 ### Podsumowanie tygodnia
 
-* Łączny planowany kilometraż biegowy: 26.0 km
+* Łączny planowany kilometraż biegowy: 28.5 km
 * Łączny planowany dystans pływacki: 0 m
-* Rozkład intensywności biegowej (wg dystansu): 84% strefy tlenowe (Z1-Z2) vs 16% jakościowe (Z3-Z5)
+* Rozkład intensywności biegowej (wg dystansu): 75% strefy tlenowe (Z1-Z2) vs 25% jakościowe (Z3-Z5)
 
 Tabela porównawcza:
 
 | Wskaźnik | Poprzedni tydzień | Obecny tydzień |
 | --- | --- | --- |
-| Dystans całkowity biegowy (km) | 3.56 km | 26.0 km |
-| Dystans całkowity pływacki (m) | 2060 m | 0 m |
-| Liczba jednostek biegowych | 1 | 4 |
-| Liczba jednostek siłowych | 0 | 2 |
-| Liczba jednostek pływackich / cross-training | 2 | 0 |
-| Dni pełnej regeneracji (rest days) | 4 | 1 |
+| Dystans całkowity biegowy (km) | 30.4 km | 28.5 km |
+| Dystans całkowity pływacki (m) | 0 m | 0 m |
+| Liczba jednostek biegowych | 4 | 4 |
+| Liczba jednostek siłowych | 2 | 2 |
+| Liczba jednostek pływackich / cross-training | 0 | 0 |
+| Dni pełnej regeneracji (rest days) | 1 | 1 |
 
-Statystyki z poprzedniego tygodniowa:
+Statystyki z poprzedniego tygodnia:
 
-* Średnie nocne HRV: 48 ms
-* Średnie tętno spoczynkowe (RHR): 54 bpm
+* Średnie nocne HRV: 45 ms
+* Średnie tętno spoczynkowe (RHR): 57 bpm
 
 ### Uzasadnienie i oczekiwane efekty
 
-Plan na ten tydzień bezpiecznie zwiększa objętość biegową po maratonie, realizując bezpieczną progresję ukierunkowaną już na cel główny, czyli 5 km. Wdrożono modyfikacje w treningu siłowym (zamiana bułgarów i usunięcie rdl na jednej nodze), aby zabezpieczyć bolesną w ubiegłym tygodniu pachwinę. Jednostka progowa w piątek i przebieżki w poniedziałek stymulują włókna szybkokurczliwe i układ oddechowy. Całość zamyka kontrolowany długi bieg, domykający bazę tlenową w cyklu po maratonie.
+Plan rozpoczyna bezpośrednią fazę taperingu przed startem docelowym na 5 km poprzez redukcję kilometrażu o 6% przy zachowaniu kluczowej ostrości tempowej (Z4 i Z5). Z jednostek siłowych wyeliminowano ciężką ekscentrykę nóg, co zabezpiecza podrażniony w ubiegłym tygodniu przywodziciel i chroni zasoby glikogenu. Korekta powtórzeń w ćwiczeniach górnej połowy ciała likwiduje pracę do załamania, stymulując odbudowę wskaźników autonomicznych (HRV i RHR). Taki dobór bodźców zapewni optymalną kompensację mocy tlenowej i świeżość nerwowo-mięśniową na tydzień przed startem docelowym.
