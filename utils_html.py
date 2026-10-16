@@ -4,17 +4,18 @@ import html
 
 RE_HR = re.compile(r'^(?:-{3,}|={3,})$')
 RE_TABLE_DIVIDER = re.compile(r'^:?-+:?$')
+RE_HEADING = re.compile(r'^(#{1,4})\s+(.*)$')
 RE_BOLD = re.compile(r'\*\*(.*?)\*\*')
 RE_ITALIC_STAR = re.compile(r'(?<!\*)\*([^*]+)\*(?!\*)')
 RE_ITALIC_UNDERSCORE = re.compile(r'(?<!_)_([^_]+)_(?!_)')
+RE_MARKDOWN_STRIP = re.compile(r'[*_`]')
 
 
 def _format_inline_markdown(text):
     """Konwertuje pogrubienie oraz kursywę Markdown na tagi HTML."""
     text = RE_BOLD.sub(r'<strong>\1</strong>', text)
     text = RE_ITALIC_STAR.sub(r'<em>\1</em>', text)
-    text = RE_ITALIC_UNDERSCORE.sub(r'<em>\1</em>', text)
-    return text
+    return RE_ITALIC_UNDERSCORE.sub(r'<em>\1</em>', text)
 
 
 def markdown_to_html_doc(md_text, title="Raport Coach Gemini"):
@@ -32,11 +33,9 @@ def markdown_to_html_doc(md_text, title="Raport Coach Gemini"):
     Returns:
         str: Pełny kod HTML wygenerowanego dokumentu.
     """
-    lines = md_text.splitlines()
     html_lines = []
     in_table = False
     in_list = False
-    table_has_header = False
 
     def close_list():
         nonlocal in_list
@@ -45,13 +44,12 @@ def markdown_to_html_doc(md_text, title="Raport Coach Gemini"):
             in_list = False
 
     def close_table():
-        nonlocal in_table, table_has_header
+        nonlocal in_table
         if in_table:
             html_lines.append("</tbody></table></div>")
             in_table = False
-            table_has_header = False
 
-    for line in lines:
+    for line in md_text.splitlines():
         stripped = line.strip()
 
         # Pusta linia
@@ -78,79 +76,68 @@ def markdown_to_html_doc(md_text, title="Raport Coach Gemini"):
 
             if not in_table:
                 in_table = True
-                html_lines.append('<div class="table-wrapper"><table>')
-                html_lines.append("<thead><tr>")
-                for c in cells:
-                    html_lines.append(f"<th>{html.escape(c)}</th>")
+                html_lines.append('<div class="table-wrapper"><table><thead><tr>')
+                html_lines.extend(f"<th>{html.escape(c)}</th>" for c in cells)
                 html_lines.append("</tr></thead><tbody>")
-                table_has_header = True
             else:
-                first_cell_raw = cells[0] if cells else ""
-                clean_first = re.sub(r'[*_`]', '', first_cell_raw).strip().lower()
-                is_pause_row = clean_first.startswith("przerw") or "przerwa" in clean_first
+                clean_first = RE_MARKDOWN_STRIP.sub('', cells[0]).strip().lower() if cells else ""
+                is_pause_row = "przerw" in clean_first
 
                 row_class = ' class="row-pause"' if is_pause_row else ''
                 html_lines.append(f"<tr{row_class}>")
                 for c in cells:
-                    cell_html = html.escape(c)
+                    escaped = html.escape(c)
                     if is_pause_row:
-                        # W wierszu przerwy usuwamy ewentualne ** (pogrubienia) oraz gwiazdki/podkreślenia
-                        cell_clean = re.sub(r'\*\*(.*?)\*\*', r'\1', cell_html)
-                        cell_clean = re.sub(r'[*_]', '', cell_clean).strip()
-                        html_lines.append(f"<td>{cell_clean}</td>")
+                        # W wierszu przerwy usuwamy ewentualne gwiazdki/podkreślenia
+                        html_lines.append(f"<td>{re.sub(r'[*_]', '', escaped).strip()}</td>")
                     else:
-                        cell_html = _format_inline_markdown(cell_html)
-                        html_lines.append(f"<td>{cell_html}</td>")
+                        html_lines.append(f"<td>{_format_inline_markdown(escaped)}</td>")
                 html_lines.append("</tr>")
             continue
-        else:
-            close_table()
 
-        # Nagłówki
-        if stripped.startswith("#### "):
+        close_table()
+
+        # Nagłówki (h1 - h4)
+        m_heading = RE_HEADING.match(stripped)
+        if m_heading:
             close_list()
-            h_text = html.escape(stripped[5:].strip())
-            html_lines.append(f"<h4>{h_text}</h4>")
-            continue
-        elif stripped.startswith("### "):
-            close_list()
-            h_text = html.escape(stripped[4:].strip())
-            html_lines.append(f"<h3>{h_text}</h3>")
-            continue
-        elif stripped.startswith("## "):
-            close_list()
-            h_text = html.escape(stripped[3:].strip())
-            html_lines.append(f"<h2>{h_text}</h2>")
-            continue
-        elif stripped.startswith("# "):
-            close_list()
-            h_text = html.escape(stripped[2:].strip())
-            html_lines.append(f"<h1>{h_text}</h1>")
+            level = len(m_heading.group(1))
+            html_lines.append(f"<h{level}>{html.escape(m_heading.group(2).strip())}</h{level}>")
             continue
 
         # Elementy listy (* lub -)
-        if stripped.startswith("* ") or stripped.startswith("- "):
+        if stripped.startswith(("* ", "- ")):
             if not in_list:
                 in_list = True
                 html_lines.append("<ul>")
-            item_text = html.escape(stripped[2:].strip())
-            item_text = _format_inline_markdown(item_text)
-            html_lines.append(f"<li>{item_text}</li>")
+            html_lines.append(f"<li>{_format_inline_markdown(html.escape(stripped[2:].strip()))}</li>")
             continue
-        else:
-            close_list()
+
+        close_list()
 
         # Zwykły akapit
-        p_text = html.escape(stripped)
-        p_text = _format_inline_markdown(p_text)
-        html_lines.append(f"<p>{p_text}</p>")
+        html_lines.append(f"<p>{_format_inline_markdown(html.escape(stripped))}</p>")
 
     close_list()
     close_table()
 
-    body_content = "\n".join(html_lines)
+    return f"""<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{html.escape(title)}</title>
+  <style>{CSS_STYLES}</style>
+</head>
+<body>
+  <div class="container">
+    {chr(10).join(html_lines)}
+  </div>
+</body>
+</html>"""
 
-    css = """
+
+CSS_STYLES = """
     :root {
       --bg: #09090b;
       --card-bg: #121214;
@@ -209,19 +196,4 @@ def markdown_to_html_doc(md_text, title="Raport Coach Gemini"):
       color: #71717a !important;
     }
     tr.row-pause:hover { background: rgba(255, 255, 255, 0.02) !important; }
-    """
-
-    return f"""<!DOCTYPE html>
-<html lang="pl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{html.escape(title)}</title>
-  <style>{css}</style>
-</head>
-<body>
-  <div class="container">
-    {body_content}
-  </div>
-</body>
-</html>"""
+"""

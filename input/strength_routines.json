@@ -3,60 +3,95 @@
     "name": "FBW (Full Body Workout)",
     "description": "Trening ogólnorozwojowy całego ciała ukierunkowany na transfer motoryczny i siłę biegową.",
     "exercises": {
-      "Bulgarian Split Squat (Dumbbell)": {
+      "Low Step-Off to Stiff Rebound": {
         "target_sets": 3,
-        "target_reps": "10-12",
-        "tempo": "3-0-1-0",
+        "target_reps": "6-8",
+        "tempo": "X-0-X-0",
         "last_sets": [
           {
             "set": 1,
-            "weight": "20 kg",
-            "reps": 10
+            "weight": "mc",
+            "reps": 5
           },
           {
             "set": 2,
-            "weight": "20 kg",
-            "reps": 10
+            "weight": "mc",
+            "reps": 5
           },
           {
             "set": 3,
-            "weight": "20 kg",
-            "reps": 10
+            "weight": "mc",
+            "reps": 5
+          }
+        ]
+      },
+      "Deadlift (Trap bar)": {
+        "target_sets": 2,
+        "target_reps": "6",
+        "tempo": "2-0-X-0",
+        "last_sets": [
+          { 
+            "set": 1,
+            "weight": "60 kg",
+            "reps": 6
+          },
+          {
+            "set": 2,
+            "weight": "60 kg",
+            "reps": 6
+          }
+        ]
+      },
+      "Squat (Barbell)": {
+        "target_sets": 2,
+        "target_reps": "8",
+        "tempo": "2-0-X-0",
+        "last_sets": [
+          {
+            "set": 1,
+            "weight": "50 kg",
+            "reps": 8
+          },
+          {
+            "set": 2,
+            "weight": "50 kg",
+            "reps": 8
           }
         ]
       },
       "Incline Bench Press (Barbell)": {
         "target_sets": 3,
-        "target_reps": "8-10",
-        "tempo": "2-0-1-0",
+        "target_reps": "4-6",
+        "tempo": "2-0-X-0",
+        "superset": "A1",
         "last_sets": [
           {
             "set": 1,
             "weight": "50 kg",
-            "reps": 8
+            "reps": 6
           },
           {
             "set": 2,
             "weight": "50 kg",
-            "reps": 8
+            "reps": 6
           },
           {
             "set": 3,
             "weight": "50 kg",
-            "reps": 8
+            "reps": 5
           }
-        ],
-        "superset": "A1"
+        ]
       },
       "Pull Up": {
         "target_sets": 3,
-        "target_reps": "8-10",
-        "tempo": "2-0-1-1",
+        "target_reps": "6-8",
+        "tempo": "2-0-X-1",
+        "superset": "A2",
         "last_sets": [
           {
             "set": 1,
             "weight": "mc",
-            "reps": 10
+            "reps": 8
           },
           {
             "set": 2,
@@ -68,84 +103,49 @@
             "weight": "mc",
             "reps": 6
           }
-        ],
-        "superset": "A2"
+        ]
       },
-      "Bent Over Row (Barbell)": {
+      "Rear Delt Reverse Fly (Machine)": {
         "target_sets": 3,
-        "target_reps": "8-10",
-        "tempo": "2-0-1-1",
+        "target_reps": "8",
+        "tempo": "2-0-1-2",
         "last_sets": [
           {
             "set": 1,
-            "weight": "50 kg",
-            "reps": 10
+            "weight": "32 kg",
+            "reps": 8
           },
           {
             "set": 2,
-            "weight": "50 kg",
-            "reps": 10
+            "weight": "32 kg",
+            "reps": 8
           },
           {
             "set": 3,
-            "weight": "50 kg",
-            "reps": 10
+            "weight": "32 kg",
+            "reps": 8
           }
         ]
       },
-      "Single Leg Romanian Deadlift (Dumbbell)": {
-        "target_sets": 2,
-        "target_reps": "10-12",
-        "tempo": "3-0-1-0",
-        "last_sets": [
-          {
-            "set": 1,
-            "weight": "mc",
-            "reps": 6
-          },
-          {
-            "set": 2,
-            "weight": "mc",
-            "reps": 6
-          }
-        ]
-      },
-      "Single Leg Hip Thrust (Dumbbell)": {
-        "target_sets": 2,
-        "target_reps": "10-12",
-        "tempo": "2-0-1-1",
-        "last_sets": [
-          {
-            "set": 1,
-            "weight": "10 kg",
-            "reps": 10
-          },
-          {
-            "set": 2,
-            "weight": "10 kg",
-            "reps": 10
-          }
-        ]
-      },
-      "Single Leg Standing Calf Raise (Barbell)": {
+      "Seated Calf Raise": {
         "target_sets": 3,
-        "target_reps": "10-12",
-        "tempo": "3-2-1-0",
+        "target_reps": "8",
+        "tempo": "2-2-1-0",
         "last_sets": [
           {
             "set": 1,
-            "weight": "50 kg",
-            "reps": 12
+            "weight": "30 kg",
+            "reps": 8
           },
           {
             "set": 2,
-            "weight": "50 kg",
-            "reps": 12
+            "weight": "30 kg",
+            "reps": 8
           },
           {
             "set": 3,
-            "weight": "50 kg",
-            "reps": 12
+            "weight": "35 kg",
+            "reps": 8
           }
         ]
       },
@@ -171,25 +171,25 @@
           }
         ]
       },
-      "Side plank with leg raise": {
+      "Cable Core Pallof Press": {
         "target_sets": 3,
-        "target_reps": "10-12",
-        "tempo": "1-0-1-0",
+        "target_reps": "10",
+        "tempo": "1-2-1-0",
         "last_sets": [
           {
             "set": 1,
-            "weight": "mc",
-            "reps": 12
+            "weight": "18 kg",
+            "reps": 10
           },
           {
             "set": 2,
-            "weight": "mc",
-            "reps": 12
+            "weight": "18 kg",
+            "reps": 10
           },
           {
             "set": 3,
-            "weight": "mc",
-            "reps": 12
+            "weight": "18 kg",
+            "reps": 10
           }
         ]
       }
@@ -201,8 +201,8 @@
     "exercises": {
       "Bench Press (Barbell)": {
         "target_sets": 3,
-        "target_reps": "8-10",
-        "tempo": "3-0-1-0",
+        "target_reps": "8",
+        "tempo": "2-1-X-0",
         "last_sets": [
           {
             "set": 1,
@@ -223,8 +223,8 @@
       },
       "Lat Pulldown (Cable)": {
         "target_sets": 3,
-        "target_reps": "8-10",
-        "tempo": "1-1-2-0",
+        "target_reps": "6-8",
+        "tempo": "2-0-1-1",
         "last_sets": [
           {
             "set": 1,
@@ -245,8 +245,8 @@
       },
       "Overhead Press (Barbell)": {
         "target_sets": 3,
-        "target_reps": "8-10",
-        "tempo": "2-0-1-1",
+        "target_reps": "3-8",
+        "tempo": "2-0-X-1",
         "last_sets": [
           {
             "set": 1,
@@ -267,8 +267,8 @@
       },
       "Seated Cable Row - Bar Grip": {
         "target_sets": 3,
-        "target_reps": "8-10",
-        "tempo": "2-1-1-1",
+        "target_reps": "10",
+        "tempo": "2-0-1-1",
         "last_sets": [
           {
             "set": 1,
@@ -283,36 +283,14 @@
           {
             "set": 3,
             "weight": "50 kg",
-            "reps": 10
-          }
-        ]
-      },
-      "Seated Calf Raise": {
-        "target_sets": 3,
-        "target_reps": "10-12",
-        "tempo": "3-2-1-0",
-        "last_sets": [
-          {
-            "set": 1,
-            "weight": "30 kg",
-            "reps": 12
-          },
-          {
-            "set": 2,
-            "weight": "30 kg",
-            "reps": 12
-          },
-          {
-            "set": 3,
-            "weight": "35 kg",
             "reps": 10
           }
         ]
       },
       "Seated Incline Curl (Dumbbell)": {
         "target_sets": 3,
-        "target_reps": "10-12",
-        "tempo": "2-0-1-1",
+        "target_reps": "8",
+        "tempo": "2-0-1-0",
         "superset": "A1",
         "last_sets": [
           {
@@ -334,7 +312,7 @@
       },
       "Triceps Pushdown": {
         "target_sets": 3,
-        "target_reps": "10-12",
+        "target_reps": "10",
         "tempo": "2-0-1-1",
         "superset": "A2",
         "last_sets": [
@@ -355,49 +333,25 @@
           }
         ]
       },
-      "Cable Core Pallof Press": {
+      "Side plank with leg raise": {
         "target_sets": 3,
         "target_reps": "10-12",
-        "tempo": "2-1-1-1",
-        "superset": "B1",
-        "last_sets": [
-          {
-            "set": 1,
-            "weight": "18 kg",
-            "reps": 10
-          },
-          {
-            "set": 2,
-            "weight": "18 kg",
-            "reps": 10
-          },
-          {
-            "set": 3,
-            "weight": "18 kg",
-            "reps": 10
-          }
-        ]
-      },
-      "Ab Wheel": {
-        "target_sets": 3,
-        "target_reps": "10-12",
-        "tempo": "2-0-1-0",
-        "superset": "B2",
+        "tempo": null,
         "last_sets": [
           {
             "set": 1,
             "weight": "mc",
-            "reps": 10
+            "reps": 12
           },
           {
             "set": 2,
             "weight": "mc",
-            "reps": 10
+            "reps": 12
           },
           {
             "set": 3,
             "weight": "mc",
-            "reps": 10
+            "reps": 12
           }
         ]
       }

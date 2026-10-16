@@ -18,15 +18,18 @@ logger = logging.getLogger(__name__)
 # Stałe globalne
 NO_DATA = "Brak danych"
 DAYS_PL = ["Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota", "Niedziela"]
-INPUT_DIR = "input"
-OUTPUT_DIR = "output"
-PROMPTS_DIR = "prompts"
-HISTORY_DIR = "trainings_history"
-DEBUG_DIR = "debug"
+INPUT_DIR_PATH = "input"
+OUTPUT_DIR_PATH = "output"
+PROMPTS_DIR_PATH = "prompts"
+HISTORY_DIR_PATH = "trainings_history"
+DEBUG_DIR_PATH = "debug"
 
 PERSONAL_DATA_KEYS = (
-    "primary_goal", "secondary_goal", "phase", "last_event_date", "last_event_type", "height", "weight", "max_hr", "lthr",
-    "z1", "z2", "z3", "z4", "z5", "personal_records", "additional_notes"
+    "primary_goal", "secondary_goal", "phase", "last_event_date", "last_event_type",
+    "height", "weight", "max_hr", "lthr",
+    "z1", "z2", "z3", "z4", "z5",
+    "pace_z1", "pace_z2", "pace_z3", "pace_z4", "pace_z5",
+    "personal_records", "additional_notes"
 )
 UNKNOWN_VALUE_KEYWORDS = frozenset({"nieznany", "brak", "none", "null"})
 
@@ -49,8 +52,11 @@ RE_RUN_TYPE = re.compile(r'^-\s*Typ treningu biegowego:\s*([^\n]+)', re.MULTILIN
 RE_RUN_STRUCT = re.compile(r'^-\s*Struktura biegu:\s*([^\n]+)', re.MULTILINE)
 RE_STR_W5 = re.compile(r'^-\s*Siłownia:\s*(TAK|NIE)', re.MULTILINE)
 RE_MUSCLE = re.compile(r'^-\s*Partie mięśniowe \(siłownia\):\s*([^\n]+)', re.MULTILINE)
-RE_DECISION_CORR = re.compile(r'\*\s*\*\*(?:DECYZJA ADAPTACYJNA(?:.*?)?|DECYZJA O KOREKCIE)[^\n:]*:\s*([^\n]+)', re.IGNORECASE)
-RE_DECISION_ACC = re.compile(r'\*\s*\*\*STOPIEŃ GOTOWOŚCI[^\n:]*:\s*([^\n]+)', re.IGNORECASE)
+RE_COACH_DECISION = re.compile(
+    r'^[*-]?\s*\*?\*?(?:DECYZJA ADAPTACYJNA(?:\s*/\s*STOPIEŃ GOTOWOŚCI)?|DECYZJA O KOREKCIE|STOPIEŃ GOTOWOŚCI|Decyzja trenera|Zgodność z planem)[^\n:]*:\s*(?:\n\s*)?([^\n|]+)',
+    re.MULTILINE | re.IGNORECASE
+)
+RE_PROFILE_HEADER = re.compile(r'^[*-]?\s*\*?\*?Profil jednostki\*?\*?:\s*([^\n\r]+)', re.MULTILINE | re.IGNORECASE)
 
 RE_DIST_FLOAT = re.compile(r'([0-9]+(?:[.,][0-9]+)?)')
 RE_PLAN_STRUCT = re.compile(r'Dystans:\s*Plan:[^\n\(]*\(([^)]*(?:rozgrzewk|schłodzen|główn|mp|tempo)[^)]*)\)', re.IGNORECASE)
@@ -66,7 +72,7 @@ RE_DATE_HEURISTIC = re.compile(
     r'\d{4}-\d{2}-\d{2}|at\s+\d{1,2}:\d{2})',
     re.IGNORECASE
 )
-ROUTINES_JSON_PATH = os.path.join(INPUT_DIR, "strength_routines.json")
+ROUTINES_JSON_PATH = os.path.join(INPUT_DIR_PATH, "strength_routines.json")
 
 
 # ==============================================================================
@@ -92,6 +98,7 @@ def _read_file_safe(filepath, default_return=None):
     except Exception as e:
         raise RuntimeError(f"Błąd odczytu pliku {filepath}: {e}") from e
 
+
 def _normalize_training_parameter(raw_value):
     """
     Czyści i normalizuje pojedynczą wartość parametru treningowego.
@@ -110,7 +117,7 @@ def _normalize_training_parameter(raw_value):
     if raw_value is None:
         return NO_DATA
     if isinstance(raw_value, dict):
-        return { k : _normalize_training_parameter(v) for k, v in raw_value.items() }
+        return {k: _normalize_training_parameter(v) for k, v in raw_value.items()}
     if isinstance(raw_value, str):
         cleaned_text = raw_value.strip()
         if not cleaned_text or cleaned_text.lower() in UNKNOWN_VALUE_KEYWORDS:
@@ -119,9 +126,9 @@ def _normalize_training_parameter(raw_value):
     return raw_value
 
 
-def load_personal_data(config_filepath=os.path.join(INPUT_DIR, "personal_data.json")):
+def load_personal_data(filepath=os.path.join(INPUT_DIR_PATH, "personal_data.json")):
     """
-    Wczytuje kontekst treningowy, strefy tętna, antropometrię i rekordy biegacza z pliku JSON.
+    Wczytuje dane o zawodniku z pliku JSON.
 
     Zasada działania:
     1. Jeśli plik nie istnieje: automatycznie tworzy katalog oraz wypełnia plik domyślnym
@@ -129,76 +136,63 @@ def load_personal_data(config_filepath=os.path.join(INPUT_DIR, "personal_data.js
        użytkownik uzupełnił go przed pierwszym uruchomieniem.
     2. Jeśli plik istnieje: parsuje zawartość JSON i weryfikuje, czy główną strukturą jest słownik.
        W przypadku błędu odczytu I/O lub składni JSON rzuca RuntimeError.
-    3. Scala wczytaną konfigurację z kompletem kluczy domyślnych oraz
-       przeprowadza sanityzację wartości (zamienia puste pola i napisy 'brak'/'nieznany' na 'Brak danych').
+    3. Scala wczytaną konfigurację z kompletem kluczy domyślnych oraz zamienia puste pola na 'Brak danych'.
 
     Args:
-        config_filepath (str, optional): Ścieżka do pliku konfiguracji. Domyślnie używa 'input/personal_data.json'.
+        filepath (str): Ścieżka do pliku konfiguracji.
 
     Returns:
         dict: Znormalizowany słownik parametrów treningowych.
     """
     default_personal_records = {
-        "400m": {"time": NO_DATA, "date": NO_DATA},
-        "800m": {"time": NO_DATA, "date": NO_DATA},
-        "1500m": {"time": NO_DATA, "date": NO_DATA},
-        "5km": {"time": NO_DATA, "date": NO_DATA},
-        "10km": {"time": NO_DATA, "date": NO_DATA},
-        "polmaraton": {"time": NO_DATA, "date": NO_DATA},
-        "maraton": {"time": NO_DATA, "date": NO_DATA},
+        dist: {"time": NO_DATA, "date": NO_DATA}
+        for dist in ("400m", "800m", "1500m", "5km", "10km", "polmaraton", "maraton")
     }
+    default_personal_data = {field: NO_DATA for field in PERSONAL_DATA_KEYS}
 
     # 1. Sprawdzenie istnienia pliku i utworzenie szablonu startowego w razie potrzeby
-    os.makedirs(os.path.dirname(config_filepath), exist_ok=True)
-    if not os.path.exists(config_filepath):
-        default_personal_data = {field: NO_DATA for field in PERSONAL_DATA_KEYS}
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+    if not os.path.exists(filepath):
         default_personal_data["personal_records"] = default_personal_records
         try:
-            with open(config_filepath, "w", encoding="utf-8") as file_handle:
+            with open(filepath, "w", encoding="utf-8") as file_handle:
                 json.dump(default_personal_data, file_handle, indent=4, ensure_ascii=False)
-            logger.info(f"Utworzono pusty szablon konfiguracji treningowej: {config_filepath}")
+            logger.info(f"Utworzono pusty szablon danych o zawodniku: {filepath}")
         except Exception as write_error:
-            logger.error(f"Nie udało się utworzyć pliku szablonu {config_filepath}: {write_error}")
+            logger.error(f"Nie udało się utworzyć pliku szablonu {filepath}: {write_error}")
 
         raise FileNotFoundError(
-            f"Nie znaleziono pliku konfiguracji '{config_filepath}'. "
+            f"Nie znaleziono pliku konfiguracji '{filepath}'. "
             f"Utworzono domyślny szablon – uzupełnij go przed uruchomieniem."
         )
 
-    # 2. Bezpieczny odczyt i parsowanie pliku JSON
+    # 2. Odczyt i parsowanie pliku JSON
     try:
-        with open(config_filepath, "r", encoding="utf-8") as file_handle:
+        with open(filepath, "r", encoding="utf-8") as file_handle:
             runner_config = json.load(file_handle)
     except Exception as read_error:
-        raise RuntimeError(f"Błąd podczas otwierania lub odczytu pliku konfiguracji '{config_filepath}': {read_error}") from read_error
+        raise RuntimeError(f"Błąd podczas otwierania lub odczytu pliku konfiguracji '{filepath}': {read_error}") from read_error
 
     # 3. Walidacja typu głównej struktury JSON (wymagany słownik)
     if not isinstance(runner_config, dict):
         raise ValueError(
-            f"Plik '{config_filepath}' musi zawierać obiekt JSON (słownik), a otrzymano: {type(runner_config).__name__}"
+            f"Plik '{filepath}' musi zawierać obiekt JSON (słownik), a otrzymano: {type(runner_config).__name__}"
         )
 
     for goal_key in ("primary_goal", "secondary_goal"):
         goal_val = runner_config.get(goal_key)
         if not isinstance(goal_val, dict):
             raise ValueError(
-                f"Klucz '{goal_key}' w '{config_filepath}' musi być obiektem JSON (słownikiem) z polami 'target', 'date', 'stimulus_share'. Otrzymano: {type(goal_val).__name__}"
+                f"Klucz '{goal_key}' w '{filepath}' musi być obiektem JSON (słownikiem) z polami 'target', 'date', 'stimulus_share'. Otrzymano: {type(goal_val).__name__}"
             )
-        if "target" not in goal_val:
-            raise ValueError(f"Obiekt '{goal_key}' w '{config_filepath}' musi zawierać pole 'target'.")
-        if "stimulus_share" not in goal_val:
-            raise ValueError(f"Obiekt '{goal_key}' w '{config_filepath}' musi zawierać pole 'stimulus_share'.")
+        for req_field in ("target", "stimulus_share"):
+            if req_field not in goal_val:
+                raise ValueError(f"Obiekt '{goal_key}' w '{filepath}' musi zawierać pole '{req_field}'.")
 
     # 4. Scalenie z szablonem bazowym (gwarancja obecności wszystkich wymaganych kluczy)
-    default_personal_data = {field: NO_DATA for field in PERSONAL_DATA_KEYS}
     runner_records = runner_config.get("personal_records")
-    if isinstance(runner_records, dict):
-        merged_records = {**default_personal_records, **runner_records}
-    else:
-        merged_records = default_personal_records
-
-    complete_personal_data = {**default_personal_data, **runner_config}
-    complete_personal_data["personal_records"] = merged_records
+    merged_records = {**default_personal_records, **runner_records} if isinstance(runner_records, dict) else default_personal_records
+    complete_personal_data = {**default_personal_data, **runner_config, "personal_records": merged_records}
 
     # 5. Sanityzacja i normalizacja wszystkich pól do jednolitego formatu
     return {
@@ -218,51 +212,44 @@ def format_personal_records(records):
         str: Sformatowany tekst z rekordami życiowymi.
     """
     if not records or not isinstance(records, dict):
-        return "	* Brak zarejestrowanych rekordów życiowych."
+        return "  * Brak zarejestrowanych rekordów życiowych."
 
     formatted_lines = []
     for distance, data in records.items():
         if isinstance(data, dict):
-            time = data.get("time", "Brak danych")
-            date = data.get("date", "Brak danych")
-            if time == "Brak danych" or not time:
-                formatted_lines.append(f"	* {distance}: Brak danych")
-            else:
-                formatted_lines.append(f"	* {distance}: {time} (data: {date})")
+            time = data.get("time", NO_DATA)
+            date = data.get("date", NO_DATA)
+            val_str = f"{time} (data: {date})" if time and time != NO_DATA else NO_DATA
+            formatted_lines.append(f"  * {distance}: {val_str}")
         elif isinstance(data, str):
-            if data == "Brak danych" or not data:
-                formatted_lines.append(f"	* {distance}: Brak danych")
-            else:
-                formatted_lines.append(f"	* {distance}: {data}")
+            val_str = data if data and data != NO_DATA else NO_DATA
+            formatted_lines.append(f"  * {distance}: {val_str}")
 
     return "\n".join(formatted_lines)
 
 
-def format_goal(goal_data, time_rel=None):
+def format_goal(goal_data, ref_date=None):
     """
-    Formatuje cel biegowy z obiektu słownika.
-
-    Obiekt zawiera pola:
-    - target: treść celu (np. '5km < 20:00')
-    - date: termin startu docelowego (YYYY-MM-DD lub None)
-    - stimulus_share: udział procentowy bodźca treningowego (np. 0.75 -> 75%)
+    Formatuje cel biegowy z obiektu słownika, uwzględniając czas względny do startu.
 
     Args:
-        goal_data (dict): Słownik zawierający dane celu.
+        goal_data (dict): Słownik zawierający dane celu (target, date, stimulus_share).
+        ref_date (datetime.date, optional): Data odniesienia do wyliczenia relacji czasowej.
 
     Returns:
-        str: Sformatowany cel biegowy.
+        str: Sformatowany opis celu biegowego.
     """
     if not isinstance(goal_data, dict):
-        raise ValueError(f"Oczekiwano słownika dla celu biegowego, a otrzymano: {type(goal_data).__name__}")
+        return str(goal_data or NO_DATA).strip()
 
     target = str(goal_data.get("target", NO_DATA)).strip()
     date_val = goal_data.get("date")
     if date_val and date_val != NO_DATA:
+        time_rel = format_relative_time(date_val, ref_date=ref_date)
         time_str = f", {time_rel}" if time_rel and time_rel != NO_DATA else ""
         return f"{target} (Termin: {date_val}{time_str})"
-    else:
-        return f"{target} (Termin: brak)"
+
+    return f"{target} (Termin: brak)"
 
 
 def format_relative_time(date_str, ref_date=None):
@@ -286,10 +273,9 @@ def format_relative_time(date_str, ref_date=None):
 
         if delta < 0:
             return f"{abs(delta)} dni temu"
-        elif delta > 0:
+        if delta > 0:
             return f"za {delta} dni"
-        else:
-            return "dzisiaj"
+        return "dzisiaj"
     except Exception as e:
         logger.debug(f"Nie udało się obliczyć czasu dla daty {date_str}: {e}")
         return str(date_str)
@@ -297,71 +283,53 @@ def format_relative_time(date_str, ref_date=None):
 
 def build_user_profile(personal_data, ref_date=None):
     """
-    Formatuje profil zawodnika do postaci słownika parametrów dla promptów.
+    Formatuje profil zawodnika do postaci słownika parametrów dla szablonów promptów.
 
     Args:
-        personal_data (dict): Dane zawodnika (HR Zones, PB, ...).
-        ref_date (datetime.date, optional): Data odniesienia.
+        personal_data (dict): Dane zawodnika (strefy tętna i tempa, cele, rekordy PB, antropometria).
+        ref_date (datetime.date, optional): Data odniesienia do wyznaczania relacji czasowych.
 
     Returns:
-        dict: Profil użytkownika przygotowany dla promptów.
+        dict: Sformatowany słownik profilu użytkownika.
     """
     if not isinstance(personal_data, dict):
         raise ValueError(f"Oczekiwano słownika konfiguracji treningowej, a otrzymano: {type(personal_data).__name__}")
 
-    # Strefy tętna
     profile = dict(personal_data)
-    z1 = profile.get("z1", NO_DATA)
-    z2 = profile.get("z2", NO_DATA)
-    z3 = profile.get("z3", NO_DATA)
-    z4 = profile.get("z4", NO_DATA)
-    z5 = profile.get("z5", NO_DATA)
 
-    profile["hr_zones"] = f"Z1: {z1}, Z2: {z2}, Z3: {z3}, Z4: {z4}, Z5: {z5}"
-   
-    # Formatowanie celów
+    # 1. Rekordy życiowe (PB)
     profile["personal_records"] = format_personal_records(profile.get("personal_records"))
-    
-    raw_primary = profile.get("primary_goal")
-    raw_secondary = profile.get("secondary_goal")
 
-    target_date = raw_primary.get("date") if isinstance(raw_primary, dict) else NO_DATA
-    time_rel = format_relative_time(target_date, ref_date=ref_date) if target_date != NO_DATA else None
+    # 2. Cele biegowe i podział bodźców treningowych
+    raw_primary = profile.get("primary_goal") if isinstance(profile.get("primary_goal"), dict) else {}
+    raw_secondary = profile.get("secondary_goal") if isinstance(profile.get("secondary_goal"), dict) else {}
 
-    profile["primary_goal"] = format_goal(raw_primary, time_rel=time_rel)
-    profile["secondary_goal"] = format_goal(raw_secondary)
+    profile["primary_goal"] = format_goal(raw_primary, ref_date=ref_date)
+    profile["secondary_goal"] = format_goal(raw_secondary, ref_date=ref_date)
+    profile["stimulus_distribution"] = (
+        f"{raw_primary.get('stimulus_share', 75)}% cel główny ({raw_primary.get('target', NO_DATA)}) / "
+        f"{raw_secondary.get('stimulus_share', 25)}% cel poboczny ({raw_secondary.get('target', NO_DATA)})"
+    )
 
-    p_target = raw_primary.get("target", NO_DATA) if isinstance(raw_primary, dict) else NO_DATA
-    s_target = raw_secondary.get("target", NO_DATA) if isinstance(raw_secondary, dict) else NO_DATA
-    p_share = raw_primary.get("stimulus_share", 75) if isinstance(raw_primary, dict) else 75
-    s_share = raw_secondary.get("stimulus_share", 25) if isinstance(raw_secondary, dict) else 25
-
-    profile["stimulus_distribution"] = f"{p_share}% cel główny ({p_target}) / {s_share}% cel poboczny ({s_target})"
-
-    # Dodatkowe notatki
+    # 3. Dodatkowe notatki zawodnika (lista z wcięciem spacjami zamiast tabulatorów)
     notes = profile.get("additional_notes", [])
     if isinstance(notes, list):
-        profile["additional_notes"] = "\n".join(f"\t* {n}" for n in notes) if notes else "\t* Brak stałych nawyków"
+        profile["additional_notes"] = "\n".join(f"  * {n}" for n in notes) if notes else "  * Brak stałych nawyków"
 
-    # Informacje o ostatnim starcie
+    # 4. Informacje o ostatnim starcie
     last_event_date = profile.get("last_event_date")
     last_event_type = profile.get("last_event_type")
     if last_event_date and last_event_date != NO_DATA:
         time_rel = format_relative_time(last_event_date, ref_date=ref_date)
         prefix = f"{last_event_type} " if last_event_type and last_event_type != NO_DATA else ""
-        ev_info = f"{prefix}(data: {last_event_date}, {time_rel})"
-        profile["last_event_info"] = ev_info
+        profile["last_event_info"] = f"{prefix}(data: {last_event_date}, {time_rel})"
     else:
         profile["last_event_info"] = NO_DATA
-
-    # Czyszczenie duplikatów
-    for k in ["last_event_date", "last_event_type", "primary_stimulus_share", "secondary_stimulus_share", "time_left"]:
-        profile.pop(k, None)
 
     return profile
 
 
-def load_weekly_plan(weekly_plan_file):
+def load_weekly_plan(weekly_plan_path):
     """
     Wczytuje treść planu tygodniowego z pliku Markdown.
 
@@ -369,12 +337,12 @@ def load_weekly_plan(weekly_plan_file):
     W przypadku błędu otwarcia lub odczytu istniejącego pliku zgłasza RuntimeError.
 
     Args:
-        weekly_plan_file (str): Ścieżka do pliku planu tygodniowego.
+        weekly_plan_path (str): Ścieżka do pliku planu tygodniowego.
 
     Returns:
         str | None: Zawartość planu tygodniowego lub None, gdy plik nie istnieje.
     """
-    return _read_file_safe(weekly_plan_file, default_return=None)
+    return _read_file_safe(weekly_plan_path, default_return=None)
 
 
 def _substitute_template_variables(template, **kwargs):
@@ -393,6 +361,15 @@ def _substitute_template_variables(template, **kwargs):
     return template
 
 
+def _load_raw_prompt_file(filename):
+    """Wczytuje surową zawartość pojedynczego pliku szablonu z folderu prompts/."""
+    prompt_path = os.path.join(PROMPTS_DIR_PATH, filename)
+    content = _read_file_safe(prompt_path)
+    if not content:
+        raise FileNotFoundError(f"Nie znaleziono pliku szablonu prompta: {prompt_path}")
+    return content
+
+
 def load_prompt_template(filenames, **kwargs):
     """
     Wczytuje szablon prompta z folderu prompts/ i podstawia przekazane zmienne {nazwa_zmiennej}.
@@ -407,16 +384,8 @@ def load_prompt_template(filenames, **kwargs):
     """
     if isinstance(filenames, str):
         filenames = [filenames]
-        
-    template_parts = []
-    for filename in filenames:
-        prompt_path = os.path.join(PROMPTS_DIR, filename)
-        part = _read_file_safe(prompt_path)
-        if not part:
-            raise FileNotFoundError(f"Nie znaleziono pliku szablonu prompta: {prompt_path}")
-        template_parts.append(part)
 
-    template = "\n".join(template_parts)
+    template = "\n".join(_load_raw_prompt_file(filename) for filename in filenames)
     return _substitute_template_variables(template, **kwargs)
 
 
@@ -461,20 +430,13 @@ def _classify_telegram_message(body):
     # 2. Kwalifikacja jako notatka biegacza ze znacznikiem NOTE
     if first_line_clean == NOTE_KEYWORD:
         raw_lines = body.splitlines()
-        found_idx = -1
         for idx, r_line in enumerate(raw_lines):
             if r_line.strip().strip(":.,!- #*[]()\"'").lower() == NOTE_KEYWORD:
-                found_idx = idx
-                break
-        if found_idx != -1:
-            clean_body = "\n".join(raw_lines[found_idx + 1:]).strip()
-            return ("note", clean_body)
+                return ("note", "\n".join(raw_lines[idx + 1:]).strip())
         return ("note", body.strip())
 
     # 3. Wiadomość ogólna / uwagi biegacza
     return ("general", body.strip())
-
-
 
 
 def _parse_message_blocks(note):
@@ -497,13 +459,9 @@ def _parse_message_blocks(note):
     tokens = re.split(pattern, note)
 
     blocks: list[tuple[str, str]] = []
+    if tokens[0].strip():
+        blocks.append(("", tokens[0].strip()))
 
-    # tokens[0] to ewentualna treść przed pierwszym nagłówkiem
-    initial_text = tokens[0].strip()
-    if initial_text:
-        blocks.append(("", initial_text))
-
-    # Kolejne elementy występują parami: (nagłówek, treść)
     for i in range(1, len(tokens), 2):
         header = tokens[i].strip()
         body = tokens[i + 1].strip() if i + 1 < len(tokens) else ""
@@ -543,10 +501,7 @@ def separate_strength_and_user_notes(note):
         if msg_type == "strength":
             workout_blocks.append(processed_body)
         elif processed_body:
-            if header:
-                note_blocks.append(f"{header}\n{processed_body}")
-            else:
-                note_blocks.append(processed_body)
+            note_blocks.append(f"{header}\n{processed_body}" if header else processed_body)
 
     strength_workout = "\n\n".join(workout_blocks).strip() if workout_blocks else None
     remaining_user_note = "\n\n".join(note_blocks).strip() if note_blocks else None
@@ -567,26 +522,24 @@ def prepare_user_note():
     try:
         tg_note, new_tg_state = fetch_recent_telegram_messages()
         if tg_note:
-            print("\n" + "="*60)
+            print("\n" + "=" * 60)
             print("📲 ODEBRANO WIADOMOŚĆ Z TELEGRAMA:")
-            print("="*60)
+            print("=" * 60)
             print(tg_note)
-            print("="*60 + "\n")
+            print("=" * 60 + "\n")
+            print(f"📄 Wiadomość dla Trenera Gemini (z Telegrama):\n   \"{tg_note}\"\n")
             user_note = tg_note
     except Exception as e:
         logger.warning(f"Nie udało się pobrać wiadomości z Telegrama: {e}")
 
-    if user_note:
-        print(f"📄 Wiadomość dla Trenera Gemini (z Telegrama):\n   \"{user_note}\"\n")
-
     return user_note, new_tg_state
 
 
-def _find_history_anchor_date(history_dir, ref_date):
+def _find_history_anchor_date(history_dir_path, ref_date):
     """Wyznacza datę bazową (anchor) dla 42-dniowego okna historii treningowej.
 
     Args:
-        history_dir (str): Ścieżka do katalogu historii.
+        history_dir_path (str): Ścieżka do katalogu historii.
         ref_date (datetime.date): Data odniesienia.
 
     Returns:
@@ -596,10 +549,9 @@ def _find_history_anchor_date(history_dir, ref_date):
         test_date = ref_date - datetime.timedelta(days=i)
         d_str = test_date.isoformat()
         year, month = d_str.split('-')[:2]
-        test_file = os.path.join(history_dir, year, month, f"{d_str}.md")
-        if os.path.exists(test_file):
+        if os.path.exists(os.path.join(history_dir_path, year, month, f"{d_str}.md")):
             return test_date
-            
+
     return ref_date
 
 
@@ -623,15 +575,14 @@ def _get_day_run_sessions(content, m_run):
 
     # Jeśli w nagłówku zapisano sesje > 1, sprawdzamy czy to nie były fragmenty jednej jednostki
     c_lower = content.lower()
-    has_aux = any(k in c_lower for k in [
+    has_aux = any(k in c_lower for k in (
         "rozgrzewka:", "rozgrzewka", "warmup", "schłodzenie:", "schłodzenie",
         "cooldown", "przebieżki", "przebiezki", "strides"
-    ])
+    ))
 
     start_times = re.findall(r'###\s*Jednostka\s*\d+\s*\[Start:\s*(\d{1,2}):(\d{2})\]', content)
     if start_times:
-        mins = [int(h) * 60 + int(m) for h, m in start_times]
-        mins.sort()
+        mins = sorted(int(h) * 60 + int(m) for h, m in start_times)
         # Jeśli wszystkie aktywności zmieściły się w oknie < 3h (180 min)
         if (mins[-1] - mins[0]) < 180:
             return 1
@@ -663,19 +614,16 @@ def _summarize_history_weeks_1_4(history_data, start_date):
         files_found = 0
 
         for d_offset in range(7):
-            cur_d = w_start + datetime.timedelta(days=d_offset)
-            date_str = cur_d.isoformat()
+            date_str = (w_start + datetime.timedelta(days=d_offset)).isoformat()
             if date_str in history_data:
                 files_found += 1
                 c = history_data[date_str]
                 m_run = RE_RUN_META.search(c)
-                m_str = RE_STR_TAK.search(c)
-
                 if m_run:
                     if m_run.group(1):
                         w_km += float(m_run.group(1).replace(',', '.'))
                     w_runs += _get_day_run_sessions(c, m_run)
-                if m_str:
+                if RE_STR_TAK.search(c):
                     w_strength += 1
 
         if files_found == 0:
@@ -705,27 +653,22 @@ def _summarize_history_week_5(history_data, start_date):
     for d_offset in range(7):
         cur_d = w5_start + datetime.timedelta(days=d_offset)
         date_str = cur_d.isoformat()
+        day_name = DAYS_PL[cur_d.weekday()]
         if date_str not in history_data:
-            week_5_lines.append(f"- {date_str} ({DAYS_PL[cur_d.weekday()]}): {NO_DATA}")
+            week_5_lines.append(f"- {date_str} ({day_name}): {NO_DATA}")
             continue
 
         try:
             c = history_data[date_str]
-            day_name = DAYS_PL[cur_d.weekday()]
-
             m_run = RE_RUN_W5.search(c)
             m_run_type = RE_RUN_TYPE.search(c)
             m_run_struct = RE_RUN_STRUCT.search(c)
             m_str = RE_STR_W5.search(c)
             m_muscle = RE_MUSCLE.search(c)
 
-            is_run = (m_run and m_run.group(1).upper() == "TAK")
-            is_str = (m_str and m_str.group(1).upper() == "TAK")
-
             parts_desc = []
-
-            if is_run:
-                run_km_val = m_run.group(2) if m_run and m_run.group(2) else ""
+            if m_run and m_run.group(1).upper() == "TAK":
+                run_km_val = m_run.group(2) or ""
                 r_type = m_run_type.group(1).strip() if m_run_type else "Bieg"
                 r_struct = m_run_struct.group(1).strip() if m_run_struct else ""
                 run_text = f"{r_type} ({run_km_val} km)"
@@ -733,35 +676,26 @@ def _summarize_history_week_5(history_data, start_date):
                     run_text += f" [{r_struct}]"
                 parts_desc.append(run_text)
 
-            if is_str:
+            if m_str and m_str.group(1).upper() == "TAK":
                 muscle_val = m_muscle.group(1).strip() if m_muscle else "GÓRA / DÓŁ"
                 parts_desc.append(f"Siłownia: partie {muscle_val}")
 
-            # Wykrywanie pływania w metadanych lub sekcji aktywności
             c_lower = c.lower()
-            if "typ dnia: pływanie" in c_lower or "typ dnia: plywanie" in c_lower or "trening pływania" in c_lower or "trening pływacki" in c_lower or "pool swim" in c_lower:
+            if any(k in c_lower for k in ("typ dnia: pływanie", "typ dnia: plywanie", "trening pływania", "trening pływacki", "pool swim")):
                 m_swim = re.search(r'(?:Trening pływania|Trening Uzupełniający|Pool Swim)[^\n]*\n-\s*Dystans:\s*([0-9.,]+\s*(?:km|m))', c, re.IGNORECASE)
                 dist_info = f" ({m_swim.group(1)})" if m_swim else ""
                 parts_desc.append(f"Pływanie{dist_info}")
-            elif "typ dnia: trening uzupełniający" in c_lower or "trening uzupełniający" in c_lower:
-                if not parts_desc:
-                    parts_desc.append("Trening uzupełniający")
+            elif ("typ dnia: trening uzupełniający" in c_lower or "trening uzupełniający" in c_lower) and not parts_desc:
+                parts_desc.append("Trening uzupełniający")
 
-            if not parts_desc:
-                workout_desc = "Dzień wolny / Regeneracja"
-            else:
-                workout_desc = " + ".join(parts_desc)
+            workout_desc = " + ".join(parts_desc) if parts_desc else "Dzień wolny / Regeneracja"
 
-            # Wyciąganie decyzji trenera
-            dec_m = RE_DECISION_CORR.search(c)
-            if not dec_m:
-                dec_m = RE_DECISION_ACC.search(c)
-            decision_str = dec_m.group(1).strip() if dec_m else "Zgodnie z planem"
+            dec_m = RE_COACH_DECISION.search(c)
+            decision_str = dec_m.group(1).strip().strip("*") if dec_m else "Zgodnie z planem"
 
-            day_entry = f"- {date_str} ({day_name}): {workout_desc} | Decyzja trenera: {decision_str}"
-            week_5_lines.append(day_entry)
+            week_5_lines.append(f"- {date_str} ({day_name}): {workout_desc} | Decyzja trenera: {decision_str}")
         except Exception:
-            week_5_lines.append(f"- {date_str} ({DAYS_PL[cur_d.weekday()]}): {NO_DATA}")
+            week_5_lines.append(f"- {date_str} ({day_name}): {NO_DATA}")
 
     return "\n".join(week_5_lines)
 
@@ -780,17 +714,14 @@ def _extract_gym_exercises_summary(content):
     m = re.search(r'\|\s*Nr\s*\|\s*Ćwiczenie[^\n]*\|\n\|(?:\s*:?-+:?\s*\|)+\n((?:\|[^\n]+\|\n?)+)', content, re.I)
     if not m:
         m_list = re.search(r'(?:Potwierdzenie i modyfikacje ćwiczeń|Wykonane ćwiczenia|ZESTAWIENIE ĆWICZEŃ):\s*([^\n]+)', content, re.I)
-        if m_list:
-            return m_list.group(1).strip()
-        return ""
+        return m_list.group(1).strip() if m_list else ""
 
-    table_rows = m.group(1).strip().splitlines()
     ex_list = []
-    for row in table_rows:
+    for row in m.group(1).strip().splitlines():
         cols = [col.strip() for col in row.split('|')[1:-1]]
         if len(cols) >= 3 and cols[1] and 'Brak szczegółowego' not in cols[1]:
-            name = re.sub(r'\s*\((Barbell|Dumbbell|Cable)\)', '', cols[1]).strip()
-            reps = cols[2] if len(cols) > 2 else ''
+            name = re.sub(r'\s*\((?:Barbell|Dumbbell|Cable|Machine|fbw|upper|lower|core|push|pull|legs)\)', '', cols[1], flags=re.I).strip()
+            reps = cols[2]
             weight = cols[3] if len(cols) > 3 else ''
             ex_str = name
             if reps and reps != '-':
@@ -813,23 +744,15 @@ def _extract_interval_tables(content):
         str | None: Wyciągnięta tabela Markdown ze splitami serii lub None.
     """
     pattern = r'(\|[^\n]*(?:Seria|Nr powtórzenia)[^\n]*\|\n\|(?:\s*:?-+:?\s*\|)+\n(?:\|[^\n]+\|\n?)+)'
-    tables = re.findall(pattern, content)
     matched = []
-    for t in tables:
+    for t in re.findall(pattern, content):
         first_line = t.splitlines()[0]
-        if 'Km' in first_line and 'GAP' in first_line:
+        if ('Km' in first_line and 'GAP' in first_line) or 'Parametr' in first_line or 'Plan' in first_line:
             continue
-        if 'Parametr' in first_line or 'Plan' in first_line:
-            continue
-        if any(k in first_line for k in ['Dystans', 'Tempo', 'Czas', 'HR', 'GCT']):
+        if any(k in first_line for k in ('Dystans', 'Tempo', 'Czas', 'HR', 'GCT')):
             matched.append(t.strip())
 
-    agg_table = next((t for t in matched if 'Łączny Dystans' in t), None)
-    if agg_table:
-        return agg_table
-    elif matched:
-        return matched[0]
-    return None
+    return next((t for t in matched if 'Łączny Dystans' in t), matched[0] if matched else None)
 
 
 def _summarize_history_day_for_planning(content, date_str, day_name):
@@ -855,7 +778,7 @@ def _summarize_history_day_for_planning(content, date_str, day_name):
 
     # 1. Nagłówek i identyfikacja aktywności
     m_day_type = re.search(r'-\s*Typ dnia:\s*([^\n]+)', content)
-    day_type = m_day_type.group(1).strip() if m_day_type else 'Brak danych'
+    day_type = m_day_type.group(1).strip() if m_day_type else NO_DATA
 
     m_run = re.search(r'-\s*Bieg:\s*(TAK|NIE)(?:\s*\(([^)]+)\))?', content, re.I)
     is_run = bool(m_run and m_run.group(1).upper() == 'TAK')
@@ -874,7 +797,7 @@ def _summarize_history_day_for_planning(content, date_str, day_name):
     muscles = m_muscles.group(1).strip() if m_muscles else ''
 
     c_lower = content.lower()
-    is_swim = 'typ dnia: pływanie' in c_lower or 'typ dnia: plywanie' in c_lower or 'pool swim' in c_lower or 'trening pływania' in c_lower
+    is_swim = any(k in c_lower for k in ('typ dnia: pływanie', 'typ dnia: plywanie', 'pool swim', 'trening pływania'))
 
     if is_run and run_type and run_type != 'Brak biegu':
         headline_workout = f"Bieg: {run_type}"
@@ -889,28 +812,29 @@ def _summarize_history_day_for_planning(content, date_str, day_name):
 
     # 2. Status autonomiczny ANS i biometria regeneracyjna
     m_hrv = re.search(r'-\s*HRV[^:]*:\s*([^\n]+)', content)
-    hrv_str = m_hrv.group(1).strip() if m_hrv else 'Brak danych'
+    hrv_str = m_hrv.group(1).strip() if m_hrv else NO_DATA
 
     m_rhr = re.search(r'-\s*RHR[^:]*:\s*([^\n]+)', content)
-    rhr_str = m_rhr.group(1).strip() if m_rhr else 'Brak danych'
+    rhr_str = m_rhr.group(1).strip() if m_rhr else NO_DATA
 
     m_sleep = re.search(r'-\s*Sen[^:]*:\s*([^\n]+)', content)
-    sleep_str = m_sleep.group(1).strip() if m_sleep else 'Brak danych'
+    sleep_str = m_sleep.group(1).strip() if m_sleep else NO_DATA
 
-    m_bb_eve = re.search(r'Body Battery pod koniec dnia:\s*([^\n]+)', content)
-    if not m_bb_eve:
-        m_bb_eve = re.search(r'Body Battery:\s*([^\n]+)', content)
+    m_bb_eve = re.search(r'Body Battery pod koniec dnia:\s*([^\n]+)', content) or re.search(r'Body Battery:\s*([^\n]+)', content)
     bb_str = m_bb_eve.group(1).strip() if m_bb_eve else ''
     m_bb_morn = re.search(r'Poranne Body Battery[^:]*:\s*([^\n]+)', content)
     bb_morn_str = m_bb_morn.group(1).strip() if m_bb_morn else ''
 
-    m_stress = re.search(r'(?:Całodzienny|Średni|Dzisiejszy całodzienny)\s*stres[^:]*:\s*([^\n]+)', content)
+    m_stress = (
+        re.search(r'-\s*(?:Całodzienny|Dzisiejszy całodzienny)\s*stres[^:]*:\s*(?:Średni poziom stresu:\s*)?([^\n]+)', content)
+        or re.search(r'-\s*Średni\s+(?!stres snu)stres[^:]*:\s*([^\n]+)', content)
+    )
     stress_str = m_stress.group(1).strip() if m_stress else ''
     m_steps = re.search(r'(?:Kroki|Dzisiejsze kroki|Wczorajsze kroki)[^:]*:\s*([^\n]+)', content)
     steps_str = m_steps.group(1).strip() if m_steps else ''
 
     ans_parts = [f"HRV: {hrv_str}", f"RHR: {rhr_str}"]
-    if sleep_str and sleep_str != 'Brak danych':
+    if sleep_str and sleep_str != NO_DATA:
         ans_parts.append(f"Sen: {sleep_str}")
     if bb_str:
         ans_parts.append(f"Body Battery: {bb_str}")
@@ -926,15 +850,15 @@ def _summarize_history_day_for_planning(content, date_str, day_name):
     workout_lines = []
     act_match = re.search(r'##\s*Zarejestrowane aktywności[^\n]*\n(.*?)(?=\n##\s+[^\#]|\Z)', content, re.DOTALL)
     if act_match and act_match.group(1).strip():
-        act_text = act_match.group(1).strip()
-        units = re.split(r'\n(?=###\s+(?:Jednostka|Trening|[0-9]))', act_text)
+        units = re.split(r'\n(?=###\s+(?:Jednostka|Trening|[0-9]))', act_match.group(1).strip())
         for u in units:
             u_clean = u.strip()
             if not u_clean:
                 continue
             u_clean_base = re.split(r'\n####\s*Splity', u_clean, flags=re.I)[0].strip()
-            u_lines = u_clean_base.splitlines()
-            u_title = u_lines[0].replace('###', '').strip()
+            u_title = u_clean_base.splitlines()[0].replace('###', '').strip()
+            if 'trening siłowy' in u_title.lower():
+                continue
             if 'pool swim' in u_clean.lower() or 'pływanie' in u_clean.lower():
                 u_title = re.sub(r'Trening Uzupełniający', 'Trening pływania', u_title, flags=re.I)
 
@@ -950,7 +874,7 @@ def _summarize_history_day_for_planning(content, date_str, day_name):
                 u_parts.append(f"Dystans: {dist_m.group(1)}")
             if time_m:
                 u_parts.append(f"Czas: {time_m.group(1)}")
-            if pace_m and pace_m.group(1).strip() not in ('Brak', 'None'):
+            if pace_m and pace_m.group(1).strip() not in ('Brak', 'None', NO_DATA):
                 u_parts.append(f"Śr. tempo: {pace_m.group(1).strip()}")
             if hr_m:
                 u_parts.append(f"HR: {hr_m.group(1).strip()}")
@@ -972,47 +896,46 @@ def _summarize_history_day_for_planning(content, date_str, day_name):
     if not workout_lines:
         workout_lines.append("Brak aktywności treningowej (Rest Day)")
 
-    # Wyciąganie tabeli splitów akcentu (serie robocze z audit_run.md)
     interval_table = _extract_interval_tables(content)
 
     # 4. Uwagi biegacza i raporty przeciążeniowe / urazowe
     m_note = re.search(r'##\s*Uwagi biegacza[^\n]*\n(.*?)(?=\n##|\Z)', content, re.DOTALL)
     user_note_clean = ''
     if m_note:
-        raw_note = m_note.group(1).strip()
-        raw_note = re.sub(r'---\s*Treść wiadomości z Telegrama[^\n]*---\s*', '', raw_note, flags=re.I).strip()
+        raw_note = re.sub(r'---\s*Treść wiadomości z Telegrama[^\n]*---\s*', '', m_note.group(1).strip(), flags=re.I).strip()
         user_note_clean = raw_note.replace('\\n', ' ').strip()
 
     injury_warning = ''
-    if user_note_clean and any(k in user_note_clean.lower() for k in ['ból', 'bol', 'uraz', 'kontuzj', 'pachwin', 'ściegn', 'kolan', 'stop', 'problem', 'przeciąż']):
-        injury_warning = f"⚠️ {user_note_clean}"
-    elif user_note_clean:
-        injury_warning = user_note_clean
+    if user_note_clean:
+        has_injury_kw = any(k in user_note_clean.lower() for k in ('ból', 'bol', 'uraz', 'kontuzj', 'pachwin', 'ściegn', 'kolan', 'stop', 'problem', 'przeciąż'))
+        injury_warning = f"⚠️ {user_note_clean}" if has_injury_kw else user_note_clean
 
     # 5. Ocena trenera, decyzja adaptacyjna i kluczowe wnioski
     eval_parts = []
-    m_eval = re.search(r'(?:Ocena|Ocena egzekucji planu|Ocena treningu):\s*([0-9]+/[0-9]+[^\n]*)', content)
+    m_eval = re.search(r'(?:Ocena|Ocena egzekucji planu|Ocena treningu)\*?\*?:\s*([0-9]+/[0-9]+[^\n]*)', content)
     if m_eval:
         eval_parts.append(f"Ocena: {m_eval.group(1).strip()}")
 
-    m_dec = re.search(r'(?:DECYZJA ADAPTACYJNA|DECYZJA O KOREKCIE|Decyzja trenera|Zgodność z planem):\s*([^\n|]+)', content)
+    m_dec = RE_COACH_DECISION.search(content)
     if m_dec:
-        eval_parts.append(f"Decyzja: {m_dec.group(1).strip()}")
+        eval_parts.append(f"Decyzja: {m_dec.group(1).strip().strip('*')}")
 
-    m_phys = re.search(r'(?:Uzasadnienie fizjologiczne|Bodziec fizjologiczny i szlaki energetyczne|Koszt nerwowo-mięśniowy|Dedykowana analiza fizjologiczna pływania)[^:]*:\s*([^\n]+)', content)
-    if m_phys:
+    m_phys = re.search(
+        r'(?:Uzasadnienie fizjologiczne|Bodziec adaptacyjny i koszt metaboliczny|Bodziec fizjologiczny i szlaki energetyczne|Koszt nerwowo-mięśniowy|Dedykowana analiza fizjologiczna pływania)[^:\n]*:[ \t]*([^\n]+)',
+        content
+    )
+    if m_phys and m_phys.group(1).strip():
         phys_text = m_phys.group(1).strip()
         s_end = phys_text.find('.')
-        if s_end != -1 and s_end > 10:
-            phys_text = phys_text[:s_end+1]
+        if s_end > 10:
+            phys_text = phys_text[:s_end + 1]
         eval_parts.append(phys_text)
 
-    workout_desc = " + ".join(workout_lines)
-    eval_desc = " | ".join(eval_parts)
-
-    res = [f"#### {date_str} ({day_name}) – {headline_workout}"]
-    res.append(f"* **Status ANS i regeneracja**: {ans_line}")
-    res.append(f"* **Zrealizowany trening**: {workout_desc}")
+    res = [
+        f"#### {date_str} ({day_name}) – {headline_workout}",
+        f"* **Status ANS i regeneracja**: {ans_line}",
+        f"* **Zrealizowany trening**: {' + '.join(workout_lines)}"
+    ]
     if run_struct and run_struct != 'Brak' and is_run:
         res.append(f"* **Struktura biegu**: {run_struct}")
     if interval_table:
@@ -1020,7 +943,7 @@ def _summarize_history_day_for_planning(content, date_str, day_name):
     if injury_warning:
         res.append(f"* **Uwagi biegacza / urazy**: {injury_warning}")
     if eval_parts:
-        res.append(f"* **Ocena trenera i adaptacja**: {eval_desc}")
+        res.append(f"* **Ocena trenera i adaptacja**: {' | '.join(eval_parts)}")
 
     return "\n".join(res)
 
@@ -1043,16 +966,12 @@ def _load_history_week_6(history_data, start_date):
         cur_d = w6_start + datetime.timedelta(days=d_offset)
         date_str = cur_d.isoformat()
         day_name = DAYS_PL[cur_d.weekday()]
-        if date_str in history_data:
-            entry = _summarize_history_day_for_planning(history_data[date_str], date_str, day_name)
-            week_6_entries.append(entry)
-        else:
-            week_6_entries.append(f"#### {date_str} ({day_name}) – {NO_DATA}\n* Brak zarejestrowanych danych treningowych ani biometrycznych.")
+        week_6_entries.append(_summarize_history_day_for_planning(history_data.get(date_str), date_str, day_name))
 
     return "\n\n".join(week_6_entries)
 
 
-def load_training_history(ref_date, history_dir=HISTORY_DIR):
+def load_training_history(ref_date, history_dir_path=HISTORY_DIR_PATH):
     """
     Wczytuje historię treningów z folderu trainings_history z ostatnich 42 dni (6 tygodni)
     z wielopoziomową szczegółowością:
@@ -1062,40 +981,34 @@ def load_training_history(ref_date, history_dir=HISTORY_DIR):
 
     Args:
         ref_date (datetime.date): Data odniesienia.
-        history_dir (str, optional): Ścieżka do katalogu z historią.
+        history_dir_path (str, optional): Ścieżka do katalogu z historią.
 
     Returns:
         str | None: Sformatowana historia treningów z ostatnich 42 dni.
     """
-    if not os.path.exists(history_dir):
+    if not os.path.exists(history_dir_path):
         return None
 
-    anchor_date = _find_history_anchor_date(history_dir, ref_date)
+    anchor_date = _find_history_anchor_date(history_dir_path, ref_date)
     start_date = anchor_date - datetime.timedelta(days=41)
 
     history_data = {}
     for d_offset in range(42):
         d_str = (start_date + datetime.timedelta(days=d_offset)).isoformat()
         year, month = d_str.split('-')[:2]
-        f_path = os.path.join(history_dir, year, month, f"{d_str}.md")
-        if os.path.exists(f_path):
-            content = _read_file_safe(f_path)
-            if content is not None:
-                history_data[d_str] = content
-                
+        content = _read_file_safe(os.path.join(history_dir_path, year, month, f"{d_str}.md"))
+        if content is not None:
+            history_data[d_str] = content
+
     if not history_data:
         return None
 
-    weeks_1_4 = _summarize_history_weeks_1_4(history_data, start_date)
-    week_5 = _summarize_history_week_5(history_data, start_date)
-    week_6 = _load_history_week_6(history_data, start_date)
+    return "\n\n".join([
+        f"### 1. Podsumowanie makrocyklu (Tygodnie 1–4 / Dni 1–28):\n{_summarize_history_weeks_1_4(history_data, start_date)}",
+        f"\n### 2. Zwarty przegląd mezocyklu (Tydzień 5 / Dni 29–35):\n{_summarize_history_week_5(history_data, start_date)}",
+        f"\n### 3. Zwięzły przegląd ostatniego tygodnia (Tydzień 6 / Dni 36–42):\n{_load_history_week_6(history_data, start_date)}"
+    ])
 
-    sections = [
-        f"### 1. Podsumowanie makrocyklu (Tygodnie 1–4 / Dni 1–28):\n{weeks_1_4}",
-        f"\n### 2. Zwarty przegląd mezocyklu (Tydzień 5 / Dni 29–35):\n{week_5}",
-        f"\n### 3. Zwięzły przegląd ostatniego tygodnia (Tydzień 6 / Dni 36–42):\n{week_6}"
-    ]
-    return "\n\n".join(sections)
 
 
 # ==============================================================================
@@ -1120,20 +1033,20 @@ def _format_activity_section(activity_stats, strength_workout=None):
         run_blocks = []
         other_blocks = []
 
-        for idx, act in enumerate(stats_list):
+        for idx, act in enumerate(stats_list, 1):
             is_run = act.get('is_run', True)
             is_swim = act.get('is_swim', False)
             time_info = f" [Start: {act.get('start_time')}]" if act.get('start_time') and act.get('start_time') != NO_DATA else ""
-            prefix = f"[JEDNOSTKA {idx + 1} z {len(stats_list)}{time_info}]: " if len(stats_list) > 1 else (f"[JEDNOSTKA 1{time_info}]: " if time_info else "")
-            
+            prefix = f"[JEDNOSTKA {idx} z {len(stats_list)}{time_info}]: " if len(stats_list) > 1 else (f"[JEDNOSTKA 1{time_info}]: " if time_info else "")
+
             if is_run:
-                splits_text = "Brak szczegółowych splitów dla tej jednostki"
-                if act.get('splits'):
-                    splits_text = "\n".join(act['splits'])
-                
-                block = f"""{prefix}{act.get('name')} | {act.get('distance')} w czasie {act.get('duration')} (Średnie tempo: {act.get('pace')})
+                splits_text = "\n".join(act['splits']) if act.get('splits') else "Brak szczegółowych splitów dla tej jednostki"
+                eg, el = act.get('elevation_gain', NO_DATA), act.get('elevation_loss', NO_DATA)
+                elev_str = NO_DATA if eg == NO_DATA and el == NO_DATA else f"+{eg} / -{el}"
+
+                run_blocks.append(f"""{prefix}{act.get('name')} | {act.get('distance')} w czasie {act.get('duration')} (Średnie tempo: {act.get('pace')})
 - Warunki atmosferyczne i pogoda: {act.get('weather', NO_DATA)}
-- Przewyższenia (wznios/spadek): +{act.get('elevation_gain')} / -{act.get('elevation_loss')}
+- Przewyższenia (wznios/spadek): {elev_str}
 - Tętno: Średnie {act.get('avg_hr')} | Maksymalne {act.get('max_hr')}
 - Biomechanika kroku:
   * Kadencja: Średnia {act.get('avg_cadence')} | Maksymalna {act.get('max_cadence')}
@@ -1144,18 +1057,18 @@ def _format_activity_section(activity_stats, strength_workout=None):
   * Aerobic Training Effect: {act.get('aerobic_te')} | Anaerobic TE: {act.get('anaerobic_te')}
   * Średnia moc biegowa: {act.get('avg_power')}
 - Splity kilometrowe / odcinki:
-{splits_text}"""
-                run_blocks.append(block)
-            elif is_swim:
-                block = f"""{prefix}TRENING PŁYWANIA: {act.get('name')} | Dystans: {act.get('distance')} | Czas: {act.get('duration')}
-- Tętno: Średnie {act.get('avg_hr')} | Maksymalne {act.get('max_hr')}
-- Efekt treningowy: Aerobic TE: {act.get('aerobic_te')} | Anaerobic TE: {act.get('anaerobic_te')}"""
-                other_blocks.append(block)
+{splits_text}""")
             else:
-                block = f"""{prefix}TRENING UZUPEŁNIAJĄCY: {act.get('name')} | {act.get('distance')} w czasie {act.get('duration')}
-- Tętno: Średnie {act.get('avg_hr')} | Maksymalne {act.get('max_hr')}
-- Efekt treningowy: Aerobic TE: {act.get('aerobic_te')} | Anaerobic TE: {act.get('anaerobic_te')}"""
-                other_blocks.append(block)
+                header_str = (
+                    f"TRENING PŁYWANIA: {act.get('name')} | Dystans: {act.get('distance')} | Czas: {act.get('duration')}"
+                    if is_swim else
+                    f"TRENING UZUPEŁNIAJĄCY: {act.get('name')} | {act.get('distance')} w czasie {act.get('duration')}"
+                )
+                other_blocks.append(
+                    f"{prefix}{header_str}\n"
+                    f"- Tętno: Średnie {act.get('avg_hr')} | Maksymalne {act.get('max_hr')}\n"
+                    f"- Efekt treningowy: Aerobic TE: {act.get('aerobic_te')} | Anaerobic TE: {act.get('anaerobic_te')}"
+                )
 
         if run_blocks:
             parts.append("-" * 35 + "\n\n" + "\n\n".join(run_blocks))
@@ -1165,11 +1078,7 @@ def _format_activity_section(activity_stats, strength_workout=None):
         parts.append("Brak zarejestrowanej aktywności w Garmin Connect ani na Telegramie (jeśli zaplanowano jednostkę, to nie została ona wykonana).")
 
     if strength_workout:
-        strength_block = (
-            f"[JEDNOSTKA SIŁOWA / UZUPEŁNIAJĄCA (RAPORT Z TELEGRAMA)]:\n"
-            f"{strength_workout}"
-        )
-        parts.append(strength_block)
+        parts.append(f"[JEDNOSTKA SIŁOWA / UZUPEŁNIAJĄCA (RAPORT Z TELEGRAMA)]:\n{strength_workout}")
 
     return "\n\n".join(parts)
 
@@ -1188,15 +1097,11 @@ def generate_weekly_suggestions_prompt(personal_data, trainings_history=None, us
     Returns:
         str: Wygenerowany prompt.
     """
-    hist_section = trainings_history if trainings_history else "Brak zarejestrowanej historii treningów z ostatnich 42 dni."
-    note_section = user_note if user_note else "Brak notatki od biegacza."
-    profile = build_user_profile(personal_data, ref_date=ref_date)
-
     return load_prompt_template(
         "weekly_suggestions.md",
-        **profile,
-        hist_section=hist_section,
-        note_section=note_section
+        **build_user_profile(personal_data, ref_date=ref_date),
+        hist_section=trainings_history or "Brak zarejestrowanej historii treningów z ostatnich 42 dni.",
+        note_section=user_note or "Brak notatki od biegacza."
     )
 
 
@@ -1248,11 +1153,10 @@ def parse_hevy_strength_workout(workout_text):
         return None, {}
 
     first_clean = lines[0].strip(":.,!- #*[]()\"'").lower()
-    routine_candidate = first_clean.split()[0] if first_clean else ""
-    if routine_candidate not in STRENGTH_WORKOUT_NAMES:
+    routine_key = first_clean.split()[0] if first_clean else ""
+    if routine_key not in STRENGTH_WORKOUT_NAMES:
         return None, {}
 
-    routine_key = routine_candidate
     parsed_exercises = {}
     current_exercise = None
     current_sets = []
@@ -1263,11 +1167,10 @@ def parse_hevy_strength_workout(workout_text):
 
         m_bw = RE_SET_BODYWEIGHT.search(line)
         if m_bw:
-            reps_val = int(m_bw.group(2) or m_bw.group(3))
             current_sets.append({
                 "set": int(m_bw.group(1)),
                 "weight": "mc",
-                "reps": reps_val
+                "reps": int(m_bw.group(2) or m_bw.group(3))
             })
             continue
 
@@ -1298,7 +1201,6 @@ def parse_hevy_strength_workout(workout_text):
 
         if current_exercise and current_sets:
             parsed_exercises[current_exercise] = current_sets
-            current_sets = []
 
         current_exercise = clean_name
         current_sets = []
@@ -1327,10 +1229,10 @@ def _find_canonical_exercise_key(exercise_candidate, canonical_exercises):
             return canon_name
 
     c_stripped = re.sub(r'\s*\([^)]*\)', '', c_norm).strip()
-    for canon_name in canonical_exercises:
-        canon_stripped = re.sub(r'\s*\([^)]*\)', '', canon_name.strip().lower()).strip()
-        if c_stripped == canon_stripped and c_stripped:
-            return canon_name
+    if c_stripped:
+        for canon_name in canonical_exercises:
+            if re.sub(r'\s*\([^)]*\)', '', canon_name.strip().lower()).strip() == c_stripped:
+                return canon_name
 
     return None
 
@@ -1381,8 +1283,35 @@ def _format_last_sets_str(last_sets):
     if not last_sets:
         return "Brak danych w historii (ustal bezpieczną wagę startową)"
     return " | ".join(
-        f"Seria {s.get('set', idx + 1)}: {s.get('weight', 'mc')} x {s.get('reps', '')}"
-        for idx, s in enumerate(last_sets)
+        f"Seria {s.get('set', idx)}: {s.get('weight', 'mc')} x {s.get('reps', '')}"
+        for idx, s in enumerate(last_sets, 1)
+    )
+
+
+def _parse_superset_meta(ex_data):
+    """Zwraca (group_key, group_header, role_tag) dla ćwiczenia w supersecie lub (None, None, None)."""
+    superset_val = ex_data.get("superset") or ex_data.get("superset_role")
+    legacy_group = ex_data.get("superset_group")
+    if superset_val:
+        sup_str = str(superset_val).strip()
+        match = re.match(r"^([A-Za-z]+)", sup_str)
+        group_key = match.group(1).upper() if match else sup_str.upper()
+        return group_key, f"[SUPERSET {group_key}]", sup_str
+    if legacy_group:
+        return legacy_group, f"[SUPERSET] {legacy_group}", ex_data.get("superset_role", "")
+    return None, None, None
+
+
+def _format_routine_exercise_lines(ex_name, r_key, ex_data, bullet_prefix, sub_prefix):
+    """Formatuje dwie linie opisu pojedynczego ćwiczenia w bazie rutyn siłowych."""
+    t_sets = ex_data.get("target_sets", 3)
+    t_reps = ex_data.get("target_reps", "8-10")
+    tempo_val = ex_data.get("tempo")
+    tempo_str = f", tempo {tempo_val}" if tempo_val else ""
+    sets_str = _format_last_sets_str(ex_data.get("last_sets", []))
+    return (
+        f"{bullet_prefix}**{ex_name} ({r_key})**: {t_sets} serie, {t_reps} powtórzeń{tempo_str}",
+        f"{sub_prefix}Ostatnie serie i wagi: {sets_str}"
     )
 
 
@@ -1408,8 +1337,7 @@ def format_strength_routines_for_prompt(routines_data=None, filepath=ROUTINES_JS
         ""
     ]
 
-    routine_idx = 1
-    for r_key, r_info in routines_data.items():
+    for routine_idx, (r_key, r_info) in enumerate(routines_data.items(), 1):
         r_name = r_info.get("name", r_key.upper())
         r_desc = r_info.get("description", "")
         exercises = r_info.get("exercises", {})
@@ -1420,65 +1348,35 @@ def format_strength_routines_for_prompt(routines_data=None, filepath=ROUTINES_JS
 
         if not exercises:
             output.append("*Zestaw jeszcze nie uzupełniony, pomiń go*\n")
-            routine_idx += 1
             continue
 
         handled_supersets = set()
         item_counter = 1
 
         for ex_name, ex_data in exercises.items():
-            superset_val = ex_data.get("superset") or ex_data.get("superset_role")
-            legacy_group = ex_data.get("superset_group")
+            group_key, group_header, _ = _parse_superset_meta(ex_data)
 
-            if superset_val or legacy_group:
-                if superset_val:
-                    match = re.match(r"^([A-Za-z]+)", str(superset_val).strip())
-                    group_key = match.group(1).upper() if match else str(superset_val).upper()
-                    group_header = f"[SUPERSET {group_key}]"
-                else:
-                    group_key = legacy_group
-                    group_header = f"[SUPERSET] {legacy_group}"
-
+            if group_key:
                 if group_key in handled_supersets:
                     continue
                 handled_supersets.add(group_key)
                 output.append(f"{item_counter}. **{group_header}**:")
 
-                sg_items = []
                 for s_name, s_data in exercises.items():
-                    s_sup = s_data.get("superset") or s_data.get("superset_role")
-                    s_grp = s_data.get("superset_group")
-                    if s_sup:
-                        m = re.match(r"^([A-Za-z]+)", str(s_sup).strip())
-                        if m and m.group(1).upper() == group_key:
-                            sg_items.append((s_name, s_data, str(s_sup).strip()))
-                    elif s_grp == group_key:
-                        sg_items.append((s_name, s_data, s_data.get("superset_role", "")))
-
-                for s_name, s_data, role_or_tag in sg_items:
-                    tag_prefix = f"{role_or_tag}: " if role_or_tag else ""
-                    t_sets = s_data.get("target_sets", 3)
-                    t_reps = s_data.get("target_reps", "8-10")
-                    tempo_val = s_data.get("tempo")
-                    tempo_str = f", tempo {tempo_val}" if tempo_val else ""
-                    sets_str = _format_last_sets_str(s_data.get("last_sets", []))
-
-                    output.append(f"   * **{tag_prefix}{s_name} ({r_key})**: {t_sets} serie, {t_reps} powtórzeń{tempo_str}")
-                    output.append(f"     - Ostatnie serie i wagi: {sets_str}")
+                    s_key, _, role_or_tag = _parse_superset_meta(s_data)
+                    if s_key == group_key:
+                        tag_prefix = f"{role_or_tag}: " if role_or_tag else ""
+                        output.extend(_format_routine_exercise_lines(
+                            f"{tag_prefix}{s_name}", r_key, s_data, "   * ", "     - "
+                        ))
                 item_counter += 1
             else:
-                t_sets = ex_data.get("target_sets", 3)
-                t_reps = ex_data.get("target_reps", "8-10")
-                tempo_val = ex_data.get("tempo")
-                tempo_str = f", tempo {tempo_val}" if tempo_val else ""
-                sets_str = _format_last_sets_str(ex_data.get("last_sets", []))
-
-                output.append(f"{item_counter}. **{ex_name} ({r_key})**: {t_sets} serie, {t_reps} powtórzeń{tempo_str}")
-                output.append(f"   * Ostatnie serie i wagi: {sets_str}")
+                output.extend(_format_routine_exercise_lines(
+                    ex_name, r_key, ex_data, f"{item_counter}. ", "   * "
+                ))
                 item_counter += 1
 
         output.append("")
-        routine_idx += 1
 
     return "\n".join(output)
 
@@ -1498,23 +1396,17 @@ def generate_weekly_plan_prompt(days_structure, personal_data, trainings_history
     Returns:
         str: Wygenerowany prompt planu tygodniowego.
     """
-    hist_section = trainings_history if trainings_history else "Brak zarejestrowanej historii treningów z ostatnich 42 dni."
-    note_section = user_note if user_note else "Brak dodatkowych uwag od biegacza."
-    profile = build_user_profile(personal_data, ref_date=ref_date)
-
     if strength_routines is None:
         strength_routines = format_strength_routines_for_prompt()
-    routines_section = strength_routines if strength_routines else "Brak zdefiniowanych zestawów siłowych w pliku input/strength_routines.json."
 
     return load_prompt_template(
         "weekly_plan.md",
-        **profile,
-        hist_section=hist_section,
+        **build_user_profile(personal_data, ref_date=ref_date),
+        hist_section=trainings_history or "Brak zarejestrowanej historii treningów z ostatnich 42 dni.",
         weekly_preferences=days_structure,
-        strength_routines=routines_section,
-        user_note=note_section
+        strength_routines=strength_routines or "Brak zdefiniowanych zestawów siłowych w pliku input/strength_routines.json.",
+        user_note=user_note or "Brak dodatkowych uwag od biegacza."
     )
-
 
 
 def _compress_weekly_plan(content):
@@ -1528,11 +1420,10 @@ def _compress_weekly_plan(content):
     if not content:
         return content
 
-    lines = content.split('\n')
     output_lines = []
     in_weekly_summary = False
 
-    for line in lines:
+    for line in content.split('\n'):
         stripped = line.strip()
         clean_label = stripped.strip("* -").strip().lower()
 
@@ -1544,20 +1435,15 @@ def _compress_weekly_plan(content):
 
         # 2. Przetwarzanie wewnątrz sekcji '### Podsumowanie tygodnia'
         if in_weekly_summary:
-            # Ucinamy dalsze przetwarzanie, gdy natrafimy na kolejny nagłówek (np. '### Uzasadnienie...')
             if stripped.startswith('###') and 'podsumowanie' not in clean_label:
                 break
-
-            # W podsumowaniu tygodnia przepuszczamy wyłącznie punkty z planowanymi obciążeniami
-            if stripped.startswith(('*', '-')):
-                if any(kw in clean_label for kw in ['planowan', 'rozkład intensywnośc']):
-                    if not any(neg in clean_label for neg in ['hrv', 'rhr', 'poprzedni', 'tętno']):
-                        output_lines.append(line)
+            if stripped.startswith(('*', '-')) and any(kw in clean_label for kw in ('planowan', 'rozkład intensywnośc')):
+                if not any(neg in clean_label for neg in ('hrv', 'rhr', 'poprzedni', 'tętno')):
+                    output_lines.append(line)
             continue
 
         # 3. Przetwarzanie sekcji dni tygodnia:
-        if stripped.startswith('#') or stripped.startswith('*') or stripped.startswith('-'):
-            # Bezwzględne usunięcie wiszącej etykiety ćwiczeń (detale ćwiczeń są odfiltrowane)
+        if stripped.startswith(('#', '*', '-')):
             if clean_label in ("**ćwiczenia**:", "ćwiczenia:", "**cwiczenia**:", "cwiczenia:"):
                 continue
             output_lines.append(line)
@@ -1568,20 +1454,18 @@ def _compress_weekly_plan(content):
         stripped = line.strip()
         clean_label = stripped.strip("* -").strip().lower()
 
-        # Odrzuć puste "Uzasadnienie" jeśli nie ma pod nim wartości
         if stripped.startswith('###') and "uzasadnienie" in clean_label:
-            if i + 1 >= len(output_lines) or output_lines[i+1].strip().startswith('#'):
+            if i + 1 >= len(output_lines) or output_lines[i + 1].strip().startswith('#'):
                 continue
 
-        # Jeśli to etykieta z dwukropkiem (np. - Ćwiczenia:, * Kategoria:) bez treści w tej samej linii
         if stripped.endswith(':'):
-            # Sprawdź, czy kolejna linia istnieje i czy NIE JEST kolejnym nagłówkiem lub kolejnym punktem listy
-            if i + 1 >= len(output_lines) or output_lines[i+1].strip().startswith(('#', '*', '-')) or output_lines[i+1].strip().endswith(':'):
+            if i + 1 >= len(output_lines) or output_lines[i + 1].strip().startswith(('#', '*', '-')) or output_lines[i + 1].strip().endswith(':'):
                 continue
 
         final_output.append(line)
 
     return "\n".join(final_output)
+
 
 def generate_daily_prompt(
     planned_workout, activity_stats, garmin_stats, weekly_plan_context,
@@ -1603,30 +1487,20 @@ def generate_daily_prompt(
         audit_date_str (str, optional): Data audytu.
         target_date_str (str, optional): Data celu.
         history_date_str (str, optional): Data historii.
-        target_plan_desc (str, optional): Opis planu celu.
-        day (any, optional): Dzień.
+        target_plan_desc (str, optional): Opis planu celu (zachowany dla kompatybilności).
+        day_of_week (str, optional): Nazwa dnia tygodnia.
 
     Returns:
         str: Prompt weryfikacyjny.
     """
-    audit_str = audit_date_str
-    history_str = history_date_str
-    target_str = target_date_str
-    plan_desc = target_plan_desc
-    if not plan_desc and day_of_week == "Niedziela":
-        plan_desc = "Brak (koniec mikrocyklu tygodniowego; w niedzielę następuje zamknięcie mikrocyklu i nowy plan na kolejny tydzień generuje wyłącznie tryb 'plan')"
-
     y_training = garmin_stats.get('yesterday_training', 'Brak aktywności (dzień wolny)')
-    y_steps = garmin_stats.get('yesterday_steps', 'Brak danych')
-    y_stress = garmin_stats.get('yesterday_stress', 'Brak danych')
-    
-    if y_training == "Brak aktywności (dzień wolny)" and "Brak danych" in y_steps and "Brak danych" in y_stress:
-        yesterday_section = f"Brak danych z dnia {history_str} (dzień wolny)"
+    y_steps = garmin_stats.get('yesterday_steps', NO_DATA)
+    y_stress = garmin_stats.get('yesterday_stress', NO_DATA)
+
+    if y_training == "Brak aktywności (dzień wolny)" and NO_DATA in y_steps and NO_DATA in y_stress:
+        yesterday_section = f"Brak danych z dnia {history_date_str} (dzień wolny)"
     else:
-        if "\n" in y_training:
-            training_str = f"\n{y_training}"
-        else:
-            training_str = f" {y_training}"
+        training_str = f"\n{y_training}" if "\n" in y_training else f" {y_training}"
         yesterday_section = f"""* Trening:{training_str}
 * Kroki z całego dnia: {y_steps}
 * Średni poziom stresu: {y_stress}"""
@@ -1634,62 +1508,36 @@ def generate_daily_prompt(
     if day_of_week and weekly_plan_context:
         weekly_plan_context = _compress_weekly_plan(weekly_plan_context)
 
-    weekly_plan_section = "Brak planu tygodniowego w pliku output/weekly_plan.md"
-    if weekly_plan_context:
-        weekly_plan_section = weekly_plan_context
-
-    note_content = user_note if user_note else f"Brak dodatkowych uwag od biegacza na dzień {audit_str}."
+    weekly_plan_section = weekly_plan_context or "Brak planu tygodniowego w pliku output/weekly_plan.md"
+    note_content = user_note or f"Brak dodatkowych uwag od biegacza na dzień {audit_date_str}."
     activity_section = _format_activity_section(activity_stats, strength_workout=strength_workout)
-
     profile_dict = user_profile if isinstance(user_profile, dict) else {}
 
-    # Determine the correct prompt templates
-    has_run = False
-    has_swim = False
-    has_other_activity = False
-    if activity_stats:
-        for act in activity_stats:
-            if act.get('is_run', True):
-                has_run = True
-            elif act.get('is_swim', False):
-                has_swim = True
-            else:
-                has_other_activity = True
-                
-    has_gym = bool(strength_workout)
-    
+    # Wybór odpowiednich szablonów audytu
+    stats_list = activity_stats if isinstance(activity_stats, list) else ([activity_stats] if activity_stats else [])
+    has_run = any(act.get('is_run', True) for act in stats_list)
+    has_swim = any(not act.get('is_run', True) and act.get('is_swim', False) for act in stats_list)
+    has_other = any(not act.get('is_run', True) and not act.get('is_swim', False) for act in stats_list)
+
     audit_templates = []
     if has_run:
         audit_templates.append("audit_run.md")
     if has_swim:
         audit_templates.append("audit_swim.md")
-    if has_gym:
+    if strength_workout:
         audit_templates.append("audit_gym.md")
-    if has_other_activity:
+    if has_other:
         audit_templates.append("audit_other.md")
-        
     if not audit_templates:
         audit_templates.append("audit_rest.md")
 
-    # Wczytanie bazy promptu (Sekcja 1: Rola, Sekcja 2: Dane wejściowe)
-    base_text = _read_file_safe(os.path.join(PROMPTS_DIR, "daily_base.md"))
-    if not base_text:
-        raise FileNotFoundError(f"Nie znaleziono pliku szablonu: {os.path.join(PROMPTS_DIR, 'daily_base.md')}")
-
-    audit_parts = []
-    for t_name in audit_templates:
-        content = _read_file_safe(os.path.join(PROMPTS_DIR, t_name))
-        if not content:
-            raise FileNotFoundError(f"Nie znaleziono pliku szablonu: {os.path.join(PROMPTS_DIR, t_name)}")
-        audit_parts.append(content)
-
-    closing_text = _read_file_safe(os.path.join(PROMPTS_DIR, "daily_closing.md"))
-    if not closing_text:
-        raise FileNotFoundError(f"Nie znaleziono pliku szablonu: {os.path.join(PROMPTS_DIR, 'daily_closing.md')}")
+    base_text = _load_raw_prompt_file("daily_base.md")
+    audit_parts = [_load_raw_prompt_file(t_name).strip() for t_name in audit_templates]
+    closing_text = _load_raw_prompt_file("daily_closing.md")
 
     # Protokół niedzielny w sekcji 4 (zamknięcie mikrocyklu)
     if day_of_week == "Niedziela":
-        sunday_section_4 = f"""## 4. OCENA GOTOWOŚCI I ADAPTACJA (ZAMKNIĘCIE MIKROCYKLU): {audit_str}
+        sunday_section_4 = f"""## 4. OCENA GOTOWOŚCI I ADAPTACJA (ZAMKNIĘCIE MIKROCYKLU): {audit_date_str}
 
 - **DECYZJA ADAPTACYJNA / STOPIEŃ GOTOWOŚCI**: [PEŁNA GOTOWOŚĆ / UMIARKOWANE ZMĘCZENIE / GŁĘBOKIE ZMĘCZENIE / WYMAGANA REGENERACJA]
 - **Uzasadnienie fizjologiczne**: [Syntetyczna ocena adaptacji i wytyczne regeneracyjne przed nowym mikrocyklem; liczby wyłącznie w nawiasach]"""
@@ -1700,29 +1548,21 @@ def generate_daily_prompt(
             flags=re.DOTALL
         )
 
-    # Łączenie elementów:
-    # 1. Baza (# 1. Rola i wytyczne, # 2. Dane wejściowe)
-    # 2. Audyty (# 3. Protokół, # 4. Zasady formatowania, # 5. Szablon: ## 1.)
-    # 3. Zwieńczenie szablonu (# 5: ## 2., ## 3., ## 4.)
-    prompt_parts = [base_text.strip()]
-    prompt_parts.extend([p.strip() for p in audit_parts])
-
+    prompt_parts = [base_text.strip(), *audit_parts]
     if len(audit_templates) > 1:
-        merging_instruction = "[ZAREJESTROWANO WIELE TYPÓW TRENINGÓW (NP. BIEG + SIŁOWNIA). ZINTEGRUJ WYTYCZNE Z POSZCZEGÓLNYCH SZABLONÓW PUNKTU 5 W JEDEN WSPÓLNY, SPÓJNY RAPORT. POŁĄCZ AUDYTY DO JEDNEJ SEKCJI NR 1 I NIE DUBLUJ SEKCJI 2, 3 ANI 4!]"
-        prompt_parts.append(merging_instruction)
-
+        prompt_parts.append(
+            "[ZAREJESTROWANO WIELE TYPÓW TRENINGÓW (NP. BIEG + SIŁOWNIA). ZINTEGRUJ WYTYCZNE Z POSZCZEGÓLNYCH SZABLONÓW PUNKTU 5 W JEDEN WSPÓLNY, SPÓJNY RAPORT. POŁĄCZ AUDYTY DO JEDNEJ SEKCJI NR 1 I NIE DUBLUJ SEKCJI 2, 3 ANI 4!]"
+        )
     prompt_parts.append(closing_text.strip())
 
-    raw_template = "\n\n".join(prompt_parts)
-
     return _substitute_template_variables(
-        raw_template,
+        "\n\n".join(prompt_parts),
         **profile_dict,
         day_of_week=day_of_week or "Brak",
-        today_date_str=audit_str,
-        yesterday_date_str=history_str,
-        tomorrow_date_str=target_str,
-        planned_workout=planned_workout or f'Brak sztywnego planu na dzień {audit_str}',
+        today_date_str=audit_date_str,
+        yesterday_date_str=history_date_str,
+        tomorrow_date_str=target_date_str,
+        planned_workout=planned_workout or f'Brak sztywnego planu na dzień {audit_date_str}',
         activity_section=activity_section,
         yesterday_section=yesterday_section,
         weekly_plan_section=weekly_plan_section,
@@ -1741,8 +1581,6 @@ def generate_daily_prompt(
     )
 
 
-
-
 # ==============================================================================
 # 3. FORMATOWANIE I ZAPIS RAPORTÓW / ARCHIWUM
 # ==============================================================================
@@ -1757,16 +1595,14 @@ def _format_acts_archive_blocks(all_stats):
         list[str]: Lista wygenerowanych bloków.
     """
     acts_archive_blocks = []
-    for idx, act_s in enumerate(all_stats):
+    for idx, act_s in enumerate(all_stats, 1):
         is_run = act_s.get('is_run', True)
         is_swim = act_s.get('is_swim', False)
         time_info = f" [Start: {act_s.get('start_time')}]" if act_s.get('start_time') and act_s.get('start_time') != NO_DATA else ""
-        
+
         if is_run:
-            splits_formatted = "\n".join(act_s.get('splits', []))
-            if not splits_formatted:
-                splits_formatted = "Brak szczegółowych splitów dla tej jednostki"
-            single_block = f"""### Jednostka {idx + 1}{time_info}: {act_s['name']}
+            splits_formatted = "\n".join(act_s.get('splits', [])) or "Brak szczegółowych splitów dla tej jednostki"
+            single_block = f"""### Jednostka {idx}{time_info}: {act_s['name']}
 - Warunki pogodowe: {act_s.get('weather', NO_DATA)}
 - Dystans: {act_s['distance']} | Czas: {act_s['duration']} | Średnie tempo: {act_s['pace']}
 - Tętno: Średnie {act_s['avg_hr']} | Max {act_s['max_hr']}
@@ -1775,13 +1611,9 @@ def _format_acts_archive_blocks(all_stats):
 
 #### Splity:
 {splits_formatted}"""
-        elif is_swim:
-            single_block = f"""### Trening pływania {idx + 1}{time_info}: {act_s['name']}
-- Dystans: {act_s['distance']} | Czas: {act_s['duration']}
-- Tętno: Średnie {act_s['avg_hr']} | Max {act_s['max_hr']}
-- Training Effect: Aerobowy {act_s['aerobic_te']} | Beztlenowy {act_s['anaerobic_te']}"""
         else:
-            single_block = f"""### Trening Uzupełniający {idx + 1}{time_info}: {act_s['name']}
+            unit_label = "Trening pływania" if is_swim else "Trening Uzupełniający"
+            single_block = f"""### {unit_label} {idx}{time_info}: {act_s['name']}
 - Dystans: {act_s['distance']} | Czas: {act_s['duration']}
 - Tętno: Średnie {act_s['avg_hr']} | Max {act_s['max_hr']}
 - Training Effect: Aerobowy {act_s['aerobic_te']} | Beztlenowy {act_s['anaerobic_te']}"""
@@ -1790,63 +1622,51 @@ def _format_acts_archive_blocks(all_stats):
     return acts_archive_blocks
 
 
-def save_daily_report(workout_date, archive_content, history_dir=HISTORY_DIR, output_dir=OUTPUT_DIR, debug=False):
+def save_daily_report(workout_date, archive_content, history_dir_path=HISTORY_DIR_PATH, output_dir_path=OUTPUT_DIR_PATH, debug=False):
     """Zapisuje wygenerowany raport trenera do pliku historii oraz do bieżącego raportu.
 
     Args:
         workout_date (str): Data treningu.
         archive_content (str): Treść do zapisania.
-        history_dir (str, optional): Katalog historii.
-        output_dir (str, optional): Katalog wyjściowy.
+        history_dir_path (str, optional): Katalog historii.
+        output_dir_path (str, optional): Katalog wyjściowy.
         debug (bool): Flaga trybu debug.
     """
     if debug:
-        os.makedirs(DEBUG_DIR, exist_ok=True)
-        debug_archive_path = os.path.join(DEBUG_DIR, f"{workout_date}.md")
-        debug_latest_file = os.path.join(DEBUG_DIR, "last_daily_report.md")
-
-        with open(debug_archive_path, "w", encoding="utf-8") as hf:
-            hf.write(archive_content)
-
-        with open(debug_latest_file, "w", encoding="utf-8") as lf:
-            lf.write(archive_content)
-        print(f"\n✅ [DEBUG] Zapisano raport do: {debug_latest_file} oraz {debug_archive_path} (Pliki produkcyjne nie zostały zmodyfikowane)")
-
-        try:
-            debug_latest_html = os.path.join(DEBUG_DIR, "last_daily_report.html")
-            html_content = markdown_to_html_doc(archive_content, title=f"Raport Coach Gemini {workout_date} (Debug)")
-            with open(debug_latest_html, "w", encoding="utf-8") as hf:
-                hf.write(html_content)
-            print(f"📄 [DEBUG] Wygenerowano podgląd HTML: {debug_latest_html}")
-        except Exception as he:
-            logger.warning(f"Nie udało się wygenerować podglądu HTML: {he}")
-        return
-    year, month = workout_date.split("-")[:2]
-    target_history_dir = os.path.join(history_dir, year, month)
-    os.makedirs(target_history_dir, exist_ok=True)
-    history_file_path = os.path.join(target_history_dir, f"{workout_date}.md")
-    
-    latest_daily_file = os.path.join(output_dir, "last_daily_report.md")
-
-    already_existed = os.path.exists(history_file_path)
-
-    with open(history_file_path, "w", encoding="utf-8") as hf:
-        hf.write(archive_content)
-
-    with open(latest_daily_file, "w", encoding="utf-8") as lf:
-        lf.write(archive_content)
-
-    if already_existed:
-        print(f"\n✅ Zaktualizowano (nadpisano) wcześniejszy raport w: {latest_daily_file} oraz archiwum {history_file_path}")
+        os.makedirs(DEBUG_DIR_PATH, exist_ok=True)
+        archive_file_path = os.path.join(DEBUG_DIR_PATH, f"{workout_date}.md")
+        latest_file_path = os.path.join(DEBUG_DIR_PATH, "last_daily_report.md")
+        latest_html_path = os.path.join(DEBUG_DIR_PATH, "last_daily_report.html")
+        html_title = f"Raport Coach Gemini {workout_date} (Debug)"
+        already_existed = False
     else:
-        print(f"\n✅ Zapisano raport do: {latest_daily_file} oraz archiwum {history_file_path}")
+        year, month = workout_date.split("-")[:2]
+        target_history_dir_path = os.path.join(history_dir_path, year, month)
+        os.makedirs(target_history_dir_path, exist_ok=True)
+        os.makedirs(output_dir_path, exist_ok=True)
+        archive_file_path = os.path.join(target_history_dir_path, f"{workout_date}.md")
+        latest_file_path = os.path.join(output_dir_path, "last_daily_report.md")
+        latest_html_path = os.path.join(output_dir_path, "last_daily_report.html")
+        html_title = f"Raport Coach Gemini {workout_date}"
+        already_existed = os.path.exists(archive_file_path)
+
+    for path in (archive_file_path, latest_file_path):
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(archive_content)
+
+    if debug:
+        print(f"\n✅ [DEBUG] Zapisano raport do: {latest_file_path} oraz {archive_file_path} (Pliki produkcyjne nie zostały zmodyfikowane)")
+    elif already_existed:
+        print(f"\n✅ Zaktualizowano (nadpisano) wcześniejszy raport w: {latest_file_path} oraz archiwum {archive_file_path}")
+    else:
+        print(f"\n✅ Zapisano raport do: {latest_file_path} oraz archiwum {archive_file_path}")
 
     try:
-        latest_daily_html = os.path.join(output_dir, "last_daily_report.html")
-        html_content = markdown_to_html_doc(archive_content, title=f"Raport Coach Gemini {workout_date}")
-        with open(latest_daily_html, "w", encoding="utf-8") as hf:
+        html_content = markdown_to_html_doc(archive_content, title=html_title)
+        with open(latest_html_path, "w", encoding="utf-8") as hf:
             hf.write(html_content)
-        print(f"📄 Wygenerowano podgląd HTML: {latest_daily_html}")
+        prefix = "📄 [DEBUG]" if debug else "📄"
+        print(f"{prefix} Wygenerowano podgląd HTML: {latest_html_path}")
     except Exception as he:
         logger.warning(f"Nie udało się wygenerować podglądu HTML: {he}")
 
@@ -1867,24 +1687,23 @@ def _extract_strength_muscle_groups(strength_workout):
         return ("NIE", "BRAK")
 
     lines = [l.strip() for l in strength_workout.splitlines() if l.strip()]
-    first_line_clean = lines[0].strip(":.,!- #*[]()\"'").lower() if lines else ""
+    first_clean = lines[0].strip(":.,!- #*[]()\"'") if lines else ""
+    first_line_lower = first_clean.lower()
 
-    routine_name = lines[0].strip(":.,!- #*[]()\"'").upper() if lines else "TRENING SIŁOWY"
-    strength_line = f"TAK ({routine_name})"
+    strength_line = f"TAK ({first_clean.upper() or 'TRENING SIŁOWY'})"
 
-    # Klasyfikacja partii mięśniowych
-    if first_line_clean in ("upper", "push", "pull"):
+    if first_line_lower in ("upper", "push", "pull"):
         muscle_groups = "GÓRA"
-    elif first_line_clean in ("lower", "legs"):
+    elif first_line_lower in ("lower", "legs"):
         muscle_groups = "DÓŁ"
-    elif first_line_clean in ("fbw",):
+    elif first_line_lower == "fbw":
         muscle_groups = "GÓRA + DÓŁ"
-    elif first_line_clean in ("core",):
+    elif first_line_lower == "core":
         muscle_groups = "CORE / STABILIZACJA"
     else:
         text_lower = strength_workout.lower()
-        has_upper = any(w in text_lower for w in ["góra", "klatka", "bench", "press", "row", "pull", "bicep", "tricep", "bark"])
-        has_lower = any(w in text_lower for w in ["dół", "nóg", "squat", "przysiad", "deadlift", "calf", "łydk", "thrust"])
+        has_upper = any(w in text_lower for w in ("góra", "klatka", "bench", "press", "row", "pull", "bicep", "tricep", "bark"))
+        has_lower = any(w in text_lower for w in ("dół", "nóg", "squat", "przysiad", "deadlift", "calf", "łydk", "thrust"))
         if has_upper and has_lower:
             muscle_groups = "GÓRA + DÓŁ"
         elif has_lower:
@@ -1918,20 +1737,18 @@ def _count_running_sessions(run_stats_list):
 
     def _parse_start_minutes(act):
         st = act.get('start_time')
-        if not st or not isinstance(st, str):
+        if not isinstance(st, str):
             return None
         m = re.search(r'(\d{1,2}):(\d{2})', st)
-        if m:
-            return int(m.group(1)) * 60 + int(m.group(2))
-        return None
+        return int(m.group(1)) * 60 + int(m.group(2)) if m else None
 
     def _is_auxiliary(act):
         name = str(act.get('name', '')).lower()
-        return any(k in name for k in [
+        return any(k in name for k in (
             'rozgrzewk', 'warmup', 'warm up', 'warm-up',
             'schłodzen', 'cooldown', 'cool down', 'cool-down',
             'przebieżk', 'strides', 'stride', 'rytm', 'rytmy', 'drill'
-        ])
+        ))
 
     parsed_times = [_parse_start_minutes(act) for act in run_stats_list]
 
@@ -1940,7 +1757,6 @@ def _count_running_sessions(run_stats_list):
         sessions = 1
         last_time = sorted_acts[0][0]
         for t, act in sorted_acts[1:]:
-            # Jeśli odstęp >= 180 min (3h) i kolejna aktywność nie jest elementem składowym
             if (t - last_time) >= 180 and not _is_auxiliary(act):
                 sessions += 1
                 last_time = t
@@ -1948,7 +1764,6 @@ def _count_running_sessions(run_stats_list):
                 last_time = max(last_time, t)
         return sessions
 
-    # Jeśli brak dokładnych czasów startu:
     main_runs = [act for act in run_stats_list if not _is_auxiliary(act)]
     return max(1, len(main_runs)) if main_runs else 1
 
@@ -1967,83 +1782,64 @@ def _extract_run_metadata(all_stats, response_text=None, strength_workout=None):
         tuple[str, str, str, str]: (run_line, run_type, run_structure, day_type)
     """
     stats_list = all_stats if isinstance(all_stats, list) else ([all_stats] if all_stats else [])
-    
+
     run_stats_list = [act for act in stats_list if act.get("is_run", True)]
     swim_stats_list = [act for act in stats_list if act.get("is_swim", False)]
     other_stats_list = [act for act in stats_list if not act.get("is_run", True) and not act.get("is_swim", False)]
 
     run_count = _count_running_sessions(run_stats_list)
-    run_km = 0.0
-    for act in run_stats_list:
-        d_raw = str(act.get("distance", "0"))
-        m = RE_DIST_FLOAT.search(d_raw)
-        if m:
-            run_km += float(m.group(1).replace(",", "."))
+    run_km = sum(
+        float(m.group(1).replace(",", "."))
+        for act in run_stats_list
+        if (m := RE_DIST_FLOAT.search(str(act.get("distance", "0"))))
+    )
 
-    resp = response_text or ""
-
-    if run_count == 0:
-        run_line = "NIE (0.00 km, sesje: 0)"
-        run_type = "Brak biegu"
-        run_structure = "Brak"
-        
-        activity_parts = []
-        if strength_workout:
-            activity_parts.append("SIŁOWNIA")
-        if swim_stats_list:
-            activity_parts.append("PŁYWANIE")
-        if other_stats_list:
-            activity_parts.append("TRENING UZUPEŁNIAJĄCY")
-        
-        day_type = " + ".join(activity_parts) if activity_parts else "REGENERACJA"
-            
-        return (run_line, run_type, run_structure, day_type)
-
-    run_line = f"TAK ({run_km:.2f} km, sesje: {run_count})"
-    
-    activity_parts = ["BIEG"]
+    activity_parts = []
+    if run_count > 0:
+        activity_parts.append("BIEG")
     if strength_workout:
         activity_parts.append("SIŁOWNIA")
     if swim_stats_list:
         activity_parts.append("PŁYWANIE")
     if other_stats_list:
         activity_parts.append("TRENING UZUPEŁNIAJĄCY")
+    day_type = " + ".join(activity_parts) if activity_parts else "REGENERACJA"
 
-    day_type = " + ".join(activity_parts)
+    if run_count == 0:
+        return ("NIE (0.00 km, sesje: 0)", "Brak biegu", "Brak", day_type)
 
-    # Wykrywanie typu treningu biegowego na podstawie raportu trenera oraz danych aktywności
-    run_type = None
+    run_line = f"TAK ({run_km:.2f} km, sesje: {run_count})"
+    resp = response_text or ""
     resp_lower = resp.lower()
+    run_type = None
 
     # 1. Sprawdzamy jawny profil jednostki biegowej podany przez trenera w sekcji audytu biegowego
-    run_section_text = resp
-    if "część biegowa" in resp_lower:
-        run_section_text = resp[resp_lower.find("część biegowa"):]
-        if "część siłowa" in run_section_text.lower():
-            run_section_text = run_section_text[:run_section_text.lower().find("część siłowa")]
+    run_section_text = resp[resp_lower.find("część biegowa"):] if "część biegowa" in resp_lower else resp
+    if "część siłowa" in run_section_text.lower():
+        run_section_text = run_section_text[:run_section_text.lower().find("część siłowa")]
 
-    m_profile = re.search(r'\*\s*Profil jednostki:\s*([^\n]+)', run_section_text, re.IGNORECASE)
+    m_profile = RE_PROFILE_HEADER.search(run_section_text)
     if m_profile:
-        cand = m_profile.group(1).strip().strip("[]")
+        cand = m_profile.group(1).strip().strip("[]*")
         if cand and cand.lower() not in ("brak", "n/d", "nie dotyczy", "brak danych"):
             run_type = cand
 
     # 2. Jeśli brak jawnego profilu w raporcie, sprawdzamy specyficzne nazwy z Garmina (act_names)
     if not run_type:
-        act_names = " ".join([str(a.get("name", "")) for a in run_stats_list]).lower()
+        act_names = " ".join(str(a.get("name", "")) for a in run_stats_list).lower()
         if "półmaraton" in act_names:
             run_type = "Półmaraton / Bieg startowy"
         elif "maraton" in act_names:
             run_type = "Maraton / Bieg startowy"
-        elif any(k in act_names for k in ["zawody", "bieg startowy", "parkrun", "mistrzostwa", "puchar", "start"]):
+        elif any(k in act_names for k in ("zawody", "bieg startowy", "parkrun", "mistrzostwa", "puchar", "start")):
             run_type = "Zawody / Bieg startowy"
-        elif any(k in act_names for k in ["interwał", "vo2max", "odcinki", "rytm", "podbieg", "intervals", "repeats"]):
+        elif any(k in act_names for k in ("interwał", "vo2max", "odcinki", "rytm", "podbieg", "intervals", "repeats")):
             run_type = "Interwały / Próg (VO2max / Threshold)"
-        elif any(k in act_names for k in ["tempo", "progowy", "threshold"]):
+        elif any(k in act_names for k in ("tempo", "progowy", "threshold")):
             run_type = "Bieg progowy / Tempo (Threshold / MP)"
-        elif any(k in act_names for k in ["długie wybieganie", "long run", "wybieganie"]):
+        elif any(k in act_names for k in ("długie wybieganie", "long run", "wybieganie")):
             run_type = "Długie wybieganie (Long Run)"
-        elif any(k in act_names for k in ["recovery", "regenerac", "regeneracyjny"]):
+        elif any(k in act_names for k in ("recovery", "regenerac", "regeneracyjny")):
             run_type = "Bieg regeneracyjny (Recovery Run)"
         elif "bieżni" in act_names or "treadmill" in act_names:
             run_type = "Bieg na bieżni mechanicznej (Treadmill)"
@@ -2054,54 +1850,48 @@ def _extract_run_metadata(all_stats, response_text=None, strength_workout=None):
 
     # 3. Pogłębiona analiza kontekstu raportu trenera (resp_lower), gdy brak jawnego profilu i nazwa w Garminie jest domyślna
     if not run_type:
-        if any(k in resp_lower for k in ["dzień startowy", "bieg startowy", "start w zawodach", "udział w zawodach"]):
-            if "maraton" in resp_lower and any(w in resp_lower for w in ["42.", "królewski", "maraton warszawski", "trasa maratonu"]):
+        if any(k in resp_lower for k in ("dzień startowy", "bieg startowy", "start w zawodach", "udział w zawodach")):
+            if "maraton" in resp_lower and any(w in resp_lower for w in ("42.", "królewski", "maraton warszawski", "trasa maratonu")):
                 run_type = "Maraton / Bieg startowy"
             elif "półmaraton" in resp_lower:
                 run_type = "Półmaraton / Bieg startowy"
             else:
                 run_type = "Zawody / Bieg startowy"
-        elif any(k in resp_lower for k in ["trening interwałowy", "interwały", "sesja vo2max", "odcinki robocze", "trening powtórzeniowy", "fartlek", "podbiegi"]):
+        elif any(k in resp_lower for k in ("trening interwałowy", "interwały", "sesja vo2max", "odcinki robocze", "trening powtórzeniowy", "fartlek", "podbiegi")):
             run_type = "Interwały / Akcent (VO2max / Threshold)"
-        elif any(k in resp_lower for k in ["tempo maratońskie", "blok mp", "akcent mp", "trening progowy", "próg mleczanowy", "lthr", "strefa z4", "strefa z3", "drugi zakres", "ii zakres"]):
+        elif any(k in resp_lower for k in ("tempo maratońskie", "blok mp", "akcent mp", "trening progowy", "próg mleczanowy", "lthr", "strefa z4", "strefa z3", "drugi zakres", "ii zakres")):
             run_type = "Bieg progowy / Tempo (Threshold / MP)"
-        elif any(k in resp_lower for k in ["długie wybieganie", "long run", "trening objętościowy", "wybieganie"]):
+        elif any(k in resp_lower for k in ("długie wybieganie", "long run", "trening objętościowy", "wybieganie")):
             run_type = "Długie wybieganie (Long Run)"
-        elif any(k in resp_lower for k in ["bieg regeneracyjny", "trucht regeneracyjny", "recovery run", "strefa z1", "regeneracja aktywna"]):
+        elif any(k in resp_lower for k in ("bieg regeneracyjny", "trucht regeneracyjny", "recovery run", "strefa z1", "regeneracja aktywna")):
             run_type = "Bieg regeneracyjny (Recovery Run)"
-        elif any(k in resp_lower for k in ["baza tlenowa", "bieg spokojny", "strefa z2", "pierwszy zakres", "i zakres", "easy run", "rozbieganie"]):
+        elif any(k in resp_lower for k in ("baza tlenowa", "bieg spokojny", "strefa z2", "pierwszy zakres", "i zakres", "easy run", "rozbieganie")):
             run_type = "Bieg spokojny (Easy Run / Z2)"
         else:
-            # W przypadku braku specyficznych cech nie zgadujemy "biegu spokojnego", lecz opieramy się na ogólnym charakterze z audytu
             run_type = "Bieg ciągły (według analizy trenera)"
 
     # Wykrywanie struktury biegu (Rozgrzewka, Główna seria, Schłodzenie)
     run_structure = None
     m_plan_struct = RE_PLAN_STRUCT.search(resp)
     if m_plan_struct:
-        raw_struct = m_plan_struct.group(1).strip()
-        parts = [p.strip() for p in raw_struct.split(",") if p.strip()]
         warmup_part = "Brak"
         main_part = f"{run_km:.2f} km ({run_type})"
         cool_part = "Brak"
-        for p in parts:
-            if "rozgrzewk" in p.lower():
+        for p in (part.strip() for part in m_plan_struct.group(1).strip().split(",") if part.strip()):
+            p_low = p.lower()
+            if "rozgrzewk" in p_low:
                 warmup_part = p
-            elif "schłodzen" in p.lower():
+            elif "schłodzen" in p_low:
                 cool_part = p
-            elif any(k in p.lower() for k in ["mp", "tempo", "część główna", "seria", "z2"]):
+            elif any(k in p_low for k in ("mp", "tempo", "część główna", "seria", "z2")):
                 main_part = p
         run_structure = f"Rozgrzewka: {warmup_part} | Główna seria: {main_part} | Schłodzenie: {cool_part}"
-
-    if not run_structure and len(run_stats_list) > 1:
-        unit_descs = []
-        for idx, a in enumerate(run_stats_list):
-            a_name = str(a.get("name", f"Jednostka {idx + 1}"))
-            a_dist = str(a.get("distance", ""))
-            unit_descs.append(f"{a_name} ({a_dist})")
-        run_structure = " + ".join(unit_descs)
-
-    if not run_structure:
+    elif len(run_stats_list) > 1:
+        run_structure = " + ".join(
+            f"{a.get('name', f'Jednostka {idx}')} ({a.get('distance', '')})"
+            for idx, a in enumerate(run_stats_list, 1)
+        )
+    else:
         run_structure = f"Rozgrzewka: Brak | Główna seria: {run_km:.2f} km ({run_type}) | Schłodzenie: Brak"
 
     return (run_line, run_type, run_structure, day_type)
@@ -2126,16 +1916,12 @@ def build_daily_archive_content(workout_date, date_str, next_date_str, all_stats
     Returns:
         str: Zawartość archiwum dziennego.
     """
-    acts_title = "Zarejestrowane aktywności"
-    strength_part = f"\n### Trening siłowy / uzupełniający (raport z Telegrama):\n{strength_workout}\n" if strength_workout else ""
-
     # Sprawdzamy czy notatka zawiera uwagi biegacza wykraczające poza sam trening siłowy
     is_only_strength = False
     if strength_workout and user_note:
         cleaned_note = re.sub(r'---\s*Treść wiadomości z Telegrama[^\n]*---\s*', '', user_note)
         cleaned_note = re.sub(r'\[(?:RAPORT Z TELEGRAMA|NOWA WIADOMOŚĆ PORANNA)\]:\s*', '', cleaned_note).strip()
-        if cleaned_note == strength_workout.strip():
-            is_only_strength = True
+        is_only_strength = (cleaned_note == strength_workout.strip())
 
     note_part = f"\n## Uwagi biegacza (notatka z Telegrama):\n{user_note.strip()}\n" if (user_note and user_note.strip() and not is_only_strength) else ""
 
@@ -2151,14 +1937,12 @@ def build_daily_archive_content(workout_date, date_str, next_date_str, all_stats
 - Siłownia: {strength_line}
 - Partie mięśniowe (siłownia): {muscle_groups}"""
 
-    if all_stats and strength_workout:
-        acts_part = f"\n## {acts_title}:\n{chr(10).join(_format_acts_archive_blocks(all_stats))}\n{strength_part}"
-    elif all_stats:
-        acts_part = f"\n## {acts_title}:\n{chr(10).join(_format_acts_archive_blocks(all_stats))}\n"
-    elif strength_workout:
-        acts_part = f"\n## {acts_title}:{strength_part}"
-    else:
-        acts_part = ""
+    act_sections = []
+    if all_stats:
+        act_sections.append("\n".join(_format_acts_archive_blocks(all_stats)))
+    if strength_workout:
+        act_sections.append(f"### Trening siłowy / uzupełniający (raport z Telegrama):\n{strength_workout}")
+    acts_part = f"\n## Zarejestrowane aktywności:\n" + "\n\n".join(act_sections) + "\n" if act_sections else ""
 
     bio_part = f"""## Biometria regeneracyjna i bilans dnia ({date_str}):
 - HRV (miniona noc przed treningiem): {garmin_stats.get('hrv_status')}
@@ -2194,7 +1978,6 @@ def build_and_save_daily_archive(workout_date, date_str, next_date_str, all_stat
         strength_workout (str, optional): Trening siłowy.
         user_note (str): Opcjonalna notatka zawodnika.
         debug (bool): Flaga trybu debug.
-        mode (str, optional): Tryb uruchomienia.
     """
     archive_content = build_daily_archive_content(
         workout_date=workout_date,
