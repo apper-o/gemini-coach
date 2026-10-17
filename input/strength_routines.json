@@ -30,7 +30,7 @@
         "target_reps": "6",
         "tempo": "2-0-X-0",
         "last_sets": [
-          { 
+          {
             "set": 1,
             "weight": "60 kg",
             "reps": 6
@@ -67,18 +67,18 @@
         "last_sets": [
           {
             "set": 1,
-            "weight": "50 kg",
+            "weight": "60 kg",
             "reps": 6
           },
           {
             "set": 2,
-            "weight": "50 kg",
+            "weight": "60 kg",
             "reps": 6
           },
           {
             "set": 3,
-            "weight": "50 kg",
-            "reps": 5
+            "weight": "60 kg",
+            "reps": 4
           }
         ]
       },
@@ -112,17 +112,17 @@
         "last_sets": [
           {
             "set": 1,
-            "weight": "32 kg",
+            "weight": "40 kg",
             "reps": 8
           },
           {
             "set": 2,
-            "weight": "32 kg",
+            "weight": "40 kg",
             "reps": 8
           },
           {
             "set": 3,
-            "weight": "32 kg",
+            "weight": "40 kg",
             "reps": 8
           }
         ]
@@ -134,17 +134,17 @@
         "last_sets": [
           {
             "set": 1,
-            "weight": "30 kg",
+            "weight": "50 kg",
             "reps": 8
           },
           {
             "set": 2,
-            "weight": "30 kg",
+            "weight": "50 kg",
             "reps": 8
           },
           {
             "set": 3,
-            "weight": "35 kg",
+            "weight": "50 kg",
             "reps": 8
           }
         ]
@@ -157,12 +157,12 @@
           {
             "set": 1,
             "weight": "mc",
-            "reps": 15
+            "reps": 12
           },
           {
             "set": 2,
             "weight": "mc",
-            "reps": 15
+            "reps": 12
           },
           {
             "set": 3,
