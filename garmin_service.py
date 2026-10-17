@@ -77,23 +77,21 @@ def _activity_sort_key(act):
 # PARSERY BIOMETRII I BIOMECHANIKI AKTYWNOŚCI
 # ==============================================================================
 
-def _speed_to_pace_str(speed_m_s):
-    """
-    Konwertuje prędkość w m/s na czytelne tempo w formacie M:SS min/km.
-    
-    Args:
-        speed_m_s (float): Prędkość w metrach na sekundę.
-        
-    Returns:
-        str: Sformatowane tempo (np. "5:30 min/km") lub NO_DATA.
-    """
+def _speed_to_pace_short(speed_m_s):
+    """Konwertuje prędkość w m/s na zwięzłe tempo M:SS (bez jednostki) do tabel splitów."""
     if speed_m_s and isinstance(speed_m_s, (int, float)) and speed_m_s > 0:
         total_seconds = int(round(1000.0 / speed_m_s))
-        return f"{total_seconds // 60}:{total_seconds % 60:02d} min/km"
-    return NO_DATA
+        return f"{total_seconds // 60}:{total_seconds % 60:02d}"
+    return "-"
 
 
-def parse_activity_biomechanics(activity):
+def _speed_to_pace_str(speed_m_s):
+    """Konwertuje prędkość w m/s na czytelne tempo w formacie M:SS min/km."""
+    short_pace = _speed_to_pace_short(speed_m_s)
+    return f"{short_pace} min/km" if short_pace != "-" else NO_DATA
+
+
+def parse_activity_biomechanics(activity, include_splits=True):
     """
     Wyciąga szczegółowe parametry biomechaniczne i fizjologiczne z konkretnego biegu.
     Oblicza średnie tempo z prędkości (m/s), jeśli Garmin nie udostępnia gotowego pola tempa.
@@ -101,6 +99,7 @@ def parse_activity_biomechanics(activity):
     
     Args:
         activity (dict): Słownik reprezentujący dane aktywności z Garmina.
+        include_splits (bool, optional): Czy parsować tabelę splitów kilometrowych. Defaults to True.
         
     Returns:
         dict: Słownik zawierający przeparsowane metryki aktywności, lub None jeśli activity jest puste.
@@ -196,13 +195,13 @@ def parse_activity_biomechanics(activity):
     if parts:
         res["weather"] = " | ".join(parts)
 
-    # --- Splity kilometrowe ---
-    splits_raw = activity.get('splits_data')
+    # --- Splity kilometrowe (jednostki w nagłówku tabeli dla oszczędności tokenów) ---
+    splits_raw = activity.get('splits_data') if include_splits else None
     parsed_splits = []
     if isinstance(splits_raw, dict):
         lap_list = splits_raw.get('lapDTOs', [])
         if lap_list:
-            parsed_splits.append("| Km | Dystans | Czas | Tempo | GAP | Tętno (śr/max) | Kadencja | Krok | GCT | Odchylenie pionowe | Moc | Wznios/Spadek |")
+            parsed_splits.append("| Km | Dystans [km] | Czas | Tempo [/km] | GAP [/km] | HR śr/max [bpm] | Kadencja [spm] | Krok [m] | GCT [ms] | VO [cm] | Moc [W] | Wznios/Spadek [m] |")
             parsed_splits.append("|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|")
 
             for idx, lap in enumerate(lap_list, 1):
@@ -210,32 +209,32 @@ def parse_activity_biomechanics(activity):
                 lap_dur = lap.get('duration', 0)
                 dur_str = f"{int(lap_dur // 60)}:{int(lap_dur % 60):02d}"
 
-                lap_pace = _speed_to_pace_str(lap.get('averageSpeed', 0))
-                gap_pace = _speed_to_pace_str(lap.get('avgGradeAdjustedSpeed', 0))
+                lap_pace = _speed_to_pace_short(lap.get('averageSpeed', 0))
+                gap_pace = _speed_to_pace_short(lap.get('avgGradeAdjustedSpeed', 0))
 
                 if lap.get('averageHR') is not None and lap.get('maxHR') is not None:
-                    hr_str = f"{int(lap['averageHR'])} / {int(lap['maxHR'])} bpm"
+                    hr_str = f"{int(lap['averageHR'])}/{int(lap['maxHR'])}"
                 elif lap.get('averageHR') is not None:
-                    hr_str = f"{int(lap['averageHR'])} bpm"
+                    hr_str = str(int(lap['averageHR']))
                 elif lap.get('maxHR') is not None:
-                    hr_str = f"max {int(lap['maxHR'])} bpm"
+                    hr_str = f"max {int(lap['maxHR'])}"
                 else:
-                    hr_str = NO_DATA
+                    hr_str = "-"
 
                 ascent = int(lap['elevationGain']) if lap.get('elevationGain') is not None else 0
                 descent = int(lap['elevationLoss']) if lap.get('elevationLoss') is not None else 0
-                elev_str = f"+{ascent}m / -{descent}m"
+                elev_str = f"+{ascent}/-{descent}"
 
-                avg_pwr = f"{int(lap['averagePower'])} W" if lap.get('averagePower') is not None else NO_DATA
+                avg_pwr = str(int(lap['averagePower'])) if lap.get('averagePower') is not None else "-"
                 raw_cad_lap = lap.get('averageRunCadence') or lap.get('averageRunningCadenceInStepsPerMinute')
-                avg_cad = f"{int(round(raw_cad_lap))} spm" if raw_cad_lap is not None else NO_DATA
+                avg_cad = str(int(round(raw_cad_lap))) if raw_cad_lap is not None else "-"
 
-                gct_lap = f"{lap['groundContactTime']:.1f} ms" if lap.get('groundContactTime') is not None else NO_DATA
-                stride_lap = f"{lap['strideLength']/100:.2f} m" if lap.get('strideLength') is not None else NO_DATA
-                vert_osc_lap = f"{lap['verticalOscillation']:.2f} cm" if lap.get('verticalOscillation') is not None else NO_DATA
+                gct_lap = f"{lap['groundContactTime']:.1f}" if lap.get('groundContactTime') is not None else "-"
+                stride_lap = f"{lap['strideLength']/100:.2f}" if lap.get('strideLength') is not None else "-"
+                vert_osc_lap = f"{lap['verticalOscillation']:.2f}" if lap.get('verticalOscillation') is not None else "-"
 
                 parsed_splits.append(
-                    f"| {idx} | {lap_dist:.2f} km | {dur_str} | {lap_pace} | {gap_pace} | "
+                    f"| {idx} | {lap_dist:.2f} | {dur_str} | {lap_pace} | {gap_pace} | "
                     f"{hr_str} | {avg_cad} | {stride_lap} | {gct_lap} | {vert_osc_lap} | "
                     f"{avg_pwr} | {elev_str} |"
                 )
@@ -244,61 +243,91 @@ def parse_activity_biomechanics(activity):
     return res
 
 
-def _parse_hrv_summary(hrv_raw):
+def _parse_hrv_data(hrv_raw):
     """
-    Parsuje status i średnie wartości HRV z surowych danych Garmina.
+    Parsuje metryki HRV z surowych danych Garmina:
+    - hrv_last_night: średnia z ostatniej nocy wraz z jednostką (np. '68 ms'),
+    - hrv_baseline_range: zakres bazowy (np. '62–75 ms'),
+    - hrv_status: pełny opis tekstowy do archiwum.
     
     Args:
         hrv_raw (dict): Słownik zawierający surowe dane HRV.
         
     Returns:
-        str: Sformatowany łańcuch znaków z podsumowaniem HRV lub NO_DATA.
+        dict: Słownik z kluczami hrv_last_night, hrv_last_night_ms, hrv_baseline_range i hrv_status.
     """
-    if not hrv_raw:
-        return NO_DATA
-    hrv_summary = hrv_raw.get('hrvSummary', {})
-    baseline_info = hrv_summary.get('baseline', {})
+    result = {
+        "hrv_last_night": NO_DATA,
+        "hrv_last_night_ms": NO_DATA,
+        "hrv_baseline_range": NO_DATA,
+        "hrv_status": NO_DATA,
+    }
+    if not isinstance(hrv_raw, dict):
+        return result
+
+    hrv_summary = hrv_raw.get('hrvSummary') or {}
+    baseline_info = hrv_summary.get('baseline') or {}
     b_low = baseline_info.get('balancedLow')
     b_high = baseline_info.get('balancedUpper')
 
-    last_night_str = _get_or_nodata(hrv_summary, 'lastNightAvg', lambda x: f"{x} ms")
-    weekly_avg_str = _get_or_nodata(hrv_summary, 'weeklyAvg', lambda x: f"{x} ms")
-    baseline_str = f"{b_low}–{b_high} ms" if b_low and b_high else NO_DATA
+    last_night_val = _get_or_nodata(hrv_summary, 'lastNightAvg', lambda x: f"{int(round(x))} ms")
+    weekly_avg_str = _get_or_nodata(hrv_summary, 'weeklyAvg', lambda x: f"{int(round(x))} ms")
+    baseline_str = f"{int(round(b_low))}–{int(round(b_high))} ms" if b_low is not None and b_high is not None else NO_DATA
 
-    return f"{last_night_str} (Średnia 7-dniowa: {weekly_avg_str}, Norma bazowa: {baseline_str})"
+    result["hrv_last_night"] = last_night_val
+    result["hrv_last_night_ms"] = last_night_val
+    result["hrv_baseline_range"] = baseline_str
+
+    if last_night_val != NO_DATA or weekly_avg_str != NO_DATA or baseline_str != NO_DATA:
+        result["hrv_status"] = f"{last_night_val} (Średnia 7-dniowa: {weekly_avg_str}, Norma bazowa: {baseline_str})"
+
+    return result
 
 
 def _parse_rhr_and_sleep(stats_raw, sleep_raw):
     """
-    Parsuje tętno spoczynkowe RHR oraz dane snu (score, fazy, oddechy, stres snu).
+    Parsuje tętno spoczynkowe RHR (bieżące, bazowe 7-dniowe oraz pełny status do archiwum)
+    oraz dane snu (score, łączny czas snu, fazy Deep/REM, stres snu) z jednostkami w wartościach.
     """
     result = {
         "rhr": NO_DATA,
-        "sleep_hr": NO_DATA,
+        "rhr_baseline": NO_DATA,
+        "rhr_status": NO_DATA,
         "sleep_score": NO_DATA,
+        "total_sleep_time": NO_DATA,
         "deep_sleep": NO_DATA,
         "rem_sleep": NO_DATA,
         "sleep_stress": NO_DATA,
     }
 
-    if stats_raw and stats_raw.get('restingHeartRate') is not None:
-        today_rhr = int(stats_raw['restingHeartRate'])
+    if isinstance(stats_raw, dict) and stats_raw.get('restingHeartRate') is not None:
+        today_rhr = int(round(stats_raw['restingHeartRate']))
+        result['rhr'] = f"{today_rhr} bpm"
         avg_7d = stats_raw.get('lastSevenDaysAvgRestingHeartRate')
         if avg_7d is not None:
-            diff = today_rhr - int(avg_7d)
-            avg_7d_str = f" (Średnia 7-dniowa: {int(avg_7d)} bpm, odchylenie: {'+' if diff > 0 else ''}{diff} bpm)"
+            avg_7d_int = int(round(avg_7d))
+            result['rhr_baseline'] = f"{avg_7d_int} bpm"
+            diff = today_rhr - avg_7d_int
+            avg_7d_str = f" (Średnia 7-dniowa: {avg_7d_int} bpm, odchylenie: {'+' if diff > 0 else ''}{diff} bpm)"
         else:
             avg_7d_str = ""
-        result['rhr'] = f"{today_rhr} bpm{avg_7d_str}"
+        result['rhr_status'] = f"{today_rhr} bpm{avg_7d_str}"
 
-    if sleep_raw and 'dailySleepDTO' in sleep_raw:
+    if isinstance(sleep_raw, dict) and isinstance(sleep_raw.get('dailySleepDTO'), dict):
         sleep_dto = sleep_raw['dailySleepDTO']
-        fmt_sleep_dur = lambda x: f"{x // 3600}h {(x % 3600) // 60}m"
-        result['sleep_hr'] = _get_or_nodata(sleep_dto, 'avgHeartRate', lambda x: f"{int(x)} bpm")
-        result['sleep_score'] = _get_or_nodata(sleep_dto.get('sleepScores', {}).get('overall', {}), 'value', str)
+        fmt_sleep_dur = lambda x: f"{int(x) // 3600}h {(int(x) % 3600) // 60}m"
+        result['sleep_score'] = _get_or_nodata((sleep_dto.get('sleepScores') or {}).get('overall') or {}, 'value', lambda x: f"{x}/100")
         result['deep_sleep'] = _get_or_nodata(sleep_dto, 'deepSleepSeconds', fmt_sleep_dur)
         result['rem_sleep'] = _get_or_nodata(sleep_dto, 'remSleepSeconds', fmt_sleep_dur)
-        result['sleep_stress'] = _get_or_nodata(sleep_dto, 'avgSleepStress', str)
+        result['sleep_stress'] = _get_or_nodata(sleep_dto, 'avgSleepStress', lambda x: str(int(round(x))))
+
+        total_sec = sleep_dto.get('sleepTimeSeconds')
+        if total_sec is None:
+            phase_secs = [sleep_dto.get(k) for k in ('deepSleepSeconds', 'lightSleepSeconds', 'remSleepSeconds')]
+            if any(isinstance(s, (int, float)) for s in phase_secs):
+                total_sec = sum(s for s in phase_secs if isinstance(s, (int, float)))
+        if isinstance(total_sec, (int, float)) and total_sec > 0:
+            result['total_sleep_time'] = fmt_sleep_dur(total_sec)
 
     return result
 
@@ -334,8 +363,8 @@ def _parse_steps_info(stats_raw):
     if not stats_raw:
         return NO_DATA
     cals = stats_raw.get('activeKilocalories')
-    cals_str = f" (aktywne kalorie: {cals} kcal)" if cals else ""
-    return _get_or_nodata(stats_raw, 'totalSteps', lambda x: f"{x} kroków{cals_str}")
+    cals_str = f" (aktywne: {int(round(cals))} kcal)" if cals else ""
+    return _get_or_nodata(stats_raw, 'totalSteps', lambda x: f"{x}{cals_str}")
 
 
 def _parse_stress_info(stress_raw):
@@ -353,50 +382,17 @@ def _parse_stress_info(stress_raw):
     return _get_or_nodata(stress_raw, 'avgStressLevel', lambda x: f"{x}/100" if x != -1 else NO_DATA)
 
 
-def _extract_exercise_tables(text):
-    """
-    Wyszukuje i wyciąga tabele Markdown zawierające ćwiczenia biegowe (serie, powtórzenia)
-    oraz siłowe (zestawienie ćwiczeń, ciężary, serie, powtórzenia).
-    
-    Args:
-        text (str): Tekst w formacie Markdown do przeszukania.
-        
-    Returns:
-        list: Lista stringów, z których każdy reprezentuje pojedynczą tabelę ćwiczeń.
-    """
-    raw_tables = []
-    current_table = []
-
-    for line in text.split("\n") + [""]:
-        stripped = line.strip()
-        if stripped.startswith("|") and stripped.endswith("|") and "|" in stripped[1:]:
-            current_table.append(stripped)
-        elif current_table:
-            if len(current_table) >= 2 and any("---" in row for row in current_table):
-                raw_tables.append(current_table)
-            current_table = []
-
-    strength_kws = ("ćwiczen", "obciążen", "rpe", "łańcuch", "partia", "ruch", "exercise", "weight")
-    running_kws = ("powtórzen", "seria", "akcent", "odcinek", "reps", "series", "intervals", "laps")
-    exercise_tables = []
-    for tbl in raw_tables:
-        header = tbl[0].lower()
-        if any(k in header for k in strength_kws) or any(k in header for k in running_kws):
-            exercise_tables.append("\n".join(tbl))
-
-    return exercise_tables
-
-
 def _fetch_historical_strength_training(date_str, history_dir_path=HISTORY_DIR_PATH):
     """
-    Wyszukuje i parsuje odnotowany trening siłowy z lokalnej historii treningów (pliki Markdown).
+    Wyszukuje i parsuje odnotowany trening siłowy z lokalnej historii treningów (pliki Markdown)
+    do zwięzłej postaci podsumowującej jednostkę i wykonane ćwiczenia (oszczędność tokenów w <context_history>).
     
     Args:
         date_str (str): Data treningu w formacie YYYY-MM-DD.
         history_dir_path (str, optional): Katalog z historią. Defaults to HISTORY_DIR_PATH.
         
     Returns:
-        str: Sformatowany wpis z pełnym raportem treningu siłowego lub pusty ciąg, jeśli brak.
+        str: Zwięzły opis zrealizowanego treningu siłowego lub pusty ciąg, jeśli brak.
     """
     if not date_str:
         return ""
@@ -413,7 +409,6 @@ def _fetch_historical_strength_training(date_str, history_dir_path=HISTORY_DIR_P
         with open(hist_file_path, "r", encoding="utf-8") as hf:
             h_content = hf.read()
 
-        # 1. Bezwzględna weryfikacja czy w tym dniu odbył się trening siłowy
         m_strength = re.search(r'^\s*-\s*Siłownia:\s*([^\n\r]+)', h_content, re.MULTILINE | re.IGNORECASE)
         if m_strength:
             val = m_strength.group(1).strip()
@@ -422,31 +417,26 @@ def _fetch_historical_strength_training(date_str, history_dir_path=HISTORY_DIR_P
         elif not RE_STRENGTH_KW.search(h_content):
             return ""
 
+        m_muscle = re.search(r'^\s*-\s*Partie mięśniowe \(siłownia\):\s*([^\n\r]+)', h_content, re.MULTILINE | re.IGNORECASE)
+        muscle_str = f", partie: {m_muscle.group(1).strip()}" if m_muscle and m_muscle.group(1).strip() != "BRAK" else ""
         profile_m = RE_PROFILE_HEADER.search(h_content)
-        profile_str = f" ({profile_m.group(1).strip()})" if profile_m else ""
+        routine_label = profile_m.group(1).strip() if profile_m else (m_strength.group(1).strip() if m_strength else "Siłownia")
 
-        # 2. Wyciąganie pełnego raportu treningu siłowego (A: audyt siłowy, B: surowy raport TG, C: tabele)
-        m_audit = re.search(r'## CZĘŚĆ SIŁOWA(.*?)(?=\n## |\n### 2|\Z)', h_content, re.DOTALL)
-        m_tg = None if m_audit else re.search(r'### Trening siłowy[^\n]*\n(.*?)(?=\n## |\n### |\Z)', h_content, re.DOTALL)
+        # Wyciąganie zwięzłej listy ćwiczeń z tabeli siłowej (bez wysyłania całego raportu tekstowego)
+        m_tbl = re.search(r'\|\s*Nr\s*\|\s*Ćwiczenie[^\n]*\|\n\|(?:\s*:?-+:?\s*\|)+\n((?:\|[^\n]+\|\n?)+)', h_content, re.I)
+        ex_items = []
+        if m_tbl:
+            for row in m_tbl.group(1).strip().splitlines():
+                cols = [c.strip() for c in row.split('|')[1:-1]]
+                if len(cols) >= 3 and cols[1] and 'Brak szczegółowego' not in cols[1]:
+                    name = re.sub(r'\s*\((?:Barbell|Dumbbell|Cable|Machine|fbw|upper|lower|core|push|pull|legs)\)', '', cols[1], flags=re.I).strip()
+                    reps = cols[2] if cols[2] != '-' else ''
+                    weight = f" ({cols[3]})" if len(cols) > 3 and cols[3] and cols[3] != '-' else ''
+                    ex_items.append(f"{name} {reps}{weight}".strip())
 
-        if m_audit:
-            strength_details = m_audit.group(0).strip()
-        elif m_tg:
-            strength_details = m_tg.group(0).strip()
-        else:
-            tables = _extract_exercise_tables(h_content)
-            strength_details = "\n\n".join(tables) if tables else None
-
-        if strength_details:
-            indented_details = "\n".join(f"    {line}" for line in strength_details.splitlines())
-            return f"  [Trening siłowy{profile_str} - raport z {date_str}]:\n{indented_details}"
-        if m_strength:
-            return (
-                f"  [Trening siłowy{profile_str} - raport z {date_str}]:\n"
-                f"    * Zarejestrowano jednostkę siłową: {m_strength.group(1).strip()}"
-            )
-
-        return ""
+        if ex_items:
+            return f"[Siłownia: {routine_label}{muscle_str}]: {', '.join(ex_items)}"
+        return f"[Siłownia: {routine_label}{muscle_str}]"
     except Exception as e:
         logger.warning(f"Błąd odczytu historii treningu siłowego z {date_str}: {e}")
         return ""
@@ -454,34 +444,37 @@ def _fetch_historical_strength_training(date_str, history_dir_path=HISTORY_DIR_P
 
 def _format_historical_activities_text(activities_list):
     """
-    Formatuje listę aktywności z poprzedniego dnia z Garmina jako zwarty tekst poglądowy.
+    Formatuje listę aktywności z poprzedniego dnia z Garmina jako zwięzły, jednoliniowy opis na jednostkę
+    (bez surowych tabel splitów kilometrowych, które były już audytowane poprzedniego dnia).
     
     Args:
         activities_list (list): Lista aktywności do sformatowania.
         
     Returns:
-        str: Sformatowany wielolinijkowy tekst reprezentujący jednostki treningowe lub pusty ciąg.
+        str: Zwarty tekst reprezentujący wczorajsze jednostki treningowe lub pusty ciąg.
     """
     if not activities_list:
         return ""
 
     acts_texts = []
     for idx, act in enumerate(sorted(activities_list, key=_activity_sort_key), 1):
-        act_details = parse_activity_biomechanics(act)
+        act_details = parse_activity_biomechanics(act, include_splits=False)
         if not act_details:
             continue
-        splits_text = "\n    * Splity kilometrowe:\n\n" + "\n".join(act_details['splits']) if act_details.get('splits') else ""
         time_info = f" [Start: {act_details['start_time']}]" if act_details.get('start_time') and act_details['start_time'] != NO_DATA else ""
-        acts_texts.append(
-            f"  [Jednostka {idx}{time_info}]: {act_details['name']} ({act_details['distance']} w {act_details['duration']}, tempo {act_details['pace']})\n"
-            f"    * Pogoda/Warunki: {act_details.get('weather', NO_DATA)}\n"
-            f"    * Tętno: Średnie {act_details['avg_hr']} | Maksymalne {act_details['max_hr']}\n"
-            f"    * Biomechanika: Średnia kadencja {act_details['avg_cadence']}, krok {act_details['stride_length']}, kontakt {act_details['ground_contact_time']}, odchylenie pionowe {act_details['vertical_oscillation']}\n"
-            f"    * Obciążenie: Aerobic TE: {act_details['aerobic_te']}, Anaerobic TE: {act_details['anaerobic_te']}, Średnia moc: {act_details['avg_power']}"
-            f"{splits_text}"
-        )
+        metrics = [
+            f"{act_details['distance']} w {act_details['duration']}",
+            f"tempo {act_details['pace']}",
+            f"HR śr. {act_details['avg_hr']} (max {act_details['max_hr']})",
+            f"TE {act_details['aerobic_te']} / {act_details['anaerobic_te']}",
+        ]
+        if act_details.get('avg_power') and act_details['avg_power'] != NO_DATA:
+            metrics.append(f"moc {act_details['avg_power']}")
+        if act_details.get('is_run', True) and act_details.get('avg_cadence') != NO_DATA:
+            metrics.append(f"kadencja {act_details['avg_cadence']}, GCT {act_details['ground_contact_time']}")
+        acts_texts.append(f"[Jednostka {idx}{time_info}] {act_details['name']} ({', '.join(metrics)})")
 
-    return "\n\n".join(acts_texts)
+    return " + ".join(acts_texts)
 
 
 def parse_garmin_data(data, target_date=None):
@@ -496,10 +489,15 @@ def parse_garmin_data(data, target_date=None):
         dict: Przeparsowane najważniejsze metryki dnia dzisiejszego i wczorajszego.
     """
     parsed = {
+        "hrv_last_night": NO_DATA,
+        "hrv_last_night_ms": NO_DATA,
+        "hrv_baseline_range": NO_DATA,
         "hrv_status": NO_DATA,
         "rhr": NO_DATA,
-        "sleep_hr": NO_DATA,
+        "rhr_baseline": NO_DATA,
+        "rhr_status": NO_DATA,
         "sleep_score": NO_DATA,
+        "total_sleep_time": NO_DATA,
         "deep_sleep": NO_DATA,
         "rem_sleep": NO_DATA,
         "sleep_stress": NO_DATA,
@@ -509,7 +507,7 @@ def parse_garmin_data(data, target_date=None):
         "today_stress": NO_DATA,
         "yesterday_training": "Brak aktywności (dzień wolny)",
         "yesterday_steps": NO_DATA,
-        "yesterday_stress": NO_DATA
+        "yesterday_stress": NO_DATA,
     }
 
     if not data:
@@ -519,14 +517,14 @@ def parse_garmin_data(data, target_date=None):
     yesterday_data = data.get('yesterday', {})
 
     # Poranek / miniona noc
-    parsed['hrv_status'] = _parse_hrv_summary(today_data.get('hrv'))
+    parsed.update(_parse_hrv_data(today_data.get('hrv')))
     parsed.update(_parse_rhr_and_sleep(today_data.get('stats'), today_data.get('sleep')))
 
     # Body Battery w ciągu dnia
     bb_vals = _parse_body_battery_values(today_data.get('body_battery'))
     if bb_vals:
-        parsed['morning_body_battery'] = str(max(bb_vals))
-        parsed['body_battery'] = str(bb_vals[-1])
+        parsed['morning_body_battery'] = f"{max(bb_vals)}/100"
+        parsed['body_battery'] = f"{bb_vals[-1]}/100"
 
     # Koszt dzisiejszego dnia
     parsed['today_steps'] = _parse_steps_info(today_data.get('stats'))
@@ -540,7 +538,7 @@ def parse_garmin_data(data, target_date=None):
             _fetch_historical_strength_training(yesterday_date_str)
         ) if t
     ]
-    parsed['yesterday_training'] = "\n\n".join(combined_acts) if combined_acts else "Brak aktywności (dzień wolny)"
+    parsed['yesterday_training'] = " + ".join(combined_acts) if combined_acts else "Brak aktywności (dzień wolny)"
     parsed['yesterday_steps'] = _parse_steps_info(yesterday_data.get('stats'))
     parsed['yesterday_stress'] = _parse_stress_info(yesterday_data.get('stress'))
 
@@ -722,15 +720,16 @@ def _fetch_night_recovery_biometrics(client, date_str):
     }
 
 
-def _fetch_day_activities_and_load(client, date_str, include_body_battery=False):
+def _fetch_day_activities_and_load(client, date_str, include_body_battery=False, include_activity_details=True):
     """
     Pobiera dzienny stres, bilans kroków/kalorii oraz aktywności z danego dnia.
-    Opcjonalnie pobiera także całodzienne Body Battery.
+    Opcjonalnie pobiera także całodzienne Body Battery oraz szczegółowe splity i pogodę dla aktywności.
     
     Args:
         client (Garmin): Obiekt zalogowanego klienta Garmin.
         date_str (str): Data, dla której mają zostać pobrane dane.
         include_body_battery (bool, optional): Czy dołączyć Body Battery. Defaults to False.
+        include_activity_details (bool, optional): Czy pobierać splity i pogodę dla aktywności. Defaults to True.
         
     Returns:
         dict: Słownik zawierający dane stresu, statystyk (kroki) oraz aktywności.
@@ -745,7 +744,7 @@ def _fetch_day_activities_and_load(client, date_str, include_body_battery=False)
 
     acts = _safe_fetch(client.get_activities_by_date, f"Nie udało się pobrać aktywności z {date_str}", date_str, date_str)
     if acts is not None:
-        day_data['activities'] = _fetch_activity_splits_and_weather(client, acts)
+        day_data['activities'] = _fetch_activity_splits_and_weather(client, acts) if include_activity_details else acts
 
     return day_data
 
@@ -788,10 +787,10 @@ def fetch_garmin_data(target_date, force_refresh=False):
     logger.info(f"🚀 Pobieranie danych z Garmina dla analizy dziennej (Wczoraj: {yesterday_str}, Dzisiaj: {today_str})...")
 
     today_data = _fetch_night_recovery_biometrics(client, today_str)
-    today_data.update(_fetch_day_activities_and_load(client, today_str, include_body_battery=True))
+    today_data.update(_fetch_day_activities_and_load(client, today_str, include_body_battery=True, include_activity_details=True))
     today_data['date'] = today_str
 
-    yesterday_data = _fetch_day_activities_and_load(client, yesterday_str, include_body_battery=False)
+    yesterday_data = _fetch_day_activities_and_load(client, yesterday_str, include_body_battery=False, include_activity_details=False)
     yesterday_data['date'] = yesterday_str
 
     result = {

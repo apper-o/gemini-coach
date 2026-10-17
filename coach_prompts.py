@@ -203,7 +203,8 @@ def load_personal_data(filepath=os.path.join(INPUT_DIR_PATH, "personal_data.json
 
 def format_personal_records(records):
     """
-    Formatuje rekordy życiowe zawodnika do czytelnego bloku tekstu dla promptu.
+    Formatuje rekordy życiowe zawodnika do zwięzłego, jednoliniowego zapisu dla promptu
+    (pomija dystanse bez zarejestrowanego wyniku).
 
     Args:
         records (dict): Słownik zawierający rekordy życiowe.
@@ -212,20 +213,20 @@ def format_personal_records(records):
         str: Sformatowany tekst z rekordami życiowymi.
     """
     if not records or not isinstance(records, dict):
-        return "  * Brak zarejestrowanych rekordów życiowych."
+        return NO_DATA
 
-    formatted_lines = []
+    entries = []
     for distance, data in records.items():
         if isinstance(data, dict):
-            time = data.get("time", NO_DATA)
-            date = data.get("date", NO_DATA)
-            val_str = f"{time} (data: {date})" if time and time != NO_DATA else NO_DATA
-            formatted_lines.append(f"  * {distance}: {val_str}")
-        elif isinstance(data, str):
-            val_str = data if data and data != NO_DATA else NO_DATA
-            formatted_lines.append(f"  * {distance}: {val_str}")
+            time_val = data.get("time", NO_DATA)
+            date_val = data.get("date", NO_DATA)
+            if time_val and time_val != NO_DATA:
+                date_str = f" ({date_val})" if date_val and date_val != NO_DATA else ""
+                entries.append(f"{distance}: {time_val}{date_str}")
+        elif isinstance(data, str) and data and data != NO_DATA:
+            entries.append(f"{distance}: {data}")
 
-    return "\n".join(formatted_lines)
+    return " | ".join(entries) if entries else NO_DATA
 
 
 def format_goal(goal_data, ref_date=None):
@@ -311,10 +312,11 @@ def build_user_profile(personal_data, ref_date=None):
         f"{raw_secondary.get('stimulus_share', 25)}% cel poboczny ({raw_secondary.get('target', NO_DATA)})"
     )
 
-    # 3. Dodatkowe notatki zawodnika (lista z wcięciem spacjami zamiast tabulatorów)
+    # 3. Dodatkowe notatki zawodnika (zwięzły zapis liniowy pasujący do <athlete_profile>)
     notes = profile.get("additional_notes", [])
     if isinstance(notes, list):
-        profile["additional_notes"] = "\n".join(f"  * {n}" for n in notes) if notes else "  * Brak stałych nawyków"
+        clean_notes = [str(n).strip() for n in notes if str(n).strip() and str(n).strip() != NO_DATA]
+        profile["additional_notes"] = " | ".join(clean_notes) if clean_notes else "Brak stałych uwag"
 
     # 4. Informacje o ostatnim starcie
     last_event_date = profile.get("last_event_date")
@@ -1017,8 +1019,8 @@ def load_training_history(ref_date, history_dir_path=HISTORY_DIR_PATH):
 
 def _format_activity_section(activity_stats, strength_workout=None):
     """
-    Formatuje blok Markdown z listą jednostek treningowych i biomechaniką dla promptu.
-    Uwzględnia aktywności biegowe oraz opcjonalny trening siłowy (np. zgłoszony przez Telegram).
+    Formatuje zwięzły blok Markdown z listą jednostek treningowych i biomechaniką dla <executed_workout>.
+    Uwzględnia aktywności z Garmina oraz opcjonalny trening siłowy z Telegrama.
 
     Args:
         activity_stats (dict | list): Statystyki aktywności.
@@ -1030,9 +1032,6 @@ def _format_activity_section(activity_stats, strength_workout=None):
     parts = []
     if activity_stats:
         stats_list = activity_stats if isinstance(activity_stats, list) else [activity_stats]
-        run_blocks = []
-        other_blocks = []
-
         for idx, act in enumerate(stats_list, 1):
             is_run = act.get('is_run', True)
             is_swim = act.get('is_swim', False)
@@ -1040,45 +1039,32 @@ def _format_activity_section(activity_stats, strength_workout=None):
             prefix = f"[JEDNOSTKA {idx} z {len(stats_list)}{time_info}]: " if len(stats_list) > 1 else (f"[JEDNOSTKA 1{time_info}]: " if time_info else "")
 
             if is_run:
-                splits_text = "\n".join(act['splits']) if act.get('splits') else "Brak szczegółowych splitów dla tej jednostki"
+                splits_text = "\n".join(act['splits']) if act.get('splits') else "Brak szczegółowych splitów"
                 eg, el = act.get('elevation_gain', NO_DATA), act.get('elevation_loss', NO_DATA)
                 elev_str = NO_DATA if eg == NO_DATA and el == NO_DATA else f"+{eg} / -{el}"
 
-                run_blocks.append(f"""{prefix}{act.get('name')} | {act.get('distance')} w czasie {act.get('duration')} (Średnie tempo: {act.get('pace')})
-- Warunki atmosferyczne i pogoda: {act.get('weather', NO_DATA)}
-- Przewyższenia (wznios/spadek): {elev_str}
-- Tętno: Średnie {act.get('avg_hr')} | Maksymalne {act.get('max_hr')}
-- Biomechanika kroku:
-  * Kadencja: Średnia {act.get('avg_cadence')} | Maksymalna {act.get('max_cadence')}
-  * Długość kroku: {act.get('stride_length')}
-  * Czas kontaktu z podłożem (GCT): {act.get('ground_contact_time')}
-  * Odchylenie pionowe: {act.get('vertical_oscillation')} (Vertical ratio: {act.get('vertical_ratio')})
-- Efekt treningowy i moc:
-  * Aerobic Training Effect: {act.get('aerobic_te')} | Anaerobic TE: {act.get('anaerobic_te')}
-  * Średnia moc biegowa: {act.get('avg_power')}
-- Splity kilometrowe / odcinki:
-{splits_text}""")
+                parts.append(
+                    f"{prefix}{act.get('name')} | Dystans: {act.get('distance')} | Czas: {act.get('duration')} | Śr. tempo: {act.get('pace')} | Przewyższenia: {elev_str}\n"
+                    f"- Pogoda: {act.get('weather', NO_DATA)}\n"
+                    f"- Tętno i obciążenie: HR śr. {act.get('avg_hr')} (max {act.get('max_hr')}) | Aerobic TE: {act.get('aerobic_te')} | Anaerobic TE: {act.get('anaerobic_te')} | Śr. moc: {act.get('avg_power')}\n"
+                    f"- Biomechanika: Kadencja śr. {act.get('avg_cadence')} (max {act.get('max_cadence')}) | Krok: {act.get('stride_length')} | GCT: {act.get('ground_contact_time')} | VO: {act.get('vertical_oscillation')} (VR: {act.get('vertical_ratio')})\n"
+                    f"- Splity:\n{splits_text}"
+                )
             else:
                 header_str = (
                     f"TRENING PŁYWANIA: {act.get('name')} | Dystans: {act.get('distance')} | Czas: {act.get('duration')}"
                     if is_swim else
-                    f"TRENING UZUPEŁNIAJĄCY: {act.get('name')} | {act.get('distance')} w czasie {act.get('duration')}"
+                    f"TRENING UZUPEŁNIAJĄCY: {act.get('name')} | Dystans: {act.get('distance')} | Czas: {act.get('duration')}"
                 )
-                other_blocks.append(
+                parts.append(
                     f"{prefix}{header_str}\n"
-                    f"- Tętno: Średnie {act.get('avg_hr')} | Maksymalne {act.get('max_hr')}\n"
-                    f"- Efekt treningowy: Aerobic TE: {act.get('aerobic_te')} | Anaerobic TE: {act.get('anaerobic_te')}"
+                    f"- Tętno i obciążenie: HR śr. {act.get('avg_hr')} (max {act.get('max_hr')}) | Aerobic TE: {act.get('aerobic_te')} | Anaerobic TE: {act.get('anaerobic_te')}"
                 )
-
-        if run_blocks:
-            parts.append("-" * 35 + "\n\n" + "\n\n".join(run_blocks))
-        if other_blocks:
-            parts.append("-" * 35 + "\n\n" + "\n\n".join(other_blocks))
     elif not strength_workout:
         parts.append("Brak zarejestrowanej aktywności w Garmin Connect ani na Telegramie (jeśli zaplanowano jednostkę, to nie została ona wykonana).")
 
     if strength_workout:
-        parts.append(f"[JEDNOSTKA SIŁOWA / UZUPEŁNIAJĄCA (RAPORT Z TELEGRAMA)]:\n{strength_workout}")
+        parts.append(f"[JEDNOSTKA SIŁOWA (RAPORT Z TELEGRAMA)]:\n{strength_workout}")
 
     return "\n\n".join(parts)
 
@@ -1409,75 +1395,219 @@ def generate_weekly_plan_prompt(days_structure, personal_data, trainings_history
     )
 
 
+def _format_day_plan_section(raw_title, body_lines, day_name=None, keep_heading=False):
+    """
+    Formatuje i kompresuje pojedynczą sekcję dziennego planu treningowego:
+    odrzuca metatekst planistyczny ('Wyjaśnienie decyzji:', 'Decyzja:', '* **Cel')
+    oraz kompresuje wieloliniowe serie ćwiczeń siłowych do zwięzłego formatu jednoliniowego.
+    """
+    clean_title = re.sub(rf'^{day_name}\s*[-–:]\s*', '', raw_title, flags=re.IGNORECASE).strip() if day_name else raw_title.strip()
+    if clean_title.startswith('Siłownia:'):
+        clean_title = clean_title.replace('Siłownia:', 'Siłownia').strip()
+    header_line = f"### {raw_title.strip()}" if keep_heading else clean_title
+
+    output_lines = []
+    i = 0
+    in_exercises = False
+
+    while i < len(body_lines):
+        line = body_lines[i]
+
+        # 1. Bezwzględne odrzucanie metatekstu planistycznego i uzasadnień
+        if line.startswith(('Wyjaśnienie decyzji:', 'Decyzja:', '* **Cel', '- **Cel', '* **Uzasadnienie', '- **Uzasadnienie')):
+            i += 1
+            continue
+
+        # 2. Pomijanie ćwiczeń usuniętych z planu
+        if 'USUNIĘTO' in line:
+            i += 1
+            while i < len(body_lines) and body_lines[i].startswith(('Seria', 'Decyzja', 'Wyjaśnienie')):
+                i += 1
+            continue
+
+        # 3. Status dolnych partii
+        if 'Status dolnych partii' in line:
+            output_lines.append(re.sub(r'^[*-]\s*(?:\*\*)?Status dolnych partii(?:\*\*)?:\s*', '- Status dolnych partii: ', line))
+            i += 1
+            continue
+
+        # 4. Sekcja ćwiczeń
+        if 'Ćwiczenia' in line and line.startswith(('* **', '-')):
+            output_lines.append('- Ćwiczenia:')
+            in_exercises = True
+            i += 1
+            continue
+
+        # 5. Cardio
+        if 'Cardio' in line and line.startswith(('* **', '-')):
+            in_exercises = False
+            output_lines.append(re.sub(r'^[*-]\s*(?:\*\*)?Cardio[^:*]*(?:\*\*)?:\s*', '- Cardio: ', line))
+            i += 1
+            continue
+
+        # 6. Standardowe punkty (np. rozgrzewka, część główna, schłodzenie, zalecenia regeneracyjne)
+        if line.startswith(('* **', '- ')):
+            in_exercises = False
+            output_lines.append(re.sub(r'^\*\s*\*\*([^*]+)\*\*:\s*', r'- \1: ', line))
+            i += 1
+            continue
+
+        # 7. Parsowanie ćwiczeń wewnątrz sekcji ćwiczeń
+        if in_exercises:
+            if re.match(r'^\[SUPERSET[^\]]*\]:?$', line.strip(), re.IGNORECASE):
+                i += 1
+                continue
+
+            clean_ex_name = re.sub(
+                r'\s*\((?:Dumbbell|Barbell|Cable|Machine|fbw|upper|lower|core|push|pull|legs)\)',
+                '',
+                line,
+                flags=re.IGNORECASE
+            ).strip()
+
+            series = []
+            i += 1
+            while i < len(body_lines):
+                s_line = body_lines[i]
+                if s_line.startswith('Seria'):
+                    series.append(s_line)
+                    i += 1
+                elif s_line.startswith(('Wyjaśnienie decyzji:', 'Decyzja:')):
+                    i += 1
+                else:
+                    break
+
+            if series:
+                num_sets = len(series)
+                m_s = re.search(r'Seria\s*\d+:\s*(\d+)\s*(?:x\s*([^(]+))?(?:\(([^)]+)\))?', series[0])
+                if m_s:
+                    reps = m_s.group(1)
+                    weight_clean = (m_s.group(2) or '').strip().replace('na rękę', '/ręka').replace(' /', '/').strip()
+                    rir = (m_s.group(3) or '').strip()
+
+                    all_rirs = [m.group(1) for s in series if (m := re.search(r'\(([^)]+)\)', s))]
+                    rir_str = 'RIR 2-3' if len(set(all_rirs)) > 1 else (all_rirs[-1] if all_rirs else rir)
+
+                    details_parts = [p for p in (weight_clean, rir_str) if p]
+                    det_str = f" ({', '.join(details_parts)})" if details_parts else ""
+                    output_lines.append(f"  * {clean_ex_name}: {num_sets}x{reps}{det_str}")
+                else:
+                    output_lines.append(f"  * {clean_ex_name}: {num_sets} serie")
+            else:
+                output_lines.append(f"  * {clean_ex_name}")
+        else:
+            output_lines.append(line)
+            i += 1
+
+    # Odfiltrowanie pustej etykiety '- Ćwiczenia:', jeśli nie ma po niej żadnych ćwiczeń
+    cleaned_lines = [
+        line for idx, line in enumerate(output_lines)
+        if not (line == '- Ćwiczenia:' and (idx + 1 >= len(output_lines) or not output_lines[idx + 1].startswith('  * ')))
+    ]
+    return f"{header_line}\n" + "\n".join(cleaned_lines) if cleaned_lines else header_line
+
+
+def extract_day_plan(content, day_name):
+    """
+    Wyciąga czyste, skondensowane założenia treningowe dla konkretnego dnia z planu tygodniowego.
+    Obsługuje również dni z dwiema jednostkami (np. poranek i popołudnie).
+
+    Args:
+        content (str): Surowa treść planu tygodniowego w Markdown.
+        day_name (str): Nazwa dnia tygodnia po polsku (np. 'Niedziela').
+
+    Returns:
+        str: Sformatowany, przejrzysty opis założeń lub informacja o braku wpisu.
+    """
+    if not content:
+        return "Brak planu"
+
+    sections = []
+    current_section = None
+
+    for line in content.split('\n'):
+        if line.startswith(('### ', '## ')):
+            if line.startswith('### ') and day_name in line:
+                current_section = [line.replace('### ', '').strip()]
+                sections.append(current_section)
+            elif current_section is not None:
+                current_section = None
+        elif current_section is not None and line.strip():
+            current_section.append(line.strip())
+
+    if not sections:
+        return "Dzień wolny (lub brak wpisu)"
+
+    return "\n\n".join(
+        _format_day_plan_section(sec[0], sec[1:], day_name=day_name, keep_heading=False)
+        for sec in sections
+    )
+
+
 def _compress_weekly_plan(content):
     """
-    Kompresuje treść planu tygodniowego, aby zredukować zużycie tokenów.
-    Usuwa puste linie oraz odfiltrowuje detale (serie, ćwiczenia).
-    Dla sekcji '### Podsumowanie tygodnia' przepuszcza wyłącznie kluczowe wskaźniki
-    dotyczące planowanych obciążeń (kilometraż, dystans pływacki, intensywność),
-    odcinając retrospektywne dane, statystyki poprzedniego tygodnia i uzasadnienia.
+    Kompresuje treść planu tygodniowego dla bloku <weekly_plan>, aby zminimalizować zużycie tokenów
+    przy zachowaniu pełnej informacji o strukturze mikrocyklu i skompresowanych ćwiczeniach siłowych (1 linia/ćwiczenie).
+    Dla sekcji '### Podsumowanie tygodnia' pozostawia wyłącznie wskaźniki planowanej objętości i intensywności.
     """
     if not content:
         return content
 
-    output_lines = []
+    day_sections = []
+    summary_lines = []
+    current_day_sec = None
     in_weekly_summary = False
 
     for line in content.split('\n'):
         stripped = line.strip()
+        if not stripped:
+            continue
         clean_label = stripped.strip("* -").strip().lower()
 
-        # 1. Wykrycie sekcji '### Podsumowanie tygodnia'
-        if stripped.startswith('###') and 'podsumowanie tygodnia' in clean_label:
-            in_weekly_summary = True
-            output_lines.append(line)
+        if stripped.startswith(('### ', '## ')):
+            if 'podsumowanie tygodnia' in clean_label:
+                in_weekly_summary = True
+                current_day_sec = None
+                summary_lines.append(stripped)
+            elif 'uzasadnienie' in clean_label:
+                in_weekly_summary = False
+                current_day_sec = None
+            elif stripped.startswith('### '):
+                in_weekly_summary = False
+                current_day_sec = [stripped.replace('### ', '').strip()]
+                day_sections.append(current_day_sec)
+            else:
+                current_day_sec = None
             continue
 
-        # 2. Przetwarzanie wewnątrz sekcji '### Podsumowanie tygodnia'
         if in_weekly_summary:
-            if stripped.startswith('###') and 'podsumowanie' not in clean_label:
-                break
             if stripped.startswith(('*', '-')) and any(kw in clean_label for kw in ('planowan', 'rozkład intensywnośc')):
                 if not any(neg in clean_label for neg in ('hrv', 'rhr', 'poprzedni', 'tętno')):
-                    output_lines.append(line)
-            continue
+                    summary_lines.append(stripped)
+        elif current_day_sec is not None:
+            current_day_sec.append(stripped)
 
-        # 3. Przetwarzanie sekcji dni tygodnia:
-        if stripped.startswith(('#', '*', '-')):
-            if clean_label in ("**ćwiczenia**:", "ćwiczenia:", "**cwiczenia**:", "cwiczenia:"):
-                continue
-            output_lines.append(line)
+    formatted_parts = [
+        _format_day_plan_section(sec[0], sec[1:], day_name=None, keep_heading=True)
+        for sec in day_sections
+    ]
+    if len(summary_lines) > 1:
+        formatted_parts.append("\n".join(summary_lines))
 
-    # 4. Usuwanie nagłówków-widm i wiszących etykiet dwukropkowych bez zawartości
-    final_output = []
-    for i, line in enumerate(output_lines):
-        stripped = line.strip()
-        clean_label = stripped.strip("* -").strip().lower()
-
-        if stripped.startswith('###') and "uzasadnienie" in clean_label:
-            if i + 1 >= len(output_lines) or output_lines[i + 1].strip().startswith('#'):
-                continue
-
-        if stripped.endswith(':'):
-            if i + 1 >= len(output_lines) or output_lines[i + 1].strip().startswith(('#', '*', '-')) or output_lines[i + 1].strip().endswith(':'):
-                continue
-
-        final_output.append(line)
-
-    return "\n".join(final_output)
+    return "\n".join(formatted_parts)
 
 
 def generate_daily_prompt(
     planned_workout, activity_stats, garmin_stats, weekly_plan_context,
     user_profile, user_note, strength_workout=None,
     audit_date_str=None, target_date_str=None, history_date_str=None,
-    target_plan_desc=None, day_of_week=None):
+    day_of_week=None):
     """
     Tworzy prompt dla Gemini do weryfikacji wykonanego treningu oraz całodziennej/nocnej regeneracji
     oraz adaptacji planu na kolejny dzień.
 
     Args:
-        planned_workout (str): Zaplanowany trening.
+        planned_workout (str): Zaplanowany trening na audytowany dzień.
         activity_stats (dict | list): Statystyki aktywności.
         garmin_stats (dict): Statystyki garmina.
         weekly_plan_context (str): Kontekst planu tygodniowego.
@@ -1485,9 +1615,8 @@ def generate_daily_prompt(
         user_note (str): Opcjonalna notatka zawodnika.
         strength_workout (str, optional): Trening siłowy.
         audit_date_str (str, optional): Data audytu.
-        target_date_str (str, optional): Data celu.
-        history_date_str (str, optional): Data historii.
-        target_plan_desc (str, optional): Opis planu celu (zachowany dla kompatybilności).
+        target_date_str (str, optional): Data kolejnego dnia (adaptacji).
+        history_date_str (str, optional): Data dnia poprzedniego (kontekstu).
         day_of_week (str, optional): Nazwa dnia tygodnia.
 
     Returns:
@@ -1497,15 +1626,12 @@ def generate_daily_prompt(
     y_steps = garmin_stats.get('yesterday_steps', NO_DATA)
     y_stress = garmin_stats.get('yesterday_stress', NO_DATA)
 
-    if y_training == "Brak aktywności (dzień wolny)" and NO_DATA in y_steps and NO_DATA in y_stress:
-        yesterday_section = f"Brak danych z dnia {history_date_str} (dzień wolny)"
+    if y_training == "Brak aktywności (dzień wolny)" and y_steps == NO_DATA and y_stress == NO_DATA:
+        yesterday_section = "Brak danych (dzień wolny)"
     else:
-        training_str = f"\n{y_training}" if "\n" in y_training else f" {y_training}"
-        yesterday_section = f"""* Trening:{training_str}
-* Kroki z całego dnia: {y_steps}
-* Średni poziom stresu: {y_stress}"""
+        yesterday_section = f"Trening: {y_training} | Kroki: {y_steps} | DayStress: {y_stress}"
 
-    if day_of_week and weekly_plan_context:
+    if weekly_plan_context:
         weekly_plan_context = _compress_weekly_plan(weekly_plan_context)
 
     weekly_plan_section = weekly_plan_context or "Brak planu tygodniowego w pliku output/weekly_plan.md"
@@ -1558,7 +1684,6 @@ def generate_daily_prompt(
     return _substitute_template_variables(
         "\n\n".join(prompt_parts),
         **profile_dict,
-        day_of_week=day_of_week or "Brak",
         today_date_str=audit_date_str,
         yesterday_date_str=history_date_str,
         tomorrow_date_str=target_date_str,
@@ -1571,13 +1696,16 @@ def generate_daily_prompt(
         today_stress=garmin_stats.get('today_stress', NO_DATA),
         body_battery=garmin_stats.get('body_battery', NO_DATA),
         morning_body_battery=garmin_stats.get('morning_body_battery', NO_DATA),
-        hrv_status=garmin_stats.get('hrv_status', NO_DATA),
+        hrv_last_night=garmin_stats.get('hrv_last_night', garmin_stats.get('hrv_last_night_ms', NO_DATA)),
+        hrv_last_night_ms=garmin_stats.get('hrv_last_night_ms', garmin_stats.get('hrv_last_night', NO_DATA)),
+        hrv_baseline_range=garmin_stats.get('hrv_baseline_range', NO_DATA),
         rhr=garmin_stats.get('rhr', NO_DATA),
+        rhr_baseline=garmin_stats.get('rhr_baseline', NO_DATA),
         sleep_score=garmin_stats.get('sleep_score', NO_DATA),
+        total_sleep_time=garmin_stats.get('total_sleep_time', NO_DATA),
         deep_sleep=garmin_stats.get('deep_sleep', NO_DATA),
         rem_sleep=garmin_stats.get('rem_sleep', NO_DATA),
         sleep_stress=garmin_stats.get('sleep_stress', NO_DATA),
-        sleep_hr=garmin_stats.get('sleep_hr', NO_DATA),
     )
 
 
@@ -1944,15 +2072,19 @@ def build_daily_archive_content(workout_date, date_str, next_date_str, all_stats
         act_sections.append(f"### Trening siłowy / uzupełniający (raport z Telegrama):\n{strength_workout}")
     acts_part = f"\n## Zarejestrowane aktywności:\n" + "\n\n".join(act_sections) + "\n" if act_sections else ""
 
+    rhr_archive = garmin_stats.get('rhr_status') or garmin_stats.get('rhr', NO_DATA)
+    total_sleep = garmin_stats.get('total_sleep_time', NO_DATA)
+    sleep_time_part = f"Czas: {total_sleep}, " if total_sleep and total_sleep != NO_DATA else ""
+
     bio_part = f"""## Biometria regeneracyjna i bilans dnia ({date_str}):
-- HRV (miniona noc przed treningiem): {garmin_stats.get('hrv_status')}
-- RHR (miniona noc przed treningiem): {garmin_stats.get('rhr')}
-- Sen (miniona noc przed treningiem): {garmin_stats.get('sleep_score')} (Głęboki: {garmin_stats.get('deep_sleep')}, REM: {garmin_stats.get('rem_sleep')})
-- Średni stres snu: {garmin_stats.get('sleep_stress')}
-- Poranne Body Battery (bufor startowy): {garmin_stats.get('morning_body_battery')}
-- Body Battery pod koniec dnia: {garmin_stats.get('body_battery')}
-- Całodzienny stres: {garmin_stats.get('today_stress')}
-- Kroki (cały dzień): {garmin_stats.get('today_steps')}"""
+- HRV (miniona noc przed treningiem): {garmin_stats.get('hrv_status', NO_DATA)}
+- RHR (miniona noc przed treningiem): {rhr_archive}
+- Sen (miniona noc przed treningiem): {garmin_stats.get('sleep_score', NO_DATA)} ({sleep_time_part}Głęboki: {garmin_stats.get('deep_sleep', NO_DATA)}, REM: {garmin_stats.get('rem_sleep', NO_DATA)})
+- Średni stres snu: {garmin_stats.get('sleep_stress', NO_DATA)}
+- Poranne Body Battery (bufor startowy): {garmin_stats.get('morning_body_battery', NO_DATA)}
+- Body Battery pod koniec dnia: {garmin_stats.get('body_battery', NO_DATA)}
+- Całodzienny stres: {garmin_stats.get('today_stress', NO_DATA)}
+- Kroki (cały dzień): {garmin_stats.get('today_steps', NO_DATA)}"""
 
     return f"""{metadata_header}
 
