@@ -45,3 +45,7 @@ Wczoraj ({yesterday_date_str}): {yesterday_section}
 <executed_workout>
 {activity_section}
 </executed_workout>
+
+<evening_routine>
+{evening_routine_section}
+</evening_routine>
