@@ -69,13 +69,14 @@ Dodatkowe uwagi: {additional_notes}
 # 4. KONTRAKT FORMATOWANIA I SZABLON WYJŚCIA
 
 ZASADY SKŁADNIOWE:
-1. Zacznij natychmiast od pierwszego nagłówka `###`. Zakaz wstępów, podsumowań końcowych i potrójnych grawisów wokół odpowiedzi.
-2. CAŁKOWITY ZAKAZ LATEX. Używaj czystego tekstu (np. 5-10%, 150 bpm, 4:15 min/km).
-3. Przy 2 jednostkach w 1 dzień twórz osobne nagłówki: `### [Dzień] (Poranek) - ...` oraz `### [Dzień] (Popołudnie) - ...` (lub łącz tlen bezpośrednio przed siłą wg preferencji).
-4. Brak danych w historii -> wpisz dosłownie: "Brak danych w historii".
-5. Zachowaj poprawną tabelę Markdown (linie `|` oraz puste linie przed i po tabeli).
+1. Czysty start i koniec: Zacznij bezpośrednio od pierwszego nagłówka `### Poniedziałek...`. Całkowity zakaz wstępów, pogawędek, otaczania odpowiedzi w bloki kodu (codeblock wrappers) oraz jakichkolwiek komentarzy po ostatniej sekcji szablonu.
+2. ZAKAZ LATEX: Używaj wyłącznie czystego tekstu (np. 5-10%, 150 bpm, 4:15 min/km).
+3. Determinizm dni podwójnych: Przy 2 osobnych jednostkach w ciągu dnia (rozdzielonych przerwą regeneracyjną) ZAWSZE twórz dwa odrębne nagłówki: `### [Dzień] (Poranek) - ...` oraz `### [Dzień] (Popołudnie) - ...`.
+4. Usuwanie placeholderów: Zastąp tekst w nawiasach `[Dzień]` czystą nazwą dnia bez nawiasów kwadratowych (np. `### Poniedziałek - Bieg: ...`).
+5. Obsługa braków danych: Przy braku historii dla ćwiczenia/metryki wpisz dosłownie: "Brak danych w historii".
+6. Format tabel: Zachowaj poprawną składnię Markdown (linie `|` oraz pusta linia przed i po tabeli).
 
-SZABLON WYJŚCIA (generuj dni chronologicznie od Poniedziałku do Niedzieli, dobierając odpowiednie bloki):
+SZABLON WYJŚCIA (generuj chronologicznie od Poniedziałku do Niedzieli, dobierając odpowiednie bloki):
 
 ### [Dzień tygodnia] - Bieg: [Easy / Recovery / Long Run ciągły]
 
@@ -88,17 +89,14 @@ SZABLON WYJŚCIA (generuj dni chronologicznie od Poniedziałku do Niedzieli, dob
 
 - **Rozgrzewka**: [Dystans truchtu 1.5-2.5 km w Z1 + rytmy/aktywacja]
 - **Część główna**: [Serie x dystans, tempo min/km, przerwa, HR, strefa]
-- **Schłodzenie**: [Dystans truchtu 1.0-1.5 km w Z1 (po AZS: 3-4 km Aerobic Flush w Z1)]
+- **Schłodzenie**: [Dystans truchtu 1.0-1.5 km w Z1 lub Aerobic Flush w Z1]
 - **Cel fizjologiczny**: [Adaptacja – max 1-2 zdania]
 <!-- Dla zawodów zastąp powyższe 4 punkty blokami: Rozgrzewka, Strategia startowa, Post-race -->
 
 ### [Dzień tygodnia] - Siłownia: [FBW / UPPER / LOWER]
 
 * **Status dolnych partii**: [Pełna intensywność / Ochrona nóg (Neural Priming: RIR 2-3, kontrola ekscentryki pod bieg)]
-* **Ćwiczenia**:
-[Nazwa ćwiczenia dokładnie z <strength_routines>]
-Seria 1: [Powt.] x [Ciężar kg / mc] (RIR [x])
-(Kolejne serie wg potrzeb)
+* **Ćwiczenia**: [Nazwa ćwiczenia dokładnie z <strength_routines>] S1: [Powt.] x [Ciężar kg / mc] (RIR [x]) | S1: [Powt.] x [Ciężar kg / mc] (RIR [x]) | ... <!--Kolejne serie wg potrzeb-->
 Wyjaśnienie decyzji: [Max 2 zdania względem historii lub "Brak danych w historii"]
 (Dla modyfikacji stosuj format: `[Nazwa] - USUNIĘTO`, `[Nowe] (ZAMIANA ZA: [Stare])` lub `[Nowe] - DODANO PRZEZ TRENERA` z seriami i linią `Decyzja: [max 2 zdania]`).
 * **Cardio / Rower eliptyczny**: [Czas min w Z1 przed siłą / po UPPER lub Brak]
