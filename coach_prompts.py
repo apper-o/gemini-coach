@@ -73,6 +73,7 @@ RE_DATE_HEURISTIC = re.compile(
     re.IGNORECASE
 )
 ROUTINES_JSON_PATH = os.path.join(INPUT_DIR_PATH, "strength_routines.json")
+EVENING_ROUTINE_PATH = os.path.join(INPUT_DIR_PATH, "evening_routine.md")
 
 
 # ==============================================================================
@@ -745,7 +746,7 @@ def _extract_interval_tables(content):
     Returns:
         str | None: Wyciągnięta tabela Markdown ze splitami serii lub None.
     """
-    pattern = r'(\|[^\n]*(?:Seria|Nr powtórzenia)[^\n]*\|\n\|(?:\s*:?-+:?\s*\|)+\n(?:\|[^\n]+\|\n?)+)'
+    pattern = r'(\|[^\n]*(?:Segment|Seria|Nr powtórzenia)[^\n]*\|\n\|(?:\s*:?-+:?\s*\|)+\n(?:\|[^\n]+\|\n?)+)'
     matched = []
     for t in re.findall(pattern, content):
         first_line = t.splitlines()[0]
@@ -754,7 +755,7 @@ def _extract_interval_tables(content):
         if any(k in first_line for k in ('Dystans', 'Tempo', 'Czas', 'HR', 'GCT')):
             matched.append(t.strip())
 
-    return next((t for t in matched if 'Łączny Dystans' in t), matched[0] if matched else None)
+    return next((t for t in matched if 'Segment' in t or 'Łączny Dystans' in t), matched[0] if matched else None)
 
 
 def _summarize_history_day_for_planning(content, date_str, day_name):
@@ -923,7 +924,7 @@ def _summarize_history_day_for_planning(content, date_str, day_name):
         eval_parts.append(f"Decyzja: {m_dec.group(1).strip().strip('*')}")
 
     m_phys = re.search(
-        r'(?:Uzasadnienie fizjologiczne|Bodziec adaptacyjny i koszt metaboliczny|Bodziec fizjologiczny i szlaki energetyczne|Koszt nerwowo-mięśniowy|Dedykowana analiza fizjologiczna pływania)[^:\n]*:[ \t]*([^\n]+)',
+        r'(?:Uzasadnienie fizjologiczne|Bodziec adaptacyjny i koszt tkankowy|Bodziec adaptacyjny i koszt metaboliczny|Bodziec fizjologiczny i szlaki energetyczne|Koszt nerwowo-mięśniowy|Dedykowana analiza fizjologiczna pływania)[^:\n]*:[ \t]*([^\n]+)',
         content
     )
     if m_phys and m_phys.group(1).strip():
@@ -1067,28 +1068,6 @@ def _format_activity_section(activity_stats, strength_workout=None):
         parts.append(f"[JEDNOSTKA SIŁOWA (RAPORT Z TELEGRAMA)]:\n{strength_workout}")
 
     return "\n\n".join(parts)
-
-
-def generate_weekly_suggestions_prompt(personal_data, trainings_history=None, user_note=None, ref_date=None):
-    """
-    Tworzy prompt dla Gemini w trybie 'suggest' bez przesyłania biometrii z Garmina.
-    Model proponuje typy/cele treningów na podstawie profilu biegacza, historii z ostatnich 42 dni i notatki.
-
-    Args:
-        personal_data (dict): Dane zawodnika (HR Zones, PB, ...).
-        trainings_history (str, optional): Historia treningów.
-        user_note (str): Opcjonalna notatka zawodnika.
-        ref_date (datetime.date, optional): Data odniesienia.
-
-    Returns:
-        str: Wygenerowany prompt.
-    """
-    return load_prompt_template(
-        "weekly_suggestions.md",
-        **build_user_profile(personal_data, ref_date=ref_date),
-        hist_section=trainings_history or "Brak zarejestrowanej historii treningów z ostatnich 42 dni.",
-        note_section=user_note or "Brak notatki od biegacza."
-    )
 
 
 def load_strength_routines(filepath=ROUTINES_JSON_PATH):
@@ -1269,7 +1248,7 @@ def _format_last_sets_str(last_sets):
     if not last_sets:
         return "Brak danych w historii (ustal bezpieczną wagę startową)"
     return " | ".join(
-        f"Seria {s.get('set', idx)}: {s.get('weight', 'mc')} x {s.get('reps', '')}"
+        f"S{s.get('set', idx)}: {s.get('reps', '')} x {s.get('weight', 'mc')}"
         for idx, s in enumerate(last_sets, 1)
     )
 
@@ -1395,33 +1374,54 @@ def generate_weekly_plan_prompt(days_structure, personal_data, trainings_history
     )
 
 
+def _strip_exercise_tags(exercise_name):
+    """Usuwa pomocnicze tagi sprzętu i rutyny z nazwy ćwiczenia siłowego."""
+    return re.sub(
+        r'\s*\((?:Dumbbell|Barbell|Cable|Machine|fbw|upper|lower|core|push|pull|legs)\)',
+        '',
+        exercise_name,
+        flags=re.IGNORECASE
+    ).strip(" *-_:")
+
+
 def _format_day_plan_section(raw_title, body_lines, day_name=None, keep_heading=False):
     """
     Formatuje i kompresuje pojedynczą sekcję dziennego planu treningowego:
     odrzuca metatekst planistyczny ('Wyjaśnienie decyzji:', 'Decyzja:', '* **Cel')
-    oraz kompresuje wieloliniowe serie ćwiczeń siłowych do zwięzłego formatu jednoliniowego.
+    oraz formatuje ćwiczenia siłowe do zwięzłego zapisu jednoliniowego.
     """
     clean_title = re.sub(rf'^{day_name}\s*[-–:]\s*', '', raw_title, flags=re.IGNORECASE).strip() if day_name else raw_title.strip()
     if clean_title.startswith('Siłownia:'):
         clean_title = clean_title.replace('Siłownia:', 'Siłownia').strip()
     header_line = f"### {raw_title.strip()}" if keep_heading else clean_title
 
+    expanded_lines = []
+    for raw_line in body_lines:
+        # Jeśli nagłówek '* **Ćwiczenia**:' zawiera w tej samej linii pierwsze ćwiczenie, rozdzielamy je
+        m_ex_inline = re.match(r'^([*-]\s*(?:\*\*)?Ćwiczenia(?:\*\*)?:\s*)(.+)$', raw_line, flags=re.IGNORECASE)
+        if m_ex_inline:
+            expanded_lines.append('- **Ćwiczenia**:')
+            expanded_lines.append(m_ex_inline.group(2).strip())
+        else:
+            expanded_lines.append(raw_line)
+
     output_lines = []
     i = 0
     in_exercises = False
 
-    while i < len(body_lines):
-        line = body_lines[i]
+    while i < len(expanded_lines):
+        line = expanded_lines[i]
+        stripped_bullet = line.lstrip("*- ").strip()
 
         # 1. Bezwzględne odrzucanie metatekstu planistycznego i uzasadnień
-        if line.startswith(('Wyjaśnienie decyzji:', 'Decyzja:', '* **Cel', '- **Cel', '* **Uzasadnienie', '- **Uzasadnienie')):
+        if stripped_bullet.startswith(('Wyjaśnienie decyzji:', 'Decyzja:')) or line.startswith(('* **Cel', '- **Cel', '* **Uzasadnienie', '- **Uzasadnienie')):
             i += 1
             continue
 
         # 2. Pomijanie ćwiczeń usuniętych z planu
         if 'USUNIĘTO' in line:
             i += 1
-            while i < len(body_lines) and body_lines[i].startswith(('Seria', 'Decyzja', 'Wyjaśnienie')):
+            while i < len(expanded_lines) and expanded_lines[i].lstrip("*- ").startswith(('Seria', 'S1:', 'Decyzja', 'Wyjaśnienie')):
                 i += 1
             continue
 
@@ -1445,10 +1445,10 @@ def _format_day_plan_section(raw_title, body_lines, day_name=None, keep_heading=
             i += 1
             continue
 
-        # 6. Standardowe punkty (np. rozgrzewka, część główna, schłodzenie, zalecenia regeneracyjne)
-        if line.startswith(('* **', '- ')):
+        # 6. Standardowe punkty z pogrubioną etykietą (np. rozgrzewka, część główna, schłodzenie, zalecenia regeneracyjne)
+        if line.startswith(('* **', '- **')) or (not in_exercises and line.startswith('- ')):
             in_exercises = False
-            output_lines.append(re.sub(r'^\*\s*\*\*([^*]+)\*\*:\s*', r'- \1: ', line))
+            output_lines.append(re.sub(r'^[*-]\s*\*\*([^*]+)\*\*:\s*', r'- \1: ', line))
             i += 1
             continue
 
@@ -1458,18 +1458,21 @@ def _format_day_plan_section(raw_title, body_lines, day_name=None, keep_heading=
                 i += 1
                 continue
 
-            clean_ex_name = re.sub(
-                r'\s*\((?:Dumbbell|Barbell|Cable|Machine|fbw|upper|lower|core|push|pull|legs)\)',
-                '',
-                line,
-                flags=re.IGNORECASE
-            ).strip()
+            # Sprawdzenie nowego formatu jednoliniowego: [Nazwa] S1: ... | S2: ...
+            inline_series_match = re.search(r'\b((?:S1|Seria\s*1)\s*:.*)$', line, flags=re.IGNORECASE)
+            if inline_series_match:
+                clean_ex_name = _strip_exercise_tags(line[:inline_series_match.start()])
+                series_text = inline_series_match.group(1).strip()
+                output_lines.append(f"  * {clean_ex_name}: {series_text}")
+                i += 1
+                continue
 
+            clean_ex_name = _strip_exercise_tags(line)
             series = []
             i += 1
-            while i < len(body_lines):
-                s_line = body_lines[i]
-                if s_line.startswith('Seria'):
+            while i < len(expanded_lines):
+                s_line = expanded_lines[i].lstrip("*- ").strip()
+                if s_line.startswith('Seria') or re.match(r'^S\d+\s*:', s_line, flags=re.IGNORECASE):
                     series.append(s_line)
                     i += 1
                 elif s_line.startswith(('Wyjaśnienie decyzji:', 'Decyzja:')):
@@ -1479,7 +1482,7 @@ def _format_day_plan_section(raw_title, body_lines, day_name=None, keep_heading=
 
             if series:
                 num_sets = len(series)
-                m_s = re.search(r'Seria\s*\d+:\s*(\d+)\s*(?:x\s*([^(]+))?(?:\(([^)]+)\))?', series[0])
+                m_s = re.search(r'(?:Seria\s*\d+|S\d+):\s*(\d+)\s*(?:x\s*([^(]+))?(?:\(([^)]+)\))?', series[0], flags=re.IGNORECASE)
                 if m_s:
                     reps = m_s.group(1)
                     weight_clean = (m_s.group(2) or '').strip().replace('na rękę', '/ręka').replace(' /', '/').strip()
@@ -1639,6 +1642,13 @@ def generate_daily_prompt(
     activity_section = _format_activity_section(activity_stats, strength_workout=strength_workout)
     profile_dict = user_profile if isinstance(user_profile, dict) else {}
 
+    evening_routine_raw = _read_file_safe(EVENING_ROUTINE_PATH)
+    evening_routine_section = (
+        evening_routine_raw.strip()
+        if evening_routine_raw and evening_routine_raw.strip()
+        else "Brak zdefiniowanej rutyny wieczornej"
+    )
+
     # Wybór odpowiednich szablonów audytu
     stats_list = activity_stats if isinstance(activity_stats, list) else ([activity_stats] if activity_stats else [])
     has_run = any(act.get('is_run', True) for act in stats_list)
@@ -1663,10 +1673,10 @@ def generate_daily_prompt(
 
     # Protokół niedzielny w sekcji 4 (zamknięcie mikrocyklu)
     if day_of_week == "Niedziela":
-        sunday_section_4 = f"""## 4. OCENA GOTOWOŚCI I ADAPTACJA (ZAMKNIĘCIE MIKROCYKLU): {audit_date_str}
+        sunday_section_4 = f"""## 4. OCENA GOTOWOŚCI I DYREKTYWA NA DZIEŃ: {audit_date_str}
 
-- **DECYZJA ADAPTACYJNA / STOPIEŃ GOTOWOŚCI**: [PEŁNA GOTOWOŚĆ / UMIARKOWANE ZMĘCZENIE / GŁĘBOKIE ZMĘCZENIE / WYMAGANA REGENERACJA]
-- **Uzasadnienie fizjologiczne**: [Syntetyczna ocena adaptacji i wytyczne regeneracyjne przed nowym mikrocyklem; liczby wyłącznie w nawiasach]"""
+- **DECYZJA ADAPTACYJNA / STOPIEŃ GOTOWOŚCI**: [PEŁNA GOTOWOŚĆ / ZMĘCZENIE FUNKCJONALNE / GŁĘBOKI DŁUG ADAPTACYJNY / WYMAGANA REGENERACJA]
+- **Uzasadnienie fizjologiczne**: [Zwięzła diagnoza gotowości CUN, glikogenu i sztywności MTS pod kątem zamkniętego mikrocyklu; liczby wyłącznie w nawiasach]"""
         closing_text = re.sub(
             r"## 4\. OCENA GOTOWOŚCI.*",
             sunday_section_4,
@@ -1691,6 +1701,7 @@ def generate_daily_prompt(
         activity_section=activity_section,
         yesterday_section=yesterday_section,
         weekly_plan_section=weekly_plan_section,
+        evening_routine_section=evening_routine_section,
         user_note=note_content,
         today_steps=garmin_stats.get('today_steps', NO_DATA),
         today_stress=garmin_stats.get('today_stress', NO_DATA),

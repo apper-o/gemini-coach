@@ -1,5 +1,5 @@
 Poniedziałek: Trening biegowy na AZS (technika biegowa)
-Wtorek: Rest day
+Wtorek: 
 Środa: Threshold
 Czwartek: Siłownia FBW
 Piątek: VO2max

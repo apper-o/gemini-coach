@@ -2,8 +2,7 @@
 coach_gemini.py - Asystent Treningowy Gemini.
 Odpowiada za inicjalizację klienta Gemini API, obsługę zapytań z pętlą retry oraz orkiestrację trybów treningowych:
 - daily: wieczorny tryb audytu bieżącego dnia (20:57), zaleceń regeneracyjnych i adaptacji na jutro
-- plan: ułożenie kompletnego planu tygodniowego
-- suggest: generowanie propozycji podziału jednostek treningowych
+- plan: ułożenie kompletnego planu tygodniowego na podstawie struktury w weekly_workout_structure.md
 """
 
 import os
@@ -38,7 +37,6 @@ from coach_prompts import (
     extract_day_plan,
     prepare_user_note,
     load_training_history,
-    generate_weekly_suggestions_prompt,
     generate_weekly_plan_prompt,
     generate_daily_prompt,
     build_and_save_daily_archive,
@@ -141,113 +139,85 @@ def send_gemini_prompt_with_fallback(client, prompt, model="gemini-3.8-flash", d
 # GŁÓWNE TRYBY DZIAŁANIA
 # ==============================================================================
 
-def run_suggest_mode(client, personal_data, trainings_history, user_note, weekly_workout_structure_path, debug=False, model="gemini-3.8-flash", ref_date=None):
+def _read_and_validate_workout_structure(weekly_workout_structure_path, debug=False):
     """
-    Generowanie sugestii typów treningów na cały nadchodzący tydzień.
+    Wczytuje plik struktury tygodnia (weekly_workout_structure.md), weryfikuje jego poprawność
+    i zwraca sformatowany ciąg preferencji dla modelu.
+    Jeśli przy danym dniu tygodnia pole po nazwie dnia jest puste, przypisuje 'Brak preferencji',
+    aby model samodzielnie dobrał optymalną jednostkę treningową.
 
     Args:
-        client: Zainicjowany klient Gemini API.
-        personal_data (dict): Dane zawodnika (HR Zones, PB, ...).
-        trainings_history (str): Kontekst wyników z 42 ostatnich dni.
-        user_note (str): Opcjonalna notatka zawodnika z Telegrama.
-        weekly_workout_structure_path (str): Ścieżka do docelowego pliku preferencji.
-        debug (bool): Flaga trybu debug.
-        model (str): Nazwa modelu Gemini.
-        ref_date (date): Data wygenerowania układu.
-    """
-    print("\n" + "=" * 60 + "\n💡 TRYB SUGESTII TYPÓW TRENINGÓW NA TYDZIEŃ (GEMINI COACH) 💡" + "=" * 60)
-
-    suggest_prompt = generate_weekly_suggestions_prompt(
-        personal_data=personal_data,
-        trainings_history=trainings_history,
-        user_note=user_note,
-        ref_date=ref_date
-    )
-
-    try:
-        response = send_gemini_prompt_with_fallback(client, suggest_prompt, model=model, debug=debug)
-        target_structure_path = os.path.join(DEBUG_DIR_PATH, "weekly_workout_structure.md") if debug else weekly_workout_structure_path
-
-        with open(target_structure_path, "w", encoding="utf-8") as pf:
-            pf.write("# Sugestia wygenerowana przez Trenera Gemini na podstawie historii treningowej i profilu\n")
-            pf.write("# Możesz zmodyfikować poniższe linie według własnych planów, a następnie uruchomić 'python coach_gemini.py plan'\n\n")
-            pf.write(response.text)
-
-        if debug:
-            print(f"\n✅ [DEBUG] Zapisano propozycję do pliku: {target_structure_path}")
-        else:
-            print(f"\n✅ Zapisano propozycję do pliku: {target_structure_path}")
-            print(f"📄 Jeśli chcesz coś zmienić, edytuj '{weekly_workout_structure_path}', a następnie uruchom:")
-            print("   python coach_gemini.py plan")
-    except Exception as e:
-        exit_with_error("Wystąpił błąd podczas generowania sugestii.", error=e)
-
-
-def _read_and_validate_preferences(weekly_workout_structure_path, debug=False):
-    """
-    Otwiera plik preferencji, weryfikuje jego zawartość i zwraca gotowy ciąg dni.
-    Jeśli plik nie istnieje, tworzy pusty szablon i przerywa działanie z ostrzeżeniem.
-
-    Args:
-        weekly_workout_structure_path (str): Ścieżka do głównego pliku preferencji.
+        weekly_workout_structure_path (str): Ścieżka do pliku weekly_workout_structure.md.
         debug (bool): Flaga trybu debug.
 
     Returns:
-        str: Sformatowany ciąg ze zweryfikowanymi preferencjami treningowymi.
+        str: Sformatowany ciąg ze strukturą dni tygodnia.
     """
     debug_structure_path = os.path.join(DEBUG_DIR_PATH, "weekly_workout_structure.md")
     if debug and os.path.exists(debug_structure_path):
-        active_path = debug_structure_path
+        active_structure_path = debug_structure_path
     elif os.path.exists(weekly_workout_structure_path):
-        active_path = weekly_workout_structure_path
+        active_structure_path = weekly_workout_structure_path
     else:
-        active_path = debug_structure_path if debug else weekly_workout_structure_path
-        with open(active_path, "w", encoding="utf-8") as pf:
-            pf.write("# Wpisz w jakie dni jaki typ treningu chcesz wykonać, np.:\n")
-            pf.write("# Poniedziałek: Easy + przebieżki\n# Wtorek: Tempo progowe\n# Środa: FBW\n")
+        active_structure_path = debug_structure_path if debug else weekly_workout_structure_path
+        template_lines = [
+            "# Wpisz preferowany typ treningu dla poszczególnych dni tygodnia.",
+            "# Pozostaw puste pole po dwukropku, jeśli model ma samodzielnie wybrać najlepszą jednostkę.",
+            *[f"{day}:" for day in DAYS_PL],
+        ]
+        with open(active_structure_path, "w", encoding="utf-8") as structure_file:
+            structure_file.write("\n".join(template_lines) + "\n")
         exit_with_error(
-            f"Nie znaleziono pliku '{active_path}'. "
-            f"Utworzono pusty szablon. Uzupełnij go lub uruchom 'python coach_gemini.py suggest'.",
+            f"Nie znaleziono pliku '{active_structure_path}'. "
+            f"Utworzono szablon struktury tygodnia. Uzupełnij go i uruchom ponownie 'python coach_gemini.py plan'.",
             code=2
         )
 
-    with open(active_path, "r", encoding="utf-8") as pf:
-        raw_lines = pf.readlines()
+    with open(active_structure_path, "r", encoding="utf-8") as structure_file:
+        raw_lines = structure_file.readlines()
 
-    valid_lines = []
+    formatted_day_lines = []
     invalid_lines = []
-    for line in raw_lines:
-        s = line.strip()
-        if not s or s.startswith("#"):
+    defined_days = []
+
+    for raw_line in raw_lines:
+        stripped_line = raw_line.strip()
+        if not stripped_line or stripped_line.startswith("#"):
             continue
-        if "uzasadnienie" in s.lower():
-            break
 
-        clean_line = s.lstrip("0123456789.-*•) ").strip()
-        first_word = clean_line.split()[0].rstrip(":").capitalize() if clean_line else ""
+        clean_line = stripped_line.lstrip("0123456789.-*•) ").strip()
+        day_part, separator, preference_part = clean_line.partition(":")
+        day_name = day_part.strip().capitalize()
 
-        if first_word in DAYS_PL:
-            valid_lines.append(clean_line)
+        if day_name not in DAYS_PL:
+            invalid_lines.append(stripped_line)
+            continue
+
+        defined_days.append(day_name)
+        workout_preference = preference_part.strip() if separator else ""
+        if not workout_preference or workout_preference.lower() == "brak preferencji":
+            formatted_day_lines.append(f"{day_name}: Brak preferencji")
         else:
-            invalid_lines.append(s)
+            formatted_day_lines.append(f"{day_name}: {workout_preference}")
 
     if invalid_lines:
-        inv_Formatted = "\n".join(f"   - {inv}" for inv in invalid_lines)
+        formatted_invalid = "\n".join(f"   - {line}" for line in invalid_lines)
         exit_with_error(
-            f"W pliku '{active_path}' znaleziono niepoprawne linie:\n{inv_Formatted}\n"
-            "Każda linia powinna zaczynać się od dnia tygodnia, np.: 'Poniedziałek: Easy run'.",
+            f"W pliku '{active_structure_path}' znaleziono niepoprawne linie:\n{formatted_invalid}\n"
+            "Każda linia powinna zaczynać się od dnia tygodnia, np.: 'Poniedziałek: Easy run' lub 'Wtorek:' (brak preferencji).",
             code=2
         )
 
-    days_structure = "\n".join(valid_lines).strip()
-    if not days_structure:
+    missing_days = [day for day in DAYS_PL if day not in defined_days]
+    if missing_days:
         exit_with_error(
-            f"Plik '{active_path}' nie zawiera zdefiniowanych dni treningowych.\n"
-            "Wpisz w nim preferencje lub uruchom: python coach_gemini.py suggest",
+            f"W pliku '{active_structure_path}' brakuje definicji dla dni: {', '.join(missing_days)}.\n"
+            "Plik musi zawierać wszystkie 7 dni tygodnia (pozostaw puste pole po dwukropku w dni bez preferencji).",
             code=2
         )
 
-    print(f"📄 Wczytano preferencje z pliku {active_path}:\n")
+    days_structure = "\n".join(formatted_day_lines)
+    print(f"📄 Wczytano strukturę tygodnia z pliku {active_structure_path}:\n")
     return days_structure
 
 
@@ -271,7 +241,7 @@ def run_plan_mode(client, personal_data, trainings_history, user_note, weekly_wo
     print("🗓️  TRYB PLANOWANIA TYGODNIOWEGO (GEMINI COACH) 🗓️")
     print("=" * 60)
 
-    days_structure = _read_and_validate_preferences(weekly_workout_structure_path, debug=debug)
+    days_structure = _read_and_validate_workout_structure(weekly_workout_structure_path, debug=debug)
     print(days_structure)
     print("\n" + "=" * 60)
 
@@ -442,13 +412,13 @@ def resolve_mode(raw_mode):
         raw_mode (str): Tryb przekazany z wiersza poleceń.
         
     Returns:
-        str: Poprawna nazwa trybu ('daily', 'plan' lub 'suggest').
+        str: Poprawna nazwa trybu ('daily' lub 'plan').
     """
     mode = (raw_mode or "daily").strip().lower()
-    if mode not in ("daily", "plan", "suggest"):
+    if mode not in ("daily", "plan"):
         exit_with_error(
             f"Nieprawidłowy tryb działania: '{raw_mode}'. "
-            f"Dozwolone tryby to: daily, plan, suggest."
+            f"Dozwolone tryby to: daily, plan."
         )
     return mode
 
@@ -500,7 +470,7 @@ def dispatch_mode(mode, client, gemini_model, today, personal_data, user_note, p
     Kieruje wykonanie do odpowiedniego modułu na podstawie wybranego trybu działania.
 
     Args:
-        mode (str): Tryb pracy (np. 'daily', 'plan', 'suggest').
+        mode (str): Tryb pracy ('daily' lub 'plan').
         client: Zainicjowany klient API Gemini.
         gemini_model (str): Nazwa modelu Gemini.
         today (date): Data uruchomienia.
@@ -545,15 +515,13 @@ def dispatch_mode(mode, client, gemini_model, today, personal_data, user_note, p
     if trainings_history:
         logger.info("Wczytano historię treningów z ostatnich 42 dni (6 tygodni).")
 
-    if mode == "suggest":
-        run_suggest_mode(client, personal_data, trainings_history, combined_note, paths["weekly_workout_structure_path"], debug=debug, model=gemini_model, ref_date=today)
-    elif mode == "plan":
+    if mode == "plan":
         run_plan_mode(client, personal_data, trainings_history, combined_note, paths["weekly_workout_structure_path"], paths["plan_path"], debug=debug, model=gemini_model, ref_date=today, send_tg=send_tg)
 
 
 def main():
     parser = argparse.ArgumentParser(description="Coach Gemini - Asystent Treningowy Gemini")
-    parser.add_argument("mode", nargs="?", default="daily", help="daily (domyślny, audyt wieczorny o 20:57), plan, suggest")
+    parser.add_argument("mode", nargs="?", default="daily", help="daily (domyślny, audyt wieczorny o 20:57), plan")
     parser.add_argument("--debug", action="store_true", help="Włącza tryb debugowania. zapis w katalogu debug/")
     parser.add_argument("--send_debug", action="store_true", help="Włącza tryb debugowania ORAZ wysyła testowy raport na Telegram")
     parser.add_argument("--date", type=str, default=None, help="opcjonalna data referencyjna w formacie YYYY-MM-DD")

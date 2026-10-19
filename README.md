@@ -58,9 +58,8 @@ Skrypt `coach_gemini.py` przyjmuje jeden pozycyjny argument określający tryb d
 
 | Tryb | Opis działania |
 | :--- | :--- |
-| **`daily`** *(domyślny)* | **Główny wieczorny tryb audytu i adaptacji (uruchamiany codziennie o 20:57)**:<br>• **Główny priorytet**: Dogłębny audyt wykonanego dzisiaj treningu (bieg ze szczegółowymi splitami, tętno, kadencja, tempo vs założenia, trening siłowy/notatki z Telegrama, koszt OUN).<br>• **Biometria**: Analiza nocnej bazy regeneracyjnej przed dzisiejszym wysiłkiem (sen, HRV, RHR), obciążenia całodniowego (stres, kroki, wieczorne Body Battery) oraz kontekstu historycznego z dnia poprzedniego.<br>• **Zalecenia regeneracyjne**: Praktyczne wytyczne na wieczór i noc (zapotrzebowanie na sen pod kątem regeneracji OUN, dedykowana sesja rolowania/mobilności ze wskazaniem konkretnych partii mięśniowych, nawodnienie).<br>• **Gotowość i adaptacja**: Ocena gotowości na jutrzejszy trening wraz z jednoznacznym werdyktem: `[ZWIĘKSZAMY INTENSYWNOŚĆ / POZOSTAJE TAKA SAMA / ZMNIEJSZAMY INTENSYWNOŚĆ / MODYFIKACJA ZAŁOŻEŃ]` i gotową rozpiską.<br>Zapisuje raport do `output/last_daily_report.md` oraz archiwizuje w `trainings_history/YYYY/MM/YYYY-MM-DD.md`. |
-| **`suggest`** | **Sugestia podziału dni i typów treningu**: Model analizuje cele biegacza, fazę przygotowań oraz historię ostatnich 42 dni (6 tygodni), proponując optymalny układ jednostek (Easy, Tempo, Siłownia, Rest Day) na nadchodzący tydzień. Zapisuje propozycję do `input/weekly_workout_structure.md`. |
-| **`plan`** | **Układanie pełnego planu tygodniowego**: Generuje kompletny 7-dniowy plan treningowy od poniedziałku do niedzieli. Wykorzystuje preferencje z `input/weekly_workout_structure.md`, profil z `input/personal_data.json`, bazę ćwiczeń i aktualne wagi z `input/strength_routines.json` oraz 42-dniową historię. Zapisuje plan do `output/weekly_plan.md`. |
+| **`daily`** *(domyślny)* | **Główny wieczorny tryb audytu i adaptacji (uruchamiany codziennie o 20:57)**:<br>• **Główny priorytet**: Dogłębny audyt wykonanego dzisiaj treningu (bieg ze szczegółowymi splitami, tętno, kadencja, tempo vs założenia, trening siłowy/notatki z Telegrama, koszt OUN).<br>• **Biometria**: Analiza nocnej bazy regeneracyjnej przed dzisiejszym wysiłkiem (sen, HRV, RHR), obciążenia całodniowego (stres, kroki, wieczorne Body Battery) oraz kontekstu historycznego z dnia poprzedniego.<br>• **Zalecenia regeneracyjne**: Praktyczne wytyczne na wieczór i noc (modyfikacja rutyny wieczornej `input/evening_routine.md`, praca tkankowa SMR, modulacja autonomiczna, nawodnienie i substraty).<br>• **Gotowość i adaptacja**: Ocena gotowości na jutrzejszy trening wraz z jednoznacznym werdyktem (`PEŁNA EGZEKUCJA PLANU`, `KOREKTA TAKTYCZNA`, `REDUKCJA AWARYJNA`) i gotową rozpiską.<br>Zapisuje raport do `output/last_daily_report.md` oraz archiwizuje w `trainings_history/YYYY/MM/YYYY-MM-DD.md`. |
+| **`plan`** | **Układanie pełnego planu tygodniowego**: Generuje kompletny 7-dniowy plan treningowy od poniedziałku do niedzieli na podstawie struktury zdefiniowanej w `input/weekly_workout_structure.md` (w dni z pustym polem po dwukropku, np. `Wtorek:`, model samodzielnie dobiera optymalny typ treningu wg zasad z `prompts/weekly_plan.md` i rozpisuje go ze szczegółami). Wykorzystuje profil z `input/personal_data.json`, bazę ćwiczeń i aktualne wagi z `input/strength_routines.json` oraz 42-dniową historię. Zapisuje plan do `output/weekly_plan.md`. |
 
 > [!NOTE]
 > Wszelkie uwagi, samopoczucie oraz raporty z treningu siłowego przekazywane są bezpośrednio z czatu **Telegrama**. Po każdym pomyślnym wykonaniu analizy stan przeczytanych wiadomości jest zapisywany w `input/telegram_state.json`, dzięki czemu wiadomości nie są dublowane.
@@ -173,16 +172,13 @@ python coach_gemini.py
 # lub jawnie:
 python coach_gemini.py daily
 
-# 2. Wygenerowanie sugestii podziału dni na nadchodzący tydzień
-python coach_gemini.py suggest
-
-# 3. Rozpisanie szczegółowego planu na cały tydzień
+# 2. Rozpisanie szczegółowego planu na cały tydzień (na bazie input/weekly_workout_structure.md)
 python coach_gemini.py plan
 
-# 4. Uruchomienie w trybie debugowania (piaskownica w debug/)
+# 3. Uruchomienie w trybie debugowania (piaskownica w debug/)
 python coach_gemini.py daily --debug
 
-# 5. Audyt historyczny dla konkretnego dnia
+# 4. Audyt historyczny dla konkretnego dnia
 python coach_gemini.py daily --date 2026-09-20
 ```
 
@@ -201,16 +197,16 @@ python coach_gemini.py daily --date 2026-09-20
 ├── .env.example              # Wzorzec pliku konfiguracyjnego .env
 ├── input/
 │   ├── personal_data.json              # Profil biegacza, cele (primary_goal, secondary_goal), rekordy PB, strefy Z1-Z5
-│   ├── weekly_workout_structure.md     # Podział dni treningowych na dany tydzień (dla trybu 'plan')
+│   ├── weekly_workout_structure.md     # Struktura dni treningowych na dany tydzień (dla trybu 'plan')
+│   ├── evening_routine.md              # Opcjonalna rutyna wieczorna zawodnika (mobilność/rozciąganie dla trybu 'daily')
 │   └── strength_routines.json          # Baza własnych zestawów ćwiczeń siłowych oraz aktualnych wag (FBW, UPPER, LOWER)
 ├── output/
 │   ├── weekly_plan.md                  # Aktualny plan treningowy na tydzień
 │   └── last_daily_report.md            # Ostatni wygenerowany raport trenerski
 ├── prompts/
-│   ├── weekly_suggestions.md           # Szablon prompta dla trybu 'suggest'
 │   ├── weekly_plan.md                  # Szablon prompta dla trybu 'plan'
 │   ├── daily_base.md                   # Bazowy szablon prompta dla trybu 'daily' (rola i dane wejściowe)
 │   ├── audit_*.md                      # Modularne szablony audytu (run, swim, gym, other, rest)
-│   └── daily_closing.md                # Domykający szablon prompta dla trybu 'daily' (regeneracja i adaptacja)
+│   └── daily_closing.md                # Domykający szablon prompta dla trybu 'daily' (ocena gotowości i dyrektywa na jutro)
 └── trainings_history/                  # Archiwum wygenerowanych raportów dziennych (YYYY/MM/YYYY-MM-DD.md)
 ```

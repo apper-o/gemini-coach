@@ -236,7 +236,7 @@ def extract_daily_report_caption(md_text):
         workout_entries.append(f"⭐ <b>Ocena:</b> {html.escape(score_val)}")
 
     # 4. Stan zasobów i bilans autonomiczny
-    re_cost = re.search(r"^[*-]?\s*\*?\*?(?:Bilans autonomiczny i drenaż zasobów|Koszt dzienny i stan zasobów|Koszt dzienny)[^\*:]*\*?\*?:\s*([^\n\r]+)", md_text, re.MULTILINE | re.I)
+    re_cost = re.search(r"^[*-]?\s*\*?\*?(?:Bilans autonomiczny|Koszt dzienny i stan zasobów|Koszt dzienny)[^\*:]*\*?\*?:\s*([^\n\r]+)", md_text, re.MULTILINE | re.I)
     if re_cost:
         raw_cost = re_cost.group(1).strip()
         end_sent = raw_cost.find(".")

@@ -12,7 +12,6 @@ on:
         options:
           - daily
           - plan
-          - suggest
 
 permissions:
   contents: write
