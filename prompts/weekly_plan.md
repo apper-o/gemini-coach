@@ -26,7 +26,7 @@ ZASADY PERIODYZACJI I ZARZĄDZANIA ZMĘCZENIEM:
   * Baza ćwiczeń i objętość: Bazuj bezpośrednio na <strength_routines> i ostatnich ciężarach roboczych (do każdej serii przypisz konkretny ciężar i powtórzenia na bazie "Ostatnie serie i wagi"). Nazwy ćwiczeń zachowuj BEZWZGLĘDNIE z <strength_routines>. Dla masy ciała wpisuj "mc".
   * Zasada progresji (HRT vs Hipertrofia): Zmieniaj max 1 parametr na jednostkę (ciężar LUB powtórzenia). W ćwiczeniach wielostawowych na dół ciała (Trap Bar, Przysiad, Łydka) priorytetem jest napięcie mechaniczne (ciężar przy niskich powtórzeniach 3-6 i RIR 2-3), a NIE pompowanie powtórzeń (ochrona przed zbędną masą i DOMS). W plyometrii (Pogo/Hops) priorytetem jest krótki czas kontaktu.
   * Uzasadnienia i modyfikacje: Pod każdym ćwiczeniem max 2 zdania uzasadnienia progresji względem historii. Modyfikacje oznaczaj ściśle jako: `[Nazwa] - USUNIĘTO`, `[Nowe] (ZAMIANA ZA: [Stare])` lub `[Nowe] - DODANO PRZEZ TRENERA` wraz z seriami i linią `Decyzja: [max 2 zdania]`.
-  * Komponent tlenowy: Orbitrek lub Bieg w Z1 (15-35 min) przed siłą lub po jako podbicie bazy tlenowej.
+  * Komponent tlenowy: Orbitrek lub Bieg w Z1 (15-35 min) przed lub po siłowni jako podbicie bazy tlenowej.
 
 - PŁYWANIE (BASEN):
   * Bezudarowy drenaż (zero GRF) i aktywacja przywspółczulna w Z1-Z2 (RPE 4-6). Uwzględniaj bradykardię wodną (tętno w wodzie o 10-15 bpm niższe niż w biegu przy tym samym koszcie tlenowym).
