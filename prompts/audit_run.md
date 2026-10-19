@@ -64,7 +64,7 @@
 <!--JEŚLI AKCENT Z SERIAMI (INTERWAŁY, PROGI, RYTMY) – WSTAW PONIŻSZĄ TABELĘ-->
 | Segment | Dystans [km] | Czas | Tempo [min/km] | Śr. HR [bpm] | Max / ΔHR60s [bpm] | Kadencja [spm] | Krok [m] | GCT [ms] | VR [%] |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-<!--Format wierszy: na przemian Powtórzenie X oraz czystym tekstem Przerwa X (w przerwomierzu podaj spadek ΔHR60s)-->
+<!--Format wierszy: na przemian Powtórzenie X oraz czystym tekstem Przerwa X (w przerwomierzu podaj spadek ΔHR60s). Może się zdarzyć, że ostatnie powtórzenie będzie przerwą-->
 
 - **Profil jednostki**: [Bieg regeneracyjny (Z1) / Baza tlenowa (Z2) / Długie wybieganie (Long Run) / Próg mleczanowy (Sub-LT2/LT2) / Interwały pułapowe (VO2max) / Technika i rytmy (AZS) / Zawody]
 - **Audyt biomechaniki i wektora siły**:
@@ -77,33 +77,44 @@
 
 ## 2. KOSZT METABOLICZNY I BILANS ZASOBÓW (ANS)
 
-- **Bodziec adaptacyjny i koszt tkankowy**: [Synteza sumarycznego kosztu dzisiejszego biegu: drenaż glikogenu, stres ekscentryczny (DOMS / spadek sztywności MTS) oraz obciążenie CUN]
-- **Bilans autonomiczny (Noc vs Dzień)**: [Zestawienie bazy porannej (HRV, RHR, Sleep Stress) z drenażem dobowym (Day Stress, kroki, spadek Body Battery) oraz kosztem biegu]
-- **Zmęczenie skumulowane i percepcja (kontekst {yesterday_date_str} vs notatka)**: [Diagnoza zgodności lub dysonansu między <user_note> a telemetrią (np. niskie RPE przy wysokim koszcie HR = maskowanie zmęczenia katecholaminami; wysokie RPE przy niskim HR = zmęczenie ośrodkowe CUN lub drenaż glikogenu) LUB wpisz: Brak dysonansu.]
+- **Bodziec adaptacyjny i koszt tkankowy**: [Synteza sumarycznego kosztu biegu: drenaż glikogenu, stres ekscentryczny (DOMS / spadek sztywności MTS) oraz obciążenie CUN]
+- **Bilans autonomiczny (Noc vs Dzień)**: [Wpływ bazy porannej (HRV, RHR, Sleep Stress) skorelowany z drenażem dziennym (Day Stress, Body Battery) i kosztem sesji – stan: dominacja współczulna vs bufor adaptacyjny]
+- **Zmęczenie skumulowane i percepcja (kontekst {yesterday_date_str} vs notatka)**: [Diagnoza dysonansu między <user_note> a telemetrią (np. zaniżone RPE przy wysokim HR = maskowanie katecholaminowe; wysokie RPE przy niskim HR = zmęczenie ośrodkowe CUN/glikogen) LUB wpisz: Brak dysonansu.]
 
 ## 3. PROTOKÓŁ REGENERACJI (WIECZÓR I NOC)
 
-- **Celowana praca tkankowa (SMR) i przeciwwskazania**: [Wskaż 1–2 przeciążone struktury na podstawie dzisiejszej biomechaniki (dryf GCT -> m. soleus/Achilles; skrócenie kroku L -> zginacze biodra/pośladek; wzrost VR -> TFL/gluteus medius) wraz z czasem i progiem bólu. BEZWZGLĘDNIE wskaż zabiegi SZKODLIWE: po akcentach Z4/Z5 lub biegach >75 min ZAKAŻ agresywnego rolowania (ból >4/10) i długiego stretchingu statycznego (>30 s) na grupy uszkodzone ekscentrycznie – nakazuj wyłącznie lekki drenaż hiperemiczny (SMR ból 2–3/10, 30–45 s)]
-- **Modyfikacja rutyny wieczornej (<evening_routine>)**: [Na podstawie dzisiejszych przeciążeń i stresu biurowego wskaż konkretnie z nazwy, które ćwiczenia z <evening_routine> dziś WYDŁUŻYĆ/DODAĆ (np. Couch Stretch w tyłopochyleniu miednicy, Soleus Wall Stretch), a które SKRÓCIĆ/POMINĄĆ (np. redukcja Bear Hug lub pominięcie pozycji napinających przeciążone struktury)]
-- **Modulacja autonomiczna i termoregulacja snu**: [Konkretna interwencja parasympatyczna pod wieczorny stres i porę treningu (np. oddech rezonansowy 5.5–6/min w rytmie 4s:6s przez 5 min dla stymulacji nerwu błędnego; ciepły prysznic 60–90 min przed snem dla wazodylatacji obwodowej i obniżenia core temp); zakaz ogólników o higienie snu]
-- **Strategia substratowa i resynteza**: [Celowane wytyczne makro/elektrolitów pod jutrzejszy bodziec ({tomorrow_date_str}): podaż węglowodanów na odbudowę glikogenu mięśniowego/wątrobowego, 30–40 g białka przed snem pod nocną syntezę MPS/kolagenu ścięgien oraz bilans sodu/płynów przy wykrytym dryfie Pa:Hr]
+- **Celowana praca tkankowa (SMR) i przeciwwskazania**: 
+  - Struktury priorytetowe: [1–2 obszary na bazie telemetrii (dryf GCT -> m. soleus; spadek L -> zginacze biodra/pośladek; skok VR -> TFL/gluteus medius) | Parametry: czas (30-45 s)]
+  - Bezwzględne przeciwwskazania: [Po akcentach Z4/Z5 lub biegach >75 min KATEGORYCZNY ZAKAZ agresywnego rolowania (ból >4/10) oraz długiego stretchingu statycznego (>30 s) na uszkodzone grupy; przy braku przeciwwskazań wpisz: Brak.]
+- **Modyfikacja rutyny wieczornej (<evening_routine>)**:
+  - Wydłużyć / Dodać: [Konkretne nazwy ćwiczeń z listy zawodnika pod dzisiejsze napięcia biegowe i biurkowe (np. Couch Stretch w tyłopochyleniu miednicy, Soleus Wall Stretch)]
+  - Skrócić / Pominąć: [Konkretne nazwy pozycji z listy zbędnych czasowo (np. redukcja Bear Hug) lub zbyt agresywnie rozciągających przeciążone dziś tkanki]
+- **Modulacja autonomiczna i środowisko snu**: [Celowana interwencja parasympatyczna pod wieczorny drenaż, stres psychiczny i obciążenie nóg:
+  - Wyciszenie korowe (Medytacja / NSDR): 5–10 min medytacji skupienia na oddechu lub skanowania ciała (body scan) w celu wygaszenia aktywności sieci wzorca domyślnego (DMN), redukcji tonusu współczulnego i torowania fal alfa przed snem (nakazuj szczególnie przy Day Stress >30 lub po późnym treningu).
+  - Drenaż hemodynamiczny: bierne uniesienie nóg (10–15 min w leżeniu z nogami na ścianie/podwyższeniu dla stymulacji baroreceptorów i drenażu limfy z podudzi).
+  - Zakaz ogólników o higienie snu; interweniuj wyłącznie przy podwyższonym napięciu dobowym lub późnym powrocie z jednostki treningowej]
+- **Strategia substratowa, timing i nawodnienie**: [Zalecenia pod jutrzejszy bodziec ({tomorrow_date_str}): podaż CHO (g/kg m.c.) na glikogen, 30-40 g białka wolnowchłanialnego przed snem na nocną syntezę MPS/kolagen + bilans sodu przy dryfie Pa:Hr | Rygor timingu: zamknięcie głównego posiłku min. 2h przed snem w celu ochrony nocnego RHR i redukcji Sleep Stress]
 
 ## 4. OCENA GOTOWOŚCI I DYREKTYWA NA DZIEŃ: {tomorrow_date_str}
-<!--WARUNEK NIEDZIELNY: W niedzielę wygeneruj WYŁĄCZNIE punkt "DECYZJA ADAPTACYJNA / STOPIEŃ GOTOWOŚCI" oraz "Uzasadnienie fizjologiczne"; bezwzględnie POMIŃ "Pierwotny plan..." oraz "ROZPISKA NA DZIEŃ..."-->
+<!--WARUNEK NIEDZIELNY: W niedzielę wygeneruj WYŁĄCZNIE punkt "DECYZJA ADAPTACYJNA / STOPIEŃ GOTOWOŚCI" oraz "Uzasadnienie fizjologiczne"; bezwzględnie POMIŃ "Plan z mikrocyklu" oraz "ROZPISKA EGZEKUCYJNA"-->
 
-- **Pierwotny plan na dzień {tomorrow_date_str}**: [Założenia z <weekly_plan>; w niedzielę POMIŃ]
-- **DECYZJA ADAPTACYJNA / STOPIEŃ GOTOWOŚCI**: [W dniach PON–SOB wybierz dokładnie jedną opcję (zakaz podkręcania obciążeń ponad plan!): PEŁNA EGZEKUCJA PLANU (100% ZAŁOŻEŃ) / KOREKTA TAKTYCZNA (KALIBRACJA WEWNĄTRZ SESJI) / REDUKCJA AWARYJNA (OCHRONA PRZED INFEKCJĄ LUB URAZEM). W NIEDZIELĘ wybierz wyłącznie: PEŁNA GOTOWOŚĆ / ZMĘCZENIE FUNKCJONALNE / GŁĘBOKI DŁUG ADAPTACYJNY / WYMAGANA REGENERACJA]
-- **Uzasadnienie fizjologiczne**: [Zwięzła diagnoza stanu CUN, glikogenu i sztywności MTS pod kątem jutrzejszego bodźca; liczby wyłącznie w nawiasach]
-- **ROZPISKA NA DZIEŃ {tomorrow_date_str}**:
-<!--W dniach PON–SOB wybierz i wypełnij format(y) odpowiadające jutrzejszemu planowi (jeśli w planie są dwie jednostki, np. Tlen + Siłownia, wygeneruj OBA odpowiednie bloki); nieużywane formaty całkowicie usuń. W niedzielę POMIŃ całą sekcję.-->
-<!--FORMAT DLA BIEGU / TLENU (ORBITREK):-->
-  - **Rozgrzewka (RAMP)**: [Czas fazy Raise w Z1, priorytet w Mobilize/Activate oraz faza Potentiate]
-  - **Część główna**: [Ścisłe widełki tempa, limit HR (%LTHR), reżim przerw oraz priorytetowy cue biomechaniczny]
-  - **Schłodzenie**: [Czas i limit strefy HR]
-<!--FORMAT DLA SIŁOWNI:-->
-  - **Jednostka**: [FBW Neural Priming / UPPER + Core]
-  - **Status dolnych partii i CUN**: [Pełna intensywność / Ochrona nóg – rygor RIR ≥2–3, zakaz załamania, kontrola fazy ekscentrycznej i czasu kontaktu GCT w plyometrii]
-  - **Kluczowe akcenty i korekty ćwiczeń**: [Konkretne wytyczne obciążenia/techniki pod stan aparatu ruchu po dzisiejszym dniu]
-  - **Wytyczne aktywacji**: [Priorytet w rozgrzewce i seriach wdrożeniowych]
-<!--FORMAT DLA REST DAY / BASEN RECOVERY:-->
-  - **Wytyczne wykonawcze**: [Dla basenu: ścisły limit HR skorygowany o bradykardię wodną (-10 do -15 bpm), nakaz pływania kraulem/grzbietem i zakaz kopnięć żabką przy przeciążeniu kolan/przywodzicieli; dla Rest Day: protokół pasywny]
+- **Plan z mikrocyklu ({tomorrow_date_str})**: [Założenia jednostki z <weekly_plan>]
+- **DECYZJA ADAPTACYJNA / STOPIEŃ GOTOWOŚCI**: [W dniach PON–SOB wybierz dokładnie jedno (zakaz zwiększania obciążeń ponad plan!):
+  * PEŁNA EGZEKUCJA PLANU (100% założeń: wysoka gotowość ANS, brak przeciwwskazań)
+  * KOREKTA TAKTYCZNA (kalibracja parametrów wewnątrz sesji: modyfikacja tempa/rozgrzewki/RIR przy zmęczeniu funkcjonalnym)
+  * REDUKCJA AWARYJNA (ochrona przed urazem/infekcją: skok RHR ≥5 bpm z krachem HRV lub ostry ból)
+  W NIEDZIELĘ wybierz wyłącznie: PEŁNA GOTOWOŚĆ / ZMĘCZENIE FUNKCJONALNE / GŁĘBOKI DŁUG ADAPTACYJNY / WYMAGANA REGENERACJA]
+- **Uzasadnienie fizjologiczne**: [Zwięzła diagnoza gotowości CUN, glikogenu i sztywności MTS pod kątem jutrzejszego bodźca; liczby wyłącznie w nawiasach]
+- **ROZPISKA EGZEKUCYJNA NA {tomorrow_date_str}**:
+<!--W dniach PON–SOB wypełnij bloki odpowiadające jutrzejszemu planowi; nieużywane bloki usuń. Jeśli w planie są 2 jednostki, wygeneruj OBA bloki i określ rygor separacji (min. 3-4h przerwy między sesjami dla uniknięcia interferencji AMPK/mTOR)-->
+  - **[JEDNOSTKA: BIEG / TLEN]**:
+    - Rozgrzewka (RAMP): [Czas Raise w Z1, priorytet w Mobilize/Activate oraz faza Potentiate]
+    - Część główna: [Widełki tempa, limit HR (%LTHR), nadrzędna kotwica (Pacing vs HR limit), reżim przerw oraz cue motoryczny]
+    - Schłodzenie: [Czas i strefa HR]
+  - **[JEDNOSTKA: SIŁOWNIA]**:
+    - Profil i cel: [FBW Neural Priming / UPPER + Core]
+    - Reżim nóg i CUN: [Rygor RIR (np. ≥2–3), kontrola fazy ekscentrycznej, priorytet czasu kontaktu GCT w skokach]
+    - Wytyczne ćwiczeń i obciążeń: [Modyfikacje ciężaru/powtórzeń pod aktualny stan tkanek po dzisiejszym dniu]
+    - Wdrożenie: [Priorytet w seriach rozgrzewkowych i aktywacji stabilizatorów]
+  - **[JEDNOSTKA: REST DAY / BASEN RECOVERY]**:
+    - Protokół wykonawczy: [Dla basenu: ścisły limit HR z korektą na bradykardię wodną (-10 do -15 bpm względem biegu), dozwolone style i zakaz żabki przy przeciążeniu kolan; dla Rest Day: zalecenia pasywne i limit kroków dziennych]
