@@ -67,7 +67,6 @@
 <!--Format wierszy: na przemian Powtórzenie X oraz czystym tekstem Przerwa X (w przerwomierzu podaj spadek ΔHR60s)-->
 
 - **Profil jednostki**: [Bieg regeneracyjny (Z1) / Baza tlenowa (Z2) / Długie wybieganie (Long Run) / Próg mleczanowy (Sub-LT2/LT2) / Interwały pułapowe (VO2max) / Technika i rytmy (AZS) / Zawody]
-- **Ocena egzekucji planu**: [X/10 – rygorystyczny audyt wierności widełkom tempa, stref HR z mikro-splitów i reżimu przerw]
 - **Audyt biomechaniki i wektora siły**:
   - Kinematyka kroku, SSC i lądowanie (GCT / Kadencja / Długość kroku / Overstriding): [Diagnoza: fakt (liczby) | Mechanizm: fizjologia/kinematyka | Korekta: nakaz motoryczny LUB Brak.]
   - Wektor siły i stabilność miednicy (VR% / VO vs zapadanie w podporze): [Diagnoza: fakt (liczby) | Mechanizm: fizjologia/kinematyka | Korekta: nakaz motoryczny LUB Brak.]
