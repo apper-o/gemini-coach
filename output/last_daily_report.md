@@ -1,130 +1,84 @@
-# AUDYT DZIENNY: 2026-10-19 (Poniedziałek, 2026-10-19)
+# AUDYT DZIENNY: 2026-10-20 (Wtorek, 2026-10-20)
 - Typ dnia: BIEG
-- Bieg: TAK (3.87 km, sesje: 1)
-- Typ treningu biegowego: Technika i rytmy (AZS)
-- Struktura biegu: Warsaw Running (2.47 km) + Warsaw Running (1.40 km)
+- Bieg: TAK (5.00 km, sesje: 1)
+- Typ treningu biegowego: Baza tlenowa (Z2)
+- Struktura biegu: Rozgrzewka: Brak | Główna seria: 5.00 km (Baza tlenowa (Z2)) | Schłodzenie: Brak
 - Siłownia: NIE
 - Partie mięśniowe (siłownia): BRAK
 
-## Biometria regeneracyjna i bilans dnia (Poniedziałek, 2026-10-19):
-- HRV (miniona noc przed treningiem): 49 ms (Średnia 7-dniowa: 51 ms, Norma bazowa: 44–57 ms)
-- RHR (miniona noc przed treningiem): 53 bpm (Średnia 7-dniowa: 54 bpm, odchylenie: -1 bpm)
-- Sen (miniona noc przed treningiem): 76/100 (Czas: 7h 0m, Głęboki: 1h 58m, REM: 0h 55m)
-- Średni stres snu: 22
-- Poranne Body Battery (bufor startowy): 83/100
-- Body Battery pod koniec dnia: 24/100
-- Całodzienny stres: 38/100
-- Kroki (cały dzień): 6657 (aktywne: 359 kcal)
+## Biometria regeneracyjna i bilans dnia (Wtorek, 2026-10-20):
+- HRV (miniona noc przed treningiem): 41 ms (Średnia 7-dniowa: 50 ms, Norma bazowa: 44–57 ms)
+- RHR (miniona noc przed treningiem): 57 bpm (Średnia 7-dniowa: 54 bpm, odchylenie: +3 bpm)
+- Sen (miniona noc przed treningiem): 81/100 (Czas: 7h 32m, Głęboki: 1h 56m, REM: 0h 53m)
+- Średni stres snu: 20
+- Poranne Body Battery (bufor startowy): 72/100
+- Body Battery pod koniec dnia: 38/100
+- Całodzienny stres: 33/100
+- Kroki (cały dzień): 8118 (aktywne: 579 kcal)
 
 ## Zarejestrowane aktywności:
-### Jednostka 1 [Start: 18:12]: Warsaw Running
-- Warunki pogodowe: Temperatura: 7.2°C (odczuwalna: 5.0°C) | Wiatr: 8.0 km/h n | Wilgotność: 85% | Warunki: Pochmurno
-- Dystans: 2.47 km | Czas: 15.4 min | Średnie tempo: 6:13 min/km
-- Tętno: Średnie 141 bpm | Max 151 bpm
-- Training Effect: Aerobowy 2.0/5.0 (RECOVERY) | Beztlenowy 0.0/5.0
-- Biomechanika: Średnia kadencja 167 spm, Krok 0.96 m, Kontakt z podłożem 279.5 ms, Odchylenie pionowe 8.50 cm
+### Jednostka 1 [Start: 12:26]: Warsaw Running
+- Warunki pogodowe: Temperatura: 11.7°C | Wiatr: 8.0 km/h e | Wilgotność: 95% | Warunki: Pochmurno
+- Dystans: 5.00 km | Czas: 32.4 min | Średnie tempo: 6:28 min/km
+- Tętno: Średnie 147 bpm | Max 154 bpm
+- Training Effect: Aerobowy 2.4/5.0 (RECOVERY) | Beztlenowy 0.0/5.0
+- Biomechanika: Średnia kadencja 170 spm, Krok 0.91 m, Kontakt z podłożem 277.6 ms, Odchylenie pionowe 8.14 cm
 
 #### Splity:
 | Km | Dystans [km] | Czas | Tempo [/km] | GAP [/km] | HR śr/max [bpm] | Kadencja [spm] | Krok [m] | GCT [ms] | VO [cm] | Moc [W] | Wznios/Spadek [m] |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| 1 | 1.00 | 6:05 | 6:06 | 6:06 | 138/148 | 167 | 0.97 | 278.2 | 8.56 | 319 | +6/-0 |
-| 2 | 1.00 | 6:16 | 6:16 | 6:19 | 144/151 | 167 | 0.95 | 279.9 | 8.49 | 305 | +0/-2 |
-| 3 | 0.47 | 3:00 | 6:24 | 6:25 | 142/144 | 168 | 0.93 | 281.3 | 8.41 | 294 | +0/-1 |
-### Jednostka 2 [Start: 18:57]: Warsaw Running
-- Warunki pogodowe: Temperatura: 7.2°C (odczuwalna: 5.0°C) | Wiatr: 8.0 km/h n | Wilgotność: 85% | Warunki: Pochmurno
-- Dystans: 1.40 km | Czas: 8.5 min | Średnie tempo: 6:02 min/km
-- Tętno: Średnie 149 bpm | Max 170 bpm
-- Training Effect: Aerobowy 2.0/5.0 (ANAEROBIC_CAPACITY) | Beztlenowy 2.3/5.0
-- Biomechanika: Średnia kadencja 135 spm, Krok 1.22 m, Kontakt z podłożem 233.1 ms, Odchylenie pionowe 7.84 cm
+| 1 | 1.00 | 6:07 | 6:08 | 6:09 | 145/151 | 171 | 0.95 | 271.7 | 8.20 | 312 | +1/-0 |
+| 2 | 1.00 | 6:26 | 6:27 | 6:28 | 149/154 | 171 | 0.91 | 276.2 | 8.10 | 302 | +0/-0 |
+| 3 | 1.00 | 6:33 | 6:34 | 6:35 | 148/152 | 170 | 0.90 | 279.1 | 8.12 | 290 | +1/-1 |
+| 4 | 1.00 | 6:32 | 6:33 | 6:32 | 148/151 | 169 | 0.90 | 279.6 | 8.17 | 296 | +1/-1 |
+| 5 | 1.00 | 6:40 | 6:40 | 6:39 | 146/151 | 169 | 0.89 | 280.9 | 8.14 | 291 | +1/-0 |
+| 6 | 0.00 | 0:01 | 6:09 | 6:58 | 144/144 | 171 | 0.83 | 282.5 | 7.82 | 294 | +0/-0 |
 
-#### Splity:
-| Km | Dystans [km] | Czas | Tempo [/km] | GAP [/km] | HR śr/max [bpm] | Kadencja [spm] | Krok [m] | GCT [ms] | VO [cm] | Moc [W] | Wznios/Spadek [m] |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| 1 | 0.24 | 0:56 | 3:55 | 4:03 | 109/134 | 170 | 1.45 | 231.3 | 9.00 | 487 | +1/-0 |
-| 2 | 0.07 | 1:26 | 21:40 | 12:32 | 142/157 | 67 | 1.16 | 213.0 | 7.13 | 124 | +0/-0 |
-| 3 | 0.09 | 0:17 | 3:10 | 3:43 | 142/142 | 138 | 1.89 | 185.6 | 8.22 | 470 | +0/-2 |
-| 4 | 0.04 | 0:15 | 6:02 | 5:05 | 145/149 | 170 | 1.08 | 264.9 | 8.59 | 381 | +2/-0 |
-| 5 | 0.09 | 0:17 | 3:25 | 3:42 | 154/161 | 179 | 1.49 | 226.4 | 9.00 | 516 | +0/-0 |
-| 6 | 0.07 | 0:48 | 11:10 | 9:34 | 160/165 | 123 | 0.92 | 250.3 | 6.15 | 160 | +0/-0 |
-| 7 | 0.09 | 0:18 | 3:27 | 4:29 | 152/153 | 158 | 1.65 | 203.6 | 8.13 | 424 | +0/-0 |
-| 8 | 0.05 | 0:18 | 6:41 | 5:07 | 153/156 | 171 | 1.10 | 262.2 | 8.69 | 386 | +0/-0 |
-| 9 | 0.08 | 0:19 | 3:48 | 4:10 | 160/165 | 176 | 1.36 | 233.5 | 9.23 | 471 | +0/-0 |
-| 10 | 0.07 | 0:48 | 11:41 | 10:08 | 161/168 | 119 | 0.80 | 269.8 | 6.23 | 150 | +0/-0 |
-| 11 | 0.08 | 0:17 | 3:35 | 4:35 | 154/157 | 147 | 1.37 | 196.7 | 8.15 | 375 | +0/-0 |
-| 12 | 0.04 | 0:16 | 6:21 | 4:50 | 154/155 | 172 | 1.13 | 256.6 | 8.72 | 393 | +1/-0 |
-| 13 | 0.08 | 0:18 | 3:37 | 4:02 | 157/161 | 179 | 1.37 | 231.6 | 9.09 | 469 | +0/-0 |
-| 14 | 0.08 | 0:51 | 10:41 | 8:49 | 165/170 | 114 | 0.94 | 230.5 | 6.57 | 171 | +0/-0 |
-| 15 | 0.08 | 0:17 | 3:41 | 4:09 | 156/157 | 130 | 1.68 | 201.5 | 9.46 | 432 | +0/-0 |
-| 16 | 0.05 | 0:16 | 5:44 | 4:29 | 157/159 | 172 | 1.24 | 247.9 | 9.11 | 431 | +0/-0 |
-| 17 | 0.08 | 0:17 | 3:27 | 4:07 | 161/165 | 176 | 1.39 | 236.2 | 9.20 | 469 | +0/-0 |
-| 18 | 0.02 | 0:06 | 5:53 | 4:23 | 168/170 | 163 | 1.26 | 220.7 | 8.15 | 373 | +0/-0 |
-
-## Ocena trenera i adaptacja na dzień Wtorek, 2026-10-20:
-## 1. AUDYT JEDNOSTKI BIEGOWEJ: Poniedziałek, 2026-10-19
+## Ocena trenera i adaptacja na dzień Środa, 2026-10-21:
+## 1. AUDYT JEDNOSTKI BIEGOWEJ: Wtorek, 2026-10-20
 
 | Parametr | Plan | Realizacja | Odchylenie |
 |:---|:---:|:---:|:---:|
-| Dystans całkowity [km] | 4.00 | 3.87 | -0.13 km |
-| Średnie tempo [min/km] | 6:22–6:40 | 6:09 | -0:13–0:31 min/km (za szybko) |
-| Średnie HR [bpm / %LTHR] | <123 (<61% HRmax) | 144 (71% HRmax) | +21 bpm (strefa Z2/Z3 zamiast Z1) |
-| Średnia kadencja [spm] | ~165–170 | 155 | -10–15 spm (zniekształcona marszem) |
+| Dystans całkowity [km] | 5.50 | 5.00 | -0.50 |
+| Średnie tempo [min/km] | 5:40 - 6:00 | 6:28 | +0:28 - +0:48 (zbyt wolno) |
+| Średnie HR [bpm / %LTHR] | 128 - 140 | 147 (max 154) | +7 - +19 bpm (dryf do Z3) |
+| Średnia kadencja [spm] | Brak danych | 170 | Zgodna z normą Z1/Z2 |
 
-| Segment | Dystans [km] | Czas | Tempo [min/km] | Śr. HR [bpm] | Max / ΔHR60s [bpm] | Kadencja [spm] | Krok [m] | GCT [ms] | VR [%] |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Powtórzenie 1 | 0.24 | 0:56 | 3:55 | 109 | 134 | 170 | 1.45 | 231.3 | 9.00 |
-| Przerwa 1 | 0.07 | 1:26 | 21:40 | 142 | brak spadku (marsz) | 67 | 1.16 | 213.0 | 7.13 |
-| Powtórzenie 2 | 0.09 | 0:17 | 3:10 | 142 | 142 | 138 | 1.89 | 185.6 | 8.22 |
-| Przerwa 2 | 0.04 | 0:15 | 6:02 | 145 | trucht łączący | 170 | 1.08 | 264.9 | 8.59 |
-| Powtórzenie 3 | 0.09 | 0:17 | 3:25 | 154 | 161 | 179 | 1.49 | 226.4 | 9.00 |
-| Przerwa 3 | 0.07 | 0:48 | 11:10 | 160 | brak spadku (marsz) | 123 | 0.92 | 250.3 | 6.15 |
-| Powtórzenie 4 | 0.09 | 0:18 | 3:27 | 152 | 153 | 158 | 1.65 | 203.6 | 8.13 |
-| Przerwa 4 | 0.05 | 0:18 | 6:41 | 153 | trucht łączący | 171 | 1.10 | 262.2 | 8.69 |
-| Powtórzenie 5 | 0.08 | 0:19 | 3:48 | 160 | 165 | 176 | 1.36 | 233.5 | 9.23 |
-| Przerwa 5 | 0.07 | 0:48 | 11:41 | 161 | brak spadku (marsz) | 119 | 0.80 | 269.8 | 6.23 |
-| Powtórzenie 6 | 0.08 | 0:17 | 3:35 | 154 | 157 | 147 | 1.37 | 196.7 | 8.15 |
-| Przerwa 6 | 0.04 | 0:16 | 6:21 | 154 | trucht łączący | 172 | 1.13 | 256.6 | 8.72 |
-| Powtórzenie 7 | 0.08 | 0:18 | 3:37 | 157 | 161 | 179 | 1.37 | 231.6 | 9.09 |
-| Przerwa 7 | 0.08 | 0:51 | 10:41 | 165 | brak spadku (marsz) | 114 | 0.94 | 230.5 | 6.57 |
-| Powtórzenie 8 | 0.08 | 0:17 | 3:41 | 156 | 157 | 130 | 1.68 | 201.5 | 9.46 |
-| Przerwa 8 | 0.05 | 0:16 | 5:44 | 157 | trucht łączący | 172 | 1.24 | 247.9 | 9.11 |
-| Powtórzenie 9 | 0.08 | 0:17 | 3:27 | 161 | 165 | 176 | 1.39 | 236.2 | 9.20 |
-| Przerwa 9 | 0.02 | 0:06 | 5:53 | 168 | 170 | 163 | 1.26 | 220.7 | 8.15 |
-
-- **Profil jednostki**: Technika i rytmy (AZS)
+- **Profil jednostki**: Baza tlenowa (Z2)
 - **Audyt biomechaniki i wektora siły**:
-  - Kinematyka kroku, SSC i lądowanie (GCT / Kadencja / Długość kroku / Overstriding): Diagnoza: Skrajnie niska kadencja na odcinkach dynamicznych (130–158 spm na powtórzeniach 2, 4, 6, 8) połączona z nadmierną długością kroku (do 1.89 m) oraz wysokim GCT w prędkościach submaksymalnych (201–236 ms). | Mechanizm: Poważny overstriding wywołany próbą generowania prędkości poprzez rzucanie podudzia w przód przed środek masy (COM), generujący wysoki impuls hamujący i obciążenie stawu kolanowego zamiast wykorzystania sprężystości ścięgna Achillesa. | Korekta: Skrócenie kroku i wzrost rytmu o +3-5%; lądowanie ściśle pod rzutem środka masy (COM).
-  - Wektor siły i stabilność miednicy (VR% / VO vs zapadanie w podporze): Diagnoza: Chronicznie wysoki wskaźnik odchylenia pionowego VR w trakcie dynamicznych odcinków (8.13–9.46%) oraz w biegu ciągłym (8.90%). | Mechanizm: Rozproszenie wektora siły na ruch wertykalny i brak stabilizacji miednicy w płaszczyźnie czołowej, co potęguje siły uderzeniowe na 5 dni przed startem docelowym. | Korekta: Usztywnienie cylindra tułowia (tłocznia brzuszna) i stabilizacja miednicy w podporze (m. gluteus medius).
+  - Kinematyka kroku, SSC i lądowanie (GCT / Kadencja / Długość kroku / Overstriding): Diagnoza: Progresywny dryf GCT o 9.2 ms (z 271.7 ms na 1. km do 280.9 ms na 5. km) przy jednoczesnym skracaniu kroku z 0.95 m do 0.89 m i spadku prędkości. | Mechanizm: Obwodowe zmęczenie kompleksu m. soleus-ścięgno Achillesa wygasza stretch reflex i wymusza wydłużenie fazy amortyzacji kosztem sprężystego magazynowania energii (przejście na mniej wydajną pracę koncentryczną). | Korekta: Pre-aktywacja stopy (dorsiflexion) przed lądowaniem; intencja natychmiastowego odbicia ze sztywnego kompleksu podudzia.
+  - Wektor siły i stabilność miednicy (VR% / VO vs zapadanie w podporze): Diagnoza: Skrajnie wysoki wskaźnik odchylenia pionowego VR na poziomie 8.97% przy stabilnej oscylacji pionowej VO (8.14 cm). | Mechanizm: Mechanical collapsing w fazie podporu wynikający z niewydolności ekscentrycznej czworogłowych i opadania miednicy przy spadającej długości kroku, co generuje straty energii na wektor pionowy. | Korekta: Usztywnienie cylindra tułowia (tłocznia brzuszna) i stabilizacja miednicy w podporze (m. gluteus medius).
 - **Audyt bioenergetyczny, restytucja i aparatura**:
-  - Sprzężenie tlenowe i kinetyka metaboliczna (EF / Pa:Hr dryf / stabilność MLSS / Cardiac Lag): Diagnoza: Całkowite złamanie założeń strefy Z1 w Jednostce 1 (średnie HR 141 bpm, max 151 bpm w strefie Z2/Z3 przy tempie 6:13 min/km vs planowane <123 bpm i >6:20 min/km). | Mechanizm: Sabotaż metaboliczny i niepotrzebna aktywacja glikolizy w tygodniu startowym wskutek zbyt szybkiego biegu ciągłego. | Korekta: Bezwzględne zaciągnięcie hamulca na biegach tlenowych; kontrola tętna jako nadrzędnej kotwicy (limit 123 bpm).
-  - Pacing mikro-splitów i restytucja przerw (ΔHR60s w seriach): Diagnoza: Chaos w prędkościach rytmów (rozstrzał od 3:10 do 3:55 min/km) oraz kumulacja tętna w przerwach marszowych (wzrost z serii na serię z 142 bpm do 168 bpm, Anaerobic TE 2.3). | Mechanizm: Niedostateczna restytucja między przyspieszeniami, generowanie zbędnego długu tlenowego i kwasicy metabolicznej zamiast czysto nerwowo-mięśniowego pobudzenia (PAP). | Korekta: Wymuszenie pełnego wypoczynku do spadku tętna poniżej 130 bpm przed kolejnym powtórzeniem.
-  - Środowisko i aparatura pomiarowa (temperatura, wiatr, nachylenie, błędy EKG/GPS): Brak. Warunki optymalne (7.2°C, niska prędkość wiatru), profil płaski, brak anomalii telemetrycznych.
+  - Sprzężenie tlenowe i kinetyka metaboliczna (EF / Pa:Hr dryf / stabilność MLSS / Cardiac Lag): Diagnoza: Drastyczne rozprzężenie tlenowe – tempo spadło głęboko do strefy Z1 (6:28–6:40 min/km), podczas gdy koszt wewnętrzny HR wzrósł do górnej granicy Z2 i wszedł w Z3 (śr. 147 bpm, pik 154 bpm), co daje skrajnie niski Efficiency Factor. | Mechanizm: Zmęczenie nerwowo-mięśniowe po kumulacji obciążeń z poniedziałku (21766 kroków) wywołało wczesną rekrutację włókien typu IIa i skokowy wzrost kosztu O2 przy znikomym tempie biegowym. | Korekta: Bezwzględna kontrola pułapu tętna na rozgrzewkach i biegach regeneracyjnych; zakaz przekraczania strefy Z1 przed kluczowymi akcentami.
+  - Pacing mikro-splitów i restytucja przerw (ΔHR60s w seriach): Nie dotyczy.
+  - Środowisko i aparatura pomiarowa (temperatura, wiatr, nachylenie, błędy EKG/GPS): Diagnoza: Wysoka wilgotność powietrza (95%) przy temperaturze 11.7°C ograniczyła efektywność chłodzenia konwekcyjnego, co spotęgowało dryf hemodynamiczny tętna.
 
 ## 2. KOSZT METABOLICZNY I BILANS ZASOBÓW (ANS)
 
-- **Bodziec adaptacyjny i koszt tkankowy**: Nieplanowany drenaż glikogenu mięśniowego wywołany wejściem w strefy Z3/Z4/Z5 (HR max 170 bpm, TE anaerobowe 2.3). Wysokie siły hamowania przy overstridingu (krok do 1.89 m przy niskiej kadencji) wygenerowały niepotrzebny mikrourazowy stres ekscentryczny aparatu wyprostnego kolana i mięśni kulszowo-goleniowych na 5 dni przed startem docelowym na 5 km.
-- **Bilans autonomiczny (Noc vs Dzień)**: Baza nocna stabilna (HRV 49 ms w korytarzu 44–57 ms, RHR 53 bpm poniżej normy 54 bpm, Sleep Stress 22). Drenaż dobowy umiarkowany (kroki 6657, Day Stress 38, zjazd BB do 24). Wykonany wieczorny trening wprowadził niepotrzebny wyrzut katecholaminowy przed snem, co opóźni wejście w głęboką fazę snu wolnofalowego (NREM).
-- **Zmęczenie skumulowane i percepcja (kontekst Niedziela, 2026-10-18 vs notatka)**: Brak dysonansu.
+- **Bodziec adaptacyjny i koszt tkankowy**: Trening wywołał nieproporcjonalnie wysoki wewnętrzny koszt krążeniowy bez uzyskania docelowej prędkości adaptacyjnej. Nastąpił umiarkowany drenaż glikogenu wynikający z wejścia w strefę Z3 (154 bpm). Zmęczenie ekscentryczne mięśni podudzia uległo pogłębieniu przez utratę sztywności MTS (wzrost GCT do 280.9 ms).
+- **Bilans autonomiczny (Noc vs Dzień)**: Nocna telemetria ANS wskazała lekkie przesunięcie współczulne (HRV 41 ms poniżej bazy 44–57 ms, RHR 57 bpm przy bazie 54 bpm), pomimo zadowalającej architektury snu (Deep 1h 56m). Dzienny drenaż pozostał umiarkowany (8118 kroków, Day Stress 33/100), jednak Body Battery spadło do 38/100, co potwierdza ograniczony bufor adaptacyjny przed środowym akcentem.
+- **Zmęczenie skumulowane i percepcja (kontekst Poniedziałek, 2026-10-19 vs notatka)**: Brak dysonansu. Zawodnik nie zgłosił uwag, jednak telemetria jednoznacznie dowodzi skumulowanego drenażu z poniedziałku (ponad 21 tys. kroków i dwie jednostki biegowe), co przełożyło się na załamanie ekonomii biegu i dryf tętna.
 
 ## 3. PROTOKÓŁ REGENERACJI (WIECZÓR I NOC)
 
 - **Celowana praca tkankowa (SMR) i przeciwwskazania**: 
-  - Struktury priorytetowe: Mięsień czworogłowy uda (zwłaszcza m. rectus femoris) oraz pasmo biodrowo-piszczelowe/TFL ze względu na przeciążenia hamujące z overstridingu | Parametry: powolne rolowanie uciskowe, 30–45 s na strefę, nacisk umiarkowany.
-  - Bezwzględne przeciwwskazania: Kategoryczny zakaz agresywnego rozbijania mięśni kulszowo-goleniowych i ścięgna Achillesa oraz długiego stretchingu statycznego powyżej 30 s – ryzyko zniesienia sztywności pasywnej (MTS) przed zawodami.
+  - Struktury priorytetowe: Mięsień płaszczkowaty (m. soleus) oraz rozcięgno podeszwowe w celu przywrócenia elastyczności po dryfie GCT | Parametry: rolowanie powolne i punktowy nacisk po 30-45 s na stronę.
+  - Bezwzględne przeciwwskazania: Zakaz agresywnego rolowania pasma biodrowo-piszczelowego i mięśni czworogłowych pod wysokim progiem bólu (<4/10) oraz zakaz rozciągania statycznego ścięgien Achillesa w skrajnych zakresach.
 - **Modyfikacja rutyny wieczornej (<evening_routine>)**:
-  - Wydłużyć / Dodać: Couch Stretch w tyłopochyleniu miednicy (2 x 45 s na stronę bez pogłębiania lordozy) w celu otwarcia zginaczy biodra po pracy siedzącej oraz Soleus Wall Stretch (2 x 30 s).
-  - Skrócić / Pominąć: Brak zdefiniowanej rutyny bazowej.
+  - Wydłużyć / Dodać: Soleus Wall Stretch (2 x 30 s na ugiętym kolanie) oraz Couch Stretch z mocnym tyłopochyleniem miednicy (2 x 40 s) w celu otwarcia zginaczy biodra przed środowymi odcinkami 400 m.
+  - Skrócić / Pominąć: Pominąć wszelkie ćwiczenia dynamiczne i skocznościowe.
 - **Modulacja autonomiczna i środowisko snu**: 
-  - Wyciszenie korowe (Medytacja / NSDR): 10 min protokołu NSDR lub medytacji oddechowej (faza wydechu 2x dłuższa od wdechu) natychmiast przed snem w celu wygaszenia pobudzenia współczulnego wywołanego sprintami z jednostki 2.
-  - Drenaż hemodynamiczny: 12 min biernego uniesienia nóg pod kątem 90 stopni (nogi oparte o ścianę) w celu redukcji obrzęku obwodowego i stymulacji baroreceptorów.
-- **Strategia substratowa, timing i nawodnienie**: Podaż węglowodanów złożonych na poziomie 1.0–1.2 g/kg m.c. w posiłku potreningowym w celu natychmiastowej resyntezy nadprogramowo uszczuplonego glikogenu; 35 g kazeiny micelarnej lub twarogu bezpośrednio przed snem pod nocną syntezę białek mięśniowych (MPS); 500 ml wody z 500 mg sodu; zamknięcie posiłku minimum 2h przed snem.
+  - Wyciszenie korowe: 10 min protokołu NSDR lub medytacji oddechowej (kadencja oddechu 4 s wdech / 6 s wydech) bezpośrednio przed snem w celu zbicia tonusu współczulnego po dziennym Day Stress (33/100) i obniżenia nocnego RHR.
+  - Drenaż hemodynamiczny: 12 min biernego uniesienia nóg pod kątem 60° na ścianie dla przyspieszenia powrotu żylnego i aktywacji baroreceptorów.
+- **Strategia substratowa, timing i nawodnienie**: Podaż węglowodanów złożonych na poziomie 5.0–5.5 g/kg m.c. w celu pełnej resyntezy glikogenu przed sesją VO2max. Przed snem przyjąć 35 g białka wolnowchłanialnego (kazeina/twaróg) wraz z 300 ml wody wzbogaconej o 500 mg sodu i magnez. Zamknięcie okna żywieniowego bezwzględnie 2.5h przed snem dla redukcji Sleep Stress.
 
-## 4. OCENA GOTOWOŚCI I DYREKTYWA NA DZIEŃ: Wtorek, 2026-10-20
+## 4. OCENA GOTOWOŚCI I DYREKTYWA NA DZIEŃ: Środa, 2026-10-21
 
-- **Plan z mikrocyklu (Wtorek, 2026-10-20)**: Część główna: 5.50 km, tempo 5:40-6:00 min/km, HR 128-140 bpm, strefa Z2.
+- **Plan z mikrocyklu (Środa, 2026-10-21)**: Bieg: VO2max. Rozgrzewka: 2.00 km w Z1 (tempo 6:20-6:35 min/km, HR <123 bpm) + mobilność dynamiczna. Część główna: 4 x 400 m, tempo 3:55-3:58 min/km, przerwa 2:00 w pełnym marszu, HR 170-180 bpm, strefa Z4/Z5. Schłodzenie: 1.00 km truchtu w Z1 (tempo >6:25 min/km, HR <123 bpm).
 - **DECYZJA ADAPTACYJNA / STOPIEŃ GOTOWOŚCI**: KOREKTA TAKTYCZNA
-- **Uzasadnienie fizjologiczne**: Wskaźniki ANS są stabilne (HRV 49 ms, RHR 53 bpm), brak podstaw do redukcji kilometrażu. Poniedziałkowe błędy pacingowe (anaerobowe zrywy i HR do 170 bpm) wymuszają jednak bezwzględny reżim tlenowy we wtorek, aby nie pogłębiać drenażu glikogenu przed kluczowym akcentem VO2max w środę.
-- **ROZPISKA EGZEKUCYJNA NA Wtorek, 2026-10-20**:
+- **Uzasadnienie fizjologiczne**: Skok RHR (+3 bpm) oraz spadek HRV (41 ms) nie wypełniają kryteriów redukcji awaryjnej, lecz załamanie relacji v/HR i dryf GCT (280.9 ms) sygnalizują wyraźne zmęczenie obwodowe. Na 4 dni przed startem docelowym priorytetem jest pobudzenie nerwowo-mięśniowe bez generowania kwasicy niszczącej. Wymusza się rygorystyczne trzymanie górnych widełek tempa (nie szybciej niż 3:58 min/km) i bezwzględne kontrolowanie rozgrzewki ściśle w Z1.
+- **ROZPISKA EGZEKUCYJNA NA Środa, 2026-10-21**:
   - **[JEDNOSTKA: BIEG / TLEN]**:
-    - Rozgrzewka (RAMP): 5 min mobilizacji dynamicznej stawu skokowego i biodrowego w miejscu przed wyjściem; brak podbiegów i przyspieszeń (Raise wyłącznie w truchcie).
-    - Część główna: Dystans 5.50 km. Pacing: 5:50–6:05 min/km (dolna granica założeń). Nadrzędna kotwica: tętno – bezwzględny sufit 140 bpm (strefa Z2). W przypadku osiągnięcia 140 bpm natychmiastowe zwolnienie tempa bez względu na wskazania zegarka. Cue motoryczny: "Wysoka kadencja (min. 168–172 spm), krótki krok prowadzony ściśle pod środkiem ciężkości".
-    - Schłodzenie: 3 minuty marszu bezpośrednio po zatrzymaniu biegu, przejście do natychmiastowego nawodnienia.
+    - Rozgrzewka (RAMP): 2.00 km Raise wyłącznie w Z1 (tempo 6:25-6:35 min/km, tętno pod rygorem <123 bpm); faza Mobilize: dynamiczne wymachy nóg w płaszczyźnie strzałkowej, krążenia bioder; faza Potentiate: 2 x 40 m skip A z naciskiem na sztywność stopy, bez wykonywania ostrych przebieżek.
+    - Część główna: 4 x 400 m. Kotwica wykonawcza: Pacing tempowy ściśle 3:55-3:58 min/km (czas odcinka: 94-95 sekund). Zakaz otwierania pierwszych 100 m poniżej 23.5 s. Tętno docelowe 170-180 bpm w drugiej części powtórzenia (uwzględnić Cardiac Lag w pierwszych 30 sekundach). Przerwa: równe 2:00 w pełnym marszu (zakaz truchtu; celem jest resynteza fosfokreatyny i restytucja krążeniowa ΔHR60s >30 bpm). Cue motoryczny: "Krótki kontakt z podłożem, lądowanie ściśle pod środkiem ciężkości i agresywna praca ramion w osi przód-tył".
+    - Schłodzenie: 1.00 km bardzo wolnego truchtu regeneracyjnego (tempo >6:30 min/km, HR <120 bpm). Natychmiastowe przejście do marszu w przypadku przekroczenia 123 bpm.
