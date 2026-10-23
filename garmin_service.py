@@ -199,7 +199,18 @@ def parse_activity_biomechanics(activity, include_splits=True):
     splits_raw = activity.get('splits_data') if include_splits else None
     parsed_splits = []
     if isinstance(splits_raw, dict):
-        lap_list = splits_raw.get('lapDTOs', [])
+        lap_list = list(splits_raw.get('lapDTOs', []))
+        # Odfiltrowanie szczątkowego ostatniego splitu (autolapa) powstałego przy wyhamowywaniu / zatrzymaniu zegarka
+        # (np. bieg zakończony na 4.01 km tworzy split o dystansie < 0.10 km lub czasie < 20 s)
+        while len(lap_list) > 1:
+            last_lap = lap_list[-1]
+            last_dist_km = (last_lap.get('distance') or 0) / 1000
+            last_dur_sec = last_lap.get('duration') or 0
+            if last_dist_km < 0.10 or last_dur_sec < 20:
+                lap_list.pop()
+            else:
+                break
+
         if lap_list:
             parsed_splits.append("| Km | Dystans [km] | Czas | Tempo [/km] | GAP [/km] | HR śr/max [bpm] | Kadencja [spm] | Krok [m] | GCT [ms] | VO [cm] | Moc [W] | Wznios/Spadek [m] |")
             parsed_splits.append("|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|")

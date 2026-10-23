@@ -34,6 +34,7 @@
    - Filtry i artefakty aparatury:
      * Pas EKG: nagły pik HR (>175-180 bpm) w pierwszych 3-6 min biegu przy niskim v/f = artefakt elektrostatyczny suchych elektrod (unieważnij odczyt; nie traktuj jako anomalii metabolicznej).
      * Stadion / Tor: ignoruj tempo chwilowe i dystans GPS (błąd śladu na wirażach); tempo i prędkość licz WYŁĄCZNIE ze wzoru: dystans odcinka (np. 400m/1000m) / czas ręcznego lapa.
+     * Wyhamowanie przed zatrzymaniem zegarka: ignoruj ewentualne szczątkowe odczyty tempa, kadencji i GCT z ostatnich metrów biegu; wyhamowanie do marszu przed wciśnięciem Stop nie świadczy o załamaniu sztywności SSC (MTS) ani osłabieniu m. soleus.
    - Słownik korekt biomechanicznych (wymuszony mapping symptom -> cue motoryczny):
      * Załamanie SSC / dryf GCT -> "Pre-aktywacja stopy (dorsiflexion) przed lądowaniem; intencja natychmiastowego odbicia ze sztywnego kompleksu podudzia".
      * Overstriding / niska kadencja w Z4/Z5 -> "Skrócenie kroku i wzrost rytmu o +3-5%; lądowanie ściśle pod rzutem środka masy (COM)".
@@ -79,7 +80,7 @@
 
 - **Bodziec adaptacyjny i koszt tkankowy**: [Synteza sumarycznego kosztu biegu: drenaż glikogenu, stres ekscentryczny (DOMS / spadek sztywności MTS) oraz obciążenie CUN]
 - **Bilans autonomiczny (Noc vs Dzień)**: [Wpływ bazy porannej (HRV, RHR, Sleep Stress) skorelowany z drenażem dziennym (Day Stress, Body Battery) i kosztem sesji – stan: dominacja współczulna vs bufor adaptacyjny]
-- **Zmęczenie skumulowane i percepcja (kontekst {yesterday_date_str} vs notatka)**: [Diagnoza dysonansu między <user_note> a telemetrią (np. zaniżone RPE przy wysokim HR = maskowanie katecholaminowe; wysokie RPE przy niskim HR = zmęczenie ośrodkowe CUN/glikogen) LUB wpisz: Brak dysonansu.]
+- **Zmęczenie skumulowane i percepcja (kontekst {yesterday_date_str} vs notatka)**: [Diagnoza dysonansu między NOTATKA_ZAWODNIKA a telemetrią (np. zaniżone RPE przy wysokim HR = maskowanie katecholaminowe; wysokie RPE przy niskim HR = zmęczenie ośrodkowe CUN/glikogen) LUB wpisz: Brak dysonansu.]
 
 ## 3. PROTOKÓŁ REGENERACJI (WIECZÓR I NOC)
 
@@ -87,8 +88,8 @@
   - Struktury priorytetowe: [1–2 obszary na bazie telemetrii (dryf GCT -> m. soleus; spadek L -> zginacze biodra/pośladek; skok VR -> TFL/gluteus medius) | Parametry: czas (30-45 s)]
   - Bezwzględne przeciwwskazania: [Po akcentach Z4/Z5 lub biegach >75 min KATEGORYCZNY ZAKAZ agresywnego rolowania (ból >4/10) oraz długiego stretchingu statycznego (>30 s) na uszkodzone grupy; przy braku przeciwwskazań wpisz: Brak.]
 - **Modyfikacja rutyny wieczornej (<evening_routine>)**:
-  - Wydłużyć / Dodać: [Konkretne nazwy ćwiczeń z listy zawodnika pod dzisiejsze napięcia biegowe i biurkowe (np. Couch Stretch w tyłopochyleniu miednicy, Soleus Wall Stretch)]
-  - Skrócić / Pominąć: [Konkretne nazwy pozycji z listy zbędnych czasowo (np. redukcja Bear Hug) lub zbyt agresywnie rozciągających przeciążone dziś tkanki]
+  - Wydłużyć / Dodać: [Konkretne nazwy ćwiczeń z listy zawodnika pod dzisiejsze napięcia biegowe i biurkowe]
+  - Skrócić / Pominąć: [Konkretne nazwy pozycji z listy zbędnych czasowo lub zbyt agresywnie rozciągających przeciążone dziś tkanki]
 - **Modulacja autonomiczna i środowisko snu**: [Celowana interwencja parasympatyczna pod wieczorny drenaż, stres psychiczny i obciążenie nóg:
   - Wyciszenie korowe (Medytacja / NSDR): 5–10 min medytacji skupienia na oddechu lub skanowania ciała (body scan) w celu wygaszenia aktywności sieci wzorca domyślnego (DMN), redukcji tonusu współczulnego i torowania fal alfa przed snem (nakazuj szczególnie przy Day Stress >30 lub po późnym treningu).
   - Drenaż hemodynamiczny: bierne uniesienie nóg (10–15 min w leżeniu z nogami na ścianie/podwyższeniu dla stymulacji baroreceptorów i drenażu limfy z podudzi).
