@@ -25,12 +25,12 @@ HISTORY_DIR_PATH = "trainings_history"
 DEBUG_DIR_PATH = "debug"
 
 PERSONAL_DATA_KEYS = (
-    "primary_goal", "secondary_goal", "phase", "last_event_date", "last_event_type",
-    "height", "weight", "max_hr", "lthr",
-    "z1", "z2", "z3", "z4", "z5",
-    "pace_z1", "pace_z2", "pace_z3", "pace_z4", "pace_z5",
+    "primary_goal", "secondary_goal", "phase", "last_event",
+    "height", "weight", "lthr",
+    "hr_zones", "pace_zones",
     "personal_records", "additional_notes"
 )
+ZONE_KEYS = ("z1", "z2", "z3", "z4", "z5")
 UNKNOWN_VALUE_KEYWORDS = frozenset({"nieznany", "brak", "none", "null"})
 
 STRENGTH_WORKOUT_NAMES = frozenset({
@@ -145,16 +145,23 @@ def load_personal_data(filepath=os.path.join(INPUT_DIR_PATH, "personal_data.json
     Returns:
         dict: Znormalizowany słownik parametrów treningowych.
     """
+    default_zones = {z: NO_DATA for z in ZONE_KEYS}
+    default_last_event = {"type": NO_DATA, "time": NO_DATA, "date": NO_DATA}
     default_personal_records = {
-        dist: {"time": NO_DATA, "date": NO_DATA}
+        dist: NO_DATA
         for dist in ("400m", "800m", "1500m", "5km", "10km", "polmaraton", "maraton")
     }
-    default_personal_data = {field: NO_DATA for field in PERSONAL_DATA_KEYS}
+    default_personal_data = {
+        **{field: NO_DATA for field in PERSONAL_DATA_KEYS},
+        "last_event": dict(default_last_event),
+        "hr_zones": dict(default_zones),
+        "pace_zones": dict(default_zones),
+        "personal_records": dict(default_personal_records),
+    }
 
     # 1. Sprawdzenie istnienia pliku i utworzenie szablonu startowego w razie potrzeby
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
     if not os.path.exists(filepath):
-        default_personal_data["personal_records"] = default_personal_records
         try:
             with open(filepath, "w", encoding="utf-8") as file_handle:
                 json.dump(default_personal_data, file_handle, indent=4, ensure_ascii=False)
@@ -184,16 +191,43 @@ def load_personal_data(filepath=os.path.join(INPUT_DIR_PATH, "personal_data.json
         goal_val = runner_config.get(goal_key)
         if not isinstance(goal_val, dict):
             raise ValueError(
-                f"Klucz '{goal_key}' w '{filepath}' musi być obiektem JSON (słownikiem) z polami 'target', 'date', 'stimulus_share'. Otrzymano: {type(goal_val).__name__}"
+                f"Klucz '{goal_key}' w '{filepath}' musi być obiektem JSON (słownikiem) z polami 'target', 'date'. Otrzymano: {type(goal_val).__name__}"
             )
-        for req_field in ("target", "stimulus_share"):
-            if req_field not in goal_val:
-                raise ValueError(f"Obiekt '{goal_key}' w '{filepath}' musi zawierać pole '{req_field}'.")
+        if "target" not in goal_val:
+            raise ValueError(f"Obiekt '{goal_key}' w '{filepath}' musi zawierać pole 'target'.")
 
     # 4. Scalenie z szablonem bazowym (gwarancja obecności wszystkich wymaganych kluczy)
+    runner_last_event = runner_config.get("last_event")
+    if isinstance(runner_last_event, dict):
+        merged_last_event = {**default_last_event, **runner_last_event}
+    elif runner_last_event:
+        merged_last_event = runner_last_event
+    elif runner_config.get("last_event_date"):
+        merged_last_event = {
+            "type": runner_config.get("last_event_type", NO_DATA),
+            "date": runner_config.get("last_event_date", NO_DATA),
+            "time": runner_config.get("last_event_time", NO_DATA),
+        }
+    else:
+        merged_last_event = dict(default_last_event)
+
+    runner_hr_zones = runner_config.get("hr_zones")
+    merged_hr_zones = {**default_zones, **runner_hr_zones} if isinstance(runner_hr_zones, dict) else dict(default_zones)
+
+    runner_pace_zones = runner_config.get("pace_zones")
+    merged_pace_zones = {**default_zones, **runner_pace_zones} if isinstance(runner_pace_zones, dict) else dict(default_zones)
+
     runner_records = runner_config.get("personal_records")
-    merged_records = {**default_personal_records, **runner_records} if isinstance(runner_records, dict) else default_personal_records
-    complete_personal_data = {**default_personal_data, **runner_config, "personal_records": merged_records}
+    merged_records = {**default_personal_records, **runner_records} if isinstance(runner_records, dict) else dict(default_personal_records)
+
+    complete_personal_data = {
+        **default_personal_data,
+        **runner_config,
+        "last_event": merged_last_event,
+        "hr_zones": merged_hr_zones,
+        "pace_zones": merged_pace_zones,
+        "personal_records": merged_records,
+    }
 
     # 5. Sanityzacja i normalizacja wszystkich pól do jednolitego formatu
     return {
@@ -216,17 +250,11 @@ def format_personal_records(records):
     if not records or not isinstance(records, dict):
         return NO_DATA
 
-    entries = []
-    for distance, data in records.items():
-        if isinstance(data, dict):
-            time_val = data.get("time", NO_DATA)
-            date_val = data.get("date", NO_DATA)
-            if time_val and time_val != NO_DATA:
-                date_str = f" ({date_val})" if date_val and date_val != NO_DATA else ""
-                entries.append(f"{distance}: {time_val}{date_str}")
-        elif isinstance(data, str) and data and data != NO_DATA:
-            entries.append(f"{distance}: {data}")
-
+    entries = [
+        f"{distance}: {val}"
+        for distance, val in records.items()
+        if isinstance(val, str) and val and val != NO_DATA
+    ]
     return " | ".join(entries) if entries else NO_DATA
 
 
@@ -235,7 +263,7 @@ def format_goal(goal_data, ref_date=None):
     Formatuje cel biegowy z obiektu słownika, uwzględniając czas względny do startu.
 
     Args:
-        goal_data (dict): Słownik zawierający dane celu (target, date, stimulus_share).
+        goal_data (dict): Słownik zawierający dane celu (target, date).
         ref_date (datetime.date, optional): Data odniesienia do wyliczenia relacji czasowej.
 
     Returns:
@@ -283,6 +311,52 @@ def format_relative_time(date_str, ref_date=None):
         return str(date_str)
 
 
+def format_last_event(event_data, ref_date=None):
+    """
+    Formatuje informacje o ostatnim starcie zawodnika z obiektu słownika lub tekstu.
+
+    Args:
+        event_data (dict | str): Słownik zawierający dane startu (type, time, date) lub tekst.
+        ref_date (datetime.date, optional): Data odniesienia do wyliczenia relacji czasowej.
+
+    Returns:
+        str: Sformatowany opis ostatniego startu lub NO_DATA.
+    """
+    if not event_data or event_data == NO_DATA:
+        return NO_DATA
+
+    if not isinstance(event_data, dict):
+        return str(event_data).strip()
+
+    ev_type = str(event_data.get("type") or "").strip()
+    ev_time = str(event_data.get("time") or "").strip()
+    ev_date = str(event_data.get("date") or "").strip()
+
+    if (not ev_type or ev_type == NO_DATA) and (not ev_time or ev_time == NO_DATA) and (not ev_date or ev_date == NO_DATA):
+        return NO_DATA
+
+    prefix_parts = []
+    if ev_type and ev_type != NO_DATA:
+        prefix_parts.append(ev_type)
+    if ev_time and ev_time != NO_DATA:
+        prefix = f"{prefix_parts[0]}: {ev_time}" if prefix_parts else ev_time
+    else:
+        prefix = " ".join(prefix_parts)
+
+    date_parts = []
+    if ev_date and ev_date != NO_DATA:
+        date_parts.append(f"data: {ev_date}")
+        time_rel = format_relative_time(ev_date, ref_date=ref_date)
+        if time_rel and time_rel != NO_DATA:
+            date_parts.append(time_rel)
+
+    if date_parts:
+        date_info = f" ({', '.join(date_parts)})"
+        return f"{prefix}{date_info}".strip() if prefix else ", ".join(date_parts)
+
+    return prefix if prefix else NO_DATA
+
+
 def build_user_profile(personal_data, ref_date=None):
     """
     Formatuje profil zawodnika do postaci słownika parametrów dla szablonów promptów.
@@ -299,35 +373,44 @@ def build_user_profile(personal_data, ref_date=None):
 
     profile = dict(personal_data)
 
-    # 1. Rekordy życiowe (PB)
+    # 1. Strefy tętna (hr_zones -> z1..z5) i strefy tempa (pace_zones -> pace_z1..pace_z5)
+    hr_zones = profile.get("hr_zones") if isinstance(profile.get("hr_zones"), dict) else {}
+    pace_zones = profile.get("pace_zones") if isinstance(profile.get("pace_zones"), dict) else {}
+    for z_key in ZONE_KEYS:
+        profile[z_key] = hr_zones.get(z_key, profile.get(z_key, NO_DATA))
+        profile[f"pace_{z_key}"] = pace_zones.get(z_key, profile.get(f"pace_{z_key}", NO_DATA))
+
+    # 2. Rekordy życiowe (PB)
     profile["personal_records"] = format_personal_records(profile.get("personal_records"))
 
-    # 2. Cele biegowe i podział bodźców treningowych
+    # 3. Cele biegowe (główny i poboczny)
     raw_primary = profile.get("primary_goal") if isinstance(profile.get("primary_goal"), dict) else {}
     raw_secondary = profile.get("secondary_goal") if isinstance(profile.get("secondary_goal"), dict) else {}
 
     profile["primary_goal"] = format_goal(raw_primary, ref_date=ref_date)
     profile["secondary_goal"] = format_goal(raw_secondary, ref_date=ref_date)
-    profile["stimulus_distribution"] = (
-        f"{raw_primary.get('stimulus_share', 75)}% cel główny ({raw_primary.get('target', NO_DATA)}) / "
-        f"{raw_secondary.get('stimulus_share', 25)}% cel poboczny ({raw_secondary.get('target', NO_DATA)})"
-    )
 
-    # 3. Dodatkowe notatki zawodnika (zwięzły zapis liniowy pasujący do <athlete_profile>)
+    # 4. Dodatkowe notatki zawodnika (zwięzły zapis liniowy pasujący do <athlete_profile>)
     notes = profile.get("additional_notes", [])
     if isinstance(notes, list):
         clean_notes = [str(n).strip() for n in notes if str(n).strip() and str(n).strip() != NO_DATA]
         profile["additional_notes"] = " | ".join(clean_notes) if clean_notes else "Brak stałych uwag"
 
-    # 4. Informacje o ostatnim starcie
-    last_event_date = profile.get("last_event_date")
-    last_event_type = profile.get("last_event_type")
-    if last_event_date and last_event_date != NO_DATA:
-        time_rel = format_relative_time(last_event_date, ref_date=ref_date)
-        prefix = f"{last_event_type} " if last_event_type and last_event_type != NO_DATA else ""
-        profile["last_event_info"] = f"{prefix}(data: {last_event_date}, {time_rel})"
-    else:
-        profile["last_event_info"] = NO_DATA
+    # 5. Informacje o ostatnim starcie
+    last_event_raw = profile.get("last_event")
+    if not last_event_raw or last_event_raw == NO_DATA:
+        if profile.get("last_event_date") and profile.get("last_event_date") != NO_DATA:
+            last_event_raw = {
+                "type": profile.get("last_event_type", NO_DATA),
+                "date": profile.get("last_event_date", NO_DATA),
+                "time": profile.get("last_event_time", NO_DATA),
+            }
+    last_event_formatted = format_last_event(last_event_raw, ref_date=ref_date)
+    profile["last_event_info"] = last_event_formatted
+    profile["last_event"] = last_event_formatted
+
+    # Zabezpieczenie przed brakiem max_hr dla ewentualnych starych szablonów
+    profile.setdefault("max_hr", profile.get("max_hr", NO_DATA))
 
     return profile
 

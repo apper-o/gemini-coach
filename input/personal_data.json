@@ -1,60 +1,42 @@
 {
-    "phase": "Peak",
-    "last_event_date": "2026-09-27",
-    "last_event_type": "maraton",
+    "phase": "Race Week A",
     "primary_goal": {
         "target": "5km < 20:00",
-        "date": "2026-10-24",
-        "stimulus_share": 90
+        "date": "2026-10-24"
     },
     "secondary_goal": {
         "target": "800m < 2:17",
-        "date": null,
-        "stimulus_share": 10
+        "date": null
+    },
+    "last_event": {
+        "type": "maraton",
+        "time": "4:13:52",
+        "date": "2026-09-27"
     },
     "height": "185 cm",
     "weight": "78 kg",
-    "max_hr": "202 bpm (szacowane)",
-    "lthr": "Brak danych",
-    "z1": "Poniżej 123 bpm",
-    "z2": "123-148 bpm",
-    "z3": "149-162 bpm",
-    "z4": "163-181 bpm",
-    "z5": "Powyżej 181 bpm",
-    "pace_z1": "Powyżej 6:15 min/km",
-    "pace_z2": "5:30-6:15 min/km",
-    "pace_z3": "4:45-5:30 min/km",
-    "pace_z4": "4:10-4:45 min/km",
-    "pace_z5": "Poniżej 4:10 min/km",
+    "lthr": "182",
+    "hr_zones": {
+        "z1": "117-144",
+        "z2": "144-160",
+        "z3": "161-171",
+        "z4": "171-180",
+        "z5": ">180"
+    },
+    "pace_zones": {
+        "z1": ">6:15",
+        "z2": "5:30-6:15",
+        "z3": "4:45-5:30",
+        "z4": "4:10-4:45",
+        "z5": "<4:10"
+    },
     "personal_records": {
-        "400m": {
-            "time": "0:59",
-            "date": "2026-05-24"
-        },
-        "800m": {
-            "time": "2:17",
-            "date": "2023-06-03"
-        },
-        "1500m": {
-            "time": "Brak danych",
-            "date": "Brak danych"
-        },
-        "5km": {
-            "time": "20:47",
-            "date": "2024-11-05"
-        },
-        "10km": {
-            "time": "45:12",
-            "date": "2026-09-06"
-        },
-        "polmaraton": {
-            "time": "1:40:55",
-            "date": "2025-04-06"
-        },
-        "maraton": {
-            "time": "4:13:52",
-            "date": "2026-09-27"
-        }
+        "400m": "0:59 (2026-05)",
+        "800m": "2:17 (2023-06)",
+        "5km": "20:47 (2024-11)",
+        "10km": "45:12 (2026-09)",
+        "polmaraton": "1:40:55 (2025-04)",
+        "maraton": "4:13:52 (2026-09)"
     },
     "additional_notes": [
         "Licznik kroków dziennych około 10000 jest dla tego zawodnika normą i nie stanowi negatywnego obciążenia regeneracyjnego."

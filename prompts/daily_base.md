@@ -16,8 +16,8 @@ TRANSFER ±24H: Oceniasz wpływ dzisiejszego kosztu (glikogen, CUN, uszkodzenia 
 
 <athlete_profile>
 Cel główny: {primary_goal} | Cel poboczny: {secondary_goal}
-Faza mezocyklu: {phase} | Dystrybucja bodźców: {stimulus_distribution} | Ostatni start: {last_event_info}
-Wzrost: {height} | Waga: {weight} | HR max: {max_hr} | LTHR: {lthr}
+Faza mezocyklu: {phase} | Ostatni start: {last_event_info}
+Wzrost: {height} | Waga: {weight} | LTHR: {lthr}
 Strefy HR: Z1: {z1} | Z2: {z2} | Z3: {z3} | Z4: {z4} | Z5: {z5}
 Strefy tempa: Z1: {pace_z1} | Z2: {pace_z2} | Z3: {pace_z3} | Z4: {pace_z4} | Z5: {pace_z5}
 Aktualne PB: {personal_records}
