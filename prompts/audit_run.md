@@ -43,13 +43,11 @@
 
 # 5. KONTRAKT FORMATOWANIA I SZABLON WYJŚCIA
 
-1. REGUŁY SKŁADNIOWE I TABELARYCZNE:
-   - Czysty Markdown: Start bezpośrednio od nagłówka `## 1.` bez żadnego tekstu wstępnego, bez codeblock wrappers (żadnych potrójnych grawisów wokół raportu) oraz bez nawiasów kwadratowych w wygenerowanym tekście.
-   - Reżim liczb: Parametry telemetryczne podawaj WYŁĄCZNIE w nawiasach okrągłych jako uzasadnienie tezy (zakaz zdań będących suchym przepisywaniem danych z tabeli).
-   - Agregacja mikro-splitów: W tabeli akcentu scalaj mikro-lapy (np. 400 m) w jedno pełne powtórzenie z planu. W analizie tekstowej wykorzystaj mikro-lapy do rozliczenia wewnętrznego pacingu i dryfu GCT wewnątrz powtórzenia.
-   - Wiersze przerw w tabeli: Wpisuj czystym tekstem bez formatowania Markdown (*, **). W kolumnie Śr. HR wpisz tętno z przerwy, a w kolumnie Max HR wpisz bezwzględny spadek tętna po 60 sekundach (ΔHR60s).
-   - Składnia anomalii: Format jednoakapitowy: `Diagnoza: [fakt (wartości)] | Mechanizm: [fizjologia/biomechanika] | Korekta: [nakaz taktyczny / cue motoryczny]`. Przy pełnej normie wpisz wyłącznie: `Brak.`
-   - Protokół niedzielny: W niedzielnym raporcie w sekcji `## 4.` wygeneruj wyłącznie status gotowości adaptacyjnej i uzasadnienie bilansu zamkniętego mikrocyklu (zakaz planowania poniedziałku).
+1. REGUŁY SKŁADNIOWE:
+   - Czysty Markdown: Start bezpośrednio od nagłówka `## 1.` bez tekstu wstępnego i codeblock wrappers.
+   - Reporting by Exception: Wypisuj WYŁĄCZNIE punkty, w których wystąpiły istotne odchylenia lub anomalie. Jeśli dany parametr jest w normie lub nie dotyczy jednostki - CAŁKOWICIE POMIŃ dany punktor (zakaz generowania linijek "Nie dotyczy", "Brak", "Brak anomalii").
+   - Likwidacja sztucznego podziału Diagnoza/Mechanizm/Korekta: Pisz naturalnym, kategorycznym językiem trenerskim w formacie: [Konkretna obserwacja z liczbą w nawiasie -> fizjologiczna/biomechaniczna przyczyna -> precyzyjny nakaz wykonawczy].
+   - Zakaz powtórzeń: Każdy błąd wykonawczy (np. zbyt szybkie tempo) opisz dogłębnie tylko RAZ – nie powielaj tego samego wywodu w sekcji 1, 2 i 3.
 
 2. SZABLON RAPORTU (WYPEŁNIJ 1:1):
 
@@ -62,36 +60,26 @@
 | Średnie HR [bpm / %LTHR] | | | |
 | Średnia kadencja [spm] | | | |
 
-<!--Jeśli akcent z SERIAMI (interwały, progi, rytmy) - WSTAW poniższą tabelę. Dla biegów CIĄGŁYCH (easy/recovery/long run) NIE WSTAWIAJ TABELI-->
+<!--Jeśli akcent z SERIAMI (interwały, progi, rytmy) - WSTAW poniższą tabelę. Dla biegów CIĄGŁYCH (easy/recovery/long run) TĘ TABELĘ CAŁKOWICIE USUŃ-->
 | Segment | Dystans [km] | Czas | Tempo [min/km] | Śr. HR [bpm] | Max / ΔHR60s [bpm] | Kadencja [spm] | Krok [m] | GCT [ms] | VR [%] |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-<!--Format wierszy: na przemian Powtórzenie X oraz czystym tekstem Przerwa X (w przerwomierzu podaj spadek ΔHR60s). Może się zdarzyć, że ostatnie powtórzenie będzie przerwą-->
 
-- **Profil jednostki**: [Bieg regeneracyjny (Z1) / Baza tlenowa (Z2) / Długie wybieganie (Long Run) / Próg mleczanowy (Sub-LT2/LT2) / Interwały pułapowe (VO2max) / Technika i rytmy (AZS) / Zawody]
-- **Audyt biomechaniki i wektora siły**:
-  - Kinematyka kroku, SSC i lądowanie (GCT / Kadencja / Długość kroku / Overstriding): [Diagnoza: fakt (liczby) | Mechanizm: fizjologia/kinematyka | Korekta: nakaz motoryczny LUB Brak.]
-  - Wektor siły i stabilność miednicy (VR% / VO vs zapadanie w podporze): [Diagnoza: fakt (liczby) | Mechanizm: fizjologia/kinematyka | Korekta: nakaz motoryczny LUB Brak.]
-- **Audyt bioenergetyczny, restytucja i aparatura**:
-  - Sprzężenie tlenowe i kinetyka metaboliczna (EF / Pa:Hr dryf / stabilność MLSS / Cardiac Lag): [Diagnoza: fakt (liczby) | Mechanizm: fizjologia | Korekta: nakaz taktyczny LUB Brak.]
-  - Pacing mikro-splitów i restytucja przerw (ΔHR60s w seriach): [Analiza dyscypliny otwarcia powtórzeń i spadku tętna w odpoczynku / dla biegów ciągłych: Nie dotyczy.]
-  - Środowisko i aparatura pomiarowa (temperatura, wiatr, nachylenie, błędy EKG/GPS): [Diagnoza wpływu na koszt wewnętrzny LUB Brak.]
+- **Profil jednostki**: [Bieg regeneracyjny (Z1) / Baza tlenowa (Z2) / Akcent jakościowy / Zawody]
+<!--Poniżej wygeneruj TYLKO te punkty, w których wystąpiło odchylenie od założeń lub anomalia:-->
+- **Pacing i kontrola stref**: [Ocena dyscypliny tempa i tętna; wskaż ewentualny dryf Pa:Hr lub przekroczenie progu metabolicznego]
+- **Technika kroku i stabilność**: [Konkretna ocena GCT, kadencji, długości kroku lub VR tylko przy załamaniu techniki / dryfie zmęczeniowym -> 1 precyzyjny cue motoryczny]
+- **Restytucja w seriach**: [Ocena spadku tętna w przerwach (ΔHR60s) i dyscypliny otwarcia – generuj WYŁĄCZNIE dla interwałów/progów]
+- **Aparatura i warunki**: [Krótka notatka tylko przy istotnym wpływie wiatru, temperatury lub błędach optyki/EKG]
 
-## 2. KOSZT METABOLICZNY I BILANS ZASOBÓW (ANS)
+## 2. KOSZT METABOLICZNY I STAN ZASOBÓW (ANS)
 
-- **Bodziec adaptacyjny i koszt tkankowy**: [Synteza sumarycznego kosztu biegu: drenaż glikogenu, stres ekscentryczny (DOMS / spadek sztywności MTS) oraz obciążenie CUN]
-- **Bilans autonomiczny (Noc vs Dzień)**: [Wpływ bazy porannej (HRV, RHR, Sleep Stress) skorelowany z drenażem dziennym (Day Stress, Body Battery) i kosztem sesji – stan: dominacja współczulna vs bufor adaptacyjny]
-- **Zmęczenie skumulowane i percepcja (kontekst {yesterday_date_str} vs notatka)**: [Diagnoza dysonansu między NOTATKA_ZAWODNIKA a telemetrią (np. zaniżone RPE przy wysokim HR = maskowanie katecholaminowe; wysokie RPE przy niskim HR = zmęczenie ośrodkowe CUN/glikogen) LUB wpisz: Brak dysonansu.]
+- **Wpływ sesji na organizm**: [Syntetyczna ocena drenażu glikogenu, układu nerwowego i nóg pod kątem jutra – max 2 zdania]
+- **Bilans układu nerwowego (ANS)**: [Zwięzła konfrontacja nocy (HRV/RHR) ze stresem dnia – czy zawodnik ma bufor, czy narasta zmęczenie centralne; max 2 zdania]
 
 ## 3. PROTOKÓŁ REGENERACJI (WIECZÓR I NOC)
 
-- **Celowana praca tkankowa (SMR) i przeciwwskazania**: 
-  - Struktury priorytetowe: [1–2 obszary na bazie telemetrii (dryf GCT -> m. soleus; spadek L -> zginacze biodra/pośladek; skok VR -> TFL/gluteus medius) | Parametry: czas (30-45 s)]
-  - Bezwzględne przeciwwskazania: [Po akcentach Z4/Z5 lub biegach >75 min KATEGORYCZNY ZAKAZ agresywnego rolowania (ból >4/10) oraz długiego stretchingu statycznego (>30 s) na uszkodzone grupy; przy braku przeciwwskazań wpisz: Brak.]
-- **Modyfikacja rutyny wieczornej (<evening_routine>)**:
-  - Wydłużyć / Dodać: [Konkretne nazwy ćwiczeń z listy zawodnika pod dzisiejsze napięcia biegowe i biurkowe]
-  - Skrócić / Pominąć: [Konkretne nazwy pozycji z listy zbędnych czasowo lub zbyt agresywnie rozciągających przeciążone dziś tkanki]
-- **Modulacja autonomiczna i środowisko snu**: [Celowana interwencja parasympatyczna pod wieczorny drenaż, stres psychiczny i obciążenie nóg:
-  - Wyciszenie korowe (Medytacja / NSDR): 5–10 min medytacji skupienia na oddechu lub skanowania ciała (body scan) w celu wygaszenia aktywności sieci wzorca domyślnego (DMN), redukcji tonusu współczulnego i torowania fal alfa przed snem (nakazuj szczególnie przy Day Stress >30 lub po późnym treningu).
-  - Drenaż hemodynamiczny: bierne uniesienie nóg (10–15 min w leżeniu z nogami na ścianie/podwyższeniu dla stymulacji baroreceptorów i drenażu limfy z podudzi).
-  - Zakaz ogólników o higienie snu; interweniuj wyłącznie przy podwyższonym napięciu dobowym lub późnym powrocie z jednostki treningowej]
-- **Strategia substratowa, timing i nawodnienie**: [Zalecenia pod jutrzejszy bodziec ({tomorrow_date_str}): podaż CHO (g/kg m.c.) na glikogen, 30-40 g białka wolnowchłanialnego przed snem na nocną syntezę MPS/kolagen + bilans sodu przy dryfie Pa:Hr | Rygor timingu: zamknięcie głównego posiłku min. 2h przed snem w celu ochrony nocnego RHR i redukcji Sleep Stress]
+- **Mobilność i regeneracja tkankowa**:
+  - Dodać / Wydłużyć: [1-2 konkretne ćwiczenia z rutyny wieczornej lub dobrane pod dzisiejsze napięcia]
+  - Pominąć / Skrócić: [Pozycje zbędne lub zakazane przy dzisiejszym stanie zmęczenia (np. zakaz rolowania)]
+- **Wyciszenie i sen**: [Konkretna interwencja: np. drenaż nóg na ścianie / oddech 4-7-8 / NSDR – max 1-2 zdania]
+- **Paliwo i nawodnienie**: [Precyzyjne wytyczne pod jutrzejszy dzień: podaż węglowodanów (g/kg m.c.), białko na noc, sód]
