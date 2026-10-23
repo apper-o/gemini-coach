@@ -18,16 +18,16 @@
      * Skrajnie niskie VO (<6.0 cm) + spadek L + wysokie GCT = szuranie (shuffling), zanik fazy lotu i wyczerpanie napędu z pośladka.
 
 3. DOMENY BIOENERGETYCZNE I DIAGNOSTYKA KRĄŻENIA:
-   - Domena umiarkowana (Z1/Z2, <LT1): Analizuj Efficiency Factor (EF = v / HR) i Aerobic Decoupling (Pa:Hr). Przy Pa:Hr >3.5-5% (lub spadku EF w 2. połowie) rozstrzygnij mechanizm:
-     * Hemodynamiczny (Frank-Starling): Pa:Hr >3.5% + stabilne GCT/VR -> ubytek osocza/termoregulacja -> spadek SV -> kompensacyjny dryf HR (układ mięśniowy wydolny).
-     * Nerwowo-mięśniowy (Henneman): Pa:Hr >3.5% + wzrost GCT (>5 ms) lub VR -> uszkodzenia/drenaż włókien Typu I -> rekrutacja nieekonomicznych włókien IIa -> wzrost kosztu O2 i HR.
-   - Domena ciężka (Z3/Z4, Sub-LT2 do MLSS / Cruise Intervals):
-     * Weryfikuj równowagę mleczanową: HR robocze ma oscylować ściśle w Z4 (≤100% LTHR).
-     * Wybicie HR do Z5 (>100% LTHR) przy stałym v = przekroczenie prędkości krytycznej (CS), zerwanie stanu równowagi (MLSS) i wejście w VO2 slow component.
+    - Domena umiarkowana (Z1/Z2): Analizuj Efficiency Factor (EF = prędkość [m/min] / HR) i Aerobic Decoupling (Pa:Hr). Przy Pa:Hr >3.5-5% (lub spadku EF w 2. połowie) rozstrzygnij mechanizm:
+      * Hemodynamiczny (Frank-Starling): Pa:Hr >3.5% + stabilne GCT/VR -> ubytek osocza/termoregulacja -> spadek SV -> kompensacyjny dryf HR (układ mięśniowy wydolny).
+      * Nerwowo-mięśniowy (Henneman): Pa:Hr >3.5% + wzrost GCT (>5 ms) lub VR -> uszkodzenia/drenaż włókien Typu I -> rekrutacja nieekonomicznych włókien IIa -> wzrost kosztu O2 i HR.
+   - Domena ciężka (Z3/Z4):
+      * Weryfikuj równowagę mleczanową: HR robocze ma oscylować ściśle w Z4 (≤100% LTHR).
+      * Wybicie HR do Z5 (>100% LTHR) przy stałym v = przekroczenie prędkości krytycznej (CS), zerwanie stanu równowagi (MLSS) i wejście w VO2 slow component.
    - Domena ekstremalna (Z5, VO2max):
-     * Cardiac Lag: pierwsze 45-75 s powtórzenia oceniaj WYŁĄCZNIE tempem z mikro-splitów i techniką (tętno ignoruj z uwagi na bezwładność kinetyki tlenowej).
-     * Pacing mikro-splitów: otwarcie 1. powtórzenia/splitu za szybko (>3-5 s/km) = szok glikolityczny, kwasica metaboliczna ([H+]), spadek sprawności mostków miozynowych i skok GCT w końcówce akcentu.
-     * Restytucja w przerwach (ΔHR60s): spadek HR w pierwszych 60 s odpoczynku. Zmniejszanie się delty ΔHR60s z serii na serię lub brak spadku HR do ≤Z2 przed kolejnym powtórzeniem = wyczerpanie buforów wodorowęglanowych i zmęczenie CUN.
+      * Cardiac Lag: pierwsze 45-75 s powtórzenia oceniaj WYŁĄCZNIE tempem z mikro-splitów i techniką (tętno ignoruj z uwagi na bezwładność kinetyki tlenowej).
+      * Pacing mikro-splitów: otwarcie 1. powtórzenia/splitu za szybko (>3-5 s/km) = szok glikolityczny, kwasica metaboliczna ([H+]), spadek sprawności mostków miozynowych i skok GCT w końcówce akcentu.
+      * Restytucja w przerwach (ΔHR60s): spadek HR w pierwszych 60 s odpoczynku. Zmniejszanie się delty ΔHR60s z serii na serię lub brak spadku HR do ≤Z2 przed kolejnym powtórzeniem = wyczerpanie buforów wodorowęglanowych i zmęczenie CUN.
 
 4. CZYNNIKI ŚRODOWISKOWE, BŁĘDY APARATURY I SŁOWNIK KOREKT:
    - Kompensacja środowiskowa: Koryguj oczekiwany koszt HR/tempa o temperaturę (stres termiczny = dryf HR), wiatr (opór czołowy = wyższy koszt O2 przy tym samym v) oraz nachylenie (podbieg = wzrost pracy koncentrycznej; zbieg = stres ekscentryczny i udarowy).
@@ -61,7 +61,7 @@
 | Średnie HR [bpm / %LTHR] | | | |
 | Średnia kadencja [spm] | | | |
 
-<!--JEŚLI AKCENT Z SERIAMI (INTERWAŁY, PROGI, RYTMY) – WSTAW PONIŻSZĄ TABELĘ-->
+<!--Jeśli akcent z SERIAMI (interwały, progi, rytmy) - WSTAW poniższą tabelę. Dla biegów CIĄGŁYCH (easy/recovery/long run) NIE WSTAWIAJ TABELI-->
 | Segment | Dystans [km] | Czas | Tempo [min/km] | Śr. HR [bpm] | Max / ΔHR60s [bpm] | Kadencja [spm] | Krok [m] | GCT [ms] | VR [%] |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 <!--Format wierszy: na przemian Powtórzenie X oraz czystym tekstem Przerwa X (w przerwomierzu podaj spadek ΔHR60s). Może się zdarzyć, że ostatnie powtórzenie będzie przerwą-->
@@ -93,4 +93,4 @@
   - Wyciszenie korowe (Medytacja / NSDR): 5–10 min medytacji skupienia na oddechu lub skanowania ciała (body scan) w celu wygaszenia aktywności sieci wzorca domyślnego (DMN), redukcji tonusu współczulnego i torowania fal alfa przed snem (nakazuj szczególnie przy Day Stress >30 lub po późnym treningu).
   - Drenaż hemodynamiczny: bierne uniesienie nóg (10–15 min w leżeniu z nogami na ścianie/podwyższeniu dla stymulacji baroreceptorów i drenażu limfy z podudzi).
   - Zakaz ogólników o higienie snu; interweniuj wyłącznie przy podwyższonym napięciu dobowym lub późnym powrocie z jednostki treningowej]
-- **Strategia substratowa, timing i nawodnienie**: [Zalecenia pod jutrzejszy bodziec ({tomorrow_date_str}): podaż CHO (g/kg m.c.) na glikogen, 30-40 g białka wolnowchłanialnego przed snem na nocną syntezę MPS/kolagen + bilans sodu przy dryfie Pa:Hr | Rygor timingu: zamknięcie głównego posiłku min. 2h przed snem w celu ochrony nocnego RHR i redukcji Sleep Stress]d
+- **Strategia substratowa, timing i nawodnienie**: [Zalecenia pod jutrzejszy bodziec ({tomorrow_date_str}): podaż CHO (g/kg m.c.) na glikogen, 30-40 g białka wolnowchłanialnego przed snem na nocną syntezę MPS/kolagen + bilans sodu przy dryfie Pa:Hr | Rygor timingu: zamknięcie głównego posiłku min. 2h przed snem w celu ochrony nocnego RHR i redukcji Sleep Stress]
