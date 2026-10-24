@@ -1,84 +1,167 @@
-# Coach Gemini AI (Garmin Running Assistant)
+# Coach Gemini AI – Autonomous Garmin & Hevy Running Assistant
 
-Inteligentny asystent treningowy integrujący dane biometryczne i biegowe z **Garmin Connect** z modelami językowymi **Google Gemini** oraz powiadomieniami na **Telegramie**.
+System autonomicznego trenera biegowego i fizjologa sportu łączący telemetrię z **Garmin Connect**, raporty siłowe z **Hevy (przez Telegram Bot API)** oraz modele **Google Gemini** w zautomatyzowanym potoku CI/CD (**GitHub Actions**).
 
-Skrypt analizuje całodobową biometrię (sen, HRV, RHR, Body Battery, stres, bilans kroków), biomechanikę biegową (splity, kadencja, czas kontaktu z podłożem, moc, przewyższenia), uwagi i notatki zawodnika z Telegrama oraz historię treningową z ostatnich 42 dni (6 tygodni), proponując optymalne plany treningowe i codzienne adaptacje obciążeń.
+---
+
+## Kluczowe Rozwiązania Inżynieryjne (Engineering Highlights)
+
+* **Hierarchiczna kompresja okna kontekstowego (42 dni historii w $\mathcal{O}(1)$)** – każdy raport dzienny w `trainings_history/` posiada ustandaryzowany 6-liniowy nagłówek metadanych. Podczas generowania planu tygodniowego 6-tygodniowa historia jest dzielona na trzy warstwy szczegółowości:
+  1. *Tygodnie 1–4 (Makrocykl)*: zagregowany kilometraż oraz liczba jednostek biegowych i siłowych odczytywana bezpośrednio z nagłówków.
+  2. *Tydzień 5 (Mezocykl)*: struktura jednostek, zaangażowane partie mięśniowe i decyzje adaptacyjne trenera.
+  3. *Tydzień 6 (Mikrocykl)*: pełna synteza statusu autonomicznego układu nerwowego (ANS: HRV, RHR, Sleep Score, Body Battery), splity akcentów biegowych i ostrzeżenia o przeciążeniach.
+* **Modularny silnik promptów oparty o kontrakty XML** – dynamiczna kompozycja szablonów (`daily_base.md` + dedykowane moduły `audit_run.md`, `audit_gym.md`, `audit_swim.md`, `audit_other.md`, `audit_rest.md` + `daily_closing.md`) dobierana w czasie wykonania na podstawie wykrytych aktywności dnia, redukująca zużycie tokenów o ~45%.
+* **Dwukierunkowa integracja z Telegramem i parser Hevy z ochroną kanoniczności bazy** – odczyt surowych eksportów treningowych z aplikacji Hevy oraz notatek biegacza (`NOTE`) z czatu Telegrama. System automatycznie aktualizuje ciężary robocze i powtórzenia (`last_sets`) w `input/strength_routines.json`, odrzucając ćwiczenia doraźne spoza zdefiniowanego planu (ochrona bazy przed zanieczyszczeniem).
+* **Odporność na blokady Cloud IP (HTTP 429 Rate Limit) w CI/CD** – obsługa magazynu sesji OAuth (`~/.garminconnect`) wstrzykiwanego z sekretu `GARMIN_TOKENS_BASE64` oraz pętla ponawiania zapytań (retry loop) do API Gemini.
+* **Własny generator raportów HTML (Dark Mode)** – lekki konwerter Markdown $\rightarrow$ HTML (`utils_html.py`) i klient `multipart/form-data` (`send_telegram.py`) napisane wyłącznie w oparciu o bibliotekę standardową Pythona (`urllib`, `re`, `html`), generujące responsywne raporty mobilne z dynamicznym streszczeniem w podpisie wiadomości.
+
+---
+
+## Architektura i Przepływ Danych
+
+```mermaid
+flowchart TD
+    subgraph Sources["Źródła Danych"]
+        GC["Garmin Connect API<br/>(Sen, HRV, RHR, Body Battery, Splity, Pogoda)"]
+        TG_IN["Telegram Bot API<br/>(Notatki NOTE + eksporty siłowe Hevy)"]
+        CFG["Konfiguracja lokalna (input/)<br/>(personal_data.json, strength_routines.json,<br/>weekly_workout_structure.md, evening_routine.md)"]
+        HIST["Archiwum 42 dni<br/>(trainings_history/YYYY/MM/*.md)"]
+    end
+
+    subgraph Core["Silnik Analityczny Python"]
+        GS["garmin_service.py<br/>Parsery biometrii i biomechaniki"]
+        CP["coach_prompts.py<br/>Kompresja historii, aktualizacja wag Hevy,<br/>modularna kompozycja promptów"]
+        CG["coach_gemini.py<br/>Orkiestracja CLI i pętla retry Gemini API"]
+    end
+
+    subgraph Output["Wyjścia i Raportowanie"]
+        GEMINI["Google Gemini API"]
+        ARCH["Zapis raportu i planu<br/>(output/ + trainings_history/)"]
+        HTML["utils_html.py + send_telegram.py<br/>Dokument HTML (Dark Mode) + wysyłka na Telegram"]
+    end
+
+    GC --> GS
+    TG_IN --> CP
+    CFG --> CP
+    HIST --> CP
+    GS --> CG
+    CP --> CG
+    CG <--> GEMINI
+    CG --> ARCH
+    ARCH --> HTML
+```
 
 ---
 
 ## Szybki Start (Instalacja)
 
 ```bash
-python3 -m venv venv
-source venv/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
 ---
 
-## Konfiguracja (`.env`)
+## Konfiguracja
+
+### 1. Zmienne środowiskowe (`.env`)
 
 Utwórz plik `.env` w katalogu głównym na podstawie wzorca `.env.example`:
 
 ```env
-# Model Google Gemini
-GEMINI_API_KEY="twój_klucz_api"
+# Klucz i model Google Gemini
+GEMINI_API_KEY="twój_klucz_gemini_api"
 GEMINI_MODEL="gemini-3.8-flash"
 
-# Dane logowania Garmin Connect (wymagane w trybie online)
+# Dane logowania Garmin Connect
 GARMIN_EMAIL="twoj_email@example.com"
 GARMIN_PASSWORD="twoje_haslo"
 
+# Opcjonalny token sesji OAuth w base64 (zalecany w GitHub Actions, aby uniknąć błędu HTTP 429)
+# Wygenerowanie: base64 -w 0 ~/.garminconnect/garmin_tokens.json
+# GARMIN_TOKENS_BASE64="ey..."
 
-# Konfiguracja powiadomień Telegram (opcjonalne)
+# Konfiguracja powiadomień Telegram
 TELEGRAM_BOT_TOKEN="twój_token_z_botfather"
 TELEGRAM_CHAT_ID="twój_chat_id"
-
-# Opcjonalny token sesji w base64 (zalecany w GitHub Actions / CI/CD, aby uniknąć błędu 429 Rate Limit)
-# GARMIN_TOKENS_BASE64="ey..."
 ```
 
-### Konfiguracja GitHub Actions (CI/CD)
+### 2. Profil zawodnika (`input/personal_data.json`)
 
-W ustawieniach repozytorium GitHub (**Settings -> Secrets and variables -> Actions**) zdefiniuj sekrety:
-* `GARMIN_EMAIL` oraz `GARMIN_PASSWORD` – dane konta Garmin Connect.
-* `GARMIN_TOKENS_BASE64` *(zalecane)* – zawartość lokalnego pliku sesji `~/.garminconnect/garmin_tokens.json` zakodowana w base64. Garmin blokuje logowanie hasłem z serwerów chmurowych (błąd HTTP 429 Rate Limited), dlatego przekazanie gotowego tokena pozwala na bezpośrednie odpytywanie API bez przechodzenia przez SSO.
-  * Wygenerowanie na maszynie lokalnej:
-    ```bash
-    base64 -w 0 ~/.garminconnect/garmin_tokens.json
-    ```
-* `GEMINI_API_KEY` – klucz API Google AI Studio.
-* `TELEGRAM_BOT_TOKEN` oraz `TELEGRAM_CHAT_ID` – dane bota Telegram do wysyłki raportów.
+Zwięzła struktura JSON zoptymalizowana pod kątem minimalizacji zużycia tokenów:
+
+```json
+{
+    "phase": "Race Week A",
+    "primary_goal": {
+        "target": "5km < 20:00",
+        "date": "2026-10-24"
+    },
+    "secondary_goal": {
+        "target": "800m < 2:17",
+        "date": null
+    },
+    "last_event": {
+        "type": "maraton",
+        "time": "4:13:52",
+        "date": "2026-09-27"
+    },
+    "height": "185 cm",
+    "weight": "78 kg",
+    "lthr": "182",
+    "hr_zones": {
+        "z1": "<123",
+        "z2": "123-148",
+        "z3": "149-162",
+        "z4": "163-181",
+        "z5": ">182"
+    },
+    "pace_zones": {
+        "z1": ">6:15",
+        "z2": "5:30-6:15",
+        "z3": "4:45-5:30",
+        "z4": "4:10-4:45",
+        "z5": "<4:10"
+    },
+    "personal_records": {
+        "400m": "0:59 (2026-05)",
+        "800m": "2:17 (2023-06)",
+        "5km": "20:47 (2024-11)",
+        "10km": "45:12 (2026-09)",
+        "polmaraton": "1:40:55 (2025-04)",
+        "maraton": "4:13:52 (2026-09)"
+    },
+    "additional_notes": [
+        "Licznik kroków dziennych około 10000 jest dla tego zawodnika normą i nie stanowi negatywnego obciążenia regeneracyjnego."
+    ]
+}
+```
 
 ---
 
 ## Tryby Uruchomienia (Modes)
 
-Skrypt `coach_gemini.py` przyjmuje jeden pozycyjny argument określający tryb działania:
+Skrypt `coach_gemini.py` przyjmuje pozycyjny argument określający tryb pracy:
 
 | Tryb | Opis działania |
 | :--- | :--- |
-| **`daily`** *(domyślny)* | **Główny wieczorny tryb audytu i adaptacji (uruchamiany codziennie o 20:57)**:<br>• **Główny priorytet**: Dogłębny audyt wykonanego dzisiaj treningu (bieg ze szczegółowymi splitami, tętno, kadencja, tempo vs założenia, trening siłowy/notatki z Telegrama, koszt OUN).<br>• **Biometria**: Analiza nocnej bazy regeneracyjnej przed dzisiejszym wysiłkiem (sen, HRV, RHR), obciążenia całodniowego (stres, kroki, wieczorne Body Battery) oraz kontekstu historycznego z dnia poprzedniego.<br>• **Zalecenia regeneracyjne**: Praktyczne wytyczne na wieczór i noc (modyfikacja rutyny wieczornej `input/evening_routine.md`, praca tkankowa SMR, modulacja autonomiczna, nawodnienie i substraty).<br>• **Gotowość i adaptacja**: Ocena gotowości na jutrzejszy trening wraz z jednoznacznym werdyktem (`PEŁNA EGZEKUCJA PLANU`, `KOREKTA TAKTYCZNA`, `REDUKCJA AWARYJNA`) i gotową rozpiską.<br>Zapisuje raport do `output/last_daily_report.md` oraz archiwizuje w `trainings_history/YYYY/MM/YYYY-MM-DD.md`. |
-| **`plan`** | **Układanie pełnego planu tygodniowego**: Generuje kompletny 7-dniowy plan treningowy od poniedziałku do niedzieli na podstawie struktury zdefiniowanej w `input/weekly_workout_structure.md` (w dni z pustym polem po dwukropku, np. `Wtorek:`, model samodzielnie dobiera optymalny typ treningu wg zasad z `prompts/weekly_plan.md` i rozpisuje go ze szczegółami). Wykorzystuje profil z `input/personal_data.json`, bazę ćwiczeń i aktualne wagi z `input/strength_routines.json` oraz 42-dniową historię. Zapisuje plan do `output/weekly_plan.md`. |
-
-> [!NOTE]
-> Wszelkie uwagi, samopoczucie oraz raporty z treningu siłowego przekazywane są bezpośrednio z czatu **Telegrama**. Po każdym pomyślnym wykonaniu analizy stan przeczytanych wiadomości jest zapisywany w `input/telegram_state.json`, dzięki czemu wiadomości nie są dublowane.
+| **`daily`** *(domyślny)* | **Wieczorny audyt dnia i adaptacja na jutro**:<br>• Audyt wykonanego treningu (splity kilometrowe, GAP, dryf tętna Pa:Hr, kadencja, GCT, oscylacja pionowa, moc biegowa, warunki pogodowe, tonaż z siłowni Hevy).<br>• Diagnoza układu autonomicznego (HRV i RHR względem bazy 7-dniowej, architektura snu, Sleep Stress, drenaż Body Battery).<br>• Wytyczne regeneracyjne (modyfikacja rutyny wieczornej `input/evening_routine.md`, strategia substratowa).<br>• Decyzja adaptacyjna na kolejny dzień (`PEŁNA EGZEKUCJA PLANU`, `KOREKTA TAKTYCZNA`, `REDUKCJA AWARYJNA`) i zapis do `output/last_daily_report.md` oraz `trainings_history/YYYY/MM/YYYY-MM-DD.md`. |
+| **`plan`** | **Programowanie pełnego mikrocyklu tygodniowego**:<br>• Projektuje 7-dniowy plan treningowy od poniedziałku do niedzieli na podstawie preferencji z `input/weekly_workout_structure.md` (dni z pustym polem po dwukropku są autonomicznie dopełniane przez model pod fazę mezocyklu i dystans docelowy).<br>• Wykorzystuje profil z `input/personal_data.json`, ciężary robocze z `input/strength_routines.json` oraz 42-dniową historię treningową.<br>• Zapisuje plan do `output/weekly_plan.md` i wysyła raport HTML na Telegram. |
 
 ---
 
-## Formatowanie Notatek z Telegrama (Komunikacja Zawodnik -> Trener)
+## Protokół Komunikacji przez Telegram (Zawodnik $\rightarrow$ Trener)
 
-Wszelkie uwagi, samopoczucie oraz raporty z treningu siłowego przekazywane są bezpośrednio z czatu **Telegrama**. System automatycznie rozróżnia typ przesyłanej wiadomości na podstawie **pierwszej linijki tekstu**:
+System automatycznie klasyfikuje wiadomości wysłane do bota na podstawie **pierwszej niepustej linii tekstu**:
 
-### 1. Trening siłowy / uzupełniający (Strength Workout)
-- W 1. niepustej linijce musi znajdować się **wyłącznie nazwa zestawu** ze zbioru `STRENGTH_WORKOUT_NAMES` (`upper`, `lower`, `fbw`, `core`, `push`, `pull`, `legs`). Wielkość liter nie ma znaczenia.
-- Następnie opcjonalnie data/godzina oraz wykaz wykonanych ćwiczeń, serii, powtórzeń i obciążeń (np. bezpośredni eksport z aplikacji Hevy).
-- Treść trafia w całości do sekcji jednostki siłowej promptu, a w archiwum raportu zapisywany jest wskaźnik zaangażowanych partii mięśniowych (`GÓRA`, `DÓŁ`, `GÓRA + DÓŁ`, `CORE / STABILIZACJA`).
+### 1. Raport z treningu siłowego (Hevy)
+* Pierwsza linia zawiera wyłącznie nazwę rutyny ze zbioru `STRENGTH_WORKOUT_NAMES`: `fbw`, `upper`, `lower`, `core`, `push`, `pull`, `legs`.
+* Kolejne linie to skopiowany eksport z aplikacji Hevy. Skrypt parsuje wykonane serie i automatycznie aktualizuje ciężary robocze w `input/strength_routines.json`.
 
-**Przykład wiadomości z treningiem siłowym (Hevy):**
 ```text
 upper
-Thursday, Sep 24, 2026 at 2:19pm
+Thursday, Oct 22, 2026 at 5:15pm
 
 Bench Press (Barbell)
 Set 1: 60 kg x 8
@@ -86,127 +169,67 @@ Set 2: 60 kg x 8
 Set 3: 60 kg x 8
 
 Lat Pulldown (Cable)
-Set 1: 54 kg x 10
-Set 2: 55 kg x 8
+Set 1: 55 kg x 10
+Set 2: 55 kg x 10
 Set 3: 55 kg x 10
-Set 4: 55 kg x 10
-
-Incline Dumbbell Curl
-Set 1: 12 kg x 10
-Set 2: 12 kg x 10
-Set 3: 12 kg x 8
-
-Triceps Pushdown
-Set 1: 45 kg x 12
-Set 2: 50 kg x 10
-Set 3: 50 kg x 10
-
-Ab Wheel
-Set 1: 10 reps
-Set 2: 10 reps
-Set 3: 10 reps
 ```
 
-### 2. Notatka i uwagi biegacza (Runner Note)
-- Wiadomość **zawsze rozpoczyna się od słowa kluczowego `NOTE`** w pierwszej linijce (i tylko tego słowa, wielkość liter dowolna).
-- Kolejne linie to pary:
-  ```text
-  nagłówek_i
-  notatka do nagłówka_i
-  ```
-- Słowo `NOTE` jest automatycznie usuwane (stripowane) podczas wczytywania, dzięki czemu Trener Gemini otrzymuje czyste uwagi z nagłówkami.
-
-**Przykład wiadomości z uwagami biegacza:**
-```text
-NOTE
-Samopoczucie i zmęczenie
-Czułem lekkie zmęczenie nóg po wczorajszej siłowni, ale bieg w strefie Z2 wszedł stabilnie. Tętno w normie.
-
-Dolegliwości bólowe
-Lekkie spięcie w lewym pasmie biodrowo-piszczelowym pod koniec 8. kilometra, ustąpiło po rolowaniu.
-
-Dieta i nawodnienie
-Wypite 3 litry wody z elektrolitami, posiłek regeneracyjny zjedzony 30 min po biegu.
-```
-
-### 3. Wiadomości ogólne (Fallback)
-Jeśli wiadomość nie zawiera słowa `NOTE` w pierwszej linii ani nazwy treningu siłowego, system traktuje ją tolerancyjnie jako ogólną uwagę biegacza i dołącza do promptu bez modyfikacji.
-
-### 4. Ochrona przed dublowaniem wiadomości
-Po każdym pomyślnym wykonaniu analizy identyfikator ostatnio odczytanej wiadomości zapisywany jest w pliku `input/telegram_state.json`, dzięki czemu wiadomości nie są dublowane przy kolejnych uruchomieniach. W trybie `--debug` stan ten nie jest modyfikowany.
+### 2. Notatka biegacza (`NOTE`)
+* Pierwsza linia zawiera słowo kluczowe `NOTE` (automatycznie usuwane przed wstrzyknięciem do promptu).
+* Wiadomości bez nagłówka `NOTE` i bez nazwy rutyny siłowej są traktowane tolerancyjnie jako ogólna uwaga biegacza.
+* Po pomyślnym uruchomieniu identyfikator `update_id` zapisywany jest w `input/telegram_state.json`, co zapobiega dublowaniu wiadomości.
 
 ---
 
-## Ustandaryzowany Format Archiwum (`trainings_history/YYYY/MM/YYYY-MM-DD.md`)
+## Flagi CLI i Przykłady Użycia
 
-Każdy zarchiwizowany raport treningowy zawiera na początku ustandaryzowany blok 6 linii metadanych:
-```markdown
-# AUDYT DZIENNY: YYYY-MM-DD (DzieńTygodnia, YYYY-MM-DD)
-- Typ dnia: BIEG | SIŁOWNIA | BIEG + SIŁOWNIA | REGENERACJA
-- Bieg: TAK (X.XX km, sesje: Y) | NIE (0.00 km, sesje: 0)
-- Typ treningu biegowego: [nazwa / profil jednostki]
-- Struktura biegu: Rozgrzewka: ... | Główna seria: ... | Schłodzenie: ...
-- Siłownia: TAK (NAZWA) | NIE
-- Partie mięśniowe (siłownia): GÓRA | DÓŁ | GÓRA + DÓŁ | CORE / STABILIZACJA | BRAK
-```
-Dzięki temu moduł wczytywania historii (`coach_prompts.py`) przetwarza historię 42 dni w złożoności $\mathcal{O}(1)$ bez konieczności przeszukiwania całych plików Markdown czy parsowania tabel serii siłowych.
-
----
-
-## Flagi CLI
-
-| Flaga | Typ | Domyślnie | Opis |
-| :--- | :---: | :---: | :--- |
-| **`--debug`** | flaga | `False` | Włącza tryb debugowania. Zapisuje pełną treść promptu przesłanego do Gemini do pliku `debug/debug_log.md` oraz izoluje wyniki w katalogu `debug/`. |
-| **`--send_debug`** | flaga | `False` | Włącza tryb debugowania ORAZ wysyła wygenerowany (testowy) raport na Telegram. |
-| **`--date YYYY-MM-DD`** | string | data bieżąca | Uruchamia skrypt z określoną datą referencyjną zamiast dzisiejszej (np. `--date 2026-09-22`). Przydatne do testów, symulacji oraz ponownego przeliczania raportów archiwalnych. |
-| **`-h`, `--help`** | flaga | — | Wyświetla wbudowaną pomoc CLI i listę dostępnych opcji. |
-
----
-
-## Przykłady Użycia
+| Flaga | Opis |
+| :--- | :--- |
+| **`--debug`** | Izoluje wykonanie w katalogu `debug/` (zapisuje pełny prompt do `debug/debug_log.md`, nie nadpisuje plików produkcyjnych ani stanu Telegrama). |
+| **`--send_debug`** | Włącza tryb `--debug` oraz wysyła wygenerowany raport testowy na Telegram. |
+| **`--date YYYY-MM-DD`** | Uruchamia audyt lub planowanie dla wskazanej daty historycznej (np. `--date 2026-10-18`). |
 
 ```bash
-# 1. Główny wieczorny audyt dnia i adaptacja na jutro (godz. 20:57)
-python coach_gemini.py
-# lub jawnie:
+# Wieczorny audyt dzisiejszego dnia
 python coach_gemini.py daily
 
-# 2. Rozpisanie szczegółowego planu na cały tydzień (na bazie input/weekly_workout_structure.md)
+# Wygenerowanie nowego planu tygodniowego
 python coach_gemini.py plan
 
-# 3. Uruchomienie w trybie debugowania (piaskownica w debug/)
+# Testowe uruchomienie w piaskownicy debug/ z podglądem wygenerowanego promptu
 python coach_gemini.py daily --debug
 
-# 4. Audyt historyczny dla konkretnego dnia
-python coach_gemini.py daily --date 2026-09-20
+# Przeliczenie raportu dla konkretnej daty
+python coach_gemini.py daily --date 2026-10-20
 ```
 
 ---
 
 ## Struktura Projektu
 
-```
-├── coach_gemini.py           # Główny skrypt aplikacji (CLI, kaskada Gemini API, orkiestracja trybów)
-├── garmin_service.py         # Moduł komunikacji z Garmin Connect oraz parserów biometrii i biegów
-├── coach_prompts.py          # Moduł prompt engineeringu, historii 42 dni i archiwizacji raportów
-├── send_telegram.py          # Integracja z Telegram Bot API (wysyłka raportów HTML, odczyt uwag/Hevy)
-├── utils_html.py             # Konwerter raportów Markdown na responsywny dokument HTML
-├── requirements.txt          # Zależności Python
-├── .env                      # Konfiguracja środowiskowa i klucze API (lokalna, ignorowana przez git)
-├── .env.example              # Wzorzec pliku konfiguracyjnego .env
+```text
+├── coach_gemini.py                 # Punkt wejścia CLI, klient Gemini API z pętlą retry, orkiestracja trybów
+├── garmin_service.py               # Klient Garmin Connect, obsługa sesji OAuth, parsery biometrii i splitów
+├── coach_prompts.py                # Silnik promptów, kompresja 42 dni historii, parser Hevy i archiwizacja
+├── send_telegram.py                # Klient Telegram Bot API (wysyłka dokumentów HTML, odbiór notatek)
+├── utils_html.py                   # Konwerter raportów Markdown na responsywny dokument HTML (Dark Mode)
+├── requirements.txt                # Zależności projektu
+├── .env.example                    # Szablon zmiennych środowiskowych
+├── .github/workflows/
+│   └── gemini_coach.yml            # Workflow GitHub Actions (automatyzacja daily/plan + cache OAuth)
 ├── input/
-│   ├── personal_data.json              # Profil biegacza, cele (primary_goal, secondary_goal), rekordy PB, strefy Z1-Z5
-│   ├── weekly_workout_structure.md     # Struktura dni treningowych na dany tydzień (dla trybu 'plan')
-│   ├── evening_routine.md              # Opcjonalna rutyna wieczorna zawodnika (mobilność/rozciąganie dla trybu 'daily')
-│   └── strength_routines.json          # Baza własnych zestawów ćwiczeń siłowych oraz aktualnych wag (FBW, UPPER, LOWER)
+│   ├── personal_data.json          # Profil zawodnika, cele, strefy HR/tempa i rekordy życiowe
+│   ├── strength_routines.json      # Kanoniczna baza ćwiczeń siłowych i ostatnich ciężarów roboczych
+│   ├── weekly_workout_structure.md # Preferowany rozkład jednostek w dniach tygodnia (dla trybu 'plan')
+│   ├── evening_routine.md          # Bazowa rutyna wieczorna (mobilność, SMR, wyciszenie autonomiczne)
+│   └── telegram_state.json         # Stan ostatnio przetworzonej wiadomości z Telegrama
 ├── output/
-│   ├── weekly_plan.md                  # Aktualny plan treningowy na tydzień
-│   └── last_daily_report.md            # Ostatni wygenerowany raport trenerski
+│   ├── weekly_plan.md              # Aktualny plan tygodniowy (Markdown + wygenerowany podgląd HTML)
+│   └── last_daily_report.md        # Ostatni wygenerowany raport dzienny (Markdown + podgląd HTML)
 ├── prompts/
-│   ├── weekly_plan.md                  # Szablon prompta dla trybu 'plan'
-│   ├── daily_base.md                   # Bazowy szablon prompta dla trybu 'daily' (rola i dane wejściowe)
-│   ├── audit_*.md                      # Modularne szablony audytu (run, swim, gym, other, rest)
-│   └── daily_closing.md                # Domykający szablon prompta dla trybu 'daily' (ocena gotowości i dyrektywa na jutro)
-└── trainings_history/                  # Archiwum wygenerowanych raportów dziennych (YYYY/MM/YYYY-MM-DD.md)
+│   ├── daily_base.md               # Bazowy szablon roli fizjologa i danych wejściowych dla trybu 'daily'
+│   ├── audit_*.md                  # Modularne szablony audytu (run, gym, swim, other, rest)
+│   ├── daily_closing.md            # Szablon oceny gotowości i dyrektywy na kolejny dzień
+│   └── weekly_plan.md              # Szablon architektury programowania mikrocyklu tygodniowego
+└── trainings_history/              # Archiwum raportów dziennych (YYYY/MM/YYYY-MM-DD.md)
 ```

@@ -1,3 +1,7 @@
+"""
+utils_html.py - Moduł konwersji raportów Markdown na responsywne dokumenty HTML (Dark Mode).
+"""
+
 import re
 import html
 
@@ -12,7 +16,15 @@ RE_MARKDOWN_STRIP = re.compile(r'[*_`]')
 
 
 def _format_inline_markdown(text):
-    """Konwertuje pogrubienie oraz kursywę Markdown na tagi HTML."""
+    """
+    Konwertuje pogrubienie oraz kursywę Markdown na odpowiadające im znaczniki HTML.
+
+    Args:
+        text (str): Tekst wejściowy z opcjonalnymi znacznikami Markdown (**tekst**, *tekst*, _tekst_).
+
+    Returns:
+        str: Tekst ze znacznikami HTML (<strong>, <em>).
+    """
     text = RE_BOLD.sub(r'<strong>\1</strong>', text)
     text = RE_ITALIC_STAR.sub(r'<em>\1</em>', text)
     return RE_ITALIC_UNDERSCORE.sub(r'<em>\1</em>', text)
@@ -82,17 +94,12 @@ def markdown_to_html_doc(md_text, title="Raport Coach Gemini"):
             else:
                 clean_first = RE_MARKDOWN_STRIP.sub('', cells[0]).strip().lower() if cells else ""
                 is_pause_row = "przerw" in clean_first
-
                 row_class = ' class="row-pause"' if is_pause_row else ''
-                html_lines.append(f"<tr{row_class}>")
-                for c in cells:
-                    escaped = html.escape(c)
-                    if is_pause_row:
-                        # W wierszu przerwy usuwamy ewentualne gwiazdki/podkreślenia
-                        html_lines.append(f"<td>{re.sub(r'[*_]', '', escaped).strip()}</td>")
-                    else:
-                        html_lines.append(f"<td>{_format_inline_markdown(escaped)}</td>")
-                html_lines.append("</tr>")
+                tds = "".join(
+                    f"<td>{re.sub(r'[*_]', '', html.escape(c)).strip() if is_pause_row else _format_inline_markdown(html.escape(c))}</td>"
+                    for c in cells
+                )
+                html_lines.append(f"<tr{row_class}>{tds}</tr>")
             continue
 
         close_table()
@@ -139,35 +146,18 @@ def markdown_to_html_doc(md_text, title="Raport Coach Gemini"):
 
 CSS_STYLES = """
     :root {
-      --bg: #09090b;
-      --card-bg: #121214;
-      --border: #27272a;
-      --border-subtle: #1c1c1f;
-      --accent: #f4f4f5;
-      --accent-muted: #a1a1aa;
-      --text: #f4f4f5;
-      --text-muted: #a1a1aa;
-      --th-bg: #18181b;
-      --tr-even: #0e0e10;
-      --tr-odd: #141416;
+      --bg: #09090b; --card-bg: #121214; --border: #27272a; --border-subtle: #1c1c1f;
+      --accent: #f4f4f5; --accent-muted: #a1a1aa; --text: #f4f4f5; --text-muted: #a1a1aa;
+      --th-bg: #18181b; --tr-even: #0e0e10; --tr-odd: #141416;
     }
     * { box-sizing: border-box; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      margin: 0;
-      padding: 14px;
+      background: var(--bg); color: var(--text); line-height: 1.6; margin: 0; padding: 14px;
     }
     .container {
-      max-width: 860px;
-      margin: 0 auto;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 18px 22px;
-      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.85);
+      max-width: 860px; margin: 0 auto; background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 14px; padding: 18px 22px; box-shadow: 0 12px 35px rgba(0, 0, 0, 0.85);
     }
     h1 { font-size: 1.4rem; color: #ffffff; margin-top: 6px; margin-bottom: 16px; border-bottom: 2px solid #3f3f46; padding-bottom: 8px; letter-spacing: -0.01em; }
     h2 { font-size: 1.2rem; color: #f4f4f5; margin-top: 26px; border-bottom: 1px solid var(--border); padding-bottom: 6px; letter-spacing: -0.01em; }
@@ -186,14 +176,7 @@ CSS_STYLES = """
     tr:nth-child(odd) { background: var(--tr-odd); }
     tr:hover { background: rgba(255, 255, 255, 0.05); }
     tr.row-pause, tr.row-pause:nth-child(even), tr.row-pause:nth-child(odd) { background: rgba(0, 0, 0, 0.35) !important; }
-    tr.row-pause td {
-      color: #71717a !important;
-      font-style: normal;
-      border-bottom: 1px dashed var(--border-subtle);
-    }
-    tr.row-pause td em {
-      font-style: normal;
-      color: #71717a !important;
-    }
+    tr.row-pause td { color: #71717a !important; font-style: normal; border-bottom: 1px dashed var(--border-subtle); }
+    tr.row-pause td em { font-style: normal; color: #71717a !important; }
     tr.row-pause:hover { background: rgba(255, 255, 255, 0.02) !important; }
 """

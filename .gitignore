@@ -1,2 +1,28 @@
+# Środowisko i sekrety
 .env
+.venv/
+venv/
+env/
 
+# Pliki kompilacji i pamięci podręcznej Pythona
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Piaskownica debugowania i surowa pamięć podręczna API Garmina (wrażliwe dane GPS)
+debug/
+garmin_data/
+garmin_dump.json
+
+# Pliki systemowe i edytorów (IDE)
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~

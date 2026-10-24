@@ -154,11 +154,8 @@ def _read_and_validate_workout_structure(weekly_workout_structure_path, debug=Fa
         str: Sformatowany ciąg ze strukturą dni tygodnia.
     """
     debug_structure_path = os.path.join(DEBUG_DIR_PATH, "weekly_workout_structure.md")
-    if debug and os.path.exists(debug_structure_path):
-        active_structure_path = debug_structure_path
-    elif os.path.exists(weekly_workout_structure_path):
-        active_structure_path = weekly_workout_structure_path
-    else:
+    active_structure_path = debug_structure_path if (debug and os.path.exists(debug_structure_path)) else weekly_workout_structure_path
+    if not os.path.exists(active_structure_path):
         active_structure_path = debug_structure_path if debug else weekly_workout_structure_path
         template_lines = [
             "# Wpisz preferowany typ treningu dla poszczególnych dni tygodnia.",
@@ -176,29 +173,21 @@ def _read_and_validate_workout_structure(weekly_workout_structure_path, debug=Fa
     with open(active_structure_path, "r", encoding="utf-8") as structure_file:
         raw_lines = structure_file.readlines()
 
-    formatted_day_lines = []
-    invalid_lines = []
-    defined_days = []
-
+    formatted_day_lines, invalid_lines, defined_days = [], [], []
     for raw_line in raw_lines:
         stripped_line = raw_line.strip()
         if not stripped_line or stripped_line.startswith("#"):
             continue
 
-        clean_line = stripped_line.lstrip("0123456789.-*•) ").strip()
-        day_part, separator, preference_part = clean_line.partition(":")
+        day_part, separator, preference_part = stripped_line.lstrip("0123456789.-*•) ").strip().partition(":")
         day_name = day_part.strip().capitalize()
-
         if day_name not in DAYS_PL:
             invalid_lines.append(stripped_line)
             continue
 
         defined_days.append(day_name)
-        workout_preference = preference_part.strip() if separator else ""
-        if not workout_preference or workout_preference.lower() == "brak preferencji":
-            formatted_day_lines.append(f"{day_name}: Brak preferencji")
-        else:
-            formatted_day_lines.append(f"{day_name}: {workout_preference}")
+        pref = preference_part.strip() if separator else ""
+        formatted_day_lines.append(f"{day_name}: {'Brak preferencji' if not pref or pref.lower() == 'brak preferencji' else pref}")
 
     if invalid_lines:
         formatted_invalid = "\n".join(f"   - {line}" for line in invalid_lines)
@@ -216,9 +205,8 @@ def _read_and_validate_workout_structure(weekly_workout_structure_path, debug=Fa
             code=2
         )
 
-    days_structure = "\n".join(formatted_day_lines)
     print(f"📄 Wczytano strukturę tygodnia z pliku {active_structure_path}:\n")
-    return days_structure
+    return "\n".join(formatted_day_lines)
 
 
 def run_plan_mode(client, personal_data, trainings_history, user_note, weekly_workout_structure_path, weekly_plan_path, debug=False, model="gemini-3.8-flash", ref_date=None, send_tg=False):
@@ -262,15 +250,13 @@ def run_plan_mode(client, personal_data, trainings_history, user_note, weekly_wo
 
         if debug:
             print(f"\n📄 [DEBUG] Zapisano plan do: {target_plan_path} (Plik produkcyjny {weekly_plan_path} pozostał nienaruszony)")
-            if send_tg:
-                print("🚀 [DEBUG] Raport zostanie wysłany na Telegrama (z flagą debug)")
-                send_weekly_plan(target_plan_path)
-            else:
-                print("📄 [DEBUG] Dane NIE zostaną wysłane na Telegrama.")
+            print("🚀 [DEBUG] Raport zostanie wysłany na Telegrama (z flagą debug)" if send_tg else "📄 [DEBUG] Dane NIE zostaną wysłane na Telegrama.")
         else:
             print(f"\n✅ Zapisano plan do: {target_plan_path}. Będzie on podstawą do codziennej weryfikacji i adaptacji!")
+
+        if not debug or send_tg:
             try:
-                send_weekly_plan(weekly_plan_path)
+                send_weekly_plan(target_plan_path)
             except Exception as te:
                 logger.warning(f"Nie udało się wysłać planu na Telegram: {te}")
     except Exception as e:
@@ -520,6 +506,7 @@ def dispatch_mode(mode, client, gemini_model, today, personal_data, user_note, p
 
 
 def main():
+    """Główny punkt wejścia CLI obsługujący parsowanie argumentów i uruchomienie odpowiedniego trybu."""
     parser = argparse.ArgumentParser(description="Coach Gemini - Asystent Treningowy Gemini")
     parser.add_argument("mode", nargs="?", default="daily", help="daily (domyślny, audyt wieczorny o 20:57), plan")
     parser.add_argument("--debug", action="store_true", help="Włącza tryb debugowania. zapis w katalogu debug/")

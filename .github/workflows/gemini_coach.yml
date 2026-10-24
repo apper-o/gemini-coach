@@ -56,7 +56,6 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           TARGET_MODE: ${{ github.event.inputs.mode || 'daily' }}
-          USE_LOCAL_DATA: "false"
         run: |
           echo "Uruchamianie w trybie: $TARGET_MODE"
           python coach_gemini.py "$TARGET_MODE"
@@ -69,7 +68,7 @@ jobs:
       - name: Wyświetlenie raportu w podsumowaniu GitHub Actions (Step Summary)
         if: success()
         run: |
-          if ([ "${{ github.event.inputs.mode }}" = "plan" ] || [ "${{ github.event.inputs.mode }}" = "week" ]) && [ -f "output/weekly_plan.md" ]; then
+          if [ "${{ github.event.inputs.mode }}" = "plan" ] && [ -f "output/weekly_plan.md" ]; then
             cat output/weekly_plan.md >> $GITHUB_STEP_SUMMARY
           elif [ -f "output/last_daily_report.md" ]; then
             cat output/last_daily_report.md >> $GITHUB_STEP_SUMMARY

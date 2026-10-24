@@ -69,7 +69,15 @@ def _get_or_nodata(d, keys, formatter=None):
 
 
 def _activity_sort_key(act):
-    """Klucz sortowania chronologicznego aktywności z Garmina."""
+    """
+    Zwraca klucz sortowania chronologicznego dla słownika aktywności z Garmina.
+
+    Args:
+        act (dict): Słownik aktywności pobrany z API Garmina.
+
+    Returns:
+        str: Znacznik czasu rozpoczęcia aktywności do porównania leksykograficznego.
+    """
     return str(act.get('startTimeLocal') or act.get('startTimeGMT') or act.get('beginTimestamp', 0))
 
 
@@ -78,7 +86,15 @@ def _activity_sort_key(act):
 # ==============================================================================
 
 def _speed_to_pace_short(speed_m_s):
-    """Konwertuje prędkość w m/s na zwięzłe tempo M:SS (bez jednostki) do tabel splitów."""
+    """
+    Konwertuje prędkość w m/s na zwięzłe tempo w formacie M:SS (bez jednostki) do tabel splitów.
+
+    Args:
+        speed_m_s (float | int): Prędkość w metrach na sekundę.
+
+    Returns:
+        str: Tempo w formacie M:SS lub '-' w przypadku braku poprawnej prędkości.
+    """
     if speed_m_s and isinstance(speed_m_s, (int, float)) and speed_m_s > 0:
         total_seconds = int(round(1000.0 / speed_m_s))
         return f"{total_seconds // 60}:{total_seconds % 60:02d}"
@@ -86,9 +102,37 @@ def _speed_to_pace_short(speed_m_s):
 
 
 def _speed_to_pace_str(speed_m_s):
-    """Konwertuje prędkość w m/s na czytelne tempo w formacie M:SS min/km."""
+    """
+    Konwertuje prędkość w m/s na czytelne tempo w formacie M:SS min/km.
+
+    Args:
+        speed_m_s (float | int): Prędkość w metrach na sekundę.
+
+    Returns:
+        str: Sformatowane tempo z jednostką 'min/km' lub NO_DATA.
+    """
     short_pace = _speed_to_pace_short(speed_m_s)
     return f"{short_pace} min/km" if short_pace != "-" else NO_DATA
+
+
+def _fmt_hr(val):
+    """Formatuje wartość tętna z jednostką bpm."""
+    return f"{int(round(val))} bpm" if isinstance(val, (int, float)) else NO_DATA
+
+
+def _fmt_cadence(val):
+    """Formatuje wartość kadencji biegowej z jednostką spm."""
+    return f"{int(round(val))} spm"
+
+
+def _fmt_elev(val):
+    """Formatuje wartość przewyższenia w metrach."""
+    return f"{int(round(val))} m"
+
+
+def _fmt_sleep_duration(seconds):
+    """Formatuje czas trwania snu w sekundach do postaci Xh Ym."""
+    return f"{int(seconds) // 3600}h {(int(seconds) % 3600) // 60}m"
 
 
 def parse_activity_biomechanics(activity, include_splits=True):
@@ -96,11 +140,11 @@ def parse_activity_biomechanics(activity, include_splits=True):
     Wyciąga szczegółowe parametry biomechaniczne i fizjologiczne z konkretnego biegu.
     Oblicza średnie tempo z prędkości (m/s), jeśli Garmin nie udostępnia gotowego pola tempa.
     Jeśli parametrów brak, wstawia NO_DATA.
-    
+
     Args:
         activity (dict): Słownik reprezentujący dane aktywności z Garmina.
         include_splits (bool, optional): Czy parsować tabelę splitów kilometrowych. Defaults to True.
-        
+
     Returns:
         dict: Słownik zawierający przeparsowane metryki aktywności, lub None jeśli activity jest puste.
     """
@@ -111,9 +155,6 @@ def parse_activity_biomechanics(activity, include_splits=True):
     if pace_str == NO_DATA:
         pace_str = _get_or_nodata(activity, 'averageSpeed', _speed_to_pace_str)
 
-    fmt_hr = lambda x: f"{int(round(x))} bpm" if isinstance(x, (int, float)) else NO_DATA
-    fmt_cadence = lambda x: f"{int(round(x))} spm"
-    fmt_elev = lambda x: f"{int(round(x))} m"
     label_str = f" ({activity.get('trainingEffectLabel')})" if activity.get('trainingEffectLabel') else ""
     type_key = (activity.get('activityType') or {}).get('typeKey', '').lower()
 
@@ -125,16 +166,16 @@ def parse_activity_biomechanics(activity, include_splits=True):
         "distance": _get_or_nodata(activity, 'distance', lambda x: f"{x / 1000:.2f} km" if x > 0 else NO_DATA),
         "duration": _get_or_nodata(activity, 'duration', lambda x: f"{x / 60:.1f} min" if x > 0 else NO_DATA),
         "pace": pace_str,
-        "avg_hr": _get_or_nodata(activity, 'averageHR', fmt_hr),
-        "max_hr": _get_or_nodata(activity, 'maxHR', fmt_hr),
-        "avg_cadence": _get_or_nodata(activity, ['averageRunningCadenceInStepsPerMinute', 'averageRunCadence'], fmt_cadence),
-        "max_cadence": _get_or_nodata(activity, ['maxRunningCadenceInStepsPerMinute', 'maxRunCadence'], fmt_cadence),
+        "avg_hr": _get_or_nodata(activity, 'averageHR', _fmt_hr),
+        "max_hr": _get_or_nodata(activity, 'maxHR', _fmt_hr),
+        "avg_cadence": _get_or_nodata(activity, ['averageRunningCadenceInStepsPerMinute', 'averageRunCadence'], _fmt_cadence),
+        "max_cadence": _get_or_nodata(activity, ['maxRunningCadenceInStepsPerMinute', 'maxRunCadence'], _fmt_cadence),
         "stride_length": _get_or_nodata(activity, 'avgStrideLength', lambda x: f"{x / 100:.2f} m" if x > 0 else NO_DATA),
         "ground_contact_time": _get_or_nodata(activity, 'avgGroundContactTime', lambda x: f"{x:.1f} ms" if isinstance(x, (int, float)) else NO_DATA),
         "vertical_oscillation": _get_or_nodata(activity, 'avgVerticalOscillation', lambda x: f"{x:.2f} cm" if isinstance(x, (int, float)) else NO_DATA),
         "vertical_ratio": _get_or_nodata(activity, 'avgVerticalRatio', lambda x: f"{x:.2f} %" if isinstance(x, (int, float)) else NO_DATA),
-        "elevation_gain": _get_or_nodata(activity, 'elevationGain', fmt_elev),
-        "elevation_loss": _get_or_nodata(activity, 'elevationLoss', fmt_elev),
+        "elevation_gain": _get_or_nodata(activity, 'elevationGain', _fmt_elev),
+        "elevation_loss": _get_or_nodata(activity, 'elevationLoss', _fmt_elev),
         "aerobic_te": _get_or_nodata(activity, 'aerobicTrainingEffect', lambda x: f"{x:.1f}/5.0{label_str}" if isinstance(x, (int, float)) else NO_DATA),
         "anaerobic_te": _get_or_nodata(activity, 'anaerobicTrainingEffect', lambda x: f"{x:.1f}/5.0" if isinstance(x, (int, float)) else NO_DATA),
         "avg_power": _get_or_nodata(activity, 'avgPower', lambda x: f"{int(round(x))} W" if isinstance(x, (int, float)) else NO_DATA),
@@ -152,45 +193,30 @@ def parse_activity_biomechanics(activity, include_splits=True):
         raw_feels = weather_info.get('apparentTemp') if weather_info.get('apparentTemp') is not None else weather_info.get('apparentTemperature')
 
         # Garmin Connect API weather endpoint zwraca temperaturę w stopniach Fahrenheita
-        if raw_temp is not None:
-            temp_c = (float(raw_temp) - 32.0) * 5.0 / 9.0
+        temp_c = (float(raw_temp) - 32.0) * 5.0 / 9.0 if raw_temp is not None else None
         feels_c = (float(raw_feels) - 32.0) * 5.0 / 9.0 if raw_feels is not None else None
 
-        wind_speed = weather_info.get('windSpeed')
-        wind_dir = weather_info.get('windDirectionCompassPoint', '')
-        humidity = weather_info.get('relativeHumidity')
-
-        w_dto = weather_info.get('weatherTypeDTO')
-        if isinstance(w_dto, dict):
-            weather_desc = w_dto.get('desc', '')
-        elif isinstance(weather_info.get('weatherType'), dict):
-            weather_desc = weather_info['weatherType'].get('weatherTypeKey', '')
-        else:
-            weather_desc = ''
-        weather_desc = WEATHER_DESC_PL.get(weather_desc, weather_desc)
+        w_dto, w_type = weather_info.get('weatherTypeDTO'), weather_info.get('weatherType')
+        raw_desc = w_dto.get('desc', '') if isinstance(w_dto, dict) else (w_type.get('weatherTypeKey', '') if isinstance(w_type, dict) else '')
+        weather_desc = WEATHER_DESC_PL.get(raw_desc, raw_desc)
 
         if temp_c is not None:
-            temp_str = f"Temperatura: {temp_c:.1f}°C"
-            if feels_c is not None and abs(feels_c - temp_c) >= 1.0:
-                temp_str += f" (odczuwalna: {feels_c:.1f}°C)"
-            parts.append(temp_str)
-        if wind_speed is not None:
-            parts.append(f"Wiatr: {wind_speed:.1f} km/h {wind_dir}".strip())
-        if humidity is not None:
+            feels_str = f" (odczuwalna: {feels_c:.1f}°C)" if feels_c is not None and abs(feels_c - temp_c) >= 1.0 else ""
+            parts.append(f"Temperatura: {temp_c:.1f}°C{feels_str}")
+        if (wind_speed := weather_info.get('windSpeed')) is not None:
+            parts.append(f"Wiatr: {wind_speed:.1f} km/h {weather_info.get('windDirectionCompassPoint', '')}".strip())
+        if (humidity := weather_info.get('relativeHumidity')) is not None:
             parts.append(f"Wilgotność: {humidity}%")
         if weather_desc:
             parts.append(f"Warunki: {weather_desc}")
 
     # Fallback na czujnik temperatury zegarka, gdy stacja pogodowa nie zwróciła temperatury
     if temp_c is None:
-        min_t = activity.get('minTemperature')
-        max_t = activity.get('maxTemperature')
+        min_t, max_t = activity.get('minTemperature'), activity.get('maxTemperature')
         if min_t is not None and max_t is not None:
-            avg_t = round((min_t + max_t) / 2, 1)
-            parts.append(f"Temperatura (czujnik zegarka): {avg_t:.1f}°C (min: {min_t:.1f}°C, max: {max_t:.1f}°C)")
+            parts.append(f"Temperatura (czujnik zegarka): {round((min_t + max_t) / 2, 1):.1f}°C (min: {min_t:.1f}°C, max: {max_t:.1f}°C)")
         elif min_t is not None or max_t is not None:
-            single_t = min_t if min_t is not None else max_t
-            parts.append(f"Temperatura (czujnik zegarka): {single_t:.1f}°C")
+            parts.append(f"Temperatura (czujnik zegarka): {(min_t if min_t is not None else max_t):.1f}°C")
 
     if parts:
         res["weather"] = " | ".join(parts)
@@ -201,53 +227,36 @@ def parse_activity_biomechanics(activity, include_splits=True):
     if isinstance(splits_raw, dict):
         lap_list = list(splits_raw.get('lapDTOs', []))
         # Odfiltrowanie szczątkowego ostatniego splitu (autolapa) powstałego przy wyhamowywaniu / zatrzymaniu zegarka
-        # (np. bieg zakończony na 4.01 km tworzy split o dystansie < 0.10 km lub czasie < 20 s)
-        while len(lap_list) > 1:
-            last_lap = lap_list[-1]
-            last_dist_km = (last_lap.get('distance') or 0) / 1000
-            last_dur_sec = last_lap.get('duration') or 0
-            if last_dist_km < 0.10 or last_dur_sec < 20:
-                lap_list.pop()
-            else:
-                break
+        while len(lap_list) > 1 and ((lap_list[-1].get('distance') or 0) / 1000 < 0.10 or (lap_list[-1].get('duration') or 0) < 20):
+            lap_list.pop()
 
         if lap_list:
-            parsed_splits.append("| Km | Dystans [km] | Czas | Tempo [/km] | GAP [/km] | HR śr/max [bpm] | Kadencja [spm] | Krok [m] | GCT [ms] | VO [cm] | Moc [W] | Wznios/Spadek [m] |")
-            parsed_splits.append("|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|")
+            parsed_splits.extend([
+                "| Km | Dystans [km] | Czas | Tempo [/km] | GAP [/km] | HR śr/max [bpm] | Kadencja [spm] | Krok [m] | GCT [ms] | VO [cm] | Moc [W] | Wznios/Spadek [m] |",
+                "|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|",
+            ])
 
             for idx, lap in enumerate(lap_list, 1):
-                lap_dist = lap.get('distance', 0) / 1000
                 lap_dur = lap.get('duration', 0)
-                dur_str = f"{int(lap_dur // 60)}:{int(lap_dur % 60):02d}"
-
-                lap_pace = _speed_to_pace_short(lap.get('averageSpeed', 0))
-                gap_pace = _speed_to_pace_short(lap.get('avgGradeAdjustedSpeed', 0))
-
-                if lap.get('averageHR') is not None and lap.get('maxHR') is not None:
-                    hr_str = f"{int(lap['averageHR'])}/{int(lap['maxHR'])}"
-                elif lap.get('averageHR') is not None:
-                    hr_str = str(int(lap['averageHR']))
-                elif lap.get('maxHR') is not None:
-                    hr_str = f"max {int(lap['maxHR'])}"
-                else:
-                    hr_str = "-"
-
+                avg_hr, max_hr = lap.get('averageHR'), lap.get('maxHR')
+                hr_str = f"{int(avg_hr)}/{int(max_hr)}" if avg_hr is not None and max_hr is not None else (
+                    str(int(avg_hr)) if avg_hr is not None else (f"max {int(max_hr)}" if max_hr is not None else "-")
+                )
                 ascent = int(lap['elevationGain']) if lap.get('elevationGain') is not None else 0
                 descent = int(lap['elevationLoss']) if lap.get('elevationLoss') is not None else 0
-                elev_str = f"+{ascent}/-{descent}"
+                raw_cad_lap = lap.get('averageRunCadence') or lap.get('averageRunningCadenceInStepsPerMinute')
 
                 avg_pwr = str(int(lap['averagePower'])) if lap.get('averagePower') is not None else "-"
-                raw_cad_lap = lap.get('averageRunCadence') or lap.get('averageRunningCadenceInStepsPerMinute')
                 avg_cad = str(int(round(raw_cad_lap))) if raw_cad_lap is not None else "-"
-
                 gct_lap = f"{lap['groundContactTime']:.1f}" if lap.get('groundContactTime') is not None else "-"
                 stride_lap = f"{lap['strideLength']/100:.2f}" if lap.get('strideLength') is not None else "-"
                 vert_osc_lap = f"{lap['verticalOscillation']:.2f}" if lap.get('verticalOscillation') is not None else "-"
 
                 parsed_splits.append(
-                    f"| {idx} | {lap_dist:.2f} | {dur_str} | {lap_pace} | {gap_pace} | "
+                    f"| {idx} | {lap.get('distance', 0) / 1000:.2f} | {int(lap_dur // 60)}:{int(lap_dur % 60):02d} | "
+                    f"{_speed_to_pace_short(lap.get('averageSpeed', 0))} | {_speed_to_pace_short(lap.get('avgGradeAdjustedSpeed', 0))} | "
                     f"{hr_str} | {avg_cad} | {stride_lap} | {gct_lap} | {vert_osc_lap} | "
-                    f"{avg_pwr} | {elev_str} |"
+                    f"{avg_pwr} | +{ascent}/-{descent} |"
                 )
 
     res["splits"] = parsed_splits
@@ -260,16 +269,15 @@ def _parse_hrv_data(hrv_raw):
     - hrv_last_night: średnia z ostatniej nocy wraz z jednostką (np. '68 ms'),
     - hrv_baseline_range: zakres bazowy (np. '62–75 ms'),
     - hrv_status: pełny opis tekstowy do archiwum.
-    
+
     Args:
         hrv_raw (dict): Słownik zawierający surowe dane HRV.
-        
+
     Returns:
-        dict: Słownik z kluczami hrv_last_night, hrv_last_night_ms, hrv_baseline_range i hrv_status.
+        dict: Słownik z kluczami hrv_last_night, hrv_baseline_range i hrv_status.
     """
     result = {
         "hrv_last_night": NO_DATA,
-        "hrv_last_night_ms": NO_DATA,
         "hrv_baseline_range": NO_DATA,
         "hrv_status": NO_DATA,
     }
@@ -286,7 +294,6 @@ def _parse_hrv_data(hrv_raw):
     baseline_str = f"{int(round(b_low))}–{int(round(b_high))} ms" if b_low is not None and b_high is not None else NO_DATA
 
     result["hrv_last_night"] = last_night_val
-    result["hrv_last_night_ms"] = last_night_val
     result["hrv_baseline_range"] = baseline_str
 
     if last_night_val != NO_DATA or weekly_avg_str != NO_DATA or baseline_str != NO_DATA:
@@ -299,6 +306,13 @@ def _parse_rhr_and_sleep(stats_raw, sleep_raw):
     """
     Parsuje tętno spoczynkowe RHR (bieżące, bazowe 7-dniowe oraz pełny status do archiwum)
     oraz dane snu (score, łączny czas snu, fazy Deep/REM, stres snu) z jednostkami w wartościach.
+
+    Args:
+        stats_raw (dict): Słownik ze statystykami dobowymi Garmina (userSummary).
+        sleep_raw (dict): Słownik z danymi o śnie z Garmina.
+
+    Returns:
+        dict: Słownik z przeparsowanymi wskaźnikami RHR oraz architektury snu.
     """
     result = {
         "rhr": NO_DATA,
@@ -326,10 +340,9 @@ def _parse_rhr_and_sleep(stats_raw, sleep_raw):
 
     if isinstance(sleep_raw, dict) and isinstance(sleep_raw.get('dailySleepDTO'), dict):
         sleep_dto = sleep_raw['dailySleepDTO']
-        fmt_sleep_dur = lambda x: f"{int(x) // 3600}h {(int(x) % 3600) // 60}m"
         result['sleep_score'] = _get_or_nodata((sleep_dto.get('sleepScores') or {}).get('overall') or {}, 'value', lambda x: f"{x}/100")
-        result['deep_sleep'] = _get_or_nodata(sleep_dto, 'deepSleepSeconds', fmt_sleep_dur)
-        result['rem_sleep'] = _get_or_nodata(sleep_dto, 'remSleepSeconds', fmt_sleep_dur)
+        result['deep_sleep'] = _get_or_nodata(sleep_dto, 'deepSleepSeconds', _fmt_sleep_duration)
+        result['rem_sleep'] = _get_or_nodata(sleep_dto, 'remSleepSeconds', _fmt_sleep_duration)
         result['sleep_stress'] = _get_or_nodata(sleep_dto, 'avgSleepStress', lambda x: str(int(round(x))))
 
         total_sec = sleep_dto.get('sleepTimeSeconds')
@@ -338,7 +351,7 @@ def _parse_rhr_and_sleep(stats_raw, sleep_raw):
             if any(isinstance(s, (int, float)) for s in phase_secs):
                 total_sec = sum(s for s in phase_secs if isinstance(s, (int, float)))
         if isinstance(total_sec, (int, float)) and total_sec > 0:
-            result['total_sleep_time'] = fmt_sleep_dur(total_sec)
+            result['total_sleep_time'] = _fmt_sleep_duration(total_sec)
 
     return result
 
@@ -410,10 +423,8 @@ def _fetch_historical_strength_training(date_str, history_dir_path=HISTORY_DIR_P
 
     try:
         year, month = date_str.split('-')[:2]
-        target_file_path = os.path.join(history_dir_path, year, month, f"{date_str}.md")
-        debug_file_path = os.path.join(DEBUG_DIR_PATH, f"{date_str}.md")
-        hist_file_path = target_file_path if os.path.exists(target_file_path) else (debug_file_path if os.path.exists(debug_file_path) else None)
-
+        candidates = (os.path.join(history_dir_path, year, month, f"{date_str}.md"), os.path.join(DEBUG_DIR_PATH, f"{date_str}.md"))
+        hist_file_path = next((p for p in candidates if os.path.exists(p)), None)
         if not hist_file_path:
             return ""
 
@@ -421,11 +432,9 @@ def _fetch_historical_strength_training(date_str, history_dir_path=HISTORY_DIR_P
             h_content = hf.read()
 
         m_strength = re.search(r'^\s*-\s*Siłownia:\s*([^\n\r]+)', h_content, re.MULTILINE | re.IGNORECASE)
-        if m_strength:
-            val = m_strength.group(1).strip()
-            if val.upper().startswith(("NIE", "BRAK")):
-                return ""
-        elif not RE_STRENGTH_KW.search(h_content):
+        if m_strength and m_strength.group(1).strip().upper().startswith(("NIE", "BRAK")):
+            return ""
+        if not m_strength and not RE_STRENGTH_KW.search(h_content):
             return ""
 
         m_muscle = re.search(r'^\s*-\s*Partie mięśniowe \(siłownia\):\s*([^\n\r]+)', h_content, re.MULTILINE | re.IGNORECASE)
@@ -445,9 +454,8 @@ def _fetch_historical_strength_training(date_str, history_dir_path=HISTORY_DIR_P
                     weight = f" ({cols[3]})" if len(cols) > 3 and cols[3] and cols[3] != '-' else ''
                     ex_items.append(f"{name} {reps}{weight}".strip())
 
-        if ex_items:
-            return f"[Siłownia: {routine_label}{muscle_str}]: {', '.join(ex_items)}"
-        return f"[Siłownia: {routine_label}{muscle_str}]"
+        ex_suffix = f": {', '.join(ex_items)}" if ex_items else ""
+        return f"[Siłownia: {routine_label}{muscle_str}]{ex_suffix}"
     except Exception as e:
         logger.warning(f"Błąd odczytu historii treningu siłowego z {date_str}: {e}")
         return ""
@@ -501,7 +509,6 @@ def parse_garmin_data(data, target_date=None):
     """
     parsed = {
         "hrv_last_night": NO_DATA,
-        "hrv_last_night_ms": NO_DATA,
         "hrv_baseline_range": NO_DATA,
         "hrv_status": NO_DATA,
         "rhr": NO_DATA,

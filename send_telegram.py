@@ -1,3 +1,9 @@
+"""
+send_telegram.py - Moduł integracji z Telegram Bot API.
+Odpowiada za wysyłkę wygenerowanych raportów i planów w formacie HTML wraz ze streszczeniem (caption)
+oraz pobieranie notatek biegacza i raportów siłowych (Hevy) bezpośrednio z czatu Telegrama.
+"""
+
 import os
 import sys
 import re
@@ -41,8 +47,19 @@ RE_CLEAN_BRACKETS = re.compile(r'\[.*?\]')
 RE_SCORE_VALUE = re.compile(r'(\d+(?:[.,]\d+)?\s*/\s*10)')
 
 
+def _re_first(pattern, text, default="", flags=re.MULTILINE | re.IGNORECASE):
+    """Zwraca pierwszą grupę dopasowania wyrażenia regularnego (po strip) lub wartość domyślną."""
+    m = re.search(pattern, text, flags)
+    return m.group(1).strip() if m and m.group(1) else default
+
+
 def _get_telegram_credentials():
-    """Pobiera token bota oraz ID czatu ze zmiennych środowiskowych."""
+    """
+    Pobiera token bota oraz identyfikator czatu ze zmiennych środowiskowych.
+
+    Returns:
+        tuple: Krotka (bot_token, chat_id) pobrana ze zmiennych środowiskowych.
+    """
     return os.getenv("TELEGRAM_BOT_TOKEN"), os.getenv("TELEGRAM_CHAT_ID")
 
 
@@ -79,7 +96,15 @@ def _make_telegram_request(url, data=None, headers=None, timeout=10):
 
 def _truncate_telegram_caption(caption, max_length=1000, footer_text="Pełny materiał w załączniku HTML."):
     """
-    Przycina tekst podpisu do limitu znaków Telegrama, dodając informację o załączniku.
+    Przycina tekst podpisu do limitu znaków Telegrama, zabezpieczając przed ucięciem znacznika HTML.
+
+    Args:
+        caption (str): Pełny tekst podpisu w formacie HTML.
+        max_length (int, optional): Maksymalna długość podpisu w znakach. Domyślnie 1000.
+        footer_text (str, optional): Tekst stopki dodawany po przycięciu.
+
+    Returns:
+        str: Podpis mieszczący się w limicie znaków Telegrama.
     """
     if len(caption) <= max_length:
         return caption
@@ -136,12 +161,9 @@ def extract_daily_report_caption(md_text):
         str: Sformatowany podpis HTML dla Telegrama przycięty do bezpiecznego limitu.
     """
     # 1. Wyznaczenie daty audytowanego dnia
-    target_date = "Dzisiaj"
-    m_hdr = re.search(r"(?:#\s*AUDYT DZIENNY|##\s*1\.\s*AUDYT[^:]*):\s*([^\n\r]+)", md_text, re.I)
-    if m_hdr:
-        raw_date_str = m_hdr.group(1).strip()
-        m_day = RE_DAY_NAME.search(raw_date_str)
-        m_iso = RE_DATE_ISO.search(raw_date_str)
+    raw_date_str = _re_first(r"(?:#\s*AUDYT DZIENNY|##\s*1\.\s*AUDYT[^:]*):\s*([^\n\r]+)", md_text, flags=re.I)
+    if raw_date_str:
+        m_day, m_iso = RE_DAY_NAME.search(raw_date_str), RE_DATE_ISO.search(raw_date_str)
         if m_day and m_iso:
             target_date = f"{m_day.group(1).capitalize()}, {m_iso.group(0)}"
         elif m_iso:
@@ -150,27 +172,22 @@ def extract_daily_report_caption(md_text):
             target_date = RE_CLEAN_BRACKETS.sub('', raw_date_str).strip()
     else:
         m_iso = RE_DATE_ISO.search(md_text)
-        if m_iso:
-            target_date = m_iso.group(0)
+        target_date = m_iso.group(0) if m_iso else "Dzisiaj"
 
     # 2. Identyfikacja zrealizowanych jednostek treningowych
-    m_day_type = re.search(r"^-\s*Typ dnia:\s*([^\n\r]+)", md_text, re.MULTILINE | re.I)
-    day_type = m_day_type.group(1).strip() if m_day_type else ""
-    day_type_lower = day_type.lower()
+    day_type_lower = _re_first(r"^-\s*Typ dnia:\s*([^\n\r]+)", md_text).lower()
 
     m_run = re.search(r"^-\s*Bieg:\s*(TAK|NIE)(?:\s*\(([0-9.,]+)\s*km(?:,\s*sesje:\s*([0-9]+))?\))?", md_text, re.MULTILINE | re.I)
     is_run_meta = bool(m_run and m_run.group(1).upper() == "TAK")
-    run_km = m_run.group(2) if m_run and m_run.group(2) else ""
-
-    m_run_type = re.search(r"^-\s*Typ treningu biegowego:\s*([^\n\r]+)", md_text, re.MULTILINE | re.I)
-    run_type_meta = m_run_type.group(1).strip() if m_run_type else ""
+    run_km = (m_run.group(2) or "") if m_run else ""
+    run_type_meta = _re_first(r"^-\s*Typ treningu biegowego:\s*([^\n\r]+)", md_text)
 
     m_gym = re.search(r"^-\s*Siłownia:\s*(TAK|NIE)(?:\s*\(([^)]+)\))?", md_text, re.MULTILINE | re.I)
     is_gym_meta = bool(m_gym and m_gym.group(1).upper() == "TAK")
     gym_meta = m_gym.group(2).strip() if m_gym and m_gym.group(2) else ""
 
     profiles = [p.strip() for p in re.findall(r"^[*-]?\s*\*?\*?Profil jednostki\*?\*?:\s*([^\n\r]+)", md_text, re.MULTILINE | re.I)]
-    m_char = re.search(r"^[*-]?\s*\*?\*?Charakter dnia\*?\*?:\s*([^\n\r]+)", md_text, re.MULTILINE | re.I)
+    char_str = _re_first(r"^[*-]?\s*\*?\*?Charakter dnia\*?\*?:\s*([^\n\r]+)", md_text)
 
     c_lower = md_text.lower()
     is_swim = any(k in c_lower for k in ("typ dnia: pływanie", "typ dnia: plywanie", "pool swim", "trening pływania"))
@@ -183,52 +200,40 @@ def extract_daily_report_caption(md_text):
         workout_entries.append(f"🏃 <b>Trening biegowy:</b> {html.escape(desc)}{km_str}")
 
     if is_gym_meta:
-        if len(profiles) > 1 and is_run_meta:
-            desc = profiles[1]
-        elif profiles and not is_run_meta:
-            desc = profiles[0]
-        else:
-            desc = f"Siłownia {gym_meta}" if gym_meta else "Siłownia"
+        desc = profiles[1] if (len(profiles) > 1 and is_run_meta) else (profiles[0] if (profiles and not is_run_meta) else (f"Siłownia {gym_meta}" if gym_meta else "Siłownia"))
         workout_entries.append(f"🏋️ <b>Siłownia:</b> {html.escape(desc)}")
 
     if is_swim:
         desc = profiles[0] if profiles and not is_run_meta and not is_gym_meta else "Pływanie"
-        m_swim_dist = re.search(r"(?:Pool Swim|Trening pływania)[^\n]*\n-\s*Dystans:\s*([0-9.,]+\s*(?:km|m))", md_text, re.I)
-        dist_str = f" ({m_swim_dist.group(1)})" if m_swim_dist else ""
-        workout_entries.append(f"🏊 <b>Pływanie:</b> {html.escape(desc)}{dist_str}")
+        swim_dist = _re_first(r"(?:Pool Swim|Trening pływania)[^\n]*\n-\s*Dystans:\s*([0-9.,]+\s*(?:km|m))", md_text, flags=re.I)
+        workout_entries.append(f"🏊 <b>Pływanie:</b> {html.escape(desc)}{f' ({swim_dist})' if swim_dist else ''}")
 
     if not workout_entries:
         is_cycling = any(k in c_lower for k in ("rower", "cycling", "trenażer", "cross-training")) or "trening uzupełniający" in day_type_lower
         is_rest = (
             any(k in day_type_lower for k in ("regeneracja", "wolny", "rest", "brak"))
-            or (not profiles and bool(m_char and any(k in m_char.group(1).lower() for k in ("regeneracja", "brak jednostki", "wolny"))))
+            or (not profiles and any(k in char_str.lower() for k in ("regeneracja", "brak jednostki", "wolny")))
         )
         if is_cycling:
-            desc = profiles[0] if profiles else "Cross-training"
-            workout_entries.append(f"🚴 <b>Cross-training:</b> {html.escape(desc)}")
+            workout_entries.append(f"🚴 <b>Cross-training:</b> {html.escape(profiles[0] if profiles else 'Cross-training')}")
         elif is_rest or not profiles:
-            rest_desc = f" – {m_char.group(1).strip()}" if (is_rest and m_char) else ""
-            if len(rest_desc) > 60:
-                rest_desc = rest_desc[:57] + "..."
+            rest_desc = f" – {char_str[:57] + '...' if len(char_str) > 60 else char_str}" if (is_rest and char_str) else ""
             workout_entries.append(f"🛋 <b>Trening:</b> Dzień wolny (Rest Day){html.escape(rest_desc)}")
         else:
             workout_entries.append(f"🏃 <b>Trening:</b> {html.escape(profiles[0])}")
 
     # 3. Ocena treningu / egzekucji planu
-    re_score = re.search(r"^[*-]?\s*\*?\*?Ocena(?:\s+egzekucji(?:\s+planu)?|\s+treningu)?\*?\*?:\s*([^\n\r]+)", md_text, re.MULTILINE | re.I)
-    if re_score:
-        raw_score = re_score.group(1).strip().strip("[]")
+    raw_score = _re_first(r"^[*-]?\s*\*?\*?Ocena(?:\s+egzekucji(?:\s+planu)?|\s+treningu)?\*?\*?:\s*([^\n\r]+)", md_text).strip("[]")
+    if raw_score:
         m_score_num = RE_SCORE_VALUE.search(raw_score)
         if m_score_num:
             score_num = m_score_num.group(1).replace(" ", "")
             after_dash = re.split(r"[-–—]", raw_score, maxsplit=1)
             if len(after_dash) > 1 and after_dash[1].strip():
                 note = after_dash[1].strip()
-                if "." in note and note.find(".") < 60:
+                if 0 <= note.find(".") < 60:
                     note = note[:note.find(".")]
-                if len(note) > 60:
-                    note = note[:57] + "..."
-                score_val = f"{score_num} – {note}"
+                score_val = f"{score_num} – {note[:57] + '...' if len(note) > 60 else note}"
             else:
                 score_val = score_num
         else:
@@ -236,19 +241,16 @@ def extract_daily_report_caption(md_text):
         workout_entries.append(f"⭐ <b>Ocena:</b> {html.escape(score_val)}")
 
     # 4. Stan zasobów i bilans autonomiczny
-    re_cost = re.search(r"^[*-]?\s*\*?\*?(?:Bilans autonomiczny|Koszt dzienny i stan zasobów|Koszt dzienny)[^\*:]*\*?\*?:\s*([^\n\r]+)", md_text, re.MULTILINE | re.I)
-    if re_cost:
-        raw_cost = re_cost.group(1).strip()
+    raw_cost = _re_first(r"^[*-]?\s*\*?\*?(?:Bilans autonomiczny|Koszt dzienny i stan zasobów|Koszt dzienny)[^\*:]*\*?\*?:\s*([^\n\r]+)", md_text)
+    if raw_cost:
         end_sent = raw_cost.find(".")
         cost_val = raw_cost[:end_sent + 1] if end_sent > 15 else raw_cost
-        if len(cost_val) > 120:
-            cost_val = cost_val[:117] + "..."
-        workout_entries.append(f"🔋 <b>Stan zasobów:</b> {html.escape(cost_val)}")
+        workout_entries.append(f"🔋 <b>Stan zasobów:</b> {html.escape(cost_val[:117] + '...' if len(cost_val) > 120 else cost_val)}")
 
     # 5. Decyzja adaptacyjna trenera
-    re_dec = re.search(r"^[*-]?\s*\*?\*?(?:DECYZJA ADAPTACYJNA(?:\s*/\s*STOPIEŃ GOTOWOŚCI)?|DECYZJA O KOREKCIE|STOPIEŃ GOTOWOŚCI)\*?\*?:\s*(?:[\n\r]+\s*)?([^\n\r]+)", md_text, re.MULTILINE | re.I)
-    if re_dec:
-        workout_entries.append(f"🧠 <b>Adaptacja na jutro:</b> {html.escape(re_dec.group(1).strip())}")
+    dec_val = _re_first(r"^[*-]?\s*\*?\*?(?:DECYZJA ADAPTACYJNA(?:\s*/\s*STOPIEŃ GOTOWOŚCI)?|DECYZJA O KOREKCIE|STOPIEŃ GOTOWOŚCI)\*?\*?:\s*(?:[\n\r]+\s*)?([^\n\r]+)", md_text)
+    if dec_val:
+        workout_entries.append(f"🧠 <b>Adaptacja na jutro:</b> {html.escape(dec_val)}")
 
     caption = (
         f"📅 <b>AUDYT DNIA: {html.escape(target_date)}</b>\n\n"
@@ -454,7 +456,14 @@ def finish_run(new_tg_state=None, debug=False):
 
 def _send_telegram_report(file_path, report_type="daily"):
     """
-    Wewnętrzna funkcja wysyłająca raport Markdown na Telegram w postaci HTML.
+    Konwertuje raport Markdown na dokument HTML i wysyła go na Telegram wraz z podsumowaniem w podpisie.
+
+    Args:
+        file_path (str): Ścieżka do pliku raportu w formacie Markdown.
+        report_type (str, optional): Typ raportu ('daily' lub 'plan'). Domyślnie 'daily'.
+
+    Returns:
+        int: Kod wyjścia operacji (0 w przypadku powodzenia lub pominięcia, 1 w przypadku błędu).
     """
     bot_token, chat_id = _get_telegram_credentials()
     if not bot_token or not chat_id:
@@ -516,12 +525,28 @@ def _send_telegram_report(file_path, report_type="daily"):
 
 
 def send_daily_report(file_path):
-    """Wysyła dzienny raport treningowy na Telegram."""
+    """
+    Wysyła dzienny raport treningowy na Telegram.
+
+    Args:
+        file_path (str): Ścieżka do pliku raportu dziennego Markdown.
+
+    Returns:
+        int: Kod wyjścia operacji (0 – sukces, 1 – błąd).
+    """
     return _send_telegram_report(file_path, report_type="daily")
 
 
 def send_weekly_plan(file_path):
-    """Wysyła pełny plan tygodniowy na Telegram."""
+    """
+    Wysyła pełny plan tygodniowy na Telegram.
+
+    Args:
+        file_path (str): Ścieżka do pliku planu tygodniowego Markdown.
+
+    Returns:
+        int: Kod wyjścia operacji (0 – sukces, 1 – błąd).
+    """
     return _send_telegram_report(file_path, report_type="plan")
 
 
