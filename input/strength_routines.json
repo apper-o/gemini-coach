@@ -206,18 +206,18 @@
         "last_sets": [
           {
             "set": 1,
-            "weight": "70 kg",
+            "weight": "75 kg",
             "reps": 6
           },
           {
             "set": 2,
-            "weight": "70 kg",
-            "reps": 6
+            "weight": "75 kg",
+            "reps": 5
           },
           {
             "set": 3,
-            "weight": "70 kg",
-            "reps": 6
+            "weight": "75 kg",
+            "reps": 5
           }
         ]
       },
@@ -261,7 +261,7 @@
           {
             "set": 3,
             "weight": "40 kg",
-            "reps": 6
+            "reps": 5
           }
         ]
       },
@@ -272,18 +272,18 @@
         "last_sets": [
           {
             "set": 1,
-            "weight": "55 kg",
-            "reps": 6
+            "weight": "60 kg",
+            "reps": 8
           },
           {
             "set": 2,
-            "weight": "55 kg",
-            "reps": 6
+            "weight": "60 kg",
+            "reps": 8
           },
           {
             "set": 3,
-            "weight": "55 kg",
-            "reps": 6
+            "weight": "60 kg",
+            "reps": 8
           }
         ]
       },
