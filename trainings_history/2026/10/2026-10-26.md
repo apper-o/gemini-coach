@@ -1,8 +1,8 @@
 # AUDYT DZIENNY: 2026-10-26 (Poniedziałek, 2026-10-26)
 - Typ dnia: BIEG
 - Bieg: TAK (2.35 km, sesje: 1)
-- Typ treningu biegowego: Bieg regeneracyjny (Z1)
-- Struktura biegu: Rozgrzewka: Brak | Główna seria: 2.35 km (Bieg regeneracyjny (Z1)) | Schłodzenie: Brak
+- Typ treningu biegowego: Baza tlenowa (Z1) / Zaniechany akcent techniczny
+- Struktura biegu: Rozgrzewka: Brak | Główna seria: 2.35 km (Baza tlenowa (Z1) / Zaniechany akcent techniczny) | Schłodzenie: Brak
 - Siłownia: NIE
 - Partie mięśniowe (siłownia): BRAK
 
@@ -38,30 +38,30 @@
 
 | Parametr | Plan | Realizacja | Odchylenie |
 |:---|:---:|:---:|:---:|
-| Dystans całkowity [km] | 4.00 | 2.35 | -1.65 (-41%) |
-| Średnie tempo [min/km] | 6:20 - 6:45 | 6:16 | -0:04 do -0:29 (za szybko) |
-| Średnie HR [bpm / %LTHR] | <123 (<68%) | 141 (78%) | +18 bpm (+10% LTHR) |
-| Średnia kadencja [spm] | ~165-170 | 166 | W normie |
+| Dystans całkowity [km] | ~5.50 | 2.35 | -3.15 (-57%) |
+| Średnie tempo [min/km] | 6:15 (rozgrzewka) | 6:16 | +0:01 |
+| Średnie HR [bpm / %LTHR] | 130–140 / 72–77% | 141 / 78% | +1 do +11 bpm |
+| Średnia kadencja [spm] | ~168–170 | 166 | -2 do -4 spm |
 
-- **Profil jednostki**: Bieg regeneracyjny (Z1)
-- **Pacing i kontrola stref**: Skrócenie jednostki o 1.65 km przy jednoczesnym przekroczeniu strefy intensywności (średnie HR 141 bpm vs planowane <123 bpm, tempo 6:16 vs >6:20 min/km) -> niekontrolowane wejście w strefę Z2 zamiast aktywnego drenażu metabolicznego Z1, co zniweczyło cel jednostki flush po maratonie i wczorajszej siłowni -> bezwzględny nakaz utrzymywania pułapu tętna poniżej 123 bpm w dni regeneracyjne bez względu na tempo chwilowe.
-- **Technika kroku i stabilność**: Vertical Ratio na krytycznym poziomie 8.94% przy GCT 281.1 ms -> zapadanie się w fazie podporu (mechanical collapsing) i brak transferu wektora pionowego w fazę lotu -> Usztywnienie cylindra tułowia (tłocznia brzuszna) i stabilizacja miednicy w podporze (m. gluteus medius).
+- **Profil jednostki**: Baza tlenowa (Z1) / Zaniechany akcent techniczny
+- **Pacing i kontrola stref**: Zarejestrowano wyłącznie 2.35 km truchtu, całkowicie ignorując część główną (płotki, skipy, 6 x 80 m) oraz 3.0 km schłodzenia, a w kilometrach 2–2.35 dopuszczono do dryfu tętna do 150 bpm (Z2) -> nieusprawiedliwione porzucenie stymulacji nerwowo-mięśniowej i złamanie reżimu strefy Z1 -> wykonuj pełną strukturę jednostki i zredukuj tempo przy wzroście tętna powyżej 144 bpm.
+- **Technika kroku i stabilność**: Vertical Ratio na poziomie 8.94% przy GCT 281.1 ms i kadencji 166 spm oznacza ucieczkę energii w wektor pionowy oraz zapadanie miednicy w podporze -> niewydolność ekscentryczna i brak napięcia posturalnego przy niskich prędkościach -> wdróż cue: usztywnienie cylindra tułowia (tłocznia brzuszna) i stabilizacja miednicy w podporze (m. gluteus medius).
 
 ## 2. KOSZT METABOLICZNY I STAN ZASOBÓW (ANS)
 
-- **Wpływ sesji na organizm**: Sesja nie wyczerpała glikogenu z uwagi na krótki czas trwania (14.7 min), lecz nie zrealizowała drenażu kwasu mlekowego i metabolitów z uwagi na zbyt wysokie tętno robocze. Nadmiarowy drenaż obwodowy wygenerowała pozatreningowa aktywność piesza (18246 kroków, 988 kcal), obniżając Body Battery do 26/100.
-- **Bilans układu nerwowego (ANS)**: Autonomiczny układ nerwowy pozostaje stabilny bez cech przemęczenia centralnego (HRV 54 ms w normie bazowej 45–57 ms, RHR 51 bpm poniżej bazy 54 bpm). Zasoby adaptacyjne są wystarczające do realizacji planu, o ile ucięta zostanie nieplanowana aktywność pozatreningowa.
+- **Wpływ sesji na organizm**: Drenaż glikogenu i koszt CUN z samego biegu są znikome z powodu przedwczesnego przerwania sesji. Głównym źródłem obciążenia mechanicznego podudzi pozostaje kumulacja 18 246 kroków w ciągu dnia.
+- **Bilans układu nerwowego (ANS)**: Parametry nocne (HRV 54 ms, RHR 51 bpm) wskazują na pełną równowagę autonomiczną i brak powikłań po zawodach sprzed 48 godzin. Dzienny stres (29/100) i spadek Body Battery do 26 wynikają wyłącznie z drenażu lokomocyjnego, co nie blokuje zdolności adaptacyjnych.
 
 ## 3. PROTOKÓŁ REGENERACJI (WIECZÓR I NOC)
 
 - **Mobilność i regeneracja tkankowa**:
-  - Dodać / Wydłużyć: Pozycje 12 (Soleus Wall Stretch) oraz 7 (Couch Stretch) wydłużyć do 1:15 na stronę w celu dekompresji aparatu wyprostnego i podudzia po kumulacji kroków dziennych.
-  - Pominąć / Skrócić: Pozycję 15 (Rolowanie powięziowe SMR) skrócić do lekkiego drenażu pasywnego o niskim nacisku; zakaz głębokiej kompresji pasma biodrowo-piszczelowego przed jutrzejszym biegiem tlenowym.
-- **Wyciszenie i sen**: Wdrożyć 10 minut drenażu żylnego nóg w oparciu o ścianę (pozycja odwrócona / legs-up-the-wall) bezpośrednio przed snem z oddechem przeponowym 4-7-8 w celu zrzucenia zastoju naczyniowego z podudzi.
-- **Paliwo i nawodnienie**: Podać 4.0 g węglowodanów/kg m.c., uzupełnić 500 ml wody z 500 mg sodu w celu wyrównania strat z całodziennego drenażu oraz przyjąć 35 g białka wolnowchłanialnego (kazeina) przed snem.
+  - Dodać / Wydłużyć: Soleus Wall Stretch i Downward Dog do pełnych 60 s na stronę w celu dekompresji przeciążonego aparatu skokowego po 18 tysiącach kroków.
+  - Pominąć / Skrócić: Rolowanie mięśni kulszowo-goleniowych i czwórogłowych skróć do minimum, eliminując zbędne podrażnienie powięzi przed sesją w wodzie.
+- **Wyciszenie i sen**: Wykonaj 10 minut drenażu żylnego nóg w oparciu o ścianę pod kątem 90 stopni połączonego z oddechem przeponowym w sekwencji 4-7-8, aby zredukować zastój płynów w dystalnych częściach kończyn dolnych.
+- **Paliwo i nawodnienie**: Utrzymaj podaż węglowodanów na poziomie 4.0 g/kg m.c., wypij 500 ml wody z dodatkiem 500 mg sodu przed snem i przyjmij 35 g kazeiny micelarnej na 30 minut przed zgaszeniem światła.
 
 ## 4. OCENA GOTOWOŚCI I DYREKTYWA NA DZIEŃ: Wtorek, 2026-10-27
 
 - **DECYZJA ADAPTACYJNA**: PEŁNA EGZEKUCJA PLANU
-- **Uzasadnienie fizjologiczne**: Parametry hemodynamiczne i autonomiczne są w pełnej normie (brak skoku RHR, HRV 54 ms), a dzisiejszy błąd intensywności nie wywołał uszkodzeń strukturalnych ani wyczerpania substratów energetycznych.
-- **DYREKTYWA WYKONAWCZA (Wtorek, 2026-10-27)**: Realizacja 1:1 z planu: Bieg: Easy Run (5.50 km, tempo 5:40-6:00 min/km, HR 128-140 bpm, strefa Z2) | Kluczowy cue: Sztywny sufit HR na poziomie 140 bpm – przy przekroczeniu natychmiastowa redukcja tempa bez względu na dolne widełki prędkości.
+- **Uzasadnienie fizjologiczne**: Brak jakichkolwiek wskazań do redukcji (RHR 51 bpm przy bazie 54 bpm, brak bólu mechanicznego); wtorkowe pływanie stanowi bezudarowy drenaż niezbędny do przygotowania nóg pod środowy próg Z4.
+- **DYREKTYWA WYKONAWCZA (Wtorek, 2026-10-27)**: Realizacja 1:1 z planu: Pływanie: Regeneracja (1200 m) | Kluczowy cue: Całkowita izolacja napędu nóg za pomocą ósemki (pullbuoy) i bezwzględny zakaz stylu klasycznego.
