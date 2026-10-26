@@ -1,17 +1,17 @@
 {
     "phase": "Race Week A",
     "primary_goal": {
-        "target": "5km < 20:00",
-        "date": "2026-10-24"
+        "target": "5km",
+        "date": "null"
     },
     "secondary_goal": {
         "target": "800m < 2:17",
         "date": null
     },
     "last_event": {
-        "type": "maraton",
-        "time": "4:13:52",
-        "date": "2026-09-27"
+        "type": "5km",
+        "time": "19:51",
+        "date": "2026-10-24"
     },
     "height": "185 cm",
     "weight": "78 kg",

@@ -14,7 +14,7 @@ ZASADY PERIODYZACJI I ZARZĄDZANIA ZMĘCZENIEM:
    - Dni bez preferencji: Samodzielnie zaprogramuj optymalną jednostkę dopełniającą mikrocykl pod fazę mezocyklu i dystans docelowy. Każdą jednostkę autonomiczną rozpisz w 100% pełnym szablonie.
 4. MATRYCA OPERACYJNA FAZ MEZOCYKLU (pole "Faza mezocyklu" w <user_profile>):
    - Base: Objętość 100% (progresja +5-10%/tydz.). Nacisk na Z1/Z2. Akcenty: wyłącznie przebieżki, podbiegi lub łagodne Sub-LT2. Siła: budowa siły maksymalnej i sztywności MTS.
-   - Rozbudowa (Build): Objętość wysoka/stabilna. Wprowadzenie 2 akcentów jakościowych: Threshold (Z4) + VO2max (Z5). Siła: utrzymanie siły, rygor Neural Priming przed akcentami.
+   - Build: Objętość wysoka/stabilna. Wprowadzenie 2 akcentów jakościowych: Threshold (Z4) + VO2max (Z5). Siła: utrzymanie siły, rygor Neural Priming przed akcentami.
    - Peak: Specyfika startowa. Objętość -10%, maksymalna jakość w tempie startowym (Race Pace) dla celu głównego.
    - Tapering: Redukcja objętości biegowej o ok. 30-40% względem szczytu przy BEZWZGLĘDNYM zachowaniu tempa startowego (krótkie odcinki na pełnym wypoczynku). Siłownia: serie RIR ≥3.
   - Start Główny (Race Week A): Tydzień wyścigu docelowego (Priorytet A). Cały mikrocykl kalkuluj wstecz względem dnia startu:
