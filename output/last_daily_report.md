@@ -1,74 +1,67 @@
-# AUDYT DZIENNY: 2026-10-25 (Niedziela, 2026-10-25)
-- Typ dnia: SIŁOWNIA
-- Bieg: NIE (0.00 km, sesje: 0)
-- Typ treningu biegowego: Brak biegu
-- Struktura biegu: Brak
-- Siłownia: TAK (UPPER)
-- Partie mięśniowe (siłownia): GÓRA
+# AUDYT DZIENNY: 2026-10-26 (Poniedziałek, 2026-10-26)
+- Typ dnia: BIEG
+- Bieg: TAK (2.35 km, sesje: 1)
+- Typ treningu biegowego: Bieg regeneracyjny (Z1)
+- Struktura biegu: Rozgrzewka: Brak | Główna seria: 2.35 km (Bieg regeneracyjny (Z1)) | Schłodzenie: Brak
+- Siłownia: NIE
+- Partie mięśniowe (siłownia): BRAK
 
-## Biometria regeneracyjna i bilans dnia (Niedziela, 2026-10-25):
+## Biometria regeneracyjna i bilans dnia (Poniedziałek, 2026-10-26):
 - HRV (miniona noc przed treningiem): 54 ms (Średnia 7-dniowa: 50 ms, Norma bazowa: 45–57 ms)
-- RHR (miniona noc przed treningiem): 55 bpm (Średnia 7-dniowa: 54 bpm, odchylenie: +1 bpm)
-- Sen (miniona noc przed treningiem): 95/100 (Czas: 7h 36m, Głęboki: 1h 49m, REM: 2h 3m)
-- Średni stres snu: 14
-- Poranne Body Battery (bufor startowy): 91/100
-- Body Battery pod koniec dnia: 40/100
+- RHR (miniona noc przed treningiem): 51 bpm (Średnia 7-dniowa: 54 bpm, odchylenie: -3 bpm)
+- Sen (miniona noc przed treningiem): 80/100 (Czas: 6h 26m, Głęboki: 1h 30m, REM: 2h 0m)
+- Średni stres snu: 12
+- Poranne Body Battery (bufor startowy): 98/100
+- Body Battery pod koniec dnia: 26/100
 - Całodzienny stres: 29/100
-- Kroki (cały dzień): 2746 (aktywne: 114 kcal)
+- Kroki (cały dzień): 18246 (aktywne: 988 kcal)
 
 ## Zarejestrowane aktywności:
-### Trening siłowy / uzupełniający (raport z Telegrama):
-upper
-Sunday, Oct 25, 2026 at 2:57pm
+### Jednostka 1 [Start: 18:03]: Warsaw Running
+- Warunki pogodowe: Temperatura: 10.6°C | Wiatr: 4.0 km/h wsw | Wilgotność: 70% | Warunki: Umiarkowane zachmurzenie
+- Dystans: 2.35 km | Czas: 14.7 min | Średnie tempo: 6:16 min/km
+- Tętno: Średnie 141 bpm | Max 150 bpm
+- Training Effect: Aerobowy 2.0/5.0 (RECOVERY) | Beztlenowy 0.0/5.0
+- Biomechanika: Średnia kadencja 166 spm, Krok 0.96 m, Kontakt z podłożem 281.1 ms, Odchylenie pionowe 8.59 cm
 
-Bench Press (Barbell)
-Set 1: 75 kg x 6
-Set 2: 75 kg x 5
-Set 3: 75 kg x 5
+#### Splity:
+| Km | Dystans [km] | Czas | Tempo [/km] | GAP [/km] | HR śr/max [bpm] | Kadencja [spm] | Krok [m] | GCT [ms] | VO [cm] | Moc [W] | Wznios/Spadek [m] |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| 1 | 0.50 | 3:22 | 6:45 | 6:47 | 131/139 | 160 | 0.90 | 289.7 | 8.45 | 285 | +4/-0 |
+| 2 | 0.50 | 3:05 | 6:11 | 6:07 | 143/146 | 168 | 0.97 | 278.0 | 8.57 | 310 | +1/-0 |
+| 3 | 0.50 | 3:05 | 6:11 | 6:12 | 143/147 | 168 | 0.97 | 278.8 | 8.58 | 305 | +0/-0 |
+| 4 | 0.50 | 3:03 | 6:08 | 6:10 | 146/149 | 167 | 0.98 | 279.7 | 8.66 | 306 | +0/-1 |
+| 5 | 0.35 | 2:05 | 5:57 | 6:00 | 148/150 | 167 | 1.00 | 277.5 | 8.75 | 312 | +0/-1 |
 
-Seated Cable Row - Bar Grip
-Set 1: 60 kg x 8
-Set 2: 60 kg x 8
-Set 3: 60 kg x 8
+## Ocena trenera i adaptacja na dzień Wtorek, 2026-10-27:
+## 1. AUDYT JEDNOSTKI BIEGOWEJ: Poniedziałek, 2026-10-26
 
-Overhead Press (Barbell)
-Set 1: 40 kg x 6
-Set 2: 40 kg x 6
-Set 3: 40 kg x 5
+| Parametr | Plan | Realizacja | Odchylenie |
+|:---|:---:|:---:|:---:|
+| Dystans całkowity [km] | 4.00 | 2.35 | -1.65 (-41%) |
+| Średnie tempo [min/km] | 6:20 - 6:45 | 6:16 | -0:04 do -0:29 (za szybko) |
+| Średnie HR [bpm / %LTHR] | <123 (<68%) | 141 (78%) | +18 bpm (+10% LTHR) |
+| Średnia kadencja [spm] | ~165-170 | 166 | W normie |
 
-Lat Pulldown (Cable)
-Set 1: 65 kg x 6
-Set 2: 55 kg x 6
-Set 3: 55 kg x 6
+- **Profil jednostki**: Bieg regeneracyjny (Z1)
+- **Pacing i kontrola stref**: Skrócenie jednostki o 1.65 km przy jednoczesnym przekroczeniu strefy intensywności (średnie HR 141 bpm vs planowane <123 bpm, tempo 6:16 vs >6:20 min/km) -> niekontrolowane wejście w strefę Z2 zamiast aktywnego drenażu metabolicznego Z1, co zniweczyło cel jednostki flush po maratonie i wczorajszej siłowni -> bezwzględny nakaz utrzymywania pułapu tętna poniżej 123 bpm w dni regeneracyjne bez względu na tempo chwilowe.
+- **Technika kroku i stabilność**: Vertical Ratio na krytycznym poziomie 8.94% przy GCT 281.1 ms -> zapadanie się w fazie podporu (mechanical collapsing) i brak transferu wektora pionowego w fazę lotu -> Usztywnienie cylindra tułowia (tłocznia brzuszna) i stabilizacja miednicy w podporze (m. gluteus medius).
 
-Ab Wheel
-Set 1: 8 reps
-Set 2: 8 reps
-Set 3: 8 reps
+## 2. KOSZT METABOLICZNY I STAN ZASOBÓW (ANS)
 
-@hevyapp
-https://hevy.com/workout/hdZGVvs1XKD
+- **Wpływ sesji na organizm**: Sesja nie wyczerpała glikogenu z uwagi na krótki czas trwania (14.7 min), lecz nie zrealizowała drenażu kwasu mlekowego i metabolitów z uwagi na zbyt wysokie tętno robocze. Nadmiarowy drenaż obwodowy wygenerowała pozatreningowa aktywność piesza (18246 kroków, 988 kcal), obniżając Body Battery do 26/100.
+- **Bilans układu nerwowego (ANS)**: Autonomiczny układ nerwowy pozostaje stabilny bez cech przemęczenia centralnego (HRV 54 ms w normie bazowej 45–57 ms, RHR 51 bpm poniżej bazy 54 bpm). Zasoby adaptacyjne są wystarczające do realizacji planu, o ile ucięta zostanie nieplanowana aktywność pozatreningowa.
 
-## Ocena trenera i adaptacja na dzień Poniedziałek, 2026-10-26:
-## 1. AUDYT DNIA: Niedziela, 2026-10-25
+## 3. PROTOKÓŁ REGENERACJI (WIECZÓR I NOC)
 
-## CZĘŚĆ SIŁOWA
+- **Mobilność i regeneracja tkankowa**:
+  - Dodać / Wydłużyć: Pozycje 12 (Soleus Wall Stretch) oraz 7 (Couch Stretch) wydłużyć do 1:15 na stronę w celu dekompresji aparatu wyprostnego i podudzia po kumulacji kroków dziennych.
+  - Pominąć / Skrócić: Pozycję 15 (Rolowanie powięziowe SMR) skrócić do lekkiego drenażu pasywnego o niskim nacisku; zakaz głębokiej kompresji pasma biodrowo-piszczelowego przed jutrzejszym biegiem tlenowym.
+- **Wyciszenie i sen**: Wdrożyć 10 minut drenażu żylnego nóg w oparciu o ścianę (pozycja odwrócona / legs-up-the-wall) bezpośrednio przed snem z oddechem przeponowym 4-7-8 w celu zrzucenia zastoju naczyniowego z podudzi.
+- **Paliwo i nawodnienie**: Podać 4.0 g węglowodanów/kg m.c., uzupełnić 500 ml wody z 500 mg sodu w celu wyrównania strat z całodziennego drenażu oraz przyjąć 35 g białka wolnowchłanialnego (kazeina) przed snem.
 
-| Nr | Ćwiczenie | Serie x Powtórzenia | Ciężar | Docelowa partia |
-|:---:|:---:|:---:|:---:|:---:|
-| 1 | Wyciskanie sztangi leżąc (Bench Press) | 1x6, 2x5 | 75 kg | Mięśnie piersiowe, trójgłowy ramienia, przedni akton naramiennego |
-| 2 | Wiosłowanie wyciągiem siedząc (Seated Cable Row) | 3x8 | 60 kg | Mięsień najszerszy grzbietu, czworoboczny, tylny akton naramiennego |
-| 3 | Wyciskanie żołnierskie (Overhead Press) | 2x6, 1x5 | 40 kg | Mięśnie naramienne, trójgłowy ramienia |
-| 4 | Ściąganie drążka wyciągu górnego (Lat Pulldown) | 1x6, 2x6 | 65 kg / 55 kg | Mięsień najszerszy grzbietu, dwugłowy ramienia |
-| 5 | Kółko do brzucha (Ab Wheel) | 3x8 | Ciężar ciała | Mięsień prosty brzucha, stabilizatory głębokie tułowia |
+## 4. OCENA GOTOWOŚCI I DYREKTYWA NA DZIEŃ: Wtorek, 2026-10-27
 
-- **Profil jednostki**: Upper / Core
-- **Ocena egzekucji planu**: 2/10 – samowolna zamiana drenażu wodnego na trening siłowy stanowi bezpośrednie złamanie zasady blokady struktury mikrocyklu. Spadek powtórzeń w seriach (z 6 do 5 powtórzeń przy 75 kg na klatkę oraz 40 kg w OHP) i przymusowa redukcja ciężaru na wyciągu (spadek z 65 kg do 55 kg) wskazują na operowanie na granicy upadku mięśniowego (RIR 0–1), co jest błędem dyscypliny w dobie postartowej.
-- **Koszt nerwowo-mięśniowy (CNS) i komponent ekscentryczny**: Wysoki koszt ośrodkowy wywołany rekrutacją jednostek wysokoprogowych pod obciążeniem w warunkach wyczerpanego zapasu RIR. Komponent ekscentryczny ograniczony wyłącznie do obręczy barkowej i tułowia; brak uszkodzeń mikrowłókien aparatu wyprostnego kończyn dolnych.
-- **Wpływ na aparat biegowy (Running Transfer)**: Brak tonażu na mięśnie podudzia i uda ochronił aparat ruchu przed kumulacją uszkodzeń na zmęczenie powysiłkowe. Ćwiczenia stabilizacji centralnej wspierają transfer sztywności tułowia pod kątem kroku biegowego, jednak odrzucenie drenażu hydrostatycznego w wodzie zablokowało kompresyjną eliminację obrzęków i metabolitów z tkanek miękkich po starcie.
-- **Zgłoszone anomalie, asymetrie i przeciążenia**: Brak
-
-## 4. OCENA GOTOWOŚCI I DYREKTYWA NA DZIEŃ: Niedziela, 2026-10-25
-
-- **DECYZJA ADAPTACYJNA / STOPIEŃ GOTOWOŚCI**: ZMĘCZENIE FUNKCJONALNE
-- **Uzasadnienie fizjologiczne**: Stabilność autonomiczna została utrzymana bez cech sympatykotonii czy ostrego długu regeneracyjnego (HRV 54 ms przy korytarzu bazowym 45–57 ms; RHR 55 bpm wobec bazy 54 bpm; SleepScore 95/100; SleepStress 14). Rezerwy ośrodkowe CUN zostały jednak niepotrzebnie obciążone nieautoryzowaną sesją siłową w rejonie załamania mięśniowego, a zaniechanie pływania wyeliminowało planowany efekt odciążenia hydrodynamicznego. Zasoby glikogenu i struktury MTS kończyn dolnych zachowały integralność dzięki wyłączeniu dołu ciała z tonażu mechanicznego oraz minimalnej aktywności lokomocyjnej w ciągu dnia (2746 kroków). Mikrocykl zamknięty realizacją celu wynikowego przy wymuszonym, zbędnym koszcie nerwowym.
+- **DECYZJA ADAPTACYJNA**: PEŁNA EGZEKUCJA PLANU
+- **Uzasadnienie fizjologiczne**: Parametry hemodynamiczne i autonomiczne są w pełnej normie (brak skoku RHR, HRV 54 ms), a dzisiejszy błąd intensywności nie wywołał uszkodzeń strukturalnych ani wyczerpania substratów energetycznych.
+- **DYREKTYWA WYKONAWCZA (Wtorek, 2026-10-27)**: Realizacja 1:1 z planu: Bieg: Easy Run (5.50 km, tempo 5:40-6:00 min/km, HR 128-140 bpm, strefa Z2) | Kluczowy cue: Sztywny sufit HR na poziomie 140 bpm – przy przekroczeniu natychmiastowa redukcja tempa bez względu na dolne widełki prędkości.
