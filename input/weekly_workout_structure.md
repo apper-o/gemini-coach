@@ -1,7 +1,7 @@
 Poniedziałek: Trening biegowy na AZS (technika biegowa)
 Wtorek: 
 Środa: Threshold
-Czwartek: Siłownia FBW
+Czwartek: Siłownia fbw A
 Piątek: VO2max
-Sobota: Siłownia UPPER
+Sobota: Siłownia fbw B
 Niedziela: Long Run
