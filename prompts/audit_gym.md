@@ -29,7 +29,7 @@
 | Nr | Ćwiczenie | Serie x Powtórzenia | Ciężar | Docelowa partia |
 |:---:|:---:|:---:|:---:|:---:|
 
-- **Profil jednostki**: [Wpisz np. FBW / Upper / Lower / Core]
+- **Profil jednostki**: [Wpisz np. FBW A / FBW B / Core]
 - **Ocena egzekucji planu**: [X/10 – wierność założeniom intensywności, techniki i RIR]
 - **Koszt nerwowo-mięśniowy (CNS) i komponent ekscentryczny**: 
 - **Wpływ na aparat biegowy (Running Transfer)**: 

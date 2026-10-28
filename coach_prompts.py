@@ -34,13 +34,11 @@ ZONE_KEYS = ("z1", "z2", "z3", "z4", "z5")
 UNKNOWN_VALUE_KEYWORDS = frozenset({"nieznany", "brak", "none", "null"})
 
 STRENGTH_WORKOUT_NAMES = frozenset({
+    "fbw a",
+    "fbw b",
+    "fbw_a",
+    "fbw_b",
     "fbw",
-    "upper",
-    "lower",
-    "core",
-    "push",
-    "pull",
-    "legs",
 })
 NOTE_KEYWORD = "note"
 
@@ -478,10 +476,15 @@ def _classify_telegram_message(body):
         return ("empty", "")
 
     first_line_clean = lines[0].strip(":.,!- #*[]()\"'").lower()
+    first_line_normalized = first_line_clean.replace(" ", "_")
     first_word = first_line_clean.split()[0] if first_line_clean else ""
 
     # 1. Kwalifikacja jako trening siłowy
-    if first_word in STRENGTH_WORKOUT_NAMES:
+    if (
+        first_line_clean in STRENGTH_WORKOUT_NAMES
+        or first_line_normalized in STRENGTH_WORKOUT_NAMES
+        or first_word in STRENGTH_WORKOUT_NAMES
+    ):
         return ("strength", body.strip())
 
     # 2. Kwalifikacja jako notatka biegacza ze znacznikiem NOTE
@@ -765,7 +768,7 @@ def _extract_gym_exercises_summary(content):
     for row in m.group(1).strip().splitlines():
         cols = [col.strip() for col in row.split('|')[1:-1]]
         if len(cols) >= 3 and cols[1] and 'Brak szczegółowego' not in cols[1]:
-            name = re.sub(r'\s*\((?:Barbell|Dumbbell|Cable|Machine|fbw|upper|lower|core|push|pull|legs)\)', '', cols[1], flags=re.I).strip()
+            name = re.sub(r'\s*\((?:Barbell|Dumbbell|Cable|Machine|fbw_a|fbw_b|fbw a|fbw b|fbw|upper|lower|core|push|pull|legs)\)', '', cols[1], flags=re.I).strip()
             reps = f" {cols[2]}" if cols[2] and cols[2] != '-' else ""
             weight = f" ({cols[3]})" if len(cols) > 3 and cols[3] and cols[3] != '-' else ""
             ex_list.append(f"{name}{reps}{weight}")
@@ -1135,8 +1138,16 @@ def parse_hevy_strength_workout(workout_text):
         return None, {}
 
     first_clean = lines[0].strip(":.,!- #*[]()\"'").lower()
-    routine_key = first_clean.split()[0] if first_clean else ""
-    if routine_key not in STRENGTH_WORKOUT_NAMES:
+    first_normalized = first_clean.replace(" ", "_")
+    first_word = first_clean.split()[0] if first_clean else ""
+
+    routine_key = None
+    if first_clean in STRENGTH_WORKOUT_NAMES or first_normalized in STRENGTH_WORKOUT_NAMES:
+        routine_key = first_normalized
+    elif first_word in STRENGTH_WORKOUT_NAMES:
+        routine_key = first_word
+
+    if not routine_key:
         return None, {}
 
     parsed_exercises = {}
@@ -1238,8 +1249,12 @@ def update_strength_routines_from_workout(workout_text, filepath=ROUTINES_JSON_P
 
     routines_data = load_strength_routines(filepath)
     if routine_key not in routines_data:
-        logger.warning(f"Rutyna '{routine_key}' nie istnieje w pliku {filepath}.")
-        return None
+        alt_key = routine_key.replace("_", " ") if "_" in routine_key else routine_key.replace(" ", "_")
+        if alt_key in routines_data:
+            routine_key = alt_key
+        else:
+            logger.warning(f"Rutyna '{routine_key}' nie istnieje w pliku {filepath}.")
+            return None
 
     canonical_dict = routines_data[routine_key].get("exercises", {})
     updated_exercises = []
@@ -1315,11 +1330,9 @@ def _format_routine_exercise_lines(ex_name, r_key, ex_data, bullet_prefix, sub_p
     """
     t_sets = ex_data.get("target_sets", 3)
     t_reps = ex_data.get("target_reps", "8-10")
-    tempo_val = ex_data.get("tempo")
-    tempo_str = f", tempo {tempo_val}" if tempo_val else ""
     sets_str = _format_last_sets_str(ex_data.get("last_sets", []))
     return (
-        f"{bullet_prefix}**{ex_name} ({r_key})**: {t_sets} serie, {t_reps} powtórzeń{tempo_str}",
+        f"{bullet_prefix}**{ex_name} ({r_key})**: {t_sets} serie, {t_reps} powtórzeń",
         f"{sub_prefix}Ostatnie serie i wagi: {sets_str}"
     )
 
@@ -1327,7 +1340,7 @@ def _format_routine_exercise_lines(ex_name, r_key, ex_data, bullet_prefix, sub_p
 def format_strength_routines_for_prompt(routines_data=None, filepath=ROUTINES_JSON_PATH):
     """
     Formatuje bazę rutyn siłowych z pliku JSON do postaci Markdown dla promptu modelu.
-    Wstrzykuje do każdego ćwiczenia jego docelowe parametry, tempo oraz ostatnie
+    Wstrzykuje do każdego ćwiczenia jego docelowe parametry oraz ostatnie
     serie i wagi robocze (lub informację o braku danych).
 
     Args:
@@ -1348,7 +1361,6 @@ def format_strength_routines_for_prompt(routines_data=None, filepath=ROUTINES_JS
 
     output = [
         "# BAZA TRENINGÓW SIŁOWYCH (ROUTINES) I AKTUALNE OBCIĄŻENIA ROBOCZE",
-        "* **Zapis tempa**: Cztery cyfry oznaczają kolejno: faza ekscentryczna (opuszczanie) - pauza w rozciągnięciu - faza koncentryczna (unoszenie/skurcz) - pauza w skurczu.",
         "* **Zasada doboru wag**: Do każdej serii planowanego treningu przypisz konkretną wagę i liczbę powtórzeń na podstawie 'Ostatnie serie i wagi' (lub zaplanuj bezpieczną progresję o max 1 parametr). Dla ćwiczeń 'mc' planuj ćwiczenie z masą ciała.",
         ""
     ]
@@ -1436,7 +1448,7 @@ def _strip_exercise_tags(exercise_name):
         str: Oczyszczona nazwa ćwiczenia.
     """
     return re.sub(
-        r'\s*\((?:Dumbbell|Barbell|Cable|Machine|fbw|upper|lower|core|push|pull|legs)\)',
+        r'\s*\((?:Dumbbell|Barbell|Cable|Machine|fbw_a|fbw_b|fbw a|fbw b|fbw|upper|lower|core|push|pull|legs)\)',
         '',
         exercise_name,
         flags=re.IGNORECASE
@@ -1887,9 +1899,13 @@ def _extract_strength_muscle_groups(strength_workout):
     strength_line = f"TAK ({first_clean.upper() or 'TRENING SIŁOWY'})"
 
     routine_muscle_map = {
+        "fbw a": "GÓRA + DÓŁ",
+        "fbw b": "GÓRA + DÓŁ",
+        "fbw_a": "GÓRA + DÓŁ",
+        "fbw_b": "GÓRA + DÓŁ",
+        "fbw": "GÓRA + DÓŁ",
         "upper": "GÓRA", "push": "GÓRA", "pull": "GÓRA",
         "lower": "DÓŁ", "legs": "DÓŁ",
-        "fbw": "GÓRA + DÓŁ",
         "core": "CORE / STABILIZACJA",
     }
     if first_line_lower in routine_muscle_map:

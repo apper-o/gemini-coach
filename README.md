@@ -156,22 +156,22 @@ Skrypt `coach_gemini.py` przyjmuje pozycyjny argument określający tryb pracy:
 System automatycznie klasyfikuje wiadomości wysłane do bota na podstawie **pierwszej niepustej linii tekstu**:
 
 ### 1. Raport z treningu siłowego (Hevy)
-* Pierwsza linia zawiera wyłącznie nazwę rutyny ze zbioru `STRENGTH_WORKOUT_NAMES`: `fbw`, `upper`, `lower`, `core`, `push`, `pull`, `legs`.
+* Pierwsza linia zawiera nazwę rutyny: `fbw A` lub `fbw B` (lub `fbw_a` / `fbw_b`).
 * Kolejne linie to skopiowany eksport z aplikacji Hevy. Skrypt parsuje wykonane serie i automatycznie aktualizuje ciężary robocze w `input/strength_routines.json`.
 
 ```text
-upper
+fbw A
 Thursday, Oct 22, 2026 at 5:15pm
 
 Bench Press (Barbell)
-Set 1: 60 kg x 8
-Set 2: 60 kg x 8
-Set 3: 60 kg x 8
+Set 1: 75 kg x 6
+Set 2: 75 kg x 5
+Set 3: 75 kg x 5
 
-Lat Pulldown (Cable)
-Set 1: 55 kg x 10
-Set 2: 55 kg x 10
-Set 3: 55 kg x 10
+Drop jump
+Set 1: 6 reps
+Set 2: 6 reps
+Set 3: 6 reps
 ```
 
 ### 2. Notatka biegacza (`NOTE`)

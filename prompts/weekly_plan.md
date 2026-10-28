@@ -21,7 +21,7 @@ ZASADY PERIODYZACJI I ZARZĄDZANIA ZMĘCZENIEM:
      * 3-4 dni przed zawodami: mini-bodziec pobudzający sztywność MTS i układ nerwowy (np. 3-4x 1 km w Z4 lub krótkie odcinki w Race Pace; objętość akcentu ucięta o ok. 40% na pełnej przerwie).
      * 1-2 dni przed zawodami: krótki rozruch (15-20 min Z1 + 3-4 rytmy z aktywacją PAP) lub dzień wolny.
      * Pozostałe dni: czyste Z1 (<85% LTHR) i regeneracja.
-     * Siłownia: całkowity zakaz ćwiczeń na dół ciała na <72h przed startem (dozwolony wyłącznie lekki Upper/Core z RIR ≥3 na min. 48h przed biegiem).
+     * Siłownia: całkowity zakaz ćwiczeń na dół ciała na <72h przed startem (dozwolony wyłącznie lekki trening góry ciała / Core z RIR ≥3 na min. 48h przed biegiem lub wyłączenie ćwiczeń na nogi z FBW).
    - Start Kontrolny: Start sprawdzający „z pełnego treningu” (Priorytet B). Wyścig zastępuje drugi akcent jakościowy w mikrocyklu. W pierwszej części tygodnia realizowany jest standardowy akcent jakościowy (np. Threshold Z4 oddalony o min. 72-96h od startu). Wymogi ochrony: wyłącznie lekki bieg regeneracyjny w Z1 i Rest Day na 1-2 dni przed startem.
    - Deload: Planowy tydzień asymilacyjny (co 3-4 tyg.). Cięcie objętości o max 20% przy pełnym ZACHOWANIU intensywności (tempo i ciężary bez zmian, obcięta liczba serii/powtórzeń).
    - Roztrenowanie (Transition): Brak akcentów. Wyłącznie regeneracyjny bieg Z1 lub bezudarowy cross-training (basen/rower) dla resetu CUN i tkanek łącznych.
@@ -112,14 +112,14 @@ SZABLON WYJŚCIA (generuj chronologicznie od Poniedziałku do Niedzieli, dobiera
 - **Cel fizjologiczny**: [Adaptacja – max 1-2 zdania]
 <!-- Dla zawodów zastąp powyższe 4 punkty blokami: Rozgrzewka, Strategia startowa, Post-race -->
 
-### [Dzień tygodnia] - Siłownia: [FBW / UPPER / LOWER]
+### [Dzień tygodnia] - Siłownia: [FBW A / FBW B]
 
 - **Status dolnych partii**: [Pełna intensywność / Ochrona nóg (Neural Priming: RIR 2-3, kontrola ekscentryki pod bieg)]
 - **Ćwiczenia**:
 [Nazwa ćwiczenia dokładnie z <strength_routines>] S1: [Powt.] x [Ciężar kg / mc] (RIR [x]) | S2: [Powt.] x [Ciężar kg / mc] (RIR [x]) | ... <!--Kolejne serie wg potrzeb-->
 Wyjaśnienie decyzji: [Max 2 zdania względem historii lub "Brak danych w historii"]
 (Dla modyfikacji stosuj format: `[Nazwa] - USUNIĘTO`, `[Nowe] (ZAMIANA ZA: [Stare])` lub `[Nowe] - DODANO PRZEZ TRENERA` z seriami i linią `Decyzja: [max 2 zdania]`).
-- **Cardio / Rower eliptyczny**: [Czas min w Z1 przed siłą / po UPPER lub Brak]
+- **Cardio / Rower eliptyczny**: [Czas min w Z1 przed siłą / po sile lub Brak]
 - **Cel i zalecenia adaptacyjne**: [Wpływ na aparat biegowy i MTS – max 1-2 zdania]
 
 ### [Dzień tygodnia] - Pływanie: [Baza / Regeneracja / Technika]
