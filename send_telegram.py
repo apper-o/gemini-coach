@@ -186,7 +186,7 @@ def extract_daily_report_caption(md_text):
     is_gym_meta = bool(m_gym and m_gym.group(1).upper() == "TAK")
     gym_meta = m_gym.group(2).strip() if m_gym and m_gym.group(2) else ""
 
-    profiles = [p.strip() for p in re.findall(r"^[*-]?\s*\*?\*?Profil jednostki\*?\*?:\s*([^\n\r]+)", md_text, re.MULTILINE | re.I)]
+    profiles = [p.strip("* ") for p in re.findall(r"^[*-]?\s*\*?\*?(?:Profil jednostki|Typ treningu)[^\n:]*:\*?\*?\s*([^\n\r]+)", md_text, re.MULTILINE | re.I)]
     char_str = _re_first(r"^[*-]?\s*\*?\*?Charakter dnia\*?\*?:\s*([^\n\r]+)", md_text)
 
     c_lower = md_text.lower()
@@ -222,8 +222,8 @@ def extract_daily_report_caption(md_text):
         else:
             workout_entries.append(f"🏃 <b>Trening:</b> {html.escape(profiles[0])}")
 
-    # 3. Ocena treningu / egzekucji planu
-    raw_score = _re_first(r"^[*-]?\s*\*?\*?Ocena(?:\s+egzekucji(?:\s+planu)?|\s+treningu)?\*?\*?:\s*([^\n\r]+)", md_text).strip("[]")
+    # 3. Ocena treningu / egzekucji planu lub podsumowanie
+    raw_score = _re_first(r"^[*-]?\s*\*?\*?Ocena(?:\s+biegu|\s+egzekucji(?:\s+planu)?|\s+treningu)?\*?\*?:\s*([^\n\r]+)", md_text).strip("[]")
     if raw_score:
         m_score_num = RE_SCORE_VALUE.search(raw_score)
         if m_score_num:
@@ -239,18 +239,25 @@ def extract_daily_report_caption(md_text):
         else:
             score_val = raw_score[:60]
         workout_entries.append(f"⭐ <b>Ocena:</b> {html.escape(score_val)}")
+    else:
+        raw_summary = _re_first(r"^[*-]?\s*\*?\*?Podsumowanie[^\n:]*:\*?\*?\s*([^\n\r]+)", md_text)
+        if raw_summary:
+            end_s = raw_summary.find(".")
+            sum_val = raw_summary[:end_s + 1] if 10 < end_s < 100 else raw_summary[:100]
+            workout_entries.append(f"📝 <b>Podsumowanie:</b> {html.escape(sum_val.strip('* '))}")
 
     # 4. Stan zasobów i bilans autonomiczny
-    raw_cost = _re_first(r"^[*-]?\s*\*?\*?(?:Bilans autonomiczny|Koszt dzienny i stan zasobów|Koszt dzienny)[^\*:]*\*?\*?:\s*([^\n\r]+)", md_text)
+    raw_cost = _re_first(r"^[*-]?\s*\*?\*?(?:Bilans układu nerwowego|Bilans autonomiczny|Drenaż fizjologiczny|Koszt dzienny i stan zasobów|Koszt dzienny)[^\*:]*\*?\*?:\s*([^\n\r]+)", md_text)
     if raw_cost:
         end_sent = raw_cost.find(".")
         cost_val = raw_cost[:end_sent + 1] if end_sent > 15 else raw_cost
         workout_entries.append(f"🔋 <b>Stan zasobów:</b> {html.escape(cost_val[:117] + '...' if len(cost_val) > 120 else cost_val)}")
 
     # 5. Decyzja adaptacyjna trenera
-    dec_val = _re_first(r"^[*-]?\s*\*?\*?(?:DECYZJA ADAPTACYJNA(?:\s*/\s*STOPIEŃ GOTOWOŚCI)?|DECYZJA O KOREKCIE|STOPIEŃ GOTOWOŚCI)\*?\*?:\s*(?:[\n\r]+\s*)?([^\n\r]+)", md_text)
+    dec_val = _re_first(r"^[*-]?\s*\*?\*?(?:DECYZJA ADAPTACYJNA(?:\s*/\s*STOPIEŃ GOTOWOŚCI)?|DYREKTYWA WYKONAWCZA(?:\s*\([^)]*\))?|DECYZJA O KOREKCIE|STOPIEŃ GOTOWOŚCI)[^\n:]*:\*?\*?\s*(?:[\n\r]+\s*)?([^\n\r]+)", md_text)
     if dec_val:
-        workout_entries.append(f"🧠 <b>Adaptacja na jutro:</b> {html.escape(dec_val)}")
+        dec_clean = dec_val.strip("* ").lstrip("- ")
+        workout_entries.append(f"🧠 <b>Adaptacja na jutro:</b> {html.escape(dec_clean)}")
 
     caption = (
         f"📅 <b>AUDYT DNIA: {html.escape(target_date)}</b>\n\n"

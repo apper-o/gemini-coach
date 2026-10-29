@@ -20,7 +20,7 @@ GARMIN_CACHE_DIR_PATH = "garmin_data"
 
 # Prekompilowane wyrażenia regularne dla parsowania historii
 RE_STRENGTH_KW = re.compile(r'(siłowni|siłowa|hevy|fbw|upper|lower|strength)', re.IGNORECASE)
-RE_PROFILE_HEADER = re.compile(r'^[*-]?\s*\*?\*?Profil jednostki\*?\*?:\s*([^\n\r]+)', re.MULTILINE | re.IGNORECASE)
+RE_PROFILE_HEADER = re.compile(r'^[*-]?\s*\*?\*?(?:Profil jednostki|Typ treningu)[^\n:]*:\*?\*?\s*([^\n\r]+)', re.MULTILINE | re.IGNORECASE)
 
 WEATHER_DESC_PL = {
     "Clear": "Bezchmurnie",

@@ -51,10 +51,10 @@ RE_RUN_STRUCT = re.compile(r'^-\s*Struktura biegu:\s*([^\n]+)', re.MULTILINE)
 RE_STR_W5 = re.compile(r'^-\s*Siłownia:\s*(TAK|NIE)', re.MULTILINE)
 RE_MUSCLE = re.compile(r'^-\s*Partie mięśniowe \(siłownia\):\s*([^\n]+)', re.MULTILINE)
 RE_COACH_DECISION = re.compile(
-    r'^[*-]?\s*\*?\*?(?:DECYZJA ADAPTACYJNA(?:\s*/\s*STOPIEŃ GOTOWOŚCI)?|DECYZJA O KOREKCIE|STOPIEŃ GOTOWOŚCI|Decyzja trenera|Zgodność z planem)[^\n:]*:\s*(?:\n\s*)?([^\n|]+)',
+    r'^[*-]?\s*\*?\*?(?:DECYZJA ADAPTACYJNA(?:\s*/\s*STOPIEŃ GOTOWOŚCI)?|DYREKTYWA WYKONAWCZA(?:\s*\([^)]*\))?|DECYZJA O KOREKCIE|STOPIEŃ GOTOWOŚCI|Decyzja trenera|Zgodność z planem)[^\n:]*:\*?\*?\s*(?:\n\s*)?([^\n|]+)',
     re.MULTILINE | re.IGNORECASE
 )
-RE_PROFILE_HEADER = re.compile(r'^[*-]?\s*\*?\*?Profil jednostki\*?\*?:\s*([^\n\r]+)', re.MULTILINE | re.IGNORECASE)
+RE_PROFILE_HEADER = re.compile(r'^[*-]?\s*\*?\*?(?:Profil jednostki|Typ treningu)[^\n:]*:\*?\*?\s*([^\n\r]+)', re.MULTILINE | re.IGNORECASE)
 
 RE_DIST_FLOAT = re.compile(r'([0-9]+(?:[.,][0-9]+)?)')
 RE_PLAN_STRUCT = re.compile(r'Dystans:\s*Plan:[^\n\(]*\(([^)]*(?:rozgrzewk|schłodzen|główn|mp|tempo)[^)]*)\)', re.IGNORECASE)
@@ -925,13 +925,15 @@ def _summarize_history_day_for_planning(content, date_str, day_name):
 
     # 5. Ocena trenera, decyzja adaptacyjna i kluczowe wnioski
     eval_parts = []
-    if (eval_v := _re_first(r'(?:Ocena|Ocena egzekucji planu|Ocena treningu)\*?\*?:\s*([0-9]+/[0-9]+[^\n]*)', content)):
-        eval_parts.append(f"Ocena: {eval_v}")
-    if (dec_v := _re_first(RE_COACH_DECISION, content).strip('*')):
+    if (eval_v := _re_first(r'(?:Ocena(?:\s+biegu|\s+egzekucji(?:\s+planu)?|\s+treningu)?)[^\n:]*:\*?\*?\s*\[?([0-9]+/[0-9]+[^\n]*)', content)):
+        eval_parts.append(f"Ocena: {eval_v.rstrip(']')}")
+    elif (podsum_v := _re_first(r'^[*-]?\s*\*?\*?Podsumowanie[^\n:]*:\*?\*?\s*([^\n]+)', content)):
+        eval_parts.append(f"Podsumowanie: {podsum_v.strip('* ')}")
+    if (dec_v := _re_first(RE_COACH_DECISION, content).strip('* -')):
         eval_parts.append(f"Decyzja: {dec_v}")
 
     phys_text = _re_first(
-        r'(?:Uzasadnienie fizjologiczne|Bodziec adaptacyjny i koszt tkankowy|Bodziec adaptacyjny i koszt metaboliczny|Bodziec fizjologiczny i szlaki energetyczne|Koszt nerwowo-mięśniowy|Dedykowana analiza fizjologiczna pływania)[^:\n]*:[ \t]*([^\n]+)',
+        r'(?:Uzasadnienie fizjologiczne|Drenaż fizjologiczny|Bodziec adaptacyjny i koszt tkankowy|Bodziec adaptacyjny i koszt metaboliczny|Bodziec fizjologiczny i szlaki energetyczne|Koszt nerwowo-mięśniowy|Dedykowana analiza fizjologiczna pływania)[^:\n]*:[ \t]*([^\n]+)',
         content
     )
     if phys_text:
@@ -1754,8 +1756,8 @@ def generate_daily_prompt(
     if day_of_week == "Niedziela":
         sunday_section_4 = (
             f"## 4. OCENA GOTOWOŚCI I DYREKTYWA NA DZIEŃ: {audit_date_str}\n\n"
-            "- **DECYZJA ADAPTACYJNA / STOPIEŃ GOTOWOŚCI**: [PEŁNA GOTOWOŚĆ / ZMĘCZENIE FUNKCJONALNE / GŁĘBOKI DŁUG ADAPTACYJNY / WYMAGANA REGENERACJA]\n"
-            "- **Uzasadnienie fizjologiczne**: [Zwięzła diagnoza gotowości CUN, glikogenu i sztywności MTS pod kątem zamkniętego mikrocyklu; liczby wyłącznie w nawiasach]"
+            "* **DECYZJA ADAPTACYJNA:** [PEŁNA GOTOWOŚĆ / ZMĘCZENIE FUNKCJONALNE / GŁĘBOKI DŁUG ADAPTACYJNY / WYMAGANA REGENERACJA]\n"
+            "* **Uzasadnienie fizjologiczne:** [Zwięzła diagnoza gotowości CUN, glikogenu i sztywności MTS pod kątem zamkniętego mikrocyklu; liczby wyłącznie w nawiasach]"
         )
         closing_text = re.sub(r"## 4\. OCENA GOTOWOŚCI.*", sunday_section_4, closing_text, flags=re.DOTALL)
 

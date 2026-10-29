@@ -13,6 +13,7 @@ import argparse
 import time
 from dotenv import load_dotenv
 from google import genai
+from google.genai import types
 
 from send_telegram import (
     send_daily_report,
@@ -117,7 +118,13 @@ def send_gemini_prompt_with_fallback(client, prompt, model="gemini-3.8-flash", d
     for attempt in range(1, max_retries + 1):
         try:
             logger.info(f"Wysyłanie zapytania do Gemini (Model: {model}, próba [{attempt}/{max_retries}])...")
-            response = client.models.generate_content(model=model, contents=prompt)
+            response = client.models.generate_content(
+                model=model,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True)
+                ),
+            )
             logger.info(f"✅ Odpowiedź pomyślnie wygenerowana przez model: {model}")
             return response
         except Exception as e:

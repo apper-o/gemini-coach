@@ -24,23 +24,23 @@
           }
         ]
       },
-      "Smith Machine Split Squat Isometric Hold": {
+      "Bulgarian Split Squat (Dumbbell)": {
         "target_sets": 3,
         "target_reps": "6",
         "last_sets": [
           {
             "set": 1,
-            "weight": "60 kg",
+            "weight": "28 kg",
             "reps": 6
           },
           {
             "set": 2,
-            "weight": "60 kg",
+            "weight": "28 kg",
             "reps": 6
           },
           {
             "set": 3,
-            "weight": "60 kg",
+            "weight": "28 kg",
             "reps": 6
           }
         ]
@@ -51,18 +51,18 @@
         "last_sets": [
           {
             "set": 1,
-            "weight": "50 kg",
-            "reps": 8
+            "weight": "12 kg",
+            "reps": 6
           },
           {
             "set": 2,
-            "weight": "50 kg",
-            "reps": 8
+            "weight": "12 kg",
+            "reps": 6
           },
           {
             "set": 3,
-            "weight": "50 kg",
-            "reps": 8
+            "weight": "12 kg",
+            "reps": 6
           }
         ]
       },
@@ -99,12 +99,12 @@
           {
             "set": 2,
             "weight": "75 kg",
-            "reps": 5
+            "reps": 6
           },
           {
             "set": 3,
             "weight": "75 kg",
-            "reps": 5
+            "reps": 6
           }
         ]
       },
@@ -114,17 +114,17 @@
         "last_sets": [
           {
             "set": 1,
-            "weight": "mc",
-            "reps": 8
+            "weight": "10 kg",
+            "reps": 6
           },
           {
             "set": 2,
-            "weight": "mc",
-            "reps": 8
+            "weight": "10 kg",
+            "reps": 6
           },
           {
             "set": 3,
-            "weight": "mc",
+            "weight": "10 kg",
             "reps": 6
           }
         ]
@@ -132,7 +132,23 @@
       "Face Pull": {
         "target_sets": 3,
         "target_reps": "10-12",
-        "last_sets": []
+        "last_sets": [
+          {
+            "set": 1,
+            "weight": "45 kg",
+            "reps": 8
+          },
+          {
+            "set": 2,
+            "weight": "45 kg",
+            "reps": 8
+          },
+          {
+            "set": 3,
+            "weight": "45 kg",
+            "reps": 6
+          }
+        ]
       },
       "Cable Core Pallof Press": {
         "target_sets": 3,
@@ -140,18 +156,18 @@
         "last_sets": [
           {
             "set": 1,
-            "weight": "18 kg",
-            "reps": 10
+            "weight": "25 kg",
+            "reps": 6
           },
           {
             "set": 2,
-            "weight": "18 kg",
-            "reps": 10
+            "weight": "25 kg",
+            "reps": 6
           },
           {
             "set": 3,
-            "weight": "18 kg",
-            "reps": 10
+            "weight": "25 kg",
+            "reps": 6
           }
         ]
       },
@@ -203,7 +219,7 @@
         "target_reps": "6-8",
         "last_sets": []
       },
-      "Bulgarian Split Squat (Dumbbell)": {
+      "Dumbbell Step Up": {
         "target_sets": 3,
         "target_reps": "8-10",
         "last_sets": []
