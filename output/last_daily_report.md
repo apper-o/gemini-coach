@@ -1,8 +1,8 @@
 # AUDYT DZIENNY: 2026-10-30 (Piątek, 2026-10-30)
 - Typ dnia: BIEG
 - Bieg: TAK (7.01 km, sesje: 1)
-- Typ treningu biegowego: Bieg spokojny (Easy Run)
-- Struktura biegu: Rozgrzewka: Brak | Główna seria: 7.01 km (Bieg spokojny (Easy Run)) | Schłodzenie: Brak
+- Typ treningu biegowego: Spokojny bieg tlenowy (Easy Run)
+- Struktura biegu: Rozgrzewka: Brak | Główna seria: 7.01 km (Spokojny bieg tlenowy (Easy Run)) | Schłodzenie: Brak
 - Siłownia: NIE
 - Partie mięśniowe (siłownia): BRAK
 
@@ -40,35 +40,35 @@
 
 | Parametr | Plan | Realizacja | Odchylenie |
 |:---|:---:|:---:|:---:|
-| Dystans [km] | 8.00 | 7.01 | -0.99 |
+| Dystans [km] | 8.00 | 7.01 | -0.99 (-12.4%) |
 | Średnie tempo [min/km] | 5:35–5:45 | 5:53 | +0:08 do +0:18 (wolniej) |
 
-* **Typ treningu:** Bieg spokojny (Easy Run)
+* **Typ treningu:** Spokojny bieg tlenowy (Easy Run)
 * **Mocne strony:**
-  - Utrzymanie stabilnej kadencji w optymalnym oknie fizjologicznym (śr. 171 spm, zgodne z normą 165–175 spm dla Z2).
-  - Prawidłowa kontrola pionowego stosunku oscylacji (VR 8.50% i VO 8.41 cm), zapobiegająca nadmiernym stratom energii.
+  - Utrzymanie stabilnej kadencji na poziomie 171 spm, mieszczącej się precyzyjnie w korytarzu optymalnym dla strefy tlenowej (165–175 spm).
+  - Prawidłowa kontrola oscylacji pionowej (VO 8.41 cm, VR 8.50%), co zapobiegło nieekonomicznemu podskakiwaniu w trakcie wolnego biegu.
 * **Błędy i korekty:**
-  - Decyzyjne: Skrócenie dystansu bazowego o blisko 1 km bez uzasadnienia w samopoczuciu lub nagłego incydentu motorycznego; korekta: realizuj pełną zaplanowaną objętość tlenową, regulując wyłącznie tempo przy wzroście kosztu fizjologicznego.
-  - Decyzyjne: Dryf tętna powyżej zaleceń (śr. 156 bpm vs planowane 145–155 bpm, pik 163 bpm w Z3); korekta: przy rosnącym tętnie w drugiej części biegu nie utrzymuj sztywnego tempa, lecz zredukuj prędkość do Z1 (>6:00 min/km), by nie generować zbędnego zmęczenia.
+  - Decyzyjne: Niedoszacowanie dystansu (-0.99 km) połączone z dryfem tętna (śr. 156 bpm przy planie 145–155 bpm, pik 163 bpm w Z3); w dni regeneracyjne priorytetem jest sufit strefy tętna – redukuj tempo do >6:00 min/km natychmiast, gdy HR zbliża się do 155 bpm, zamiast skracać jednostkę.
+  - Biomechaniczne: Wydłużenie czasu kontaktu z podłożem na wzniesieniu (km 6: GCT 275.2 ms, tempo 6:17 min/km); na podbiegach zagęszczaj ruch ramion i dbaj o szybkie zrywanie stopy z podłoża („gorący asfalt”), przeciwdziałając biernemu wklejaniu stopy w asfalt.
 * **Kontekst fizjologiczny i środowiskowy:**
-  - Wilgotność 99% przy niskiej temperaturze (3.9°C, mgła) utrudniała termoregulację oddechową; przełożyło się to na podwyższony koszt tętna względem wolniejszego tempa; wniosek: w takich warunkach steruj biegiem wyłącznie w oparciu o widełki HR (maks. 150–152 bpm), ignorując tempo z GPS.
+  - Wilgotność sięgająca 99% (mgła) przy temperaturze 3.9°C ograniczyła efektywność wymiany gazowej i schładzania, co podbiło koszt krążeniowy (HR 156 bpm) mimo wolnego tempa biegu; tętno reagowało na gęste, wilgotne powietrze, a nie na realne obciążenie mechaniczne.
 * **Podsumowanie i wnioski:**
-  Jednostka zrealizowana poniżej założeń objętościowych ze zbyt wysokim kosztem krążeniowym w relacji do tempa biegu. Spadek wydajności tlenowej przy wolniejszym tempie wskazuje na konieczność dalszej rozbudowy bazy Z1/Z2 bez wchodzenia w strefę Z3.
+  - Jednostka zrealizowała cel podtrzymania bazy tlenowej (Aerobic TE 3.1), mimo niedomknięcia pełnego kilometrażu i lekkiego przekroczenia docelowego pułapu HR. Trening zabezpieczył adaptacje mitochondrialne bez naruszenia zasobów glikogenowych i przeciążenia aparatu ruchu. Pozwala to na pełną kontynuację mikrocyklu bez konieczności wprowadzania modyfikacji w kolejnych dniach.
 
 ## 2. STAN ZASOBÓW I KOSZT METABOLICZNY
 
-- **Drenaż fizjologiczny**: Umiarkowane zmęczenie obwodowe (TE 3.1, GCT 269 ms), bez cech przeciążenia aparatu więzadłowo-stawowego, z drenażem energii do BB 26/100 na koniec dnia.
-- **Bilans układu nerwowego**: Stabilna równowaga autonomiczna (nocne HRV 50 ms w normie, RHR 50 bpm), wskazująca na brak przeciążenia centralnego układu nerwowego mimo wysokiej dziennej aktywności niesportowej (11,5 tys. kroków).
+- **Drenaż fizjologiczny**: Umiarkowane zmęczenie obwodowe o czysto tlenowym charakterze (Anaerobic TE 0.0); wysokie wartości GCT pod koniec biegu (275 ms) wskazują na lekkie obniżenie sprężystości struktur podudzia przy kumulacji 11.5 tys. kroków w ciągu dnia.
+- **Bilans układu nerwowego**: Układ autonomiczny pozostaje zrównoważony po spokojnej nocy (HRV 50 ms, RHR 50 bpm), a spadek wskaźnika Body Battery do 26/100 stanowi prawidłowy, dobowy koszt eksploatacyjny bez objawów przeciążenia CUN.
 
 ## 3. PROTOKÓŁ REGENERACJI (WIECZÓR I NOC)
 
-- **Paliwo i nawodnienie**: Posiłek bogaty w węglowodany złożone i sód w celu uzupełnienia glikogenu oraz wypicie minimum 500 ml płynów elektrolitowych przed snem.
+- **Odżywianie i nawodnienie**: Spożyj kolację bogatą w węglowodany złożone i pełnowartościowe białko (25–30 g), wypijając 500 ml wody wzbogaconej o elektrolity, by przygotować depozyty glikogenu pod niedzielne wybieganie.
 - **Mobilność i regeneracja tkankowa**:
-  - Dodać / Wydłużyć: Runner's Lunge Twist oraz Couch Stretch (wydłużyć do 1:00 na stronę) w celu otwarcia taśmy przedniej po długim kontakcie z podłożem.
-  - Pominąć / Skrócić: Zredukować intensywny ucisk SMR na łydki do lekkiego drenażu powierzchownego, aby nie nasilać mikrouszkodzeń przed niedzielą.
-- **Wyciszenie i highiena snu**: Minimum 8 godzin snu z ograniczeniem ekspozycji na światło niebieskie 60 minut przed snem i utrzymaniem temperatury w sypialni na poziomie 18–19°C.
+  - Dodać / Wydłużyć: Soleus Wall Stretch (0:45/stronę) oraz Downward Dog (0:45) w celu dekompresji ścięgien Achillesa i rozcięgna podeszwowego po podwyższonym kontakcie z podłożem.
+  - Pominąć / Skrócić: Intensywne rolowanie powięziowe czwórogłowych na twardym wałku – zastąpić lekkim drenażem i pozycją Child's Pose.
+- **Wyciszenie i higiena snu**: Zastosuj 1 minutę w pozycji Child's Pose z wydłużonym wydechem przeponowym w celu szybkiej aktywacji nerwu błędnego. Zabezpiecz minimum 8 godzin snu w przewietrzonej sypialni o temperaturze poniżej 19°C.
 
 ## 4. OCENA GOTOWOŚCI I DECYZJA NA DZIEŃ: Sobota, 2026-10-31
 
-* **Decyzja wykonawcza (Sobota, 2026-10-31):** Pełna egzekucja -> Realizacja planu: Dzień wolny / Regeneracja pasywna | Cel: Pasywna regeneracja CUN, sen minimum 8 godzin oraz 15 minut lekkiej mobilności bioder i kręgosłupa w celu optymalizacji glikogenu przed niedzielnym wybieganiem.
-* **Uzasadnienie fizjologiczne:** Wskaźniki ANS są w normie, a dzisiejszy trening nie wywołał głębokiej degradacji biomechanicznej, co pozwala na pełną adaptację w zaplanowanym dniu wolnym. Pozwoli to w pełni odbudować zasoby mięśniowe i nerwowe przed niedzielnym biegiem długim (12.0 km).
+* **Decyzja wykonawcza (Sobota, 2026-10-31):** Realizacja planu: Dzień wolny / Pasywna regeneracja CUN | Cel: Sen minimum 8 godzin, 15 minut lekkiej mobilności bioder i kręgosłupa oraz całkowite unikanie obciążeń dynamicznych.
+* **Uzasadnienie fizjologiczne:** Pełna absencja biegowa w sobotę umożliwi odbudowę sztywności ścięgnistej podudzi i całkowite wysycenie glikogenu mięśniowego. Zapewni to optymalną biomechanikę i świeżość układu nerwowego na niedzielne 12 km Long Run.
