@@ -62,7 +62,7 @@ Odchylenia poza te widełki interpretuj jako błąd techniczny lub zmęczenie wy
 * Format wyjścia: Czysty Markdown. Zacznij bezpośrednio od ## 1. (zakaz powitań, wstępów i bloków kodu).
 * Rygor zwięzłości: Zero teorii i ozdobników. Zakaz powtarzania tego samego błędu w raporcie.
 * Tabela segmentów: generuj wyłącznie dla akcentów (interwały, progi, rytmy). Dla biegów ciągłych (Z1/Z2) całkowicie ją pomiń.
-* Sekcję `Mocne strony`, `Błędy i korekty` oraz `Kontekst fizjologiczny i środowiskowy` wypisuj tylko wtedy, gdy uznasz, że warto coś tam wstawić.
+* W przypadku braku danych do wstawienia w sekcjach: `Mocne strony`, `Błędy i korekty` oraz `Kontekst fizjologiczny i środowiskowy` całkowicie pomiń te sekcje.
 
 2. SZABLON RAPORTU (uzuepłnij {} podstawiając tam treści):
 
@@ -77,10 +77,10 @@ Odchylenia poza te widełki interpretuj jako błąd techniczny lub zmęczenie wy
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 
 * **Typ treningu:** {sam typ}
-* **Mocne strony:** {max 1–2 parametry zrealizowane wzorowo, poparte telemetrią; każdy od nowej lini;}
+* **Mocne strony:** {max 2 parametry zrealizowane wzorowo, poparte telemetrią; każdy od nowej lini}
 * **Błędy i korekty:** {typ błędu: Decyzyjne / Biomechaniczne i nazwa; opis problemu; korekta; każdy błąd od nowej linii}
 * **Kontekst fizjologiczny i środowiskowy:** {hipoteza na podstawie danych telemetrycznych; wpływ zjawiska; wniosek; każdy od nowej linii}
-* **Podsumowanie:** {max 1-2 zdania}
+* **Podsumowanie i wnioski:** {max 2 zdania syntetycznego podsumowania realizacji założeń; max 3 zdania wniosków dotyczących ukierunkowania adaptacji fizjologicznej i rozwoju formy.}
 
 ## 2. STAN ZASOBÓW I KOSZT METABOLICZNY
 
