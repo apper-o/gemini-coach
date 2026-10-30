@@ -82,7 +82,7 @@ Odchylenia poza te zakresy interpretuj jako błąd techniczny lub zmęczenie pod
 
 * **Typ treningu:** {podaj tylko typ}
 * **Mocne strony:** {max 2 parametry zrealizowane wzorowo, poparte telemetrią; każda obserwacja od nowej linii}
-* **Błędy i korekty:** {typ błędu: Decyzyjne / Biomechaniczne i nazwa; opis problemu; korekta; każdy błąd od nowej linii}
+* **Błędy i korekty:** {typ błędu: np. Decyzyjne / Biomechaniczne i nazwa; opis problemu; korekta; każdy błąd od nowej linii}
 * **Kontekst fizjologiczny i środowiskowy:** {hipoteza na podstawie danych telemetrycznych; wpływ zjawiska na trening; wniosek; każda obserwacja od nowej linii}
 * **Podsumowanie i wnioski:** {max 2 zdania syntetycznego podsumowania realizacji założeń; max 3 zdania wniosków dotyczących ukierunkowania adaptacji fizjologicznej i rozwoju formy.}
 
