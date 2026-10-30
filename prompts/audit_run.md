@@ -1,5 +1,4 @@
-# 4. PROTOKÓŁ ANALIZY BIOMECHANICZNEJ I BIOENERGETYCZNEJ
-
+# 3. PROTOKÓŁ ANALIZY TRENINGU BIEGOWEGO
 Koreluj obciążenie zewnętrzne (v, nachylenie) z wewnętrznym (HR, EF, Pw:HR) – zakaz analizowania jakiejkolwiek metryki w izolacji.
 
 1. Zakresy referencyjne dynamiki biegu (teren płaski, nawierzchnia twarda):
