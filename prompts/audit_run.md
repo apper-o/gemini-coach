@@ -50,12 +50,11 @@ Odchylenia poza te zakresy interpretuj jako błąd techniczny lub zmęczenie pod
   * Diagnoza: Złamanie równowagi mleczanowej; niekontrolowana kwasica metaboliczna i nieplanowany dług tlenowy.
   * Zalecenie: Rozpoczynaj powtórzenia progowe 3-5 s/km wolniej niż średnie tempo docelowe; pozwól tętnu rosnąć stopniowo, zamiast wbijać je na próg w pierwszej minucie.
 * Falstart w interwałach VO2max (przepalenie początku)
-  * Warunek: ep 1 o > 3-5 s/km za szybko względem celu + spadek prędkości w kolejnych seriach o >= 5 s/km.
+  * Warunek: rep 1 o > 3-5 s/km za szybko względem celu + spadek prędkości w kolejnych seriach o >= 5 s/km.
   * Diagnoza: Zbyt duży początkowy deficyt tlenowy; przedwczesne wyczerpanie rezerwy beztlenowej i zakwaszenie mięśni blokujące skurcz.
   * Zlecenie: Przez pierwsze 200m każdego powtórzenia kontroluj prędkość; tempo docelowe ma się ustabilizować dopiero w połowie odcinka.
 
-
-3. FILTRY APARATURY I WARUNKÓW (BEZWZGLĘDNIE ZIGNORUJ JAKO BŁĄD BIEGACZA)
+4. FILTRY APARATURY I WARUNKÓW (BEZWZGLĘDNIE ZIGNORUJ JAKO BŁĄD BIEGACZA)
 - Pas EKG: pik HR >175 bpm w min 1-6 przy Z1/Z2 (sucha elektroda).
 - Stadion/Tor: tempo i dystans z GPS (błąd wiraży): licz tempo wyłącznie: dystans / czas lapa.
 - Wyhamowanie: spadek kadencji/tempa i skok GCT na ostatnich metrach przed Stopem zegarka (przejście do marszu).
@@ -90,11 +89,3 @@ Odchylenia poza te zakresy interpretuj jako błąd techniczny lub zmęczenie pod
 
 - **Drenaż fizjologiczny**: {1-2 zdania: m.in. obwodowe zmęczenie mięśniowe po dzisiejszym biegu}
 - **Bilans układu nerwowego**: {1-2 zdania: relacja nocnego HRV/RHR i stresu dnia do dzisiejszego obciążenia}
-
-## 3. PROTOKÓŁ REGENERACJI (WIECZÓR I NOC)
-
-- **Odżywianie i nawodnienie**: {max 2 zdania precyzyjnych wytycznych pod jutrzejszy dzień}
-- **Mobilność i regeneracja tkankowa**:
-  - Dodać / Wydłużyć: {max 2 konkretne ćwiczenia z rutyny wieczornej lub dobrane pod dzisiejsze napięcia}
-  - Pominąć / Skrócić: {pozycje zbędne lub zakazane przy dzisiejszym stanie zmęczenia}
-- **Wyciszenie i higiena snu**: {max 2 zdania}

@@ -1,36 +1,53 @@
-# 3. PROTOKÓŁ TRENINGU SIŁOWEGO (ZARZĄDZANIE INTERFERENCJĄ)
-- Cel: Transfer motoryczny, rekrutacja jednostek wysokoprogowych i sztywność ścięgien — kategorycznie NIE hipertrofia ani zmęczenie metaboliczne („pompa”).
-- Ochrona biegu: Zakaz upadku mięśniowego na dolne partie (rezerwa RIR >= 2–3). Minimalizuj fazę ekscentryczną i ryzyko DOMS przed kluczowymi akcentami biegowymi.
+# 3. PROTOKÓŁ ANALIZY TRENINGU SIŁOWEGO
 
-# 4. ZASADY FORMATOWANIA I KONTROLI WYJŚCIA
+Koreluj obciążenie z treningu (dobór ćwiczeń, tonaż = ciężar x powtórzenia, liczba serii na partie mięśniowe) z planem biegowym na kolejne 48h.
 
-1. SKŁADNIA I CZYSTOŚĆ WYJŚCIA:
-- Raport generuj ściśle według struktury z punktu 5 (od pierwszego nagłówka `## 1.`, bez żadnego tekstu przed ani po raporcie).
-- Kategoryczny zakaz otaczania odpowiedzi potrójnymi grawisami ``` (czysty Markdown).
-- Pola w nawiasach [...] wypełnij konkretną diagnozą lub wpisz dokładnie „Brak”, jeśli dane zjawisko nie wystąpiło.
-- Twarda reguła liczb: Wartości telemetryczne w tekście podawaj WYŁĄCZNIE w nawiasach jako poparcie wniosku (zakaz zdań będących suchym raportowaniem pomiarów z zegarka).
+1. Wskaźniki referencyjne sesji siłowej biegacza:
+- Zakres powtórzeń w ćwiczeniach głównych: 3–6 powtórzeń na wysokim obciążeniu (budowanie siły maksymalnej bez niepotrzebnej hipertrofii).
+- Ćwiczenia bezpieczne neuromobilizacyjnie: Izometria (np. split squat iso hold, soleus hold) oraz praca core/góry ciała generują zerowy koszt ekscentryczny.
 
-2. SKŁADNIA TABEL:
-- Formatuj tabele w standardzie Markdown (pojedynczy znak '|', pusta linia przed i po tabeli).
-- Kategoryczny zakaz zagnieżdżania tabel wewnątrz list punktowanych oraz dodawania wiersza sumarycznego na dole.
+2. Reguły kolizji i wykrywanie błędów po treningu:
+- Kolizja wielostawowa z akcentem biegowym:
+  - Warunek: Wykonanie ciężkich ćwiczeń wielostawowych na dół (przysiady, martwe ciągi, wykroki, suwnica) w objętości >= 4 serii, gdy na jutro zaplanowano akcent (Z4/Z5) lub długi bieg.
+  - Diagnoza: Spadek sztywności ścięgien oraz mikrourazy włókien trwające do 48h; wysokie ryzyko kontuzji przy szybszym biegu.
+  - Wskazówka: Ciężki dół planuj w dni akcentów biegowych (zaraz po biegu) lub zachowaj minimum 48h przerwy przed kolejnym akcentem.
+- Przeładowanie objętością (trening kulturystyczny):
+  - Warunek: Serie o dużej liczbie powtórzeń (> 10-12 powtórzeń w ćwiczeniach nóg pod obciążeniem).
+  - Diagnoza: Niepotrzebna akumulacja kwasicy i zmęczenia metabolicznego; długi czas powrotu do świeżości bez zysku dla mocy biegowej.
+  - Wskazówka: Ogranicz dół ciała do 3–5 jakościowych serii na dany ruch z małą liczbą powtórzeń (3–6) i długimi przerwami.
+- Zła kolejność pracy dynamicznej:
+  - Warunek: Ćwiczenia skocznościowe lub plyometria (drop jumps, skoki, rzuty) wpisane w logu PO ciężkich seriach siadów/ciągów.
+  - Diagnoza: Lądowanie na zmęczonym układzie nerwowym; wyłączenie sprężynowania ścięgien i przeciążenie aparatu więzadłowego kolan/stóp.
+  - Wskazówka na przyszłość: Plyometrię i skoki wykonuj ZAWSZE na początku sesji, zaraz po rozgrzewce, gdy układ nerwowy jest w pełni wypoczęty.
 
-3. REGUŁA TABELI SIŁOWEJ W PUNKCIE 1 SZABLONU:
-- Tabela ćwiczeń siłowych: Wypełnij na podstawie zrealizowanych ćwiczeń. Zakaz dodawania wiersza podsumowania/sumy na dole tabeli.
+3. FILTRY DANYCH:
+- Brak wpisanego RIR/RPE: Traktuj obciążenie wyłącznie przez pryzmat relacji: ciężar x liczba powtórzeń i łączna liczba serii.
+- Serie rozgrzewkowe: Odrzuć przy kalkulacji obciążenia układu nerwowego i nóg.
 
-4. PROTOKÓŁ NIEDZIELNY (DOMKNIĘCIE MIKROCYKLU):
-- W niedzielę w sekcji ## 4. wygeneruj WYŁĄCZNIE status gotowości oraz uzasadnienie; bezwzględnie pomiń pierwotny plan oraz rozpiskę na kolejny dzień.
+# 4. ZASADY FORMATOWANIA I SZABLON WYJŚCIA
 
-# 5. BEZWZGLĘDNY SZABLON RAPORTU (DO WYPEŁNIENIA 1:1)
+1. REGUŁY RAPORTU:
+- Format wyjścia: Czysty Markdown. Zacznij bezpośrednio od ## 1. (zakaz powitań, wstępów i bloków kodu).
+- Tabela ćwiczeń: Wypisz wykonane ćwiczenia, sumaryczny ciężar, serie x powtórzenia oraz oszacowany tonaż.
+- W przypadku braku danych dla sekcji: Mocne strony, Błędy i kolizje oraz Wpływ na bieg – pomiń daną sekcję.
+- W tabeli z ćwiczeniami wypisuj ciężar na każdą serię oddzielony znakiem /. W kolumnie Serie x Powtórzenia wpisuj powtórzenia oddzielone /.
+- Sekcję `Mocne strony` oraz `Błędy i kolizje` wypisuj jedynie jeśli zdecydujesz wypisać w niej pewien punkt. 
 
-## 1. AUDYT DNIA: {today_date_str}
+2. SZABLON RAPORTU:
 
-## CZĘŚĆ SIŁOWA
+## 1. AUDYT JEDNOSTKI SIŁOWEJ (HEVY): {today_date_str}
 
-| Nr | Ćwiczenie | Serie x Powtórzenia | Ciężar | Docelowa partia |
-|:---:|:---:|:---:|:---:|:---:|
+| Ćwiczenie | Ciężar [kg] | Serie x Powtórzenia | Wzorzec ruchowy |
+|:---|:---:|:---:|:---:|
+| | | | |
 
-- **Profil jednostki**: [Wpisz np. FBW A / FBW B / Core]
-- **Ocena egzekucji planu**: [X/10 – wierność założeniom intensywności, techniki i RIR]
-- **Koszt nerwowo-mięśniowy (CNS) i komponent ekscentryczny**: 
-- **Wpływ na aparat biegowy (Running Transfer)**: 
-- **Zgłoszone anomalie, asymetrie i przeciążenia**: [Diagnoza lub Brak]
+* **Typ sesji:** {wpisz rodzaj treningu}
+* **Mocne strony:** {max 2 parametry sesji zrealizowane zgodnie ze specyfiką biegową; od nowej linii}
+* **Błędy i kolizje:** {wykryte kolizje z planem biegowym, przeładowanie objętością lub zła kolejność ćwiczeń; od nowej linii}
+* **Wpływ na bieg i biomechanikę:** {jak dzisiejszy trening wpłynie na sztywność nóg i dyspozycję na kolejnym biegu; od nowej linii}
+* **Podsumowanie i wnioski:** {max 3 zdania oceny mechanicznej; max 3 zdania zaleceń na kolejną sesję na siłowni.}
+
+## 2. STAN ZASOBÓW I KOSZT UKŁADU NERWOWEGO
+
+- **Obciążenie nerwowo-mięśniowe**: {max 2 zdania: zmęczenie centralne po pracy wielostawowej i dynamicznej}
+- **Status uszkodzeń tkankowych**: {max 2 zdania: ocena mikrourazów nóg i spodziewana bolesność za 24-48h}
