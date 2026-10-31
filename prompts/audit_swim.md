@@ -1,40 +1,29 @@
 # 3. PROTOKÓŁ ANALIZY TRENINGU PŁYWACKIEGO (CROSS-TRAINING)
 
-Koreluj parametry z pływania (dystans, tempo/100m, SWOLF, styl) z fizjologią biegacza i kolejnymi jednostkami w mikrocyklu. Pływanie dla biegacza pełni rolę aktywnej regeneracji (drenaż limfatyczny bez mikrourazów uderzeniowych GRF) lub tlenowego bodźca sercowo-naczyniowego z odciążeniem ścięgien i stawów.
+Koreluj parametry z pływania (dystans, tempo/100m, SWOLF, styl) z fizjologią biegacza i kolejnymi jednostkami w mikrocyklu. Pływanie dla biegacza pełni rolę aktywnej regeneracji lub tlenowego bodźca sercowo-naczyniowego z odciążeniem ścięgien i stawów.
 
 1. Wskaźniki referencyjne pływania dla biegacza:
-- Przesunięcie stref tętna w wodzie: HR w wodzie jest fizjologicznie o 10–15 bpm niższe niż w biegu (pozycja horyzontalna, ułatwiony powrót żylny, chłodzenie ciała). Tętno 135 bpm w basenie odpowiada obciążeniu ~145–150 bpm na lądzie.
-- Wskaźnik SWOLF (efektywność): Wartość powinna być stabilna przez całą sesję. Skok SWOLF oznacza utratę chwytu wody i jałowe szamotanie się.
-- Zalecany styl: Kraul (styl dowolny) i grzbiet (otwieranie klatki piersiowej, rotacja tułowia bez obciążania nóg).
+- Przesunięcie stref tętna w wodzie: HR w wodzie jest fizjologicznie o 10–15 bpm niższe niż w biegu.
 
 2. Sygnały błędów, zmęczenia i kolizji z bieganiem:
-- Przepalenie metaboliczne na basenie (zajechanie glikogenu):
-  - Warunek: Średnie tętno na basenie w strefie powyżej Z2 (biegowe HR minus 10 bpm) lub duża objętość sprintów beztlenowych.
+- Przepalenie metaboliczne na basenie:
+  - Warunek: Średnie tętno na basenie w strefie powyżej Z2 lub duża objętość sprintów beztlenowych.
   - Diagnoza: Zamiana jednostki regeneracyjnej w wyczerpujący trening beztlenowy; drenaż glikogenu i zmęczenie OUN bez adaptacji biegowej.
   - Zalecenie: Utrzymuj basen w reżimie czysto tlenowym; korzystaj z ósemki (pullbuoy), by wyłączyć pracę nóg i skupić się na miękkim oddechu.
-- Przeciążenie zginaczy bioder i łydek pracą nóg:
-  - Warunek: Intensywne serie z deską / płetwami lub notatka o skurczach łydek i spiętych biodrach po wyjściu z wody.
-  - Diagnoza: Ciągła praca stóp w wyproście (zgięcie podeszwowe) skraca i napina łydki; kopanie z biodra przeciąża mięsień biodrowo-lędźwiowy.
-  - Zalecenie: Ogranicz kopanie z deski; w kraulu stosuj lekki, 2-uderzeniowy rytm nóg wyłącznie do podtrzymania pozycji bioder.
-- Kolizja stylu klasycznego (żabki) ze stawami kolanowymi:
-  - Warunek: Dominacja stylu klasycznego (żabki) w sesji przy notatce o dyskomforcie po wewnętrznej stronie kolana.
-  - Diagnoza: Ruch nożycowy w żabce wywołuje naprężenia koślawe na więzadło poboczne (MCL) i łąkotkę; osłabienie stabilizacji kolana pod bieg.
-  - Zalecenie: Zamień żabkę na kraul lub grzbiet. Jeśli pływasz żabką, wykonuj ją bardzo luźno, bez agresywnego kopnięcia kolanami na zewnątrz.
 - Spadek efektywności i rwania techniki (skok SWOLF):
   - Warunek: Wzrost SWOLF o >= 15% w drugiej części treningu.
   - Diagnoza: Zmęczenie mięśni najszerszych grzbietu i obręczy barkowej; zapadanie łokcia w wodzie i gubienie fazy pociągnięcia.
-  - Zalecenie: Po zauważeniu utraty rytmu nie walcz siłowo o tempo – przejdź natychmiast do luźnego rozpływania i ćwiczeń technicznych.
+  - Zalecenie: Po zauważeniu utraty rytmu nie walcz siłowo o tempo. Przejdź natychmiast do luźnego rozpływania i ćwiczeń technicznych.
 
 3. FILTRY APARATURY I PŁYWANIA (ZIGNORUJ JAKO BŁĄD):
-- Optyczny pomiar tętna z nadgarstka pod wodą: Częste anomalie (dopływ wody pod sensor, zaciskanie dłoni). Jeśli pomiar nie pochodzi z dedykowanego pasa piersiowego, traktuj wykres HR czysto szacunkowo.
-- Zliczanie długości basenu (nawroty): Zegarek gubi baseny przy miękkich, wolnych nawrotach bez mocnego odbicia od ściany lub dolicza basen przy zatrzymaniu w połowie toru.
-- Obciążenie mechaniczne (GRF = 0): Brak uderzeń o podłoże oznacza pełne odciążenie kości, ścięgna Achillesa i rozcięgna stopy – sesja basenowa nie kumuluje zmęczenia udarowego.
+- Optyczny pomiar tętna z nadgarstka pod wodą: Częste anomalie. Jeśli pomiar nie pochodzi z dedykowanego pasa piersiowego, traktuj wykres HR czysto szacunkowo.
+- Zliczanie długości basenu: Zegarek gubi baseny przy miękkich, wolnych nawrotach bez mocnego odbicia od ściany lub dolicza basen przy zatrzymaniu w połowie toru.
 
 # 4. ZASADY FORMATOWANIA I SZABLON WYJŚCIA
 
 1. REGUŁY RAPORTU:
 - Format wyjścia: Czysty Markdown. Zacznij bezpośrednio od ## 1. (bez powitań, wstępów i bloków kodu).
-- W przypadku braku danych dla sekcji: Mocne strony, Błędy i kolizje oraz Wpływ na bieg – pomiń daną sekcję.
+- W przypadku braku danych dla sekcji: Mocne strony, Błędy i kolizje pomiń daną sekcję.
 
 2. SZABLON RAPORTU:
 
