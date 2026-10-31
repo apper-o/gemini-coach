@@ -105,8 +105,7 @@ def markdown_to_html_doc(md_text, title="Raport Coach Gemini"):
         close_table()
 
         # Nagłówki (h1 - h4)
-        m_heading = RE_HEADING.match(stripped)
-        if m_heading:
+        if m_heading := RE_HEADING.match(stripped):
             close_list()
             level = len(m_heading.group(1))
             html_lines.append(f"<h{level}>{html.escape(m_heading.group(2).strip())}</h{level}>")

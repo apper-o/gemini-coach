@@ -16,35 +16,32 @@ from datetime import datetime
 from dotenv import load_dotenv
 from utils_html import markdown_to_html_doc, RE_BOLD
 
-# Załadowanie zmiennych środowiskowych z pliku .env (jeśli uruchamiane lokalnie)
 load_dotenv()
 
-logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
-# Główne katalogi i pliki
-INPUT_DIR_PATH = "input"
+# Konfiguracja i stałe modułu
+INPUT_DIR_PATH = os.getenv("INPUT_DIR", "input")
 STATE_FILE_PATH = os.path.join(INPUT_DIR_PATH, "telegram_state.json")
+TELEGRAM_CAPTION_LIMIT = int(os.getenv("TELEGRAM_CAPTION_LIMIT", "1000"))
+TELEGRAM_MAX_AGE_HOURS = int(os.getenv("TELEGRAM_MAX_AGE_HOURS", "36"))
 DAYS_PL = ("Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota", "Niedziela")
 
-# Prekompilowane wyrażenia regularne dla parsowania Markdown i podpisów
-RE_DATE_ISO = re.compile(r'\d{4}-\d{2}-\d{2}')
+RE_DATE_ISO = re.compile(r"\d{4}-\d{2}-\d{2}")
 RE_DAY_NAME = re.compile(rf"({'|'.join(DAYS_PL)})", re.IGNORECASE)
-
 RE_PLAN_KM = re.compile(
-    r'(?:\|\s*Dystans całkowity biegowy \(km\)\s*\|[^|]*\|\s*([0-9.,]+)|'
-    r'Łączny planowany kilometraż.*?([0-9.,]+)\s*(?:km)?|'
-    r'Łączny dystans.*?([0-9.,]+)\s*(?:km)?)',
-    re.IGNORECASE
+    r"(?:\|\s*Dystans całkowity biegowy \(km\)\s*\|[^|]*\|\s*([0-9.,]+)|"
+    r"Łączny planowany kilometraż.*?([0-9.,]+)\s*(?:km)?|"
+    r"Łączny dystans.*?([0-9.,]+)\s*(?:km)?)",
+    re.IGNORECASE,
 )
-
 RE_DAY_HEADERS = {
-    day: re.compile(rf'###\s*{day}(?:\s*\([^)]*\))?\s*[-–:]\s*([^\n\r]+)', re.IGNORECASE)
+    day: re.compile(rf"###\s*{day}(?:\s*\([^)]*\))?\s*[-–:]\s*([^\n\r]+)", re.IGNORECASE)
     for day in DAYS_PL
 }
-
-RE_CLEAN_BRACKETS = re.compile(r'\[.*?\]')
-RE_SCORE_VALUE = re.compile(r'(\d+(?:[.,]\d+)?\s*/\s*10)')
+RE_CLEAN_BRACKETS = re.compile(r"\[.*?\]")
+RE_SCORE_VALUE = re.compile(r"(\d+(?:[.,]\d+)?\s*/\s*10)")
 
 
 def _re_first(pattern, text, default="", flags=re.MULTILINE | re.IGNORECASE):
@@ -54,39 +51,22 @@ def _re_first(pattern, text, default="", flags=re.MULTILINE | re.IGNORECASE):
 
 
 def _get_telegram_credentials():
-    """
-    Pobiera token bota oraz identyfikator czatu ze zmiennych środowiskowych.
-
-    Returns:
-        tuple: Krotka (bot_token, chat_id) pobrana ze zmiennych środowiskowych.
-    """
+    """Pobiera token bota oraz identyfikator czatu ze zmiennych środowiskowych."""
     return os.getenv("TELEGRAM_BOT_TOKEN"), os.getenv("TELEGRAM_CHAT_ID")
 
 
 def _make_telegram_request(url, data=None, headers=None, timeout=10):
-    """
-    Pomocnicza funkcja do wykonywania żądań HTTP do Telegram API za pomocą urllib.
-
-    Args:
-        url (str): Adres URL żądania.
-        data (bytes, optional): Dane żądania w formacie bajtów (dla POST). Domyślnie None.
-        headers (dict, optional): Słownik nagłówków HTTP. Domyślnie None.
-        timeout (int, optional): Maksymalny czas oczekiwania na odpowiedź w sekundach. Domyślnie 10.
-
-    Returns:
-        bytes: Odpowiedź serwera w formacie bajtów lub None w przypadku błędu.
-    """
+    """Wykonuje żądanie HTTP do Telegram Bot API za pomocą urllib."""
     req_headers = {"User-Agent": "GeminiCoach/1.0", **(headers or {})}
     req = urllib.request.Request(url, data=data, headers=req_headers)
     try:
         with urllib.request.urlopen(req, timeout=timeout) as response:
             return response.read()
     except Exception as e:
-        safe_url = re.sub(r'bot[^/]+/', 'bot***/', url)
+        safe_url = re.sub(r"bot[^/]+/", "bot***/", url)
         error_msg = str(e)
-        if hasattr(e, 'read'):
+        if hasattr(e, "read"):
             try:
-                # Telegram często wysyła szczegóły błędu w ciele odpowiedzi
                 error_msg += f" | Szczegóły: {e.read().decode('utf-8')}"
             except Exception:
                 pass
@@ -94,47 +74,24 @@ def _make_telegram_request(url, data=None, headers=None, timeout=10):
         return None
 
 
-def _truncate_telegram_caption(caption, max_length=1000, footer_text="Pełny materiał w załączniku HTML."):
-    """
-    Przycina tekst podpisu do limitu znaków Telegrama, zabezpieczając przed ucięciem znacznika HTML.
-
-    Args:
-        caption (str): Pełny tekst podpisu w formacie HTML.
-        max_length (int, optional): Maksymalna długość podpisu w znakach. Domyślnie 1000.
-        footer_text (str, optional): Tekst stopki dodawany po przycięciu.
-
-    Returns:
-        str: Podpis mieszczący się w limicie znaków Telegrama.
-    """
+def _truncate_telegram_caption(caption, max_length=TELEGRAM_CAPTION_LIMIT, footer_text="Pełny materiał w załączniku HTML."):
+    """Przycina tekst podpisu do limitu znaków Telegrama, zabezpieczając przed ucięciem znacznika HTML."""
     if len(caption) <= max_length:
         return caption
     suffix = f"...\n\n📎 <i>{footer_text}</i>"
-    cut = caption[:max_length - len(suffix)]
-    # Zabezpieczenie przed ucięciem w środku tagu HTML
+    cut = caption[: max_length - len(suffix)]
     if "<" in cut and cut.rfind("<") > cut.rfind(">"):
-        cut = cut[:cut.rfind("<")]
+        cut = cut[: cut.rfind("<")]
     return cut + suffix
 
 
 def extract_weekly_plan_caption(md_text):
-    """
-    Generuje caption dla planu tygodniowego do Telegrama.
-    Pobiera wykaz zadeklarowanych dni z jednostkami oraz łączny planowany kilometraż biegowy.
-
-    Args:
-        md_text (str): Zawartość pliku Markdown (plan tygodniowy).
-
-    Returns:
-        str: Sformatowany tekst wiadomości dla Telegrama, sformatowany w HTML,
-             o długości maksymalnej dostosowanej do limitów Telegrama.
-    """
-    day_entries = []
-    for day in DAYS_PL:
-        day_matches = RE_DAY_HEADERS[day].findall(md_text)
-        if day_matches:
-            combined = " + ".join(RE_BOLD.sub(r'\1', m).strip() for m in day_matches)
-            day_entries.append(f"▪️ <b>{day}:</b> {html.escape(combined)}")
-
+    """Generuje podpis (caption) planu tygodniowego z wykazem dni oraz łącznym kilometrażem."""
+    day_entries = [
+        f"▪️ <b>{day}:</b> {html.escape(' + '.join(RE_BOLD.sub(r'\\1', m).strip() for m in matches))}"
+        for day in DAYS_PL
+        if (matches := RE_DAY_HEADERS[day].findall(md_text))
+    ]
     km_match = RE_PLAN_KM.search(md_text)
     km_val = next((g.strip() for g in km_match.groups() if g), "") if km_match else ""
     km_info = f"\n\n📊 <b>Planowany dystans biegowy:</b> ~{km_val} km" if km_val else ""
@@ -142,41 +99,26 @@ def extract_weekly_plan_caption(md_text):
 
     caption = (
         f"🗓️ <b>PLAN TRENINGOWY NA TEN TYDZIEŃ</b>\n\n"
-        f"{summary_days}"
-        f"{km_info}\n\n"
+        f"{summary_days}{km_info}\n\n"
         f"📎 <i>Pełny plan w załączniku HTML poniżej.</i>"
     )
     return _truncate_telegram_caption(caption, footer_text="Pełny plan w załączniku HTML.")
 
 
 def extract_daily_report_caption(md_text):
-    """
-    Pobiera z raportu dobowego zwięzłą informację (dymek czatu) o zrealizowanym treningu,
-    ocenie egzekucji, stanie zasobów oraz decyzji adaptacyjnej na kolejny dzień.
-
-    Args:
-        md_text (str): Zawartość pliku Markdown raportu dobowego.
-
-    Returns:
-        str: Sformatowany podpis HTML dla Telegrama przycięty do bezpiecznego limitu.
-    """
-    # 1. Wyznaczenie daty audytowanego dnia
+    """Wyciąga z raportu dobowego zwięzłe podsumowanie (caption) na Telegram."""
     raw_date_str = _re_first(r"(?:#\s*AUDYT DZIENNY|##\s*1\.\s*AUDYT[^:]*):\s*([^\n\r]+)", md_text, flags=re.I)
     if raw_date_str:
         m_day, m_iso = RE_DAY_NAME.search(raw_date_str), RE_DATE_ISO.search(raw_date_str)
-        if m_day and m_iso:
-            target_date = f"{m_day.group(1).capitalize()}, {m_iso.group(0)}"
-        elif m_iso:
-            target_date = m_iso.group(0)
-        else:
-            target_date = RE_CLEAN_BRACKETS.sub('', raw_date_str).strip()
+        target_date = (
+            f"{m_day.group(1).capitalize()}, {m_iso.group(0)}" if (m_day and m_iso)
+            else (m_iso.group(0) if m_iso else RE_CLEAN_BRACKETS.sub("", raw_date_str).strip())
+        )
     else:
         m_iso = RE_DATE_ISO.search(md_text)
         target_date = m_iso.group(0) if m_iso else "Dzisiaj"
 
-    # 2. Identyfikacja zrealizowanych jednostek treningowych
     day_type_lower = _re_first(r"^-\s*Typ dnia:\s*([^\n\r]+)", md_text).lower()
-
     m_run = re.search(r"^-\s*Bieg:\s*(TAK|NIE)(?:\s*\(([0-9.,]+)\s*km(?:,\s*sesje:\s*([0-9]+))?\))?", md_text, re.MULTILINE | re.I)
     is_run_meta = bool(m_run and m_run.group(1).upper() == "TAK")
     run_km = (m_run.group(2) or "") if m_run else ""
@@ -188,12 +130,10 @@ def extract_daily_report_caption(md_text):
 
     profiles = [p.strip("* ") for p in re.findall(r"^[*-]?\s*\*?\*?(?:Profil jednostki|Typ treningu)[^\n:]*:\*?\*?\s*([^\n\r]+)", md_text, re.MULTILINE | re.I)]
     char_str = _re_first(r"^[*-]?\s*\*?\*?Charakter dnia\*?\*?:\s*([^\n\r]+)", md_text)
-
     c_lower = md_text.lower()
     is_swim = any(k in c_lower for k in ("typ dnia: pływanie", "typ dnia: plywanie", "pool swim", "trening pływania"))
 
     workout_entries = []
-
     if is_run_meta:
         desc = profiles[0] if profiles else (run_type_meta if run_type_meta and run_type_meta != "Brak biegu" else "Bieg")
         km_str = f" ({run_km} km)" if run_km and run_km != "0.00" else ""
@@ -222,7 +162,6 @@ def extract_daily_report_caption(md_text):
         else:
             workout_entries.append(f"🏃 <b>Trening:</b> {html.escape(profiles[0])}")
 
-    # 3. Ocena treningu / egzekucji planu lub podsumowanie
     raw_score = _re_first(r"^[*-]?\s*\*?\*?Ocena(?:\s+biegu|\s+egzekucji(?:\s+planu)?|\s+treningu)?\*?\*?:\s*([^\n\r]+)", md_text).strip("[]")
     if raw_score:
         m_score_num = RE_SCORE_VALUE.search(raw_score)
@@ -232,32 +171,25 @@ def extract_daily_report_caption(md_text):
             if len(after_dash) > 1 and after_dash[1].strip():
                 note = after_dash[1].strip()
                 if 0 <= note.find(".") < 60:
-                    note = note[:note.find(".")]
+                    note = note[: note.find(".")]
                 score_val = f"{score_num} – {note[:57] + '...' if len(note) > 60 else note}"
             else:
                 score_val = score_num
         else:
             score_val = raw_score[:60]
         workout_entries.append(f"⭐ <b>Ocena:</b> {html.escape(score_val)}")
-    else:
-        raw_summary = _re_first(r"^[*-]?\s*\*?\*?Podsumowanie[^\n:]*:\*?\*?\s*([^\n\r]+)", md_text)
-        if raw_summary:
-            end_s = raw_summary.find(".")
-            sum_val = raw_summary[:end_s + 1] if 10 < end_s < 100 else raw_summary[:100]
-            workout_entries.append(f"📝 <b>Podsumowanie:</b> {html.escape(sum_val.strip('* '))}")
+    elif raw_summary := _re_first(r"^[*-]?\s*\*?\*?Podsumowanie[^\n:]*:\*?\*?\s*([^\n\r]+)", md_text):
+        end_s = raw_summary.find(".")
+        sum_val = raw_summary[: end_s + 1] if 10 < end_s < 100 else raw_summary[:100]
+        workout_entries.append(f"📝 <b>Podsumowanie:</b> {html.escape(sum_val.strip('* '))}")
 
-    # 4. Stan zasobów i bilans autonomiczny
-    raw_cost = _re_first(r"^[*-]?\s*\*?\*?(?:Bilans układu nerwowego|Bilans autonomiczny|Drenaż fizjologiczny|Koszt dzienny i stan zasobów|Koszt dzienny)[^\*:]*\*?\*?:\s*([^\n\r]+)", md_text)
-    if raw_cost:
+    if raw_cost := _re_first(r"^[*-]?\s*\*?\*?(?:Bilans układu nerwowego|Bilans autonomiczny|Drenaż fizjologiczny|Koszt dzienny i stan zasobów|Koszt dzienny)[^\*:]*\*?\*?:\s*([^\n\r]+)", md_text):
         end_sent = raw_cost.find(".")
-        cost_val = raw_cost[:end_sent + 1] if end_sent > 15 else raw_cost
+        cost_val = raw_cost[: end_sent + 1] if end_sent > 15 else raw_cost
         workout_entries.append(f"🔋 <b>Stan zasobów:</b> {html.escape(cost_val[:117] + '...' if len(cost_val) > 120 else cost_val)}")
 
-    # 5. Decyzja adaptacyjna trenera
-    dec_val = _re_first(r"^[*-]?\s*\*?\*?(?:DECYZJA ADAPTACYJNA(?:\s*/\s*STOPIEŃ GOTOWOŚCI)?|DYREKTYWA WYKONAWCZA(?:\s*\([^)]*\))?|DECYZJA O KOREKCIE|STOPIEŃ GOTOWOŚCI)[^\n:]*:\*?\*?\s*(?:[\n\r]+\s*)?([^\n\r]+)", md_text)
-    if dec_val:
-        dec_clean = dec_val.strip("* ").lstrip("- ")
-        workout_entries.append(f"🧠 <b>Adaptacja na jutro:</b> {html.escape(dec_clean)}")
+    if dec_val := _re_first(r"^[*-]?\s*\*?\*?(?:DECYZJA ADAPTACYJNA(?:\s*/\s*STOPIEŃ GOTOWOŚCI)?|DYREKTYWA WYKONAWCZA(?:\s*\([^)]*\))?|DECYZJA O KOREKCIE|STOPIEŃ GOTOWOŚCI)[^\n:]*:\*?\*?\s*(?:[\n\r]+\s*)?([^\n\r]+)", md_text):
+        workout_entries.append(f"🧠 <b>Adaptacja na jutro:</b> {html.escape(dec_val.strip('* ').lstrip('- '))}")
 
     caption = (
         f"📅 <b>AUDYT DNIA: {html.escape(target_date)}</b>\n\n"
@@ -268,21 +200,7 @@ def extract_daily_report_caption(md_text):
 
 
 def send_telegram_document(file_bytes, filename, caption="", parse_mode="HTML"):
-    """
-    Wysyła plik jako załącznik na Telegram za pomocą żądania multipart/form-data.
-
-    Jeśli wystąpi błąd parsowania HTML, wysyłanie jest automatycznie ponawiane
-    jako zwykły tekst bez tagów HTML (parse_mode=None).
-
-    Args:
-        file_bytes (bytes): Zawartość pliku w bajtach.
-        filename (str): Nazwa pliku dołączonego do wiadomości.
-        caption (str, optional): Podpis wiadomości pod załącznikiem. Domyślnie "".
-        parse_mode (str, optional): Tryb parsowania wiadomości (np. 'HTML' lub 'Markdown'). Domyślnie "HTML".
-
-    Returns:
-        bytes: Odpowiedź serwera w formacie bajtów, lub None w przypadku niepowodzenia.
-    """
+    """Wysyła plik jako załącznik na Telegram za pomocą żądania multipart/form-data."""
     bot_token, chat_id = _get_telegram_credentials()
     if not bot_token or not chat_id:
         logger.warning("Brak TELEGRAM_BOT_TOKEN lub TELEGRAM_CHAT_ID – pomijam wysyłkę dokumentu.")
@@ -302,7 +220,7 @@ def send_telegram_document(file_bytes, filename, caption="", parse_mode="HTML"):
 
     body.extend(
         f'--{boundary}\r\nContent-Disposition: form-data; name="document"; filename="{filename}"\r\n'
-        f'Content-Type: text/html; charset=utf-8\r\n\r\n'.encode("utf-8")
+        f"Content-Type: text/html; charset=utf-8\r\n\r\n".encode("utf-8")
     )
     body.extend(file_bytes)
     body.extend(f"\r\n--{boundary}--\r\n".encode("utf-8"))
@@ -312,34 +230,21 @@ def send_telegram_document(file_bytes, filename, caption="", parse_mode="HTML"):
     response_data = _make_telegram_request(url, data=bytes(body), headers=headers, timeout=30)
 
     if response_data is None and parse_mode:
-        plain_caption = re.sub(r'<[^>]+>', '', caption)
+        plain_caption = re.sub(r"<[^>]+>", "", caption)
         logger.info("Ponawiam wysyłkę z podpisem w czystym tekście bez HTML...")
         return send_telegram_document(file_bytes, filename, caption=plain_caption, parse_mode=None)
 
     return response_data
 
 
-def fetch_recent_telegram_messages(max_age_hours=36):
-    """
-    Pobiera najnowsze wiadomości użytkownika z Telegrama.
-
-    Filtruje wiadomości według danego ID czatu, maksymalnego wieku oraz stanu
-    z ostatniego uruchomienia, aby uniknąć ponownego przetwarzania.
-
-    Args:
-        max_age_hours (int, optional): Maksymalny wiek wiadomości w godzinach. Domyślnie 36.
-
-    Returns:
-        tuple: Krotka (tekst_notatek, nowy_stan_dict) jeśli znaleziono wiadomości, inaczej (None, None).
-    """
+def fetch_recent_telegram_messages(max_age_hours=TELEGRAM_MAX_AGE_HOURS):
+    """Pobiera najnowsze wiadomości użytkownika z Telegrama z uwzględnieniem offsetu stanu."""
     bot_token, chat_id = _get_telegram_credentials()
     if not bot_token or not chat_id:
         logger.warning("Brak TELEGRAM_BOT_TOKEN lub TELEGRAM_CHAT_ID – pomijam pobieranie wiadomości z Telegrama.")
         return None, None
 
-    last_update_id = 0
-    last_message_id = 0
-
+    last_update_id, last_message_id = 0, 0
     if os.path.exists(STATE_FILE_PATH):
         try:
             with open(STATE_FILE_PATH, "r", encoding="utf-8") as sf:
@@ -362,21 +267,14 @@ def fetch_recent_telegram_messages(max_age_hours=36):
         logger.warning(f"Błąd podczas dekodowania JSON odpowiedzi Telegram API: {e}")
         return None, None
 
-    if not data.get("ok"):
-        logger.warning(f"Odpowiedź Telegram API nie jest poprawna: {data}")
-        return None, None
-
-    results = data.get("result", [])
-    if not results:
+    if not data.get("ok") or not data.get("result"):
         return None, None
 
     now_ts = time.time()
     valid_msgs = []
-    max_update_id = last_update_id
-    max_message_id = last_message_id
-    max_date = 0
+    max_update_id, max_message_id, max_date = last_update_id, last_message_id, 0
 
-    for upd in results:
+    for upd in data["result"]:
         u_id = upd.get("update_id", 0)
         max_update_id = max(max_update_id, u_id)
 
@@ -387,7 +285,6 @@ def fetch_recent_telegram_messages(max_age_hours=36):
         m_id = msg.get("message_id", 0)
         m_date = msg.get("date", 0)
         m_text = (msg.get("text") or msg.get("caption") or "").strip()
-
         if not m_text or m_id <= last_message_id:
             continue
 
@@ -413,20 +310,29 @@ def fetch_recent_telegram_messages(max_age_hours=36):
         "last_processed_update_id": max_update_id,
         "last_processed_message_id": max_message_id,
         "last_processed_timestamp": max_date,
-        "last_updated_local": datetime.now().isoformat()
+        "last_updated_local": datetime.now().isoformat(),
     }
 
 
+def prepare_user_note():
+    """Wczytuje i wyświetla najnowsze wiadomości oraz uwagi od biegacza z czatu Telegrama."""
+    try:
+        tg_note, new_tg_state = fetch_recent_telegram_messages()
+        if tg_note:
+            print("\n" + "=" * 60)
+            print("📲 ODEBRANO WIADOMOŚĆ Z TELEGRAMA:")
+            print("=" * 60)
+            print(tg_note)
+            print("=" * 60 + "\n")
+            print(f'📄 Wiadomość dla Trenera Gemini (z Telegrama):\n   "{tg_note}"\n')
+            return tg_note, new_tg_state
+    except Exception as e:
+        logger.warning(f"Nie udało się pobrać wiadomości z Telegrama: {e}")
+    return None, None
+
+
 def save_telegram_state(new_state):
-    """
-    Zapisuje zaktualizowany stan przetworzonych wiadomości z Telegrama do pliku JSON.
-
-    Potwierdza również przetworzenie wiadomości w Telegram API poprzez
-    wysłanie zapytania z odpowiednim offsetem.
-
-    Args:
-        new_state (dict): Nowy słownik stanu do zapisania.
-    """
+    """Zapisuje zaktualizowany stan przetworzonych wiadomości z Telegrama do pliku JSON i potwierdza offset w API."""
     if not new_state:
         return
     try:
@@ -438,40 +344,21 @@ def save_telegram_state(new_state):
         logger.warning(f"Błąd zapisu stanu Telegrama do {STATE_FILE_PATH}: {e}")
 
     bot_token, _ = _get_telegram_credentials()
-    u_id = new_state.get("last_processed_update_id")
-    if bot_token and u_id:
-        ack_url = f"https://api.telegram.org/bot{bot_token}/getUpdates?offset={u_id + 1}&limit=1"
-        _make_telegram_request(ack_url, timeout=5)
+    if bot_token and (u_id := new_state.get("last_processed_update_id")):
+        _make_telegram_request(f"https://api.telegram.org/bot{bot_token}/getUpdates?offset={u_id + 1}&limit=1", timeout=5)
 
 
 def finish_run(new_tg_state=None, debug=False):
-    """
-    Finalizuje działanie skryptu zapisując ewentualnie nowy stan wiadomości Telegram.
-    W trybie debugowania operacja aktualizacji jest w pełni pomijana.
-
-    Args:
-        new_tg_state (dict, optional): Nowy stan Telegrama. Domyślnie None.
-        debug (bool, optional): Flaga trybu debugowania, zapobiega mutacjom stanu. Domyślnie False.
-    """
+    """Finalizuje działanie skryptu zapisując nowy stan wiadomości Telegram (pomijane w trybie debug)."""
     if debug:
         logger.info("[DEBUG] Tryb debugowania aktywny: stan Telegrama pozostał nienaruszony.")
         return
-
     if new_tg_state:
         save_telegram_state(new_tg_state)
 
 
 def _send_telegram_report(file_path, report_type="daily"):
-    """
-    Konwertuje raport Markdown na dokument HTML i wysyła go na Telegram wraz z podsumowaniem w podpisie.
-
-    Args:
-        file_path (str): Ścieżka do pliku raportu w formacie Markdown.
-        report_type (str, optional): Typ raportu ('daily' lub 'plan'). Domyślnie 'daily'.
-
-    Returns:
-        int: Kod wyjścia operacji (0 w przypadku powodzenia lub pominięcia, 1 w przypadku błędu).
-    """
+    """Konwertuje raport Markdown na dokument HTML i wysyła go na Telegram wraz ze streszczeniem w podpisie."""
     bot_token, chat_id = _get_telegram_credentials()
     if not bot_token or not chat_id:
         logger.warning("Brak zmiennych TELEGRAM_BOT_TOKEN lub TELEGRAM_CHAT_ID. Pomijanie wysyłki na Telegram.")
@@ -492,7 +379,7 @@ def _send_telegram_report(file_path, report_type="daily"):
         logger.warning(f"Plik {file_path} jest pusty. Brak treści do wysłania.")
         return 0
 
-    is_plan = (report_type == "plan")
+    is_plan = report_type == "plan"
     is_debug_file = "debug" in os.path.normpath(file_path).split(os.sep)
 
     date_match = RE_DATE_ISO.search(md_content)
@@ -532,28 +419,12 @@ def _send_telegram_report(file_path, report_type="daily"):
 
 
 def send_daily_report(file_path):
-    """
-    Wysyła dzienny raport treningowy na Telegram.
-
-    Args:
-        file_path (str): Ścieżka do pliku raportu dziennego Markdown.
-
-    Returns:
-        int: Kod wyjścia operacji (0 – sukces, 1 – błąd).
-    """
+    """Wysyła dzienny raport treningowy na Telegram."""
     return _send_telegram_report(file_path, report_type="daily")
 
 
 def send_weekly_plan(file_path):
-    """
-    Wysyła pełny plan tygodniowy na Telegram.
-
-    Args:
-        file_path (str): Ścieżka do pliku planu tygodniowego Markdown.
-
-    Returns:
-        int: Kod wyjścia operacji (0 – sukces, 1 – błąd).
-    """
+    """Wysyła pełny plan tygodniowy na Telegram."""
     return _send_telegram_report(file_path, report_type="plan")
 
 

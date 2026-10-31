@@ -52,7 +52,7 @@ jobs:
           GARMIN_PASSWORD: ${{ secrets.GARMIN_PASSWORD }}
           GARMIN_TOKENS_BASE64: ${{ secrets.GARMIN_TOKENS_BASE64 }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GEMINI_MODEL: "gemini-3.8-flash"
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL || secrets.GEMINI_MODEL || 'gemini-3.8-flash' }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           TARGET_MODE: ${{ github.event.inputs.mode || 'daily' }}
