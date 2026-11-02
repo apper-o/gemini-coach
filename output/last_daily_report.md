@@ -1,4 +1,4 @@
-# AUDYT DZIENNY: 2026-11-01 (Niedziela, 2026-11-01)
+# AUDYT DZIENNY: 2026-11-02 (Poniedziałek, 2026-11-02)
 - Typ dnia: REGENERACJA
 - Bieg: NIE (0.00 km, sesje: 0)
 - Typ treningu biegowego: Brak biegu
@@ -6,53 +6,51 @@
 - Siłownia: NIE
 - Partie mięśniowe (siłownia): BRAK
 
-## Biometria regeneracyjna i bilans dnia (Niedziela, 2026-11-01):
-- HRV (miniona noc przed treningiem): 43 ms (Średnia 7-dniowa: 49 ms, Norma bazowa: 45–56 ms)
-- RHR (miniona noc przed treningiem): 57 bpm (Średnia 7-dniowa: 53 bpm, odchylenie: +4 bpm)
-- Sen (miniona noc przed treningiem): 62/100 (Czas: 7h 9m, Głęboki: 1h 29m, REM: 0h 54m)
-- Średni stres snu: 27
-- Poranne Body Battery (bufor startowy): 63/100
-- Body Battery pod koniec dnia: 24/100
-- Całodzienny stres: 45/100
-- Kroki (cały dzień): 3114 (aktywne: 455 kcal)
+## Biometria regeneracyjna i bilans dnia (Poniedziałek, 2026-11-02):
+- HRV (miniona noc przed treningiem): 33 ms (Średnia 7-dniowa: 46 ms, Norma bazowa: 45–57 ms)
+- RHR (miniona noc przed treningiem): 57 bpm (Średnia 7-dniowa: 54 bpm, odchylenie: +3 bpm)
+- Sen (miniona noc przed treningiem): 44/100 (Czas: 7h 43m, Głęboki: 1h 44m, REM: 0h 20m)
+- Średni stres snu: 51
+- Poranne Body Battery (bufor startowy): 30/100
+- Body Battery pod koniec dnia: 6/100
+- Całodzienny stres: 48/100
+- Kroki (cały dzień): 3912 (aktywne: 418 kcal)
 
-## Ocena trenera i adaptacja na dzień Poniedziałek, 2026-11-02:
-## 1. AUDYT DNIA REGENERACYJNEGO (REST DAY): Niedziela, 2026-11-01
+## Ocena trenera i adaptacja na dzień Wtorek, 2026-11-03:
+## 1. AUDYT DNIA REGENERACYJNEGO (REST DAY): Poniedziałek, 2026-11-02
 
 | Wskaźnik | Wartość | Zakres optymalny | Status |
 |:---|:---:|:---:|:---:|
-| Kroki (NEAT) | 3114 (aktywne: 455 kcal) | 6 000 – 10 000 | Poniżej normy (zastój limfatyczny) |
-| Stres dzienny | 45/100 | < 25 | Podwyższony |
-| Bilans Body Battery | 63/100 -> 24/100 | Δ < 35 pkt | Przekroczony drenaż (Δ 39 pkt) |
-| Nocne HRV / RHR | 43 ms / 57 bpm | [45–56 ms] / 53 bpm | Lekka supresja HRV / Podwyższone RHR |
+| Kroki (NEAT) | 3912 (aktywne: 418 kcal) | 6 000 – 10 000 | Poniżej normy (zastój) |
+| Stres dzienny | 48/100 | < 25 | Podwyższony |
+| Bilans Body Battery | 30/100 -> 6/100 | Δ < 35 pkt | Krytyczny drenaż |
+| Nocne HRV / RHR | 33 ms / 57 bpm | [45–57 ms] / 54 bpm | Tłumienie ANS (stres) |
 
-* **Typ dnia:** Pełna regeneracja / Rest Day (niezrealizowany Long Run 12 km)
+* **Typ dnia:** Pełna regeneracja / Rest Day (nieodnotowana jednostka AZS)
 * **Mocne strony odnowy:**
-Solidny czas snu głębokiego (1h 29m) przy łącznej długości snu 7h 09m, sprzyjający podstawowej resyntezie neuroprzekaźników.
-Całkowity brak obciążeń udarowych na układ kostno-stawowy w wyniku braku aktywności biegowej.
+Długi łączny czas snu (7h 43m) z solidnym udziałem fazy głębokiej (1h 44m), co zabezpieczyło podstawową regenerację tkanek.
 * **Błędy i zakłócenia:**
-Zastój limfatyczno-krążeniowy: skrajnie niski NEAT (3114 kroków) przy braku biegu wyłączył pompę mięśniową podudzi, sprzyjając zaleganiu płynów śródmiąższowych; korekta: 15 minut dynamicznej mobilności i drenażu przed snem.
-Podwyższony stres dzienny (45/100) drenujący Body Battery do poziomu 24/100 bez wykonania jednostki treningowej, wskazujący na silny koszt emocjonalny lub poznawczy; korekta: protokół odcięcia bodźców i techniki oddechowe przed snem.
-Niezrealizowanie zaplanowanego wybiegania (12 km) bez adnotacji w dzienniku – naruszenie założeń objętościowych mikrocyklu.
+Zastój limfatyczno-krążeniowy spowodowany skrajnie niskim ruchem (3912 kroków); brak pracy pompy mięśniowej utrudnia odprowadzanie metabolitów; korekta: 15 minut lekkiej mobilności bioder i stawu skokowego przed snem.
+Silne obciążenie układu nerwowego (DayStress 48/100, spadek BB do zaledwie 6/100, HRV 33 ms); przewaga współczulna mimo braku treningu; korekta: bezwzględne odcięcie ekranów min. 60 min przed snem i techniki oddechowe.
 * **Kontekst fizjologiczny:**
-Zasoby glikogenu mięśniowego i wątrobowego pozostały w pełni nasycone z uwagi na brak wydatku glikolitycznego, co tworzy optymalne podłoże energetyczne pod kolejny tydzień.
-Układ autonomiczny (ANS) wykazuje jednak przesunięcie w stronę współczulną (HRV 43 ms poniżej dolnej granicy bazy, RHR 57 bpm o 4 bpm powyżej normy), co przy dziennym stresie ograniczyło pełną odnowę CUN.
+Brak wydatku mechanicznego ułatwił zachowanie glikogenu, jednak układ autonomiczny znajduje się w stanie głębokiego drenażu (SleepStress 51, HRV znacznie poniżej korytarza bazowego).
+Podwyższone nocne tętno (+3 bpm) w połączeniu z niskim HRV sygnalizuje walkę organizmu ze stresem poznawczym/środowiskowym lub początek przeciążenia ogólnoustrojowego.
 * **Podsumowanie i gotowość na jutro:**
-Dzień zapewnił całkowite odciążenie mechaniczne, lecz z powodu stresu pozatreningowego nie doszło do pełnej odbudowy zasobów autonomicznych. Jutrzejsza jednostka AZS (płotki i rytmy) pozostaje w planie, ale wymaga bezwzględnego przestrzegania pełnych przerw wypoczynkowych w marszu, aby nie przeciążyć układu nerwowego.
+Dzień odciążył układ kostno-stawowy od sił uderzeniowych, ale nie dostarczył optymalnego wypoczynku dla układu nerwowego. Jutrzejsza sesja na basenie będzie kluczowa jako bezudarowy drenaż hydrostatyczny przed środowym akcentem progowym.
 
 ## 2. STAN ZASOBÓW I BILANS HOMEOSTAZY
 
-- **Stan układu ruchu**: Brak mikrourazów tkankowych, jednak wielogodzinny bezruch mógł wywołać spadek ślizgu powięziowego i przejściową sztywność w obrębie stawu skokowego oraz pasma biodrowo-piszczelowego.
-- **Równowaga autonomiczna (ANS)**: Dominacja składowej współczulnej i niski zasób końcowy Body Battery (24/100) świadczą o nieoptymalnym wyciszeniu układu nerwowego, wymagającym celowanego protokołu parasympatycznego w nocy.
+- **Stan układu ruchu**: Mięśnie i ścięgna odpoczęły od obciążeń uderzeniowych biegu, co sprzyja wygaszaniu mikrourazów przed startem docelowym. Niski NEAT niesie jednak ryzyko zesztywnienia aparatu torebkowo-więzadłowego i zalegania płynów śródmiąższowych.
+- **Równowaga autonomiczna (ANS)**: Dominacja układu współczulnego i skrajnie niski poziom naładowania (BB_End: 6/100) wskazują na brak pełnego wyciszenia. CUN wymaga pilnego wsparcia parasympatycznego, by nie wejść w stan chronicznego zmęczenia na 12 dni przed zawodami na 5 km.
 
 ## 3. PROTOKÓŁ REGENERACJI (WIECZÓR I NOC)
-- **Odżywianie i nawodnienie**: Zjedz lekkostrawną kolację z dodatkiem węglowodanów złożonych i wypij 400-500 ml wody z elektrolitami (magnez, sód), wspierając przewodnictwo nerwowo-mięśniowe pod jutrzejsze pobudzenie dynamiczne.
+- **Odżywianie i nawodnienie**: Zjedz lekkostrawną kolację bogatą w węglowodany złożone i magnez na minimum 2,5 h przed snem, unikając przeciążenia układu pokarmowego. Uzupełnij płyny (ok. 400-500 ml wody z elektrolitami), aby wspomóc przepływ limfy.
 - **Mobilność i regeneracja tkankowa**:
-  - Dodać / Wydłużyć: Runner's Lunge Twist (1:00 na stronę) oraz 90/90 Hip Switches (1:30) w celu odblokowania stawów biodrowych po całym dniu bezruchu.
-  - Pominąć / Skrócić: Głębokie, agresywne rolowanie mięśni czworogłowych i łydek – zamień na lekki, powierzchowny drenaż, aby nie generować dodatkowego bólu i napięcia współczulnego.
-- **Wyciszenie i higiena snu**: Wyłącz ekrany minimum 60 minut przed snem i wykonaj 5 minut oddechu przeponowego w pozycji Child's Pose (wydłużona faza wydechu). Zadbaj o pełne zaciemnienie sypialni i temperaturę 18-19°C, by wydłużyć fazę snu głębokiego.
+  - Dodać / Wydłużyć: Child's Pose (wydłużyć do 2:00 dla stymulacji nerwu błędnego) oraz 90/90 Hip Switches (1:00 na rozbicie zastałych bioder).
+  - Pominąć / Skrócić: Rolowanie powięziowe (SMR) skrócić lub wykonać bardzo powierzchownie, by nie dokładać bodźców bólowych do przestymulowanego układu nerwowego.
+- **Wyciszenie i higiena snu**: Odłóż telefon i wyłącz komputer 60 minut przed snem; wykonaj 5 minut oddechu 4-7-8 w dobrze przewietrzonej sypialni.
 
-## 4. OCENA GOTOWOŚCI I DYREKTYWA NA DZIEŃ: Niedziela, 2026-11-01
+## 4. OCENA GOTOWOŚCI I DECYZJA NA DZIEŃ: Wtorek, 2026-11-03
 
-* **DECYZJA ADAPTACYJNA:** ZMĘCZENIE FUNKCJONALNE
-* **Uzasadnienie fizjologiczne:** Mimo braku obciążeń mechanicznych i pełnych rezerw glikogenu po opuszczeniu wybiegania, układ autonomiczny znajduje się w stanie podwyższonego napięcia (HRV 43 ms przy normie 45-56 ms, RHR 57 bpm wobec bazy 53 bpm, DayStress 45/100). Brak spełnienia kryteriów redukcji awaryjnej (wzrost RHR o 4 bpm nie przekracza progu >5 bpm) pozwala na utrzymanie poniedziałkowego treningu szybkościowego, pod warunkiem rzetelnej rozgrzewki dynamicznej niwelującej zastój w aparacie ruchu.
+* **Decyzja wykonawcza (Wtorek, 2026-11-03):** Realizacja planu: Pływanie regeneracyjne 1200 m (w tym 6 x 100 m kraul z pullbuoy w Z1, HR <130 bpm / RPE 4-5) | Cel: Aktywny drenaż limfatyczny i mobilizacja krążenia bez obciążania nóg.
+* **Uzasadnienie fizjologiczne:** Ciśnienie hydrostatyczne wody przyspieszy powrót żylny i usunie zastoje bez generowania mikrourazów mięśniowych. Pływanie z pullbuoy w strefie Z1 wymusi parasympatyczną odpowiedź organizmu (bradykardia wodna), przygotowując CUN i aparat ruchu pod środowy akcent progowy (Threshold 4 x 1.5 km).
