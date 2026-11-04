@@ -1,56 +1,67 @@
-# AUDYT DZIENNY: 2026-11-02 (Poniedziałek, 2026-11-02)
-- Typ dnia: REGENERACJA
-- Bieg: NIE (0.00 km, sesje: 0)
-- Typ treningu biegowego: Brak biegu
-- Struktura biegu: Brak
+# AUDYT DZIENNY: 2026-11-04 (Środa, 2026-11-04)
+- Typ dnia: BIEG
+- Bieg: TAK (5.00 km, sesje: 1)
+- Typ treningu biegowego: Spokojny bieg tlenowy (Easy Run)
+- Struktura biegu: Rozgrzewka: Brak | Główna seria: 5.00 km (Spokojny bieg tlenowy (Easy Run)) | Schłodzenie: Brak
 - Siłownia: NIE
 - Partie mięśniowe (siłownia): BRAK
 
-## Biometria regeneracyjna i bilans dnia (Poniedziałek, 2026-11-02):
-- HRV (miniona noc przed treningiem): 33 ms (Średnia 7-dniowa: 46 ms, Norma bazowa: 45–57 ms)
-- RHR (miniona noc przed treningiem): 57 bpm (Średnia 7-dniowa: 54 bpm, odchylenie: +3 bpm)
-- Sen (miniona noc przed treningiem): 44/100 (Czas: 7h 43m, Głęboki: 1h 44m, REM: 0h 20m)
-- Średni stres snu: 51
-- Poranne Body Battery (bufor startowy): 30/100
-- Body Battery pod koniec dnia: 6/100
-- Całodzienny stres: 48/100
-- Kroki (cały dzień): 3912 (aktywne: 418 kcal)
+## Biometria regeneracyjna i bilans dnia (Środa, 2026-11-04):
+- HRV (miniona noc przed treningiem): 35 ms (Średnia 7-dniowa: 43 ms, Norma bazowa: 45–56 ms)
+- RHR (miniona noc przed treningiem): 58 bpm (Średnia 7-dniowa: 55 bpm, odchylenie: +3 bpm)
+- Sen (miniona noc przed treningiem): 77/100 (Czas: 7h 3m, Głęboki: 1h 52m, REM: 1h 27m)
+- Średni stres snu: 23
+- Poranne Body Battery (bufor startowy): 61/100
+- Body Battery pod koniec dnia: 7/100
+- Całodzienny stres: 44/100
+- Kroki (cały dzień): 9733 (aktywne: 869 kcal)
 
-## Ocena trenera i adaptacja na dzień Wtorek, 2026-11-03:
-## 1. AUDYT DNIA REGENERACYJNEGO (REST DAY): Poniedziałek, 2026-11-02
+## Zarejestrowane aktywności:
+### Jednostka 1 [Start: 15:59]: Warsaw Running
+- Warunki pogodowe: Temperatura: 7.8°C (odczuwalna: 5.6°C) | Wiatr: 8.0 km/h nnw | Wilgotność: 73% | Warunki: Duże zachmurzenie
+- Dystans: 5.00 km | Czas: 31.5 min | Średnie tempo: 6:17 min/km
+- Tętno: Średnie 151 bpm | Max 159 bpm
+- Training Effect: Aerobowy 2.6/5.0 (AEROBIC_BASE) | Beztlenowy 0.0/5.0
+- Biomechanika: Średnia kadencja 167 spm, Krok 0.96 m, Kontakt z podłożem 280.0 ms, Odchylenie pionowe 8.53 cm
 
-| Wskaźnik | Wartość | Zakres optymalny | Status |
+#### Splity:
+| Km | Dystans [km] | Czas | Tempo [/km] | GAP [/km] | HR śr/max [bpm] | Kadencja [spm] | Krok [m] | GCT [ms] | VO [cm] | Moc [W] | Wznios/Spadek [m] |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| 1 | 1.00 | 6:13 | 6:14 | 6:10 | 141/154 | 166 | 0.97 | 279.0 | 8.56 | 315 | +3/-0 |
+| 2 | 1.00 | 5:49 | 5:49 | 5:51 | 156/159 | 170 | 1.01 | 270.7 | 8.61 | 325 | +3/-6 |
+| 3 | 1.00 | 6:39 | 6:40 | 6:36 | 152/157 | 165 | 0.92 | 286.6 | 8.45 | 297 | +6/-4 |
+| 4 | 1.00 | 6:25 | 6:25 | 6:24 | 152/155 | 166 | 0.94 | 283.6 | 8.52 | 297 | +1/-0 |
+| 5 | 1.00 | 6:18 | 6:19 | 6:13 | 153/157 | 168 | 0.96 | 278.8 | 8.55 | 310 | +0/-0 |
+
+## Ocena trenera i adaptacja na dzień Czwartek, 2026-11-05:
+## 1. AUDYT JEDNOSTKI BIEGOWEJ: Środa, 2026-11-04
+
+| Parametr | Plan | Realizacja | Odchylenie |
 |:---|:---:|:---:|:---:|
-| Kroki (NEAT) | 3912 (aktywne: 418 kcal) | 6 000 – 10 000 | Poniżej normy (zastój) |
-| Stres dzienny | 48/100 | < 25 | Podwyższony |
-| Bilans Body Battery | 30/100 -> 6/100 | Δ < 35 pkt | Krytyczny drenaż |
-| Nocne HRV / RHR | 33 ms / 57 bpm | [45–57 ms] / 54 bpm | Tłumienie ANS (stres) |
+| Dystans [km] | 7.0 | 5.00 | -2.00 km (-28.6%) |
+| Średnie tempo [min/km] | 5:35-5:45 | 6:17 | +0:32 do +0:42 min/km (wolniej) |
 
-* **Typ dnia:** Pełna regeneracja / Rest Day (nieodnotowana jednostka AZS)
-* **Mocne strony odnowy:**
-Długi łączny czas snu (7h 43m) z solidnym udziałem fazy głębokiej (1h 44m), co zabezpieczyło podstawową regenerację tkanek.
-* **Błędy i zakłócenia:**
-Zastój limfatyczno-krążeniowy spowodowany skrajnie niskim ruchem (3912 kroków); brak pracy pompy mięśniowej utrudnia odprowadzanie metabolitów; korekta: 15 minut lekkiej mobilności bioder i stawu skokowego przed snem.
-Silne obciążenie układu nerwowego (DayStress 48/100, spadek BB do zaledwie 6/100, HRV 33 ms); przewaga współczulna mimo braku treningu; korekta: bezwzględne odcięcie ekranów min. 60 min przed snem i techniki oddechowe.
-* **Kontekst fizjologiczny:**
-Brak wydatku mechanicznego ułatwił zachowanie glikogenu, jednak układ autonomiczny znajduje się w stanie głębokiego drenażu (SleepStress 51, HRV znacznie poniżej korytarza bazowego).
-Podwyższone nocne tętno (+3 bpm) w połączeniu z niskim HRV sygnalizuje walkę organizmu ze stresem poznawczym/środowiskowym lub początek przeciążenia ogólnoustrojowego.
-* **Podsumowanie i gotowość na jutro:**
-Dzień odciążył układ kostno-stawowy od sił uderzeniowych, ale nie dostarczył optymalnego wypoczynku dla układu nerwowego. Jutrzejsza sesja na basenie będzie kluczowa jako bezudarowy drenaż hydrostatyczny przed środowym akcentem progowym.
+* **Typ treningu:** Spokojny bieg tlenowy (Easy Run)
+* **Mocne strony:** Utrzymanie średniego tętna (151 bpm) idealnie wewnątrz docelowego przedziału Z2 (148–155 bpm), co zapobiegło niepotrzebnej dominacji układu współczulnego przy obniżonej gotowości autonomicznej.
+* **Błędy i korekty:** 
+Decyzyjne (Niedociągnięcie dystansu i spadki tempa): Samowolne ucięcie dystansu do 5.0 km oraz bieg wolniejszy o ponad 30 s/km względem planu (6:17 min/km vs 5:35–5:45 min/km); korekta: w przypadku osłabienia CUN kontroluj w pierwszej kolejności HR, lecz staraj się dociągać objętość w dolnej granicy strefy tempa, gdy tętno na to pozwala.
+Biomechaniczne (Spadek sztywności nogi): Czas kontaktu z podłożem GCT wynosił 280.0 ms (powyżej zakresu referencyjnego 240–270 ms dla Z2), a VR osiągnął 8.92% (norma <8.5%); korekta: przy zmęczeniu tkankowym dbaj o aktywne zadzieranie palców stopy przed lądowaniem i ląduj bliżej środka ciężkości, aby uniknąć zapadania się w asfalt.
+* **Kontekst fizjologiczny i środowiskowy:** Nocny spadek HRV (35 ms przy normie 45–56 ms) oraz drenaż strefy Body Battery do 7/100 wskazały na skumulowane zmęczenie układu nerwowego; spadek dynamiki biegu przy tętnie Z2 był bezpośrednim skutkiem niższej gotowości układu krążenia i obwodowej utraty sprężystości.
+* **Podsumowanie i wnioski:** Trening zrealizowany z redukcją dystansu (5.0 km zamiast 7.0 km) oraz w wolniejszym tempie, ale z pełnym poszanowaniem ograniczeń tętna strefy Z2. Jednostka podtrzymała obieg tlenowy bez wywołania dodatkowego stresu metabolicznego przed nadchodzącym akcentem progowym.
 
-## 2. STAN ZASOBÓW I BILANS HOMEOSTAZY
+## 2. STAN ZASOBÓW I KOSZT METABOLICZNY
 
-- **Stan układu ruchu**: Mięśnie i ścięgna odpoczęły od obciążeń uderzeniowych biegu, co sprzyja wygaszaniu mikrourazów przed startem docelowym. Niski NEAT niesie jednak ryzyko zesztywnienia aparatu torebkowo-więzadłowego i zalegania płynów śródmiąższowych.
-- **Równowaga autonomiczna (ANS)**: Dominacja układu współczulnego i skrajnie niski poziom naładowania (BB_End: 6/100) wskazują na brak pełnego wyciszenia. CUN wymaga pilnego wsparcia parasympatycznego, by nie wejść w stan chronicznego zmęczenia na 12 dni przed zawodami na 5 km.
+- **Drenaż fizjologiczny**: Obciążenie kardio było niskie (TE 2.6), jednak podwyższony czas kontaktu z podłożem (GCT 280 ms) wskazuje na umiarkowane obwodowe zmęczenie taśmy tylnej i podudzi.
+- **Bilans układu nerwowego**: Znaczny spadek nocnego HRV (35 ms) oraz wysoki stres dzienny (44/100) sygnalizują przeciążenie CUN, wymagające priorytetowego wyciszenia przed czwartkową sesją siłową.
 
 ## 3. PROTOKÓŁ REGENERACJI (WIECZÓR I NOC)
-- **Odżywianie i nawodnienie**: Zjedz lekkostrawną kolację bogatą w węglowodany złożone i magnez na minimum 2,5 h przed snem, unikając przeciążenia układu pokarmowego. Uzupełnij płyny (ok. 400-500 ml wody z elektrolitami), aby wspomóc przepływ limfy.
+- **Odżywianie i nawodnienie**: Uzupełnij zapasy glikogenu posiłkiem węglowodanowo-białkowym (ok. 1.0 g węglowodanów/kg m.c.) oraz wypij 500 ml wody z elektrolitami, aby zrekompensować drenaż z całego dnia.
 - **Mobilność i regeneracja tkankowa**:
-  - Dodać / Wydłużyć: Child's Pose (wydłużyć do 2:00 dla stymulacji nerwu błędnego) oraz 90/90 Hip Switches (1:00 na rozbicie zastałych bioder).
-  - Pominąć / Skrócić: Rolowanie powięziowe (SMR) skrócić lub wykonać bardzo powierzchownie, by nie dokładać bodźców bólowych do przestymulowanego układu nerwowego.
-- **Wyciszenie i higiena snu**: Odłóż telefon i wyłącz komputer 60 minut przed snem; wykonaj 5 minut oddechu 4-7-8 w dobrze przewietrzonej sypialni.
+  - Dodać / Wydłużyć: Soleus Wall Stretch (rozciąganie m. płaszczkowatego) oraz rozluźnianie SMR łydki (pozycja 12 i 15 z rutyny), aby zniwelować sztywność po wydłużonym GCT.
+  - Pominąć / Skrócić: Dynamiczne i obciążające pozycje otwierające (np. Couch Stretch) na rzecz pozycji dekompresyjnych i tonizujących.
+- **Wyciszenie i higiena snu**: Odłącz ekrany na 60 minut przed snem i wykonaj 5 minut oddechu przeponowego w pozycji Child's Pose (pozycja 14), aby stymulować tonus przywspółczulny i odbudować HRV.
 
-## 4. OCENA GOTOWOŚCI I DECYZJA NA DZIEŃ: Wtorek, 2026-11-03
+## 4. OCENA GOTOWOŚCI I DECYZJA NA DZIEŃ: Czwartek, 2026-11-05
 
-* **Decyzja wykonawcza (Wtorek, 2026-11-03):** Realizacja planu: Pływanie regeneracyjne 1200 m (w tym 6 x 100 m kraul z pullbuoy w Z1, HR <130 bpm / RPE 4-5) | Cel: Aktywny drenaż limfatyczny i mobilizacja krążenia bez obciążania nóg.
-* **Uzasadnienie fizjologiczne:** Ciśnienie hydrostatyczne wody przyspieszy powrót żylny i usunie zastoje bez generowania mikrourazów mięśniowych. Pływanie z pullbuoy w strefie Z1 wymusi parasympatyczną odpowiedź organizmu (bradykardia wodna), przygotowując CUN i aparat ruchu pod środowy akcent progowy (Threshold 4 x 1.5 km).
+* **Decyzja wykonawcza (Czwartek, 2026-11-05):** Realizacja planu: Siłownia FBW A (z sub-maksymalną rezerwą RIR 2-3 oraz 15 min cardio w Z1) | Cel: Pobudzenie nerwowo-mięśniowe i neural priming pod piątkowy próg bez nakładania zmęczenia strukturalnego.
+* **Uzasadnienie fizjologiczne:** Brak wskazań do redukcji awaryjnej (RHR wzrosło o 3 bpm, co mieści się w buforze bezpieczeństwa). Utrzymanie zaplanowanej siłowni z wysokim zapasem RIR 2-3 pozwoli podnieść sztywność mięśniowo-ścięgnistą bez generowania mikrouszkodzeń tkankowych przed kluczową sesją Threshold.
