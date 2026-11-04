@@ -1,5 +1,5 @@
 {
-    "phase": "Build",
+    "phase": "Deload",
     "primary_goal": {
         "target": "5km",
         "date": "2026-11-14"

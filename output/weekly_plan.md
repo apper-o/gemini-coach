@@ -1,93 +1,98 @@
-### Poniedziałek - Bieg: AZS
+### Poniedziałek - Dzień wolny / Regeneracja
 
-- **Rozgrzewka**: 2.0 km truchtu w tempie 6:15 min/km, HR 130-140 bpm (Z1) + dynamiczna mobilizacja stawu skokowego i bioder.
-- **Część główna**: Część techniczna: skipy (A, C), płotki lekkoatletyczne na pełnej przerwie + 6 x 80 m rytmy na 90-95% prędkości submaksymalnej (tempo 3:20-3:30 min/km), przerwa 90-120 s w pełnym marszu, HR w piku <165 bpm (Z3/Z4).
-- **Schłodzenie**: 3.0 km spokojnego biegu w tempie 6:10 min/km, HR <140 bpm (Aerobic Flush w Z1 dla kumulacji bazy tlenowej).
-- **Cel fizjologiczny**: Pobudzenie koordynacji nerwowo-mięśniowej i rekrutacja jednostek motorycznych wysokiego progu bez kumulacji mleczanu oraz tlenowy drenaż powysiłkowy.
+- **Zalecenia regeneracyjne**: Pełna regeneracja pasywna po osłabieniu organizmu, uzupełnienie płynów i glikogenu oraz lekka mobilność kompensacyjna (rolowanie klatki piersiowej i pasma biodrowo-piszczelowego) pod pracę siedzącą.
 
-### Wtorek - Pływanie: Regeneracja
+### Wtorek - Dzień wolny / Regeneracja
 
-- **Dystans całkowity**: 1200 m
-- **Rozgrzewka**: 200 m kraul swobodnie, RPE 3.
-- **Część techniczna**: 4 x 50 m ćwiczenia czucia wody (sculling, dokładanka do kraula), przerwa 20 s.
-- **Część główna**: 6 x 100 m kraul z ósemką wypornościową (pullbuoy) w strefie Z1 (HR <130 bpm z uwzględnieniem bradykardii wodnej / RPE 4-5), przerwa 30 s.
-- **Wypływanie**: 200 m luźno stylem grzbietowym, RPE 3.
-- **Zarządzanie aparatem ruchu**: Zastosowanie pullbuoy całkowicie odciąża podudzia i aparat więzadłowy przed środowym akcentem progowym; obowiązuje bezwzględny zakaz stylu klasycznego (żabki) w celu ochrony więzadeł pobocznych kolana.
-- **Uzasadnienie progresji**: Wprowadzenie drenażu hydrodynamicznego po starcie głównym; brak historii pływania w ostatnim tygodniu wymusza ostrożną objętość adaptacyjną.
+- **Zalecenia regeneracyjne**: Pasywny odpoczynek ze spacerem regeneracyjnym (max 20 min) dla pobudzenia krążenia limfatycznego bez obciążenia CUN oraz rozciąganie mięśni dwugłowych i łydki.
 
-### Środa - Bieg: Threshold
+### Środa - Bieg: Spokojny bieg tlenowy (Easy Run)
 
-- **Rozgrzewka**: 2.0 km truchtu w tempie 6:10 min/km, HR <144 bpm (Z1) + 3 dynamiczne przebieżki 60 m.
-- **Część główna**: 4 x 1.5 km w tempie 4:10-4:15 min/km (Z4), przerwa 60 s w truchcie, HR 171-178 bpm.
-- **Schłodzenie**: 1.5 km truchtu w tempie 6:20 min/km, HR <135 bpm (Z1).
-- **Cel fizjologiczny**: Maksymalizacja ekspresji transporterów monokarboksylanowych MCT-1 i utylizacji mleczanu przy minimalnym uszkodzeniu włókien mięśniowych.
+- **Część główna**: 7.0 km, tempo 5:35-5:45 min/km, tętno 148-155 bpm, strefa Z2
+- **Cel fizjologiczny**: Weryfikacja gotowości układu krążeniowo-oddechowego po infekcji, stymulacja biogenezy mitochondriów oraz bezstresowy powrót do objętości tlenowej.
 
-### Czwartek - Siłownia: FBW
+### Czwartek - Siłownia: FBW A
 
 - **Status dolnych partii**: Ochrona nóg (Neural Priming: RIR 2-3, kontrola ekscentryki pod bieg)
 - **Ćwiczenia**:
-Low Step-Off to Stiff Rebound (fbw) S1: 6 x mc (RIR 3) | S2: 6 x mc (RIR 3) | S3: 6 x mc (RIR 3)
-Wyjaśnienie decyzji: Zwiększono liczbę powtórzeń z 5 do 6 na serię z masą ciała dla stymulacji sztywności MTS bez zmęczenia obwodowego.
-Deadlift (Trap bar) (fbw) S1: 6 x 60 kg (RIR 3) | S2: 6 x 60 kg (RIR 3)
-Wyjaśnienie decyzji: Utrzymano ciężar 60 kg z wysokim zapasem RIR dla ochrony układu nerwowego po środowym akcencie progowym.
-Squat (Barbell) (fbw) S1: 8 x 50 kg (RIR 3) | S2: 8 x 50 kg (RIR 3)
-Wyjaśnienie decyzji: Zachowano 50 kg dla podtrzymania siły wzorca przysiadu bez wywoływania mikrouszkodzeń włókien mięśniowych.
-[SUPERSET A]:
-A1: Incline Bench Press (Barbell) (fbw) S1: 6 x 60 kg (RIR 2) | S2: 6 x 60 kg (RIR 2) | S3: 5 x 60 kg (RIR 2)
-Wyjaśnienie decyzji: Podniesiono liczbę powtórzeń w ostatniej serii z 4 do 5 przy 60 kg, stabilizując siłę pchania po przeciążeniu niedzielnym.
-A2: Pull Up (fbw) S1: 8 x mc (RIR 2) | S2: 8 x mc (RIR 2) | S3: 7 x mc (RIR 2)
-Wyjaśnienie decyzji: Progresja o 1 powtórzenie w trzeciej serii (z 6 do 7) przy pełnej kontroli fazy ekscentrycznej.
-Rear Delt Reverse Fly (Machine) (fbw) S1: 8 x 40 kg (RIR 2) | S2: 8 x 40 kg (RIR 2) | S3: 8 x 40 kg (RIR 2)
-Wyjaśnienie decyzji: Utrzymano obciążenie 40 kg dla stabilizacji posturalnej obręczy barkowej.
-Seated Calf Raise (fbw) S1: 8 x 50 kg (RIR 2) | S2: 8 x 50 kg (RIR 2) | S3: 8 x 50 kg (RIR 2)
-Wyjaśnienie decyzji: Zachowano 50 kg z pauzą w rozciągnięciu (tempo 2-2-1-0) celem wzmocnienia mięśnia płaszczkowatego.
-Dead Bug (fbw) S1: 15 x mc (RIR 3) | S2: 15 x mc (RIR 3) | S3: 15 x mc (RIR 3)
-Wyjaśnienie decyzji: Wyrównano liczbę powtórzeń do 15 we wszystkich seriach dla stabilizacji miednicy w płaszczyźnie strzałkowej.
-Cable Core Pallof Press (fbw) S1: 10 x 18 kg (RIR 2) | S2: 10 x 18 kg (RIR 2) | S3: 10 x 18 kg (RIR 2)
-Wyjaśnienie decyzji: Utrzymano 18 kg dla kontroli antyrotacyjnej tułowia bez kompresji osiowej kręgosłupa.
-- **Cardio / Rower eliptyczny**: 20 min w Z1 (HR 125-135 bpm) przed siłownią jako bezudarowe podbicie bazy tlenowej.
-- **Cel i zalecenia adaptacyjne**: Wzmocnienie sztywności ścięgien i transferu siły z zachowaniem dyscypliny RIR chroniącej aparat ruchu.
+Drop jump (fbw_a) S1: 4 x mc (RIR 3) | S2: 4 x mc (RIR 3)
+Wyjaśnienie decyzji: Redukcja objętości do 2 serii po 4 powtórzenia w celu priorytetyzacji sztywności ścięgien przy braku zmęczenia nerwowego.
+[Trap Bar Deadlift] (ZAMIANA ZA: [Bulgarian Split Squat (Dumbbell)]) S1: 3 x 60 kg (RIR 3) | S2: 3 x 60 kg (RIR 3)
+Decyzja: Zamiana wykroków z obciążeniem na osiowy martwy ciąg w reżimie Neural Priming, eliminująca niszczącą fazę ekscentryczną przed piątkowym akcentem.
+Single Leg Romanian Deadlift (Dumbbell) (fbw_a) S1: 5 x 12 kg (RIR 3) | S2: 5 x 12 kg (RIR 3)
+Wyjaśnienie decyzji: Zmniejszenie liczby serii do 2x5 z zachowaniem ciężaru 12 kg dla aktywacji grupy kulszowo-goleniowej bez wywoływania mikrourazów.
+Single Leg Isometric Calf Hold (fbw_a) S1: 4 x 60 kg (RIR 3) | S2: 4 x 60 kg (RIR 3)
+Wyjaśnienie decyzji: Zachowanie ciężaru 60 kg z redukcją do 2 serii po 4 powtórzenia dla podtrzymania izometrycznej siły kompleksu łydka-ścięgno Achillesa.
+Bench Press (Barbell) (fbw_a) S1: 5 x 75 kg (RIR 2) | S2: 5 x 75 kg (RIR 2) | S3: 5 x 75 kg (RIR 2)
+Wyjaśnienie decyzji: Zachowanie ciężaru roboczego 75 kg ze zmniejszeniem powtórzeń do 5 dla utrzymania siły maksymalnej góry ciała.
+Pull Up (Weighted) (fbw_a) S1: 5 x 10 kg (RIR 2) | S2: 5 x 10 kg (RIR 2) | S3: 5 x 10 kg (RIR 2)
+Wyjaśnienie decyzji: Dociążenie +10 kg z redukcją powtórzeń do 5 w celu zachowania wysokiej jakości ruchu bez drenażu metabolicznego.
+Face Pull (fbw_a) S1: 10 x 45 kg (RIR 2) | S2: 10 x 45 kg (RIR 2) | S3: 10 x 45 kg (RIR 2)
+Wyjaśnienie decyzji: Utrzymanie ciężaru 45 kg dla stabilizacji obręczy barkowej i postury.
+Cable Core Pallof Press (fbw_a) S1: 10 x 25 kg (RIR 2) | S2: 10 x 25 kg (RIR 2) | S3: 10 x 25 kg (RIR 2)
+Wyjaśnienie decyzji: Zachowanie ciężaru 25 kg dla stabilizacji antyrotacyjnej tułowia.
+Dead Bug (fbw_a) S1: 12 x mc (RIR 3) | S2: 12 x mc (RIR 3)
+Wyjaśnienie decyzji: Utrzymanie podstawoej objętości podtrzymującej kontrolę nerwowo-mięśniową core.
+- **Cardio / Rower eliptyczny**: 15 minut w Z1 przed siłownią
+- **Cel i zalecenia adaptacyjne**: Pobudzenie układu nerwowego (Neural Priming) i aktywacja jednostek motorycznych przed akcentem progowym bez generowania zmęczenia obwodowego.
 
-### Piątek - Bieg: Easy Run
+### Piątek - Bieg: Threshold
 
-- **Część główna**: 8.0 km, tempo 5:35-5:45 min/km, HR 145-155 bpm, strefa Z2
-- **Cel fizjologiczny**: Stymulacja biogenezy mitochondriów poniżej pierwszego progu mleczanowego (LT1) oraz asymilacja wcześniejszych obciążeń.
+- **Rozgrzewka**: 2.0 km truchtu w Z1 (tempo 6:10 min/km, tętno <144 bpm) + 3 dynamiczne przebieżki 60 m
+- **Część główna**: 3 x 1.5 km, tempo 4:15 min/km, przerwa 60 s w truchcie, tętno 171-178 bpm, strefa Z4
+- **Schłodzenie**: 1.5 km truchtu w Z1 (tempo 6:20 min/km, tętno <140 bpm)
+- **Cel fizjologiczny**: Maksymalizacja gęstości transporterów mleczanu MCT-1 i podtrzymanie ekonomii biegu progowego w fazie deload przed zawodami docelowymi.
 
-### Sobota - Dzień wolny / Regeneracja
+### Sobota - Siłownia: FBW B
 
-- **Zalecenia regeneracyjne**: Pasywna regeneracja CUN, sen minimum 8 godzin oraz 15 minut lekkiej mobilności bioder i kręgosłupa w celu optymalizacji glikogenu przed niedzielnym wybieganiem.
+- **Status dolnych partii**: Ochrona nóg (Neural Priming: RIR 2-3, kontrola ekscentryki pod bieg)
+- **Ćwiczenia**:
+Deadlift (Trap bar) (fbw_b) S1: 4 x 60 kg (RIR 3) | S2: 4 x 60 kg (RIR 3)
+Wyjaśnienie decyzji: Utrzymanie ciężaru 60 kg przy zredukowanej objętości (2x4) pod rygor Neural Priming chroniący niedzielny wybieganie.
+Single Arm Landmine Press (Barbell) (fbw_b) S1: 6 x 15 kg (RIR 3) | S2: 6 x 15 kg (RIR 3) | S3: 6 x 15 kg (RIR 3)
+Wyjaśnienie decyzji: Brak danych w historii. Ustalono bezpieczny ciężar startowy 15 kg do nauki wzorca pchania.
+[Dumbbell Step Up] - USUNIĘTO
+Decyzja: Ćwiczenie usunięte ze względu na bezwzględny zakaz wykroków i obciążania ekscentrycznego czworogłowych w reżimie Neural Priming przed niedzielnym Long Runem.
+Single Arm Cable Row (fbw_b) S1: 8 x 20 kg (RIR 2) | S2: 8 x 20 kg (RIR 2) | S3: 8 x 20 kg (RIR 2)
+Wyjaśnienie decyzji: Brak danych w historii. Ustalono umiarkowany ciężar 20 kg dla wzmocnienia mięśni grzbietu.
+Swiss Ball Hamstring Curl (fbw_b) S1: 8 x mc (RIR 3) | S2: 8 x mc (RIR 3)
+Wyjaśnienie decyzji: Brak danych w historii. Wprowadzono 2 serie po 8 powtórzeń z masą ciała dla bezudarowej aktywacji zginaczy kolana.
+Seated Calf Raise (fbw_b) S1: 6 x 50 kg (RIR 3) | S2: 6 x 50 kg (RIR 3)
+Wyjaśnienie decyzji: Utrzymanie ciężaru 50 kg przy zredukowanej liczbie serii do 2 dla wsparcia mięśnia płaszczkowatego.
+Copenhagen Plank (fbw_b) S1: 20s x mc (RIR 3) | S2: 20s x mc (RIR 3)
+Wyjaśnienie decyzji: Brak danych w historii. Bezpieczna dawka wstępna 20 s dla izometrii przywodzicieli.
+Ab Wheel (fbw_b) S1: 8 x mc (RIR 3) | S2: 8 x mc (RIR 3)
+Wyjaśnienie decyzji: Brak danych w historii. Kontrolowana praca antyekstensyjna tułowia.
+- **Cardio / Rower eliptyczny**: 10 minut w Z1 przed siłownią
+- **Cel i zalecenia adaptacyjne**: Wzmocnienie stabilizacji tułowia i tonusu nerwowo-mięśniowego przy znikomym koszcie energetycznym przed wybieganiem.
 
-### Niedziela - Bieg: Long Run
+### Niedziela - Bieg: Long Run ciągły
 
-- **Część główna**: 12.0 km, tempo 5:35-5:55 min/km, HR 140-155 bpm, strefa Z1/Z2
-- **Cel fizjologiczny**: Rozbudowa gęstości kapilarnej, poprawa ekonomii ruchu i usprawnienie utylizacji wolnych kwasów tłuszczowych.
+- **Część główna**: 11.0 km, tempo 5:35 min/km, tętno 148-155 bpm, strefa Z2
+- **Cel fizjologiczny**: Odbudowa pojemności tlenowej i kapilaryzacji mięśniowej bez przekraczania progu LT1.
 
 ### Podsumowanie tygodnia
 
-* Łączny planowany kilometraż biegowy: 36.0 km
-* Łączny planowany dystans pływacki: 1200 m
-* Rozkład intensywności biegowej (wg dystansu): 83% strefy tlenowe (Z1-Z2) vs 17% jakościowe (Z3-Z5)
-
-Korekty preferencji zawodnika:
-- Piątkowy trening VO2max skorygowano do biegu spokojnego Easy Run (Z2), aby nie nakładać dwóch akcentów beztlenowych o skrajnym koszcie metabolicznym bezpośrednio po starcie docelowym i utrzymać polaryzację 80/20.
-- Sobotnią siłownię FBW B zamieniono na dzień pełnej regeneracji (Rest Day), ponieważ w bazie ćwiczeń brak jest protokołu FBW B, a trening siłowy dołu ciała na 24h przed akcentem Long Run naruszałby zasadę ochrony jakości jednostki docelowej.
+* Łączny planowany kilometraż biegowy: 26.0 km
+* Łączny planowany dystans pływacki: 0 m
+* Rozkład intensywności biegowej (wg dystansu): 82.7% strefy tlenowe (Z1-Z2) vs 17.3% jakościowe (Z3-Z5)
 
 Tabela porównawcza:
 
 | Wskaźnik | Poprzedni tydzień | Obecny tydzień |
 | --- | --- | --- |
-| Dystans całkowity biegowy (km) | 23.0 km | 38.0 km |
-| Dystans całkowity pływacki (m) | 0 m | 1200 m |
-| Liczba jednostek biegowych | 5 | 4 |
-| Liczba jednostek siłowych | 1 | 1 |
-| Liczba jednostek pływackich / cross-training | 0 | 1 |
-| Dni pełnej regeneracji (rest days) | 1 | 1 |
+| Dystans całkowity biegowy (km) | 14.2 km | 26.0 km |
+| Dystans całkowity pływacki (m) | 750 m | 0 m |
+| Liczba jednostek biegowych | 2 | 3 |
+| Liczba jednostek siłowych | 1 | 2 |
+| Liczba jednostek pływackich / cross-training | 1 | 0 |
+| Dni pełnej regeneracji (rest days) | 4 | 2 |
 
 Statystyki z poprzedniego tygodnia:
 
-* Średnie nocne HRV: 50 ms
-* Średnie tętno spoczynkowe (RHR): 54 bpm
+* Średnie nocne HRV: 46 ms
+* Średnie tętno spoczynkowe (RHR): 55 bpm
 
 ### Uzasadnienie i oczekiwane efekty
 
-Mikrocykl porządkuje obciążenia po udanym starcie docelowym na 5 km, stabilizując kilometraż na poziomie 36 km w ścisłym reżimie spolaryzowanym 83/17. Ochrona pojedynczego akcentu progowego w środę oraz niedzielnego wybiegania została zabezpieczona poprzez bezudarowy basen we wtorek i dzień wolny w sobotę. Trening siłowy FBW realizowany jest w rygorze Neural Priming, co zapobiega powtórzeniu błędu wyczerpania zapasu RIR z ubiegłej niedzieli. Taki układ gwarantuje asymilację powysiłkową, odbudowę zasobów glikogenu oraz rozwój sztywności mięśniowo-ścięgnistej bez ryzyka przeciążenia centralnego.
+Prezentowany mikrocykl pełni funkcję asymilacyjną (Deload) po przebytej infekcji i epizodzie zmęczenia funkcjonalnego, przygotowując organizm bezpośrednio do startu docelowego na 5 km za 12 dni. Objętość biegowa została skrojona na poziomie 26.0 km, zapewniając idealne proporcje spolaryzowane (82.7% Z1-Z2 vs 17.3% Z4). Zastosowanie rygoru Neural Priming na siłowni przed piątkowym akcentem progowym oraz niedzielnym wybieganiem zabezpiecza mięśnie przed zmęczeniem ekscentrycznym. Wykonanie kontrolowanej serii 3x1.5 km w tempie progowym Z4 podtrzyma adaptacje enzymatyczne bez kumulacji długu tlenowego. Struktura mikrocyklu zapewnia pełną resyntezę glikogenu i superkompensację CUN przed bezpośrednim tygodniem startowym.
