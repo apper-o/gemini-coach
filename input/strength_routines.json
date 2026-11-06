@@ -51,17 +51,17 @@
         "last_sets": [
           {
             "set": 1,
-            "weight": "12 kg",
-            "reps": 6
+            "weight": "14 kg",
+            "reps": 5
           },
           {
             "set": 2,
-            "weight": "12 kg",
+            "weight": "14 kg",
             "reps": 6
           },
           {
             "set": 3,
-            "weight": "12 kg",
+            "weight": "14 kg",
             "reps": 6
           }
         ]
@@ -93,17 +93,17 @@
         "last_sets": [
           {
             "set": 1,
-            "weight": "75 kg",
+            "weight": "65 kg",
             "reps": 6
           },
           {
             "set": 2,
-            "weight": "75 kg",
+            "weight": "65 kg",
             "reps": 6
           },
           {
             "set": 3,
-            "weight": "75 kg",
+            "weight": "65 kg",
             "reps": 6
           }
         ]
@@ -114,17 +114,17 @@
         "last_sets": [
           {
             "set": 1,
-            "weight": "10 kg",
-            "reps": 6
+            "weight": "0 kg",
+            "reps": 8
           },
           {
             "set": 2,
-            "weight": "10 kg",
-            "reps": 6
+            "weight": "0 kg",
+            "reps": 8
           },
           {
             "set": 3,
-            "weight": "10 kg",
+            "weight": "0 kg",
             "reps": 6
           }
         ]
@@ -135,17 +135,17 @@
         "last_sets": [
           {
             "set": 1,
-            "weight": "45 kg",
+            "weight": "50 kg",
             "reps": 8
           },
           {
             "set": 2,
-            "weight": "45 kg",
+            "weight": "50 kg",
             "reps": 8
           },
           {
             "set": 3,
-            "weight": "45 kg",
+            "weight": "50 kg",
             "reps": 6
           }
         ]
@@ -157,7 +157,7 @@
           {
             "set": 1,
             "weight": "25 kg",
-            "reps": 6
+            "reps": 8
           },
           {
             "set": 2,

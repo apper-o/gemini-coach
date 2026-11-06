@@ -1,67 +1,95 @@
-# AUDYT DZIENNY: 2026-11-04 (Środa, 2026-11-04)
-- Typ dnia: BIEG
-- Bieg: TAK (5.00 km, sesje: 1)
-- Typ treningu biegowego: Spokojny bieg tlenowy (Easy Run)
-- Struktura biegu: Rozgrzewka: Brak | Główna seria: 5.00 km (Spokojny bieg tlenowy (Easy Run)) | Schłodzenie: Brak
-- Siłownia: NIE
-- Partie mięśniowe (siłownia): BRAK
+# AUDYT DZIENNY: 2026-11-05 (Czwartek, 2026-11-05)
+- Typ dnia: SIŁOWNIA
+- Bieg: NIE (0.00 km, sesje: 0)
+- Typ treningu biegowego: Brak biegu
+- Struktura biegu: Brak
+- Siłownia: TAK (FBW A)
+- Partie mięśniowe (siłownia): GÓRA + DÓŁ
 
-## Biometria regeneracyjna i bilans dnia (Środa, 2026-11-04):
-- HRV (miniona noc przed treningiem): 35 ms (Średnia 7-dniowa: 43 ms, Norma bazowa: 45–56 ms)
-- RHR (miniona noc przed treningiem): 58 bpm (Średnia 7-dniowa: 55 bpm, odchylenie: +3 bpm)
-- Sen (miniona noc przed treningiem): 77/100 (Czas: 7h 3m, Głęboki: 1h 52m, REM: 1h 27m)
-- Średni stres snu: 23
-- Poranne Body Battery (bufor startowy): 61/100
-- Body Battery pod koniec dnia: 7/100
-- Całodzienny stres: 44/100
-- Kroki (cały dzień): 9733 (aktywne: 869 kcal)
+## Biometria regeneracyjna i bilans dnia (Czwartek, 2026-11-05):
+- HRV (miniona noc przed treningiem): 40 ms (Średnia 7-dniowa: 42 ms, Norma bazowa: 45–56 ms)
+- RHR (miniona noc przed treningiem): 58 bpm (Średnia 7-dniowa: 56 bpm, odchylenie: +2 bpm)
+- Sen (miniona noc przed treningiem): 72/100 (Czas: 7h 24m, Głęboki: 1h 44m, REM: 0h 31m)
+- Średni stres snu: 19
+- Poranne Body Battery (bufor startowy): 56/100
+- Body Battery pod koniec dnia: 5/100
+- Całodzienny stres: 43/100
+- Kroki (cały dzień): 11429 (aktywne: 898 kcal)
 
 ## Zarejestrowane aktywności:
-### Jednostka 1 [Start: 15:59]: Warsaw Running
-- Warunki pogodowe: Temperatura: 7.8°C (odczuwalna: 5.6°C) | Wiatr: 8.0 km/h nnw | Wilgotność: 73% | Warunki: Duże zachmurzenie
-- Dystans: 5.00 km | Czas: 31.5 min | Średnie tempo: 6:17 min/km
-- Tętno: Średnie 151 bpm | Max 159 bpm
-- Training Effect: Aerobowy 2.6/5.0 (AEROBIC_BASE) | Beztlenowy 0.0/5.0
-- Biomechanika: Średnia kadencja 167 spm, Krok 0.96 m, Kontakt z podłożem 280.0 ms, Odchylenie pionowe 8.53 cm
+### Trening siłowy / uzupełniający (raport z Telegrama):
+fbw A
+Thursday, Nov 05, 2026 at 8:29pm
 
-#### Splity:
-| Km | Dystans [km] | Czas | Tempo [/km] | GAP [/km] | HR śr/max [bpm] | Kadencja [spm] | Krok [m] | GCT [ms] | VO [cm] | Moc [W] | Wznios/Spadek [m] |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| 1 | 1.00 | 6:13 | 6:14 | 6:10 | 141/154 | 166 | 0.97 | 279.0 | 8.56 | 315 | +3/-0 |
-| 2 | 1.00 | 5:49 | 5:49 | 5:51 | 156/159 | 170 | 1.01 | 270.7 | 8.61 | 325 | +3/-6 |
-| 3 | 1.00 | 6:39 | 6:40 | 6:36 | 152/157 | 165 | 0.92 | 286.6 | 8.45 | 297 | +6/-4 |
-| 4 | 1.00 | 6:25 | 6:25 | 6:24 | 152/155 | 166 | 0.94 | 283.6 | 8.52 | 297 | +1/-0 |
-| 5 | 1.00 | 6:18 | 6:19 | 6:13 | 153/157 | 168 | 0.96 | 278.8 | 8.55 | 310 | +0/-0 |
+Drop jump
+Set 1: 6 reps
+Set 2: 6 reps
+Set 3: 6 reps
 
-## Ocena trenera i adaptacja na dzień Czwartek, 2026-11-05:
-## 1. AUDYT JEDNOSTKI BIEGOWEJ: Środa, 2026-11-04
+Single Leg Romanian Deadlift (Dumbbell)
+Set 1: 14 kg x 5
+Set 2: 14 kg x 6
+Set 3: 14 kg x 6
 
-| Parametr | Plan | Realizacja | Odchylenie |
+Single Leg Isometric Calf Hold
+Set 1: 0 kg - 30s
+Set 2: 0 kg - 30s
+Set 3: 0 kg - 30s
+
+Bench Press (Barbell)
+Set 1: 65 kg x 6
+Set 2: 65 kg x 6
+Set 3: 65 kg x 6
+
+Pull Up (Weighted)
+Set 1: 0 kg x 8
+Set 2: 0 kg x 8
+Set 3: 0 kg x 6
+
+Face Pull
+Set 1: 50 kg x 8
+Set 2: 50 kg x 8
+Set 3: 50 kg x 6
+
+Cable Core Pallof Press
+Set 1: 25 kg x 8
+Set 2: 25 kg x 6
+Set 3: 25 kg x 6
+
+@hevyapp
+https://hevy.com/workout/8863f100-e4dc-4ea5-b784-5e3ad7b4e1ca
+
+## Ocena trenera i adaptacja na dzień Piątek, 2026-11-06:
+## 1. AUDYT JEDNOSTKI SIŁOWEJ (HEVY): Czwartek, 2026-11-05
+
+| Ćwiczenie | Ciężar [kg] | Serie x Powtórzenia | Wzorzec ruchowy |
 |:---|:---:|:---:|:---:|
-| Dystans [km] | 7.0 | 5.00 | -2.00 km (-28.6%) |
-| Średnie tempo [min/km] | 5:35-5:45 | 6:17 | +0:32 do +0:42 min/km (wolniej) |
+| Drop jump | 0 / 0 / 0 | 6 / 6 / 6 | Plyometria / Skok |
+| Single Leg Romanian Deadlift | 14 / 14 / 14 | 5 / 6 / 6 | Zgięcie biodra (Hip Hinge) |
+| Single Leg Isometric Calf Hold | 0 / 0 / 0 | 30s / 30s / 30s | Izometria podudzia |
+| Bench Press | 65 / 65 / 65 | 6 / 6 / 6 | Wyciskanie poziome |
+| Pull Up | 0 / 0 / 0 | 8 / 8 / 6 | Przyciąganie pionowe |
+| Face Pull | 50 / 50 / 50 | 8 / 8 / 6 | Przyciąganie poziome |
+| Cable Core Pallof Press | 25 / 25 / 25 | 8 / 6 / 6 | Antyrotacja tułowia |
 
-* **Typ treningu:** Spokojny bieg tlenowy (Easy Run)
-* **Mocne strony:** Utrzymanie średniego tętna (151 bpm) idealnie wewnątrz docelowego przedziału Z2 (148–155 bpm), co zapobiegło niepotrzebnej dominacji układu współczulnego przy obniżonej gotowości autonomicznej.
-* **Błędy i korekty:** 
-Decyzyjne (Niedociągnięcie dystansu i spadki tempa): Samowolne ucięcie dystansu do 5.0 km oraz bieg wolniejszy o ponad 30 s/km względem planu (6:17 min/km vs 5:35–5:45 min/km); korekta: w przypadku osłabienia CUN kontroluj w pierwszej kolejności HR, lecz staraj się dociągać objętość w dolnej granicy strefy tempa, gdy tętno na to pozwala.
-Biomechaniczne (Spadek sztywności nogi): Czas kontaktu z podłożem GCT wynosił 280.0 ms (powyżej zakresu referencyjnego 240–270 ms dla Z2), a VR osiągnął 8.92% (norma <8.5%); korekta: przy zmęczeniu tkankowym dbaj o aktywne zadzieranie palców stopy przed lądowaniem i ląduj bliżej środka ciężkości, aby uniknąć zapadania się w asfalt.
-* **Kontekst fizjologiczny i środowiskowy:** Nocny spadek HRV (35 ms przy normie 45–56 ms) oraz drenaż strefy Body Battery do 7/100 wskazały na skumulowane zmęczenie układu nerwowego; spadek dynamiki biegu przy tętnie Z2 był bezpośrednim skutkiem niższej gotowości układu krążenia i obwodowej utraty sprężystości.
-* **Podsumowanie i wnioski:** Trening zrealizowany z redukcją dystansu (5.0 km zamiast 7.0 km) oraz w wolniejszym tempie, ale z pełnym poszanowaniem ograniczeń tętna strefy Z2. Jednostka podtrzymała obieg tlenowy bez wywołania dodatkowego stresu metabolicznego przed nadchodzącym akcentem progowym.
+* **Typ sesji:** FBW / Neural Priming (Siła i Core)
+* **Mocne strony:** Wdrożenie bezobciążeniowej izometrii podudzia (Calf Hold), co wzmacnia aparat ścięgnisty stopy bez generowania mikrourazów ekscentrycznych. Rezygnacja z obciążającego Trap Bar Deadlift na rzecz jednonóżnego SL RDL.
+* **Błędy i kolizje:** Samowolne podbicie objętości plyometrii (3x6 zamiast planned 2x4) oraz serii SL RDL (3 serie zamiast 2) na 24h przed akcentem biegowym Z4 w fazie deloadu.
+* **Wpływ na bieg i biomechanikę:** Wyższa objętość ekscentryczna w SL RDL oraz lądowań w Drop Jump może nieznacznie obniżyć sztywność tkankową (stiffness) i wywołać tkliwość grupy kulszowo-goleniowej podczas jutrzejszych powtórzeń progowych.
+* **Podsumowanie i wnioski:** Trening siłowy poprawnie zmodyfikowano pod kątem zaniechania ciężkiego martwego ciągu, co zabezpieczyło układ ruchu przed głębokim przeciążeniem. Jednocześnie niepotrzebnie zwiększono liczbę serii i powtórzeń w plyometrii i RDL na 24h przed kluczowym akcentem w strefie Z4. Na kolejnych sesjach siłowych przed biegami jakościowymi należy bezwzględnie trzymać się limitu 2 serii na partie dolne i nie przekraczać zaplanowanej liczby powtórzeń dynamicznych.
 
-## 2. STAN ZASOBÓW I KOSZT METABOLICZNY
+## 2. STAN ZASOBÓW I KOSZT UKŁADU NERWOWEGO
 
-- **Drenaż fizjologiczny**: Obciążenie kardio było niskie (TE 2.6), jednak podwyższony czas kontaktu z podłożem (GCT 280 ms) wskazuje na umiarkowane obwodowe zmęczenie taśmy tylnej i podudzi.
-- **Bilans układu nerwowego**: Znaczny spadek nocnego HRV (35 ms) oraz wysoki stres dzienny (44/100) sygnalizują przeciążenie CUN, wymagające priorytetowego wyciszenia przed czwartkową sesją siłową.
+- **Obciążenie nerwowo-mięśniowe**: Zmęczenie centralne po pracy skocznościowej i asymetrycznej nakłada się na już obniżony poranny wskaźnik HRV (40 ms przy bazie 45–56 ms) i mocny drenaż energii (BB_End 5/100). Dodatkowe serie dynamiczne opóźniają regenerację układu nerwowego przed piątkowym akcentem.
+- **Status uszkodzeń tkankowych**: Mikrourazy są ograniczone do grupy kulszowo-goleniowej i pośladków w wyniku wykonania 3 serii SL RDL z hantlami 14 kg. Spodziewany jest lekki spadek elastyczności taśmy tylnej w ciągu najbliższych 24 godzin.
 
 ## 3. PROTOKÓŁ REGENERACJI (WIECZÓR I NOC)
-- **Odżywianie i nawodnienie**: Uzupełnij zapasy glikogenu posiłkiem węglowodanowo-białkowym (ok. 1.0 g węglowodanów/kg m.c.) oraz wypij 500 ml wody z elektrolitami, aby zrekompensować drenaż z całego dnia.
+- **Odżywianie i nawodnienie**: Spożyj węglowodanowo-białkową kolację (min. 30g białka i węglowodany złożone) w celu odbudowy mikrourazów i uzupełnienia glikogenu przed piątkowym progiem. Uzupełnij płyny o co najmniej 500 ml wody z dodatkiem elektrolitów.
 - **Mobilność i regeneracja tkankowa**:
-  - Dodać / Wydłużyć: Soleus Wall Stretch (rozciąganie m. płaszczkowatego) oraz rozluźnianie SMR łydki (pozycja 12 i 15 z rutyny), aby zniwelować sztywność po wydłużonym GCT.
-  - Pominąć / Skrócić: Dynamiczne i obciążające pozycje otwierające (np. Couch Stretch) na rzecz pozycji dekompresyjnych i tonizujących.
-- **Wyciszenie i higiena snu**: Odłącz ekrany na 60 minut przed snem i wykonaj 5 minut oddechu przeponowego w pozycji Child's Pose (pozycja 14), aby stymulować tonus przywspółczulny i odbudować HRV.
+  - Dodać / Wydłużyć: Runner's Lunge Twist oraz Couch Stretch dla rozluźnienia zginaczy biodra i poprawy ruchomości torebki stawowej po RDL.
+  - Pominąć / Skrócić: Rolowanie powięziowe (SMR) dwugłowych uda – zastąpić lekkim drenażem, aby nie potęgować uszkodzeń włókien.
+- **Wyciszenie i higiena snu**: Wykonaj 10 minut spokojnego oddechu przeponowego w pozycji Child's Pose (poz. 14 z rutyny wieczornej) w celu aktywacji przywspółczulnej. Zapewnij minimum 8 godzin snu w chłodnym pomieszczeniu, aby przyspieszyć odbudowę HRV.
 
-## 4. OCENA GOTOWOŚCI I DECYZJA NA DZIEŃ: Czwartek, 2026-11-05
-
-* **Decyzja wykonawcza (Czwartek, 2026-11-05):** Realizacja planu: Siłownia FBW A (z sub-maksymalną rezerwą RIR 2-3 oraz 15 min cardio w Z1) | Cel: Pobudzenie nerwowo-mięśniowe i neural priming pod piątkowy próg bez nakładania zmęczenia strukturalnego.
-* **Uzasadnienie fizjologiczne:** Brak wskazań do redukcji awaryjnej (RHR wzrosło o 3 bpm, co mieści się w buforze bezpieczeństwa). Utrzymanie zaplanowanej siłowni z wysokim zapasem RIR 2-3 pozwoli podnieść sztywność mięśniowo-ścięgnistą bez generowania mikrouszkodzeń tkankowych przed kluczową sesją Threshold.
+## 4. OCENA GOTOWOŚCI I DECYZJA NA DZIEŃ: Piątek, 2026-11-06
+* **Decyzja wykonawcza (Piątek, 2026-11-06):** Realizacja planu: Rozgrzewka 2.0 km w Z1 + 3 przebieżki | Część główna: 3 x 1.5 km w tempie 4:15 min/km (Z4, HR 171–178 bpm, przerwa 60 s trucht) | Schłodzenie: 1.5 km w Z1 | Cel: Rygorystyczna kontrola tętna Z4 bez wchodzenia w strefę Z5 mimo zmęczenia po siłowni.
+* **Uzasadnienie fizjologiczne:** Obniżone HRV (40 ms) i drenaż BB stanowią normalny koszt treningowy, który nie spełnia kryteriów redukcji awaryjnej (RHR wzrosło o jedynie +2 bpm). Praca na progu przy dyscyplinowanym tempie zrealizuje zakładany bodziec wydolnościowy bez ryzyka przetrenowania przed startem docelowym na 5km.
