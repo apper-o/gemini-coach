@@ -1,73 +1,104 @@
-# AUDYT DZIENNY: 2026-11-06 (Piątek, 2026-11-06)
-- Typ dnia: BIEG
-- Bieg: TAK (8.01 km, sesje: 1)
-- Typ treningu biegowego: Bieg spokojny / Regeneracyjny (Easy Run w Z2) – niezrealizowany akcent progowy (Threshold)
-- Struktura biegu: Rozgrzewka: Brak | Główna seria: 8.01 km (Bieg spokojny / Regeneracyjny (Easy Run w Z2) – niezrealizowany akcent progowy (Threshold)) | Schłodzenie: Brak
-- Siłownia: NIE
-- Partie mięśniowe (siłownia): BRAK
+# AUDYT DZIENNY: 2026-11-07 (Sobota, 2026-11-07)
+- Typ dnia: SIŁOWNIA
+- Bieg: NIE (0.00 km, sesje: 0)
+- Typ treningu biegowego: Brak biegu
+- Struktura biegu: Brak
+- Siłownia: TAK (FBW B)
+- Partie mięśniowe (siłownia): GÓRA + DÓŁ
 
-## Biometria regeneracyjna i bilans dnia (Piątek, 2026-11-06):
-- HRV (miniona noc przed treningiem): 41 ms (Średnia 7-dniowa: 41 ms, Norma bazowa: 45–56 ms)
-- RHR (miniona noc przed treningiem): 59 bpm (Średnia 7-dniowa: 57 bpm, odchylenie: +2 bpm)
-- Sen (miniona noc przed treningiem): 78/100 (Czas: 7h 3m, Głęboki: 2h 3m, REM: 0h 57m)
-- Średni stres snu: 19
-- Poranne Body Battery (bufor startowy): 61/100
-- Body Battery pod koniec dnia: 18/100
-- Całodzienny stres: 33/100
-- Kroki (cały dzień): 11489 (aktywne: 786 kcal)
+## Biometria regeneracyjna i bilans dnia (Sobota, 2026-11-07):
+- HRV (miniona noc przed treningiem): 47 ms (Średnia 7-dniowa: 40 ms, Norma bazowa: 45–56 ms)
+- RHR (miniona noc przed treningiem): 56 bpm (Średnia 7-dniowa: 57 bpm, odchylenie: -1 bpm)
+- Sen (miniona noc przed treningiem): 86/100 (Czas: 8h 58m, Głęboki: 2h 2m, REM: 1h 5m)
+- Średni stres snu: 15
+- Poranne Body Battery (bufor startowy): 93/100
+- Body Battery pod koniec dnia: 35/100
+- Całodzienny stres: 30/100
+- Kroki (cały dzień): 4522 (aktywne: 312 kcal)
 
 ## Zarejestrowane aktywności:
-### Jednostka 1 [Start: 16:38]: Warsaw Running
-- Warunki pogodowe: Temperatura: 6.1°C (odczuwalna: 3.9°C) | Wiatr: 8.0 km/h nnw | Wilgotność: 69% | Warunki: Mostly Clear
-- Dystans: 8.01 km | Czas: 48.3 min | Średnie tempo: 6:02 min/km
-- Tętno: Średnie 151 bpm | Max 158 bpm
-- Training Effect: Aerobowy 3.0/5.0 (AEROBIC_BASE) | Beztlenowy 0.0/5.0
-- Biomechanika: Średnia kadencja 170 spm, Krok 0.98 m, Kontakt z podłożem 272.5 ms, Odchylenie pionowe 8.43 cm
+### Trening siłowy / uzupełniający (raport z Telegrama):
+fbw B
+Saturday, Nov 07, 2026 at 5:17pm
 
-#### Splity:
-| Km | Dystans [km] | Czas | Tempo [/km] | GAP [/km] | HR śr/max [bpm] | Kadencja [spm] | Krok [m] | GCT [ms] | VO [cm] | Moc [W] | Wznios/Spadek [m] |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| 1 | 1.00 | 5:58 | 5:59 | 5:43 | 147/156 | 171 | 1.00 | 268.8 | 8.34 | 337 | +9/-5 |
-| 2 | 1.00 | 5:53 | 5:53 | 5:53 | 150/157 | 172 | 0.99 | 269.1 | 8.42 | 320 | +1/-2 |
-| 3 | 1.00 | 5:48 | 5:49 | 5:51 | 151/154 | 171 | 1.00 | 269.9 | 8.54 | 320 | +1/-3 |
-| 4 | 1.00 | 6:04 | 6:04 | 6:04 | 152/156 | 168 | 0.98 | 276.1 | 8.59 | 316 | +0/-0 |
-| 5 | 1.00 | 6:01 | 6:02 | 6:03 | 152/157 | 169 | 0.98 | 274.8 | 8.52 | 307 | +2/-2 |
-| 6 | 1.00 | 6:01 | 6:02 | 5:58 | 153/157 | 170 | 0.98 | 272.9 | 8.47 | 322 | +4/-2 |
-| 7 | 1.00 | 6:04 | 6:04 | 6:06 | 152/158 | 170 | 0.96 | 273.7 | 8.38 | 306 | +0/-0 |
-| 8 | 1.00 | 6:23 | 6:24 | 6:16 | 151/157 | 171 | 0.93 | 274.6 | 8.17 | 309 | +6/-7 |
+Deadlift (Trap bar)
+Set 1: 70 kg x 5
+Set 2: 70 kg x 6
+Set 3: 70 kg x 6
 
-## Ocena trenera i adaptacja na dzień Sobota, 2026-11-07:
-## 1. AUDYT JEDNOSTKI BIEGOWEJ: Piątek, 2026-11-06
+Single Arm Landmine Press (Barbell)
+Set 1: 35 kg x 5
+Set 2: 35 kg x 5
+Set 3: 35 kg x 5
 
-| Parametr | Plan | Realizacja | Odchylenie |
+Dumbbell Step Up
+Set 1: 24 kg x 7
+Set 2: 24 kg x 7
+Set 3: 24 kg x 7
+
+Single Arm Cable Row
+Set 1: 50 kg x 6
+Set 2: 50 kg x 6
+Set 3: 50 kg x 6
+
+Swiss Ball Hamstring Curl
+Set 1: 8 reps
+Set 2: 8 reps
+Set 3: 8 reps
+
+Seated Calf Raise
+Set 1: 55 kg x 8
+Set 2: 55 kg x 8
+Set 3: 55 kg x 8
+
+Ab Wheel
+Set 1: 8 reps
+Set 2: 8 reps
+Set 3: 8 reps
+
+@hevyapp
+https://hevy.com/workout/37d6204c-d3a7-4bb2-aa1f-fe00fc531f56
+
+## Ocena trenera i adaptacja na dzień Niedziela, 2026-11-08:
+## 1. AUDYT JEDNOSTKI SIŁOWEJ (HEVY): Sobota, 2026-11-07
+
+| Ćwiczenie | Ciężar [kg] | Serie x Powtórzenia | Wzorzec ruchowy |
 |:---|:---:|:---:|:---:|
-| Dystans [km] | 8.00 | 8.01 | +0.01 |
-| Średnie tempo [min/km] | ~5:10 | 6:02 | +0:52 |
+| Deadlift (Trap bar) | 70 / 70 / 70 | 5 / 6 / 6 | Zawias biodrowy (Hip Hinge) |
+| Single Arm Landmine Press (Barbell) | 35 / 35 / 35 | 5 / 5 / 5 | Wyciskanie pionowe/kątowe |
+| Dumbbell Step Up | 24 / 24 / 24 | 7 / 7 / 7 | Wykrok / Praca jednonóż |
+| Single Arm Cable Row | 50 / 50 / 50 | 6 / 6 / 6 | Przyciąganie poziome |
+| Swiss Ball Hamstring Curl | mc / mc / mc | 8 / 8 / 8 | Zgięcie kolana (Taśma tylna) |
+| Seated Calf Raise | 55 / 55 / 55 | 8 / 8 / 8 | Zgięcie podeszwowe stopy (m. płaszczkowaty) |
+| Ab Wheel | mc / mc / mc | 8 / 8 / 8 | Anty-ekstensja tułowia (Core) |
 
-* **Typ treningu:** Bieg spokojny / Regeneracyjny (Easy Run w Z2) – niezrealizowany akcent progowy (Threshold)
-* **Mocne strony:** 
-Utrzymanie stabilnego tętna tlenowego (śr. 151 bpm, Z2) bez niekontrolowanego dryfu tętna na przestrzeni całego dystansu.
-Równomierny rytm biegu z poprawną kadencją bazową (śr. 170 spm) w warunkach rozbiegania.
-* **Błędy i korekty:** 
-Decyzyjne: Całkowite pominięcie części głównej jednostki (3 x 1.5 km w tempie progowym 4:15 min/km); zamiana kluczowego bodźca Z4 na jednostajne rozbieganie Z2 bez konsultacji z trenerem skutkuje brakiem stymulacji kinetyki mleczanu na 8 dni przed startem docelowym; na przyszłość realizuj założone interwały lub zgłaszaj powód modyfikacji w notatce.
-Biomechaniczne: Zwiększony koszt pionowy (VR 8.67% przy VO 8.43 cm, norma do 8.5%) oraz wydłużony czas kontaktu z podłożem (GCT 272.5 ms, norma 240–270 ms); zbyt pasywne przetaczanie stopy i kierowanie wektora siły w górę zamiast w przód; koryguj to aktywnym ściąganiem stopy pod środek ciężkości oraz wyobrażeniem biegu pod niskim sufitem.
-* **Kontekst fizjologiczny i środowiskowy:** 
-Wyjściowy drenaż układu autonomicznego po czwartkowej sesji siłowej (HRV 41 ms poniżej dolnej bazy 45 ms, RHR podwyższone o 2 bpm do 59 bpm, BB_Start 61) w połączeniu z chłodem (odczuwalna 3.9°C); stan ten prawdopodobnie wywołał subiektywne uczucie ciężkich nóg i skłonił do rezygnacji z tempa progowego; brak zakwaszenia ograniczył jednak drenaż glikogenu przed kolejnymi dniami.
-* **Podsumowanie i wnioski:** 
-Trening nie spełnił założeń jakościowych mezocyklu – zamiast specyficznej pracy progowej pod zawody 5 km wykonano bieg czysto regeneracyjny o objętości 8 km. Z punktu widzenia adaptacji fizjologicznej organizm nie otrzymał bodźca podtrzymującego tolerancję na mleczan przy tempie startowym, co wymusza pełną dyscyplinę na ostatnich jednostkach przedstartowych. Zyskiem z tej sesji jest niska akumulacja zmęczenia mięśniowo-obwodowego, chroniąca układ ruchu w fazie deloadu.
+* **Typ sesji:** FBW B – siłowa ogólnorozwojowa z nieplanowanym przeciążeniem dołu ciała
+* **Mocne strony:**
+  - Bardzo dobra jakość i stabilizacja w pracy core (Ab Wheel) oraz efektywne wzmocnienie mięśnia płaszczkowatego (Seated Calf Raise).
+  - Skuteczne utrzymanie niskiej liczby powtórzeń w ćwiczeniach górnej części ciała, co sprzyja budowie siły bez zbędnej hipertrofii.
+* **Błędy i kolizje:**
+  - Złamanie założeń fazy deload na 7 dni przed startem docelowym (5 km): dołożenie nieplanowanego ćwiczenia jednonóż (Dumbbell Step Up: 3 serie z ciężarem 24 kg) oraz podbicie objętości i ciężaru w Trap Bar Deadlift (3x5-6 @ 70 kg zamiast 2x4 @ 60 kg).
+  - Wygenerowanie 6 ciężkich serii wielostawowych na dół ciała bezpośrednio przed niedzielnym biegiem długim (11 km), co drastycznie zwiększa koszt ekscentryczny i zaburza regenerację przedstartową.
+  - Pominięcie planowanego cardio rozgrzewkowego w Z1 oraz ćwiczenia Copenhagen Plank.
+* **Wpływ na bieg i biomechanikę:**
+  - Wprowadzenie Step-upów wygeneruje bolesność mięśniową (DOMS) mięśni czworogłowych i pośladkowych, co podczas niedzielnego biegu przełoży się na skrócenie kroku, utratę sztywności sprężystej w stawie skokowo-kolanowym oraz wydłużenie czasu kontaktu z podłożem (GCT).
+* **Podsumowanie i wnioski:**
+  - Pod kątem czysto siłowym jednostka została zaliczona z wysoką intensywnością, jednak pod kątem periodyzacji biegowej stanowi błąd dyscypliny w bezpośrednim okresie przedstartowym. Nastąpiło niepotrzebne nagromadzenie zmęczenia obwodowego nóg w tygodniu, w którym priorytetem miała być świeżość układu nerwowo-mięśniowego.
+  - Na kolejnej sesji siłowej przed startem bezwzględnie trzymaj się zaleconego tonażu, eliminując wszelkie nadprogramowe ćwiczenia dolnych partii. Utrzymuj RIR 3–4 i skup się wyłącznie na neuro-pobudzeniu, a nie na bodźcowaniu hipertroficznym.
 
-## 2. STAN ZASOBÓW I KOSZT METABOLICZNY
+## 2. STAN ZASOBÓW I KOSZT UKŁADU NERWOWEGO
 
-- **Drenaż fizjologiczny**: Obciążenie mięśniowe i metaboliczne jest minimalne (brak zakwaszenia, TE aerobowe 3.0, zerowe beztlenowe), co pozwoliło zaoszczędzić zasoby glikogenu mimo niskiego stanu końcowego energii (BB 18).
-- **Bilans układu nerwowego**: Układ współczulny nie został przestymulowany biegiem, jednak z uwagi na nocny spadek HRV (41 ms) oraz 11,5 tysiąca kroków w ciągu dnia, CUN wymaga pełnego nocnego wygaszenia.
+- **Obciążenie nerwowo-mięśniowe**: Podwyższone zmęczenie CUN w wyniku przekroczenia planowanego tonażu w martwym ciągu oraz dodania wymagających koordynacyjnie wejść na podwyższenie pod obciążeniem.
+- **Status uszkodzeń tkankowych**: Wysokie ryzyko mikrourazów aparatu wyprostnego kolana oraz taśmy tylnej (połączenie ciągów, uginania na piłce i wykroków), których szczyt bolesności przypadnie na jutrzejszy poranek i popołudnie.
 
 ## 3. PROTOKÓŁ REGENERACJI (WIECZÓR I NOC)
-- **Odżywianie i nawodnienie**: Spożyj zbilansowaną kolację z udziałem węglowodanów złożonych (300-400 g batatów/ryżu) i pełnowartościowego białka, uzupełniając płyny porcją 500 ml wody z elektrolitami (magnez, sód).
+- **Odżywianie i nawodnienie**: Spożyj kolację bogatą w węglowodany złożone i pełnowartościowe białko (min. 35 g) w celu odbudowy glikogenu oraz wsparcia syntezy włókien mięśniowych przed jutrzejszym biegiem. Zadbaj o wypicie min. 500 ml wody z elektrolitami przed snem.
 - **Mobilność i regeneracja tkankowa**:
-  - Dodać / Wydłużyć: Runner's Lunge Twist oraz Soleus Wall Stretch (wydłuż do 1:00 na stronę, by przywrócić mobilność skokową po wydłużonym GCT).
-  - Pominąć / Skrócić: Rolowanie powięziowe (SMR) na mięśnie czworogłowe – zastąp je lekkim drenażem unosząc nogi w górę.
-- **Wyciszenie i higiena snu**: Wykonaj Child's Pose z głębokim oddechem przeponowym (4 s wdech / 6 s wydech) bezpośrednio przed snem. Zapewnij całkowite zaciemnienie sypialni i temperaturę 18°C, aby odbudować HRV powyżej 45 ms.
+  - Dodać / Wydłużyć: Couch Stretch (wydłuż do 1:00/stronę w celu rozluźnienia m. czworogłowych i pasma biodrowo-lędźwiowego po Step Upach) oraz Child's Pose (1:30 dla dekompresji odcinka lędźwiowego po ciągach).
+  - Pominąć / Skrócić: Pomiń agresywne rolowanie (SMR) czwórogłowych i kulszowo-goleniowych – zastąp je lekkim drenażem manualnym lub uniesieniem nóg, aby nie pogłębiać mikrourazów.
+- **Wyciszenie i higiena snu**: Wywietrz sypialnię (temp. 17–19°C) i odstaw ekrany na 45 minut przed snem, wykorzystując wysoki punkt wyjścia Body Battery do pełnej regeneracji nocnej.
 
-## 4. OCENA GOTOWOŚCI I DECYZJA NA DZIEŃ: Sobota, 2026-11-07
-* **Decyzja wykonawcza (Sobota, 2026-11-07):** Realizacja planu: Siłownia FBW B (Deadlift Trap bar 2x4 @ 60kg RIR 3, Landmine Press 3x6 @ 15kg RIR 3, Cable Row 3x8, Hamstring Curl 2x8, Calf Raise 2x6, Copenhagen Plank, Ab Wheel) + 10 min cardio Z1 | Cel: Bezwzględne zachowanie zapasu RIR 2-3 (Neural Priming bez kwasicy i załamania technicznego) przed niedzielnym Long Runem.
-* **Uzasadnienie fizjologiczne:** Ponieważ piątkowy bieg nie wywołał obciążenia progowego, aparat ruchu jest w pełni gotowy na bodziec siłowy, pod warunkiem rygorystycznej kontroli ekscentryki i unikania pracy do upadku mięśniowego. Zapobiegnie to powstawaniu mikrouszkodzeń włókien przed niedzielnym biegiem tlenowym i zbliżającym się startem docelowym.
+## 4. OCENA GOTOWOŚCI I DECYZJA NA DZIEŃ: Niedziela, 2026-11-08
+
+* **Decyzja wykonawcza (Niedziela, 2026-11-08):** Korekta: Bieg długi 11.0 km | Cel: Kontrola tętna Z2 (145–155 bpm) bez presji na sztywne tempo 5:35 min/km (dopuszczalne naturalne zwolnienie do 5:45–6:00 min/km w razie ciężkości nóg) i wysoka kadencja (>170 spm) dla minimalizacji obciążeń uderzeniowych.
+* **Uzasadnienie fizjologiczne:** Ze względu na nieplanowany mikrouraz włókien mięśniowych po nadprogramowych ćwiczeniach siłowych nóg, bieg musi być sterowany wyłącznie tętnem, aby uniknąć dryfu do Z3 i nie zakłócić superkompensacji przed zawodami za 7 dni. Zmniejszenie tempa przy zachowaniu zaplanowanego czasu pracy tlenowej zabezpieczy stawy i pozwoli przeprowadzić niezbędny trening bazy bez ryzyka przeciążenia.
