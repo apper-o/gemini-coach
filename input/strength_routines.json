@@ -30,17 +30,17 @@
         "last_sets": [
           {
             "set": 1,
-            "weight": "28 kg",
+            "weight": "36 kg",
             "reps": 6
           },
           {
             "set": 2,
-            "weight": "28 kg",
+            "weight": "36 kg",
             "reps": 6
           },
           {
             "set": 3,
-            "weight": "28 kg",
+            "weight": "36 kg",
             "reps": 6
           }
         ]
@@ -93,18 +93,18 @@
         "last_sets": [
           {
             "set": 1,
-            "weight": "65 kg",
+            "weight": "75 kg",
             "reps": 6
           },
           {
             "set": 2,
-            "weight": "65 kg",
+            "weight": "75 kg",
             "reps": 6
           },
           {
             "set": 3,
-            "weight": "65 kg",
-            "reps": 6
+            "weight": "75 kg",
+            "reps": 5
           }
         ]
       },
@@ -114,17 +114,17 @@
         "last_sets": [
           {
             "set": 1,
-            "weight": "0 kg",
-            "reps": 8
+            "weight": "8 kg",
+            "reps": 6
           },
           {
             "set": 2,
-            "weight": "0 kg",
-            "reps": 8
+            "weight": "8 kg",
+            "reps": 6
           },
           {
             "set": 3,
-            "weight": "0 kg",
+            "weight": "8 kg",
             "reps": 6
           }
         ]
@@ -156,18 +156,18 @@
         "last_sets": [
           {
             "set": 1,
-            "weight": "25 kg",
+            "weight": "20 kg",
             "reps": 8
           },
           {
             "set": 2,
-            "weight": "25 kg",
-            "reps": 6
+            "weight": "20 kg",
+            "reps": 8
           },
           {
             "set": 3,
-            "weight": "25 kg",
-            "reps": 6
+            "weight": "20 kg",
+            "reps": 8
           }
         ]
       },
