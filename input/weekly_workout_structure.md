@@ -1,7 +1,7 @@
 Poniedziałek: Technika Biegowa
-Wtorek: Easy Run
+Wtorek: 
 Środa: Threshold + Siłownia fbw B
 Czwartek: Rest day
-Piątek: Easy Run
-Sobota: Zawody 5km
-Niedziela:
+Piątek: VO2MAX
+Sobota: fbw A
+Niedziela: Long Run

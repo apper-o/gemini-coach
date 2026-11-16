@@ -1,12 +1,12 @@
 {
-    "phase": "Start kontrolny",
+    "phase": "Build",
     "primary_goal": {
-        "target": "5km",
-        "date": "2026-11-14"
+        "target": "3km",
+        "date": "2027-03-27"
     },
     "secondary_goal": {
-        "target": "800m < 2:17",
-        "date": null
+        "target": "400m płotki",
+        "date": "2027-05-30"
     },
     "last_event": {
         "type": "5km",
