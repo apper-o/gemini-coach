@@ -1,128 +1,140 @@
-# AUDYT DZIENNY: 2026-11-20 (Piątek, 2026-11-20)
-- Typ dnia: BIEG
-- Bieg: TAK (6.90 km, sesje: 1)
-- Typ treningu biegowego: Interwały VO2max (Z5)
-- Struktura biegu: Rzeszow Running (1.60 km) + Rzeszow Track Running (4.63 km) + Rzeszow Running (0.67 km)
-- Siłownia: NIE
-- Partie mięśniowe (siłownia): BRAK
+# AUDYT DZIENNY: 2026-11-21 (Sobota, 2026-11-21)
+- Typ dnia: BIEG + SIŁOWNIA
+- Bieg: TAK (1.00 km, sesje: 1)
+- Typ treningu biegowego: Rozgrzewka tlenowa / Cardio Z1
+- Struktura biegu: Rozgrzewka: Brak | Główna seria: 1.00 km (Rozgrzewka tlenowa / Cardio Z1) | Schłodzenie: Brak
+- Siłownia: TAK (FBW A)
+- Partie mięśniowe (siłownia): GÓRA + DÓŁ
 
-## Biometria regeneracyjna i bilans dnia (Piątek, 2026-11-20):
-- HRV (miniona noc przed treningiem): 47 ms (Średnia 7-dniowa: 48 ms, Norma bazowa: 44–56 ms)
-- RHR (miniona noc przed treningiem): 55 bpm (Średnia 7-dniowa: 55 bpm, odchylenie: 0 bpm)
-- Sen (miniona noc przed treningiem): 74/100 (Czas: 6h 45m, Głęboki: 1h 58m, REM: 0h 37m)
-- Średni stres snu: 15
-- Poranne Body Battery (bufor startowy): 82/100
-- Body Battery pod koniec dnia: 12/100
-- Całodzienny stres: 33/100
-- Kroki (cały dzień): 13031 (aktywne: 745 kcal)
+## Biometria regeneracyjna i bilans dnia (Sobota, 2026-11-21):
+- HRV (miniona noc przed treningiem): 49 ms (Średnia 7-dniowa: 47 ms, Norma bazowa: 44–56 ms)
+- RHR (miniona noc przed treningiem): 53 bpm (Średnia 7-dniowa: 55 bpm, odchylenie: -2 bpm)
+- Sen (miniona noc przed treningiem): 82/100 (Czas: 8h 9m, Głęboki: 1h 59m, REM: 0h 46m)
+- Średni stres snu: 16
+- Poranne Body Battery (bufor startowy): 83/100
+- Body Battery pod koniec dnia: 30/100
+- Całodzienny stres: 31/100
+- Kroki (cały dzień): 6712 (aktywne: 239 kcal)
 
 ## Zarejestrowane aktywności:
-### Jednostka 1 [Start: 18:22]: Rzeszow Running
-- Warunki pogodowe: Temperatura: 7.8°C (odczuwalna: 6.1°C) | Wiatr: 6.0 km/h wsw | Wilgotność: 100% | Warunki: Lekki deszcz
-- Dystans: 1.60 km | Czas: 9.4 min | Średnie tempo: 5:51 min/km
-- Tętno: Średnie 144 bpm | Max 156 bpm
-- Training Effect: Aerobowy 2.0/5.0 (RECOVERY) | Beztlenowy 0.0/5.0
-- Biomechanika: Średnia kadencja 174 spm, Krok 0.97 m, Kontakt z podłożem 262.4 ms, Odchylenie pionowe 8.06 cm
+### Jednostka 1 [Start: 15:43]: Rzeszow Running
+- Warunki pogodowe: Temperatura: 5.0°C (odczuwalna: 1.7°C) | Wiatr: 9.0 km/h w | Wilgotność: 65% | Warunki: Duże zachmurzenie
+- Dystans: 1.00 km | Czas: 5.9 min | Średnie tempo: 5:50 min/km
+- Tętno: Średnie 143 bpm | Max 157 bpm
+- Training Effect: Aerobowy 1.5/5.0 (RECOVERY) | Beztlenowy 0.0/5.0
+- Biomechanika: Średnia kadencja 172 spm, Krok 1.01 m, Kontakt z podłożem 269.2 ms, Odchylenie pionowe 8.43 cm
 
 #### Splity:
 | Km | Dystans [km] | Czas | Tempo [/km] | GAP [/km] | HR śr/max [bpm] | Kadencja [spm] | Krok [m] | GCT [ms] | VO [cm] | Moc [W] | Wznios/Spadek [m] |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| 1 | 1.00 | 5:54 | 5:54 | 5:56 | 141/150 | 174 | 0.96 | 263.5 | 7.99 | 315 | +2/-0 |
-| 2 | 0.60 | 3:28 | 5:47 | 5:40 | 149/156 | 174 | 1.00 | 260.6 | 8.18 | 327 | +0/-0 |
-### Jednostka 2 [Start: 18:43]: Rzeszow Track Running
-- Warunki pogodowe: Temperatura: 7.8°C (odczuwalna: 6.1°C) | Wiatr: 6.0 km/h wsw | Wilgotność: 100% | Warunki: Lekki deszcz
-- Dystans: 4.63 km | Czas: 25.1 min | Średnie tempo: 5:25 min/km
-- Tętno: Średnie 165 bpm | Max 186 bpm
-- Training Effect: Aerobowy 3.2/5.0 (ANAEROBIC_CAPACITY) | Beztlenowy 3.5/5.0
-- Biomechanika: Średnia kadencja 137 spm, Krok 1.37 m, Kontakt z podłożem 211.5 ms, Odchylenie pionowe 7.74 cm
+| 1 | 1.00 | 5:48 | 5:48 | 5:39 | 143/157 | 172 | 1.01 | 268.7 | 8.43 | 343 | +7/-2 |
 
-#### Splity:
-| Km | Dystans [km] | Czas | Tempo [/km] | GAP [/km] | HR śr/max [bpm] | Kadencja [spm] | Krok [m] | GCT [ms] | VO [cm] | Moc [W] | Wznios/Spadek [m] |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| 1 | 0.20 | 0:44 | 3:41 | - | 162/177 | 167 | 1.59 | 192.3 | 8.68 | 465 | +1/-1 |
-| 2 | 0.20 | 0:32 | 2:42 | - | 180/181 | 190 | 1.47 | 202.7 | 8.76 | 547 | +0/-0 |
-| 3 | 0.20 | 0:55 | 4:38 | - | 182/183 | 189 | 1.41 | 209.7 | 8.66 | 483 | +0/-0 |
-| 4 | 0.20 | 0:35 | 2:57 | - | 183/184 | 188 | 1.36 | 215.2 | 8.58 | 493 | +0/-0 |
-| 5 | 0.04 | 0:08 | 3:38 | - | 183/184 | 189 | 1.36 | 213.4 | 8.53 | 493 | +0/-0 |
-| 6 | 0.12 | 2:21 | 19:03 | - | 149/183 | 72 | 0.81 | 264.4 | 5.73 | 71 | +0/-0 |
-| 7 | 0.16 | 0:43 | 4:37 | - | 153/171 | 165 | 1.54 | 195.0 | 8.85 | 447 | +0/-0 |
-| 8 | 0.20 | 0:35 | 2:56 | - | 176/179 | 189 | 1.41 | 209.9 | 8.70 | 521 | +0/-0 |
-| 9 | 0.20 | 0:56 | 4:42 | - | 182/184 | 188 | 1.33 | 217.3 | 8.51 | 460 | +0/-0 |
-| 10 | 0.20 | 0:36 | 3:04 | - | 184/185 | 188 | 1.31 | 218.9 | 8.45 | 478 | +0/-0 |
-| 11 | 0.04 | 0:09 | 4:23 | - | 184/184 | 187 | 1.32 | 220.2 | 8.55 | 471 | +0/-0 |
-| 12 | 0.14 | 2:25 | 17:06 | - | 149/185 | 58 | 1.08 | 231.4 | 5.93 | 62 | +0/-0 |
-| 13 | 0.16 | 0:43 | 4:31 | - | 155/170 | 163 | 1.50 | 203.9 | 8.73 | 434 | +0/-0 |
-| 14 | 0.25 | 0:46 | 3:03 | - | 177/181 | 188 | 1.34 | 216.3 | 8.53 | 493 | +0/-0 |
-| 15 | 0.14 | 0:44 | 5:27 | - | 183/184 | 180 | 1.45 | 215.2 | 8.50 | 454 | +0/-0 |
-| 16 | 0.26 | 0:46 | 2:57 | - | 186/186 | 191 | 1.38 | 209.2 | 8.49 | 503 | +0/-0 |
-| 17 | 0.13 | 2:27 | 19:20 | - | 150/186 | 65 | 0.92 | 252.2 | 5.86 | 71 | +0/-0 |
-| 18 | 0.16 | 0:38 | 4:03 | - | 157/175 | 170 | 1.67 | 189.5 | 8.41 | 470 | +0/-0 |
-| 19 | 0.25 | 0:41 | 2:46 | - | 181/184 | 194 | 1.56 | 189.8 | 8.60 | 564 | +0/-0 |
-| 20 | 0.16 | 0:48 | 5:05 | - | 184/185 | 189 | 1.39 | 210.9 | 8.59 | 476 | +0/-0 |
-| 21 | 0.23 | 0:45 | 3:17 | - | 184/185 | 188 | 1.28 | 222.2 | 8.40 | 461 | +0/-0 |
-| 22 | 0.15 | 2:29 | 16:56 | - | 150/183 | 77 | 1.01 | 253.5 | 5.71 | 78 | +0/-0 |
-| 23 | 0.15 | 0:46 | 5:03 | - | 152/166 | 175 | 1.40 | 223.0 | 8.81 | 445 | +0/-0 |
-| 24 | 0.26 | 0:46 | 3:01 | - | 174/179 | 189 | 1.33 | 217.2 | 8.48 | 484 | +0/-0 |
-| 25 | 0.14 | 0:43 | 5:00 | - | 181/183 | 191 | 1.35 | 211.6 | 8.43 | 467 | +0/-0 |
-| 26 | 0.26 | 0:46 | 3:01 | - | 185/186 | 193 | 1.37 | 207.4 | 8.35 | 504 | +0/-0 |
-### Jednostka 3 [Start: 19:10]: Rzeszow Running
-- Warunki pogodowe: Temperatura: 7.8°C (odczuwalna: 6.1°C) | Wiatr: 6.0 km/h wsw | Wilgotność: 100% | Warunki: Lekki deszcz
-- Dystans: 0.67 km | Czas: 4.5 min | Średnie tempo: 6:40 min/km
-- Tętno: Średnie 141 bpm | Max 148 bpm
-- Training Effect: Aerobowy 0.6/5.0 (RECOVERY) | Beztlenowy 0.0/5.0
-- Biomechanika: Średnia kadencja 168 spm, Krok 0.89 m, Kontakt z podłożem 280.6 ms, Odchylenie pionowe 8.11 cm
+### Trening siłowy / uzupełniający (raport z Telegrama):
+fbw A
+Saturday, Nov 21, 2026 at 16:08
 
-#### Splity:
-| Km | Dystans [km] | Czas | Tempo [/km] | GAP [/km] | HR śr/max [bpm] | Kadencja [spm] | Krok [m] | GCT [ms] | VO [cm] | Moc [W] | Wznios/Spadek [m] |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| 1 | 0.67 | 4:27 | 6:40 | 6:42 | 141/148 | 168 | 0.89 | 280.6 | 8.11 | 286 | +0/-0 |
+Bulgarian Split Squat (Dumbbell)
+Set 1: 36 kg x 6
+Set 2: 36 kg x 6
+Set 3: 36 kg x 6
 
-## Uwagi biegacza (notatka z Telegrama):
---- Treść wiadomości z Telegrama (2026-11-20 19:34) ---
-Nie analizuj dzisiejszych odcinków dokładnie co 200m. Mój zegarek nie mógł się skalibrować i źle mierzył odcinki. Zrób podsumowanie z całym czasem bez przerw. Przerwy to odcinki o czasie ok. 2 minuty 30 sekund
+Single Leg Romanian Deadlift (Dumbbell)
+Set 1: 14 kg x 6
+Set 2: 14 kg x 6
+Set 3: 14 kg x 6
 
-## Ocena trenera i adaptacja na dzień Sobota, 2026-11-21:
-## 1. AUDYT JEDNOSTKI BIEGOWEJ: Piątek, 2026-11-20
+Weighted Single Leg Isometric Calf Hold
+Set 1: 10 kg - 30s
+Set 2: 10 kg - 30s
+Set 3: 10 kg - 30s
+
+Bench Press (Barbell)
+Set 1: 75 kg x 6
+Set 2: 75 kg x 6
+Set 3: 75 kg x 5
+
+Pull Up (Weighted)
+Set 1: 8 kg x 6
+Set 2: 8 kg x 6
+Set 3: 8 kg x 6
+
+Face Pull
+Set 1: 50 kg x 8
+Set 2: 50 kg x 8
+Set 3: 50 kg x 6
+
+Cable Core Pallof Press
+Set 1: 20 kg x 8
+Set 2: 20 kg x 8
+Set 3: 20 kg x 8
+
+@hevyapp
+https://hevy.com/workout/dM5FygSPvEI
+
+## Ocena trenera i adaptacja na dzień Niedziela, 2026-11-22:
+## 1. AUDYT JEDNOSTEK TRENINGOWYCH: Sobota, 2026-11-21
+
+### Część biegowa (Rozgrzewka / Cardio przed siłownią)
 
 | Parametr | Plan | Realizacja | Odchylenie |
 |:---|:---:|:---:|:---:|
-| Dystans [km] | 6.00 | 6.90 | +0.90 km (+15%) |
-| Średnie tempo [min/km] | 5:30 | 5:39 | +0:09 min/km |
+| Dystans [km] | ~1.60 | 1.00 | -0.60 |
+| Średnie tempo [min/km] | >6:00 (Z1) | 5:50 | -0:10 (wejście w Z2) |
 
-| Segment | Dystans [km] | Czas | Tempo [min/km] | Śr. HR [bpm] | Max / ΔHR60s [bpm] | Kadencja [spm] | Krok [m] | GCT [ms] | VR [%] |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Powtórzenie 1 | 0.84 | 2:54 | 3:27 | 180 | 184 / 34 | 185 | 1.44 | 208 | 6.8 |
-| Powtórzenie 2 | 0.80 | 2:59 | 3:44 | 181 | 185 / 36 | 185 | 1.38 | 212 | 6.5 |
-| Powtórzenie 3 | 0.81 | 2:59 | 3:41 | 182 | 186 / 36 | 186 | 1.42 | 211 | 6.5 |
-| Powtórzenie 4 | 0.80 | 2:52 | 3:35 | 182 | 185 / 35 | 185 | 1.48 | 203 | 6.5 |
-| Powtórzenie 5 | 0.81 | 2:58 | 3:40 | 180 | 186 / 34 | 187 | 1.36 | 212 | 6.4 |
-
-* **Typ treningu:** Interwały VO2max (Z5)
+* **Typ treningu:** Rozgrzewka tlenowa / Cardio Z1
 * **Mocne strony:**
-  Pacing i stymulacja VO2max: Wszystkie powtórzenia wykonane w tempie 3:27–3:44 min/km (szybciej niż planowane 3:55 min/km w Z5) z wejściem tętna w strefę Z5 (>181 bpm).
-  Pojemność tlenowa: Wykonanie 5. dodatkowego powtórzenia bez załamania kadencji (185–187 spm) i przy zachowaniu powtarzalnego czasu odcinków.
+Prawidłowa kadencja (172 spm) mieszcząca się precyzyjnie w widełkach ekonomicznego biegu tlenowego (165–175 spm).
+Czas kontaktu z podłożem (GCT 269.2 ms) na właściwym poziomie dla biegu spokojnego (norma 240–270 ms), bez oznak szurania po wczorajszym akcencie.
 * **Błędy i korekty:**
-  Decyzyjne (Przestrzelenie tempa na 1. odcinku): Pierwsze powtórzenie pobiegane w 3:27 min/km (o 28 s/km za szybko), co zbudowało wczesny dług tlenowy. Korekta: Kontroluj prędkość przez pierwsze 200 m powtórzenia i dopiero od połowy wchodź na tempo docelowe.
-  Biomechaniczne (Wydłużony czas kontaktu z podłożem): GCT na poziomie 203–212 ms przekracza optymalny zakres dla Z5 (170–200 ms), wskazując na brak pełnej sztywności w stawie skokowym. Korekta: "Biegaj po gorącym asfalcie" – zrywaj stopę z ziemi natychmiast po kontakcie i akcentuj lądowanie pod biodrem.
+Decyzyjne (przekroczenie strefy i skrócenie czasu): Bieg zrealizowano w tempie 5:50 min/km (strefa Z2) zamiast regeneracyjnego Z1 (>6:00 min/km), skracając czas trwania do niespełna 6 minut zamiast zaplanowanych 10 minut. Na rozgrzewce przed siłownią trzymaj rygorystycznie tempo >6:00 min/km przez pełne 10 minut, aby dogrzać aparat ruchu bez przedwczesnego zużywania glikogenu.
 * **Kontekst fizjologiczny i środowiskowy:**
-  Lekki deszcz i wysoka wilgotność (100%) obniżyły koszt termiczny, chroniąc przed dryfem tętna wywołanym przegrzaniem.
-  Spadek tętna o ~34–36 bpm w ciągu pierwszych 60 sekund przerwy wskazuje na bardzo dobrą wydolność kardio-respiracyjną i szybką restytucję.
+Wczorajszy mocny trening VO2max (4x 800 m w Z5, max HR 186 bpm) oraz chłód (5.0°C, odczuwalna 1.7°C) spowodowały skok tętna do 157 bpm na podbiegu (+7 m). Niska temperatura otoczenia wymagała pełnych 10 minut stopniowego dogrzania torebek stawowych, a nie szybkiego kilometra w Z2.
 * **Podsumowanie i wnioski:**
-  Jednostka zrealizowana z nadwyżką objętościową (5 zamiast 4 powtórzeń) i na wyższych prędkościach niż zakładano, przy bardzo dobrej kontroli strefy Z5. Trening dał potężny bodziec dla rozwoju pułapu tlenowego (VO2max) i tolerancji zakwaszenia pod cele na 3km i 400m płotki.
+Jednostka spełniła podstawową funkcję podniesienia temperatury ciała, jednak została wykonana zbyt krótko i za intensywnie względem założeń strefy Z1. Bieg wprowadzający do siłowni ma służyć wyłącznie aktywacji naczyniowej, a nie generowaniu dodatkowego obciążenia metabolicznego. W przyszłości pilnuj spokojnego tempa konwersacyjnego, aby nie wchodzić na siłownię z podwyższonym poziomem mleczanu.
 
-## 2. STAN ZASOBÓW I KOSZT METABOLICZNY
+---
 
-- **Drenaż fizjologiczny**: Wysoka intensywność w strefie Z5 doprowadziła do znacznego uszczuplenia glikogenu mięśniowego i drenażu Body Battery do poziomu 12/100, wywołując powierzchowne zmęczenie obwodowe nóg.
-- **Bilans układu nerwowego**: Stabilne nocne parametry ANS (HRV 47 ms, RHR 55 bpm) po czwartkowym wolnym pozwoliły przyjąć mocny bodziec, jednak łączny stres dnia i wysiłek wymagają priorytetyzacji snu.
+### Część siłowa (FBW A)
+
+| Ćwiczenie | Ciężar [kg] | Serie x Powtórzenia | Wzorzec ruchowy |
+|:---|:---:|:---:|:---:|
+| Bulgarian Split Squat (Dumbbell) | 36 / 36 / 36 | 6 / 6 / 6 | Przysiad jednonóż / Wykrok |
+| Single Leg Romanian Deadlift (Dumbbell) | 14 / 14 / 14 | 6 / 6 / 6 | Zawias biodrowy jednonóż |
+| Weighted Single Leg Isometric Calf Hold | 10 / 10 / 10 | 30s / 30s / 30s | Zgięcie podeszwowe stopy (izometria) |
+| Bench Press (Barbell) | 75 / 75 / 75 | 6 / 6 / 5 | Wyciskanie horyzontalne |
+| Pull Up (Weighted) | 8 / 8 / 8 | 6 / 6 / 6 | Przyciąganie pionowe |
+| Face Pull | 50 / 50 / 50 | 8 / 8 / 6 | Odwiedzenie horyzontalne / retrakcja |
+| Cable Core Pallof Press | 20 / 20 / 20 | 8 / 8 / 8 | Antyrotacja tułowia (core) |
+
+* **Typ sesji:** Siłownia FBW A (Siła maksymalna / Neural Priming)
+* **Mocne strony:**
+Wzorowa realizacja podciągania z ciężarem (3x 6 x 8 kg) z utrzymaniem pełnej kontroli ruchu i założonego wolumenu.
+Dobra stabilność w ćwiczeniu antyrotacyjnym Pallof Press na ciężarze 20 kg we wszystkich 3 seriach.
+* **Błędy i kolizje:**
+Kolizja wielostawowa z jutrzejszym biegiem: Zignorowano zalecaną zamianę na bezpieczny Goblet Squat (miało być 2x 3 x 24 kg) i wykonano ciężkie Bulgarian Split Squat (3x 6 x 36 kg) oraz podwojono liczbę powtórzeń w SL RDL (3x 6 zamiast 2x 3), wprowadzając duży stres ekscentryczny na mniej niż 24h przed niedzielnym biegiem na 12 km.
+Pominięcie plyometrii i aktywacji: Całkowicie pominięto Drop jumpy (brak bodźca torującego sztywność ścięgien bez zmęczenia) oraz ćwiczenie Dead Bug.
+Przełamanie założeń RIR w wyciskaniu: Spadek do 5 powtórzeń w 3. serii wyciskania (75 kg) świadczy o dojściu do upadku mięśniowego (RIR 0 zamiast RIR 2), co niepotrzebnie obciążyło układ nerwowy.
+* **Wpływ na bieg i biomechanikę:**
+Wysoka objętość ekscentryczna przysiadów bułgarskich oraz martwych ciągów jednonóż wywoła mikrourazy i spadek sztywności sprężystej mięśni czworogłowych i pośladkowych. Na jutrzejszym biegu długim przełoży się to na wydłużenie GCT, obniżenie dynamiki odbicia i większą podatność na zapadanie się miednicy w drugiej części dystansu.
+* **Podsumowanie i wnioski:**
+Sesja została wykonana zbyt ciężko pod kątem objętości i ekscentryki dołu ciała, przypominając klasyczny trening budowania masy, a nie jednostkę tonizującą (Neural Priming) przed biegiem ciągłym. Brak drop jumpów pozbawił sesję jej kluczowego waloru pobudzenia układu nerwowego pod kątem reaktywności ścięgien. W kolejnych mikrocyklach przed biegiem niedzielnym bezwzględnie przestrzegaj małej liczby powtórzeń (maksymalnie 3) z dużym zapasem RIR 3 i unikaj ćwiczeń generujących głębokie mikrourazy.
+
+## 2. STAN ZASOBÓW I KOSZT METABOLICZNY ORAZ NERWOWY
+
+- **Drenaż fizjologiczny**: Bardzo wysokie zmęczenie obwodowe mięśni nóg wywołane nieplanowaną, dużą objętością ciężkich przysiadów bułgarskich i martwych ciągów nałożoną na wczorajszy akcent VO2max. Krótki bieg rozgrzewkowy miał minimalny koszt metaboliczny (TE 1.5), jednak sesja siłowa wygenerowała znaczne zakwaszenie lokalne i zużycie glikogenu.
+- **Bilans układu nerwowego**: Bardzo dobra regeneracja nocna (HRV 49 ms w normie, RHR 53 bpm, sen 8h 9m) stworzyła solidną bazę, jednak praca do upadku w wyciskaniu oraz wysoki tonaż przysiadów zredukowały Body Battery do poziomu 30.
+- **Obciążenie nerwowo-mięśniowe**: Wysokie zmęczenie centralne wywołane seriami do odmowy mięśniowej na górną część ciała oraz ciężką pracą unilateralną dolnych partii, przy braku plyometrycznego pobudzenia przez pominięcie skoków drop jump.
+- **Status uszkodzeń tkankowych**: Wystąpią wyraźne mikrourazy włókien mięśniowych czwórogłowych ud i pośladków po 3 seriach przysiadów bułgarskich z obciążeniem 36 kg. Szczyt bolesności powysiłkowej (DOMS) przypadnie na niedzielne popołudnie oraz poniedziałek.
 
 ## 3. PROTOKÓŁ REGENERACJI (WIECZÓR I NOC)
-- **Odżywianie i nawodnienie**: Spożyj potreningowo 1.0–1.2 g/kg m.c. węglowodanów i wypij ok. 750 ml płynów z elektrolitami, aby w pełni odbudować glikogen przed jutrzejszą siłownią.
+
+- **Odżywianie i nawodnienie**: Zjedz kolację bogatą w węglowodany złożone (resynteza glikogenu pod jutrzejsze 12 km) oraz dostarcz minimum 35–40 g pełnowartościowego białka, aby wesprzeć naprawę uszkodzonych włókien mięśniowych po przysiadach. Wypij do wieczora dodatkowe 500 ml wody z elektrolitami, aby zoptymalizować nawodnienie powięzi.
 - **Mobilność i regeneracja tkankowa**:
-  - Dodać / Wydłużyć: *Couch Stretch* oraz *Soleus Wall Stretch* pod kątem rozluźnienia mocno obciążonych mięśni czworogłowych i płaszczkowatych.
-  - Pominąć / Skrócić: *Rolowanie powięziowe (SMR)* – przy wysokiej mikrourazowości po biegu Z5 pomiń mocne rolowanie na rzecz drenażu i delikatnego rozciągania.
-- **Wyciszenie i higiena snu**: Wydłuż *Child's Pose* do 2 minut z głębokim oddechem przeponowym dla aktywacji przywspółczulnej; zapewnij minimum 8 godzin snu.
+  - Dodać / Wydłużyć: Couch Stretch (wydłużyć do 1:00 na stronę, aby rozciągnąć silnie napięte po przysiadach bułgarskich mięśnie czworogłowe i pasma biodrowo-lędźwiowe) oraz Child's Pose (wydłużyć do 1:30 w celu dekompresji odcinka lędźwiowego).
+  - Pominąć / Skrócić: Rolowanie powięziowe (SMR) czwórogłowych i pośladków – całkowicie zrezygnuj z agresywnego rolowania świeżo uszkodzonych ekscentryką włókien, aby nie pogłębiać stanu zapalnego tkanek.
+- **Wyciszenie i higiena snu**: Wykonaj 10 minut spokojnego oddychania przeponowego w pozycji leżącej z nogami uniesionymi na ścianie lub kanapie, co ułatwi odpływ krwi żylnej i drenaż podudzi. Zapewnij pełne zaciemnienie sypialni i minimum 8 godzin nieprzerwanego snu, by zmaksymalizować nocny wyrzut hormonu wzrostu.
 
-## 4. OCENA GOTOWOŚCI I DECYZJA NA DZIEŃ: Sobota, 2026-11-21
+## 4. OCENA GOTOWOŚCI I DECYZJA NA DZIEŃ: Niedziela, 2026-11-22
 
-* **Decyzja wykonawcza (Sobota, 2026-11-21):** Realizacja planu: Siłownia FBW A (zgodnie z planem, z zachowaniem RIR 2-3) | Cel: Priming układu nerwowego i ochrona nóg przed niedzielnym Long Runem.
-* **Uzasadnienie fizjologiczne:** Stan układu nerwowego jest stabilny, a dzisiejszy bieg był planowanym akcentem Build. Trening oparty na niskiej objętości i zapasie powtórzeń podtrzyma pobudzenie nerwowo-mięśniowe bez pogłębiania mikrouszkodzeń tkankowych.
+* **Decyzja wykonawcza (Niedziela, 2026-11-22):** Korekta: Bieg ciągły 12.0 km w strefie Z2 z bezwzględnym ograniczeniem tętna do sufitu 150 bpm (dopuszczenie wolniejszego tempa w widełkach 5:35–5:55 min/km zamiast sztywnego trzymania 5:30 min/km) | Cel: Ochrona aparatu ruchu przed przeciążeniem przy obniżonej sztywności mięśniowej po przysiadach bułgarskich oraz bezpieczna realizacja bazy tlenowej.
+* **Uzasadnienie fizjologiczne:** Bieganie wyłącznie pod kontrolą pułapu tętna (do 150 bpm) zapobiegnie przedwczesnemu dryfowi krążeniowemu i kompensowaniu zmęczenia nóg załamaniem sylwetki. Wolniejsze tempo pozwoli zachować czysto tlenowy charakter wysiłku i wesprze drenaż powysiłkowy bez ryzyka pogłębienia uszkodzeń tkankowych.
