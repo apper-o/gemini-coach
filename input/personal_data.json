@@ -1,12 +1,12 @@
 {
     "phase": "Build",
     "primary_goal": {
-        "target": "3km",
-        "date": "2027-03-27"
+        "target": "800m",
+        "date": "2027-05-30"
     },
     "secondary_goal": {
         "target": "400m płotki",
-        "date": "2027-05-30"
+        "date": "2027-05-23"
     },
     "last_event": {
         "type": "5km",
