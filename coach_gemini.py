@@ -53,7 +53,7 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
 # Konfiguracja modelu Gemini i parametrów retry ze zmiennych środowiskowych
-DEFAULT_GEMINI_MODEL = (os.getenv("GEMINI_MODEL") or os.getenv("GEMINI_MODELS") or "gemini-3.8-flash").strip()
+DEFAULT_GEMINI_MODEL = (os.getenv("GEMINI_MODEL") or os.getenv("GEMINI_MODELS") or "gemini-3.6-flash").strip()
 GEMINI_MAX_RETRIES = int(os.getenv("GEMINI_MAX_RETRIES", "10"))
 GEMINI_RETRY_DELAY = int(os.getenv("GEMINI_RETRY_DELAY", "10"))
 
