@@ -1,77 +1,65 @@
-# AUDYT DZIENNY: 2026-11-22 (Niedziela, 2026-11-22)
+# AUDYT DZIENNY: 2026-11-23 (Poniedziałek, 2026-11-23)
 - Typ dnia: BIEG
-- Bieg: TAK (12.01 km, sesje: 1)
-- Typ treningu biegowego: Long Run ciągły (Z2)
-- Struktura biegu: Rozgrzewka: Brak | Główna seria: 12.01 km (Long Run ciągły (Z2)) | Schłodzenie: Brak
+- Bieg: TAK (1.92 km, sesje: 1)
+- Typ treningu biegowego: Bieg w Z1 / Niewykonana sesja techniki biegowej (skrócone rozbieganie)
+- Struktura biegu: Rozgrzewka: Brak | Główna seria: 1.92 km (Bieg w Z1 / Niewykonana sesja techniki biegowej (skrócone rozbieganie)) | Schłodzenie: Brak
 - Siłownia: NIE
 - Partie mięśniowe (siłownia): BRAK
 
-## Biometria regeneracyjna i bilans dnia (Niedziela, 2026-11-22):
+## Biometria regeneracyjna i bilans dnia (Poniedziałek, 2026-11-23):
 - HRV (miniona noc przed treningiem): 47 ms (Średnia 7-dniowa: 47 ms, Norma bazowa: 44–56 ms)
-- RHR (miniona noc przed treningiem): 54 bpm (Średnia 7-dniowa: 55 bpm, odchylenie: -1 bpm)
-- Sen (miniona noc przed treningiem): 84/100 (Czas: 7h 55m, Głęboki: 1h 46m, REM: 0h 59m)
-- Średni stres snu: 17
-- Poranne Body Battery (bufor startowy): 88/100
-- Body Battery pod koniec dnia: 29/100
-- Całodzienny stres: 31/100
-- Kroki (cały dzień): 15557 (aktywne: 1007 kcal)
+- RHR (miniona noc przed treningiem): 57 bpm (Średnia 7-dniowa: 55 bpm, odchylenie: +2 bpm)
+- Sen (miniona noc przed treningiem): 85/100 (Czas: 7h 42m, Głęboki: 1h 56m, REM: 1h 12m)
+- Średni stres snu: 18
+- Poranne Body Battery (bufor startowy): 75/100
+- Body Battery pod koniec dnia: 18/100
+- Całodzienny stres: 30/100
+- Kroki (cały dzień): 20036 (aktywne: 927 kcal)
 
 ## Zarejestrowane aktywności:
-### Jednostka 1 [Start: 12:24]: Rzeszow Running
-- Warunki pogodowe: Temperatura: 6.1°C (odczuwalna: 2.2°C) | Wiatr: 13.0 km/h wsw | Wilgotność: 61% | Warunki: Umiarkowane zachmurzenie
-- Dystans: 12.01 km | Czas: 70.1 min | Średnie tempo: 5:50 min/km
-- Tętno: Średnie 151 bpm | Max 158 bpm
-- Training Effect: Aerobowy 3.3/5.0 (AEROBIC_BASE) | Beztlenowy 0.0/5.0
-- Biomechanika: Średnia kadencja 172 spm, Krok 0.99 m, Kontakt z podłożem 268.1 ms, Odchylenie pionowe 8.37 cm
+### Jednostka 1 [Start: 18:08]: Warsaw Running
+- Warunki pogodowe: Temperatura: 2.2°C (odczuwalna: -2.2°C) | Wiatr: 10.0 km/h w | Wilgotność: 94% | Warunki: Lekki deszcz
+- Dystans: 1.92 km | Czas: 12.5 min | Średnie tempo: 6:29 min/km
+- Tętno: Średnie 143 bpm | Max 149 bpm
+- Training Effect: Aerobowy 2.0/5.0 (RECOVERY) | Beztlenowy 0.0/5.0
+- Biomechanika: Średnia kadencja 168 spm, Krok 0.96 m, Kontakt z podłożem 276.7 ms, Odchylenie pionowe 8.40 cm
 
 #### Splity:
 | Km | Dystans [km] | Czas | Tempo [/km] | GAP [/km] | HR śr/max [bpm] | Kadencja [spm] | Krok [m] | GCT [ms] | VO [cm] | Moc [W] | Wznios/Spadek [m] |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| 1 | 1.00 | 5:39 | 5:39 | 5:42 | 145/150 | 172 | 1.03 | 264.0 | 8.48 | 327 | +2/-10 |
-| 2 | 1.00 | 5:46 | 5:47 | 5:49 | 153/157 | 173 | 0.99 | 267.0 | 8.32 | 336 | +5/-3 |
-| 3 | 1.00 | 5:59 | 6:00 | 5:58 | 152/156 | 172 | 0.99 | 269.1 | 8.39 | 332 | +6/-8 |
-| 4 | 1.00 | 6:03 | 6:04 | 6:07 | 153/158 | 164 | 0.96 | 271.7 | 8.33 | 305 | +6/-7 |
-| 5 | 1.00 | 5:52 | 5:52 | 5:54 | 153/157 | 174 | 0.98 | 265.8 | 8.22 | 319 | +4/-3 |
-| 6 | 1.00 | 5:41 | 5:42 | 5:44 | 155/158 | 172 | 1.01 | 266.6 | 8.45 | 331 | +1/-1 |
-| 7 | 1.00 | 5:29 | 5:29 | 5:29 | 153/156 | 173 | 1.05 | 262.3 | 8.53 | 343 | +2/-0 |
-| 8 | 1.00 | 5:36 | 5:37 | 5:44 | 153/156 | 174 | 1.00 | 265.0 | 8.31 | 331 | +4/-3 |
-| 9 | 1.00 | 5:40 | 5:41 | 5:48 | 150/156 | 173 | 1.00 | 267.3 | 8.38 | 329 | +3/-2 |
-| 10 | 1.00 | 6:04 | 6:05 | 6:05 | 149/153 | 171 | 0.97 | 272.8 | 8.39 | 314 | +3/-5 |
-| 11 | 1.00 | 6:15 | 6:15 | 6:11 | 150/154 | 170 | 0.95 | 275.8 | 8.35 | 308 | +7/-5 |
-| 12 | 1.00 | 5:54 | 5:54 | 5:55 | 152/157 | 172 | 0.98 | 268.7 | 8.36 | 327 | +6/-9 |
+| 1 | 1.00 | 6:09 | 6:09 | 6:06 | 139/148 | 168 | 0.97 | 276.0 | 8.46 | 323 | +6/-0 |
+| 2 | 0.92 | 6:18 | 6:51 | 6:42 | 146/149 | 166 | 0.95 | 277.4 | 8.35 | 288 | +4/-3 |
 
-## Ocena trenera i adaptacja na dzień Poniedziałek, 2026-11-23:
-## 1. AUDYT JEDNOSTKI BIEGOWEJ: Niedziela, 2026-11-22
+## Ocena trenera i adaptacja na dzień Wtorek, 2026-11-24:
+## 1. AUDYT JEDNOSTKI BIEGOWEJ: Poniedziałek, 2026-11-23
 
 | Parametr | Plan | Realizacja | Odchylenie |
 |:---|:---:|:---:|:---:|
-| Dystans [km] | 10.50 | 12.01 | +1.51 |
-| Średnie tempo [min/km] | 5:45 | 5:50 | +0:05 |
+| Dystans [km] | 4.30 | 1.92 | -2.38 km (-55%) |
+| Średnie tempo [min/km] | 5:30 | 6:29 | +0:59 min/km |
 
-* **Typ treningu:** Long Run ciągły (Z2)
-* **Mocne strony:** 
-  Wzorowa kontrola strefy tlenowej i brak dryfu sercowo-naczyniowego – średnie tętno 151 bpm (plan: 152 bpm) pozostało stabilne do samego końca biegu bez widocznego zjawiska Cardiac Drift.
-  Prawidłowa kadencja kroku – średnia 172 spm utrzymała się idealnie w widełkach referencyjnych dla biegów spokojnych (165–175 spm), zapobiegając nadmiernemu wydłużeniu czasu kontaktu z podłożem.
+* **Typ treningu:** Bieg w Z1 / Niewykonana sesja techniki biegowej (skrócone rozbieganie)
 * **Błędy i korekty:** 
-  Decyzyjne: Nieuzasadnione wydłużenie dystansu o 1.51 km (+14%) względem założeń. Na koniec mikrocyklu samowolne dokładanie kilometrażu generuje zbędny koszt mechaniczny i opóźnia odbudowę glikogenu przed poniedziałkowym akcentem szybkościowym; kończ jednostkę dokładnie na zaplanowanym dystansie.
+Decyzyjne (Porzucenie części głównej i skrócenie jednostki): Zawodnik przebiegł zaledwie 1.92 km wolnym truchtem, rezygnując z części głównej (8x 100 m w Z5) oraz schłodzenia; korekta: w przypadku bardzo złych warunków pogodowych (2.2°C, deszcz) należy przenieść akcent szybkościowo-techniczny na bieżnię mechaniczną lub pod dach zamiast całkowicie odpuszczać cel motoryczny.
+Biomechaniczne (Wysokie odchylenie pionowe i niski zwrot energii): Odchylenie pionowe VR wyniosło 8.81% (norma Z1/Z2: 7.5–8.5%) przy podwyższonym GCT 276.7 ms, co wskazuje na bieg szurany, podskakujący i pozbawiony sztywności sprężystej; korekta: podnieś kadencję do 170+ spm i kieruj pchnięcie z biodra płasko w przód.
 * **Kontekst fizjologiczny i środowiskowy:** 
-  Niska temperatura zewnętrzna (6.1°C, odczuwalna 2.2°C) istotnie ułatwiła termoregulację ustrojową, co ograniczyło odpływ krwi do łożyska skórnego i pozwoliło utrzymać niskie tętno (151 bpm) pomimo lekkich podbiegów i dłuższego czasu trwania jednostki (70 min).
+Trudne warunki pogodowe (2.2°C, odczuwalna -2.2°C, deszcz) połączone ze skumulowanym obciążeniem z niedzieli (12 km) oraz wysoką aktywnością w ciągu dnia (20 036 kroków) wywołały szybką rezygnację z kontynuowania biegu.
+Wpływ: Przerwanie treningu po 12 minutach zapobiegło wychłodzeniu organizmu, ale pozbawiło układ nerwowy kluczowego bodźca pobudzenia włókien szybkokurczliwych (Speed/Z5).
 * **Podsumowanie i wnioski:** 
-  Trening został zrealizowany poprawnie pod kątem bioenergetycznym i intensywności tlenowej, jednak niepotrzebnie wydłużony objętościowo. Jednostka wzmocniła bazową gęstość naczyń włosowatych oraz frakcję wyrzutową serca bez generowania zakwaszenia mięśniowego. Zgromadzona objętość tlenowa stanowi solidną podbudowę pod zbliżające się akcenty beztlenowe i tolerancję kwasu mlekowego pod dystans 800m.
+Trening nie został zrealizowany zgodnie z planem – wykonano jedynie 1.92 km truchtu w strefie Z1 bez części głównej (8x 100 m). Niewykonanie przebieżek szybkościowych hamuje rozwijanie dynamiki i ekonomii biegu niezbędnych w przygotowaniach pod 800m. Brak obciążenia jakościowego w tym dniu nakłada obowiązek pełnej mobilizacji i precyzyjnego wykonania nadchodzących akcentów w środę (Threshold) oraz piątek (VO2max).
 
 ## 2. STAN ZASOBÓW I KOSZT METABOLICZNY
 
-- **Drenaż fizjologiczny**: Obciążenie obwodowe umiarkowane, ze skumulowanym zmęczeniem taśmy tylnej i mięśni podudzia po pokonaniu 12 km na nawierzchni asfaltowej w połączeniu z wczorajszym treningiem siłowym.
-- **Bilans układu nerwowego**: Autonomiczny układ nerwowy pozostaje zrównoważony dzięki dobrej regeneracji nocnej (HRV 47 ms, RHR 54 bpm), aczkolwiek całodzienny wydatek (15557 kroków, spadek Body Battery do 29/100) wymusza głęboki odpoczynek nocny.
+- **Drenaż fizjologiczny**: Obciążenie metaboliczne z samego biegu było minimalne (1.92 km), jednak wysoka aktywność pozatreningowa (20 036 kroków) przy niedzielnym biegu 12 km doprowadziła do spadek wskaźnika Body Battery do poziomu 18/100.
+- **Bilans układu nerwowego**: Nocne wskaźniki autonomiczne (HRV 47 ms przy bazie 44–56 ms, RHR 57 bpm) wykazują stabilność, a wczesne przerwanie biegu zapiegło nadmiernemu stresowi obwodowemu i wychłodzeniu.
 
 ## 3. PROTOKÓŁ REGENERACJI (WIECZÓR I NOC)
-- **Odżywianie i nawodnienie**: Spożyj kolację bogatą w węglowodany złożone (ok. 1.2–1.5 g/kg m.c.) oraz pełnowartościowe białko, aby w pełni odbudować zasoby glikogenu przed jutrzejszymi sprintami (8x100m). Uzupełnij płyny z dodatkiem elektrolitów w objętości min. 500–700 ml.
+- **Odżywianie i nawodnienie**: Spożyj ciepły posiłek regeneracyjny bogaty w węglowodany i białko, aby odbudować glikogen po aktywnym dniu oraz uzupełnij płyny z dodatkiem elektrolitów.
 - **Mobilność i regeneracja tkankowa**:
-  - Dodać / Wydłużyć: Soleus Wall Stretch (wydłużyć do 1:00 na stronę dla dekompresji mięśnia płaszczkowatego) oraz Couch Stretch (0:45 na stronę, aby otworzyć zgięte podczas biegu biodra).
-  - Pominąć / Skrócić: Pomiń głębokie, mocne rolowanie (SMR) pasma biodrowo-piszczelowego i czwórogłowych na korzyść lekkiego drenażu limfatycznego, aby nie rozbijać pożądanego napięcia mięśniowo-ścięgnistego (stiffness) przed jutrzejszą pracą nad techniką biegową.
-- **Wyciszenie i higiena snu**: Wykonaj Child's Pose przez pełną minutę z głębokim oddechem przeponowym w celu przełączenia na dominację przywspółczulną. Zadbaj o minimum 8 godzin snu w przewietrzonej sypialni (18–19°C), odstawiając ekrany 45 minut przed zaśnięciem.
+  - Dodać / Wydłużyć: Couch Stretch (otwarcie taśmy przedniej po dużej liczbie kroków) oraz Soleus Wall Stretch (rozluźnienie kompleksu łydka-Achilles).
+  - Pominąć / Skrócić: Rolowanie powięziowe (SMR) – po tak krótkiej jednostce głęboka auto-mobilizacja jest zbędna.
+- **Wyciszenie i higiena snu**: Zapewnij co najmniej 8 godzin snu w dobrze przewietrzonym i chłodnym pokoju. Stosuj ćwiczenia oddechowe z pozycji Child's Pose w celu pobudzenia układu przywspółczulnego.
 
-## 4. OCENA GOTOWOŚCI I DYREKTYWA NA DZIEŃ: Niedziela, 2026-11-22
-
-* **DECYZJA ADAPTACYJNA:** ZMĘCZENIE FUNKCJONALNE
-* **Uzasadnienie fizjologiczne:** Mikrocykl został zamknięty z planowanym, kontrolowanym zmęczeniem obwodowym. Układ autonomiczny wykazuje stabilność (HRV w normie bazowej, RHR bez odchyleń), jednak spadek zasobów dziennych (Body Battery 29/100) i sumaryczny kilometraż wymagają pełnej regeneracji nocnej, by odzyskać optymalną sztywność sprężystą mięśni (MTS) przed poniedziałkowym blokiem szybkości w Z5. Plan na poniedziałek pozostaje bez zmian.
+## 4. OCENA GOTOWOŚCI I DECYZJA NA DZIEŃ: Wtorek, 2026-11-24
+* **Decyzja wykonawcza (Wtorek, 2026-11-24):** Realizacja planu: 6.0 km, tempo 5:35 min/km, tętno docelowe ~152 bpm (strefa Z2) | Cel: Bieg regeneracyjno-tlenowy, kontrola kadencji (~170 spm) i budowanie bazy pod środowy akcent progowo-siłowy.
+* **Uzasadnienie fizjologiczne:** Wobec braku zmęczenia po niepełnym poniedziałkowym treningu układ nerwowy i mięśniowy są w pełni gotowe do podjęcia objętości tlenowej. Bieg w Z2 poprawi ukrwienie tkanek i podtrzyma ciągłość adaptacyjną przed środowym Threshold (4x 1.5 km) oraz treningiem siłowym.
